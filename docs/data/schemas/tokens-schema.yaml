@@ -1,0 +1,37 @@
+version: 1
+title: Design Tokens Schema
+description: Canonical schema for core and semantic tokens
+types:
+  ColorScale:
+    type: object
+    additionalProperties:
+      type: string
+      pattern: '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$'
+  Typography:
+    type: object
+    properties:
+      fontFamilies: { type: object }
+      fontSizes: { type: object }
+      lineHeights: { type: object }
+      fontWeights: { type: object }
+    additionalProperties: true
+properties:
+  core:
+    type: object
+    properties:
+      colors:
+        type: object
+        properties:
+          base: { $ref: '#/types/ColorScale' }
+          neutral: { $ref: '#/types/ColorScale' }
+          primary: { $ref: '#/types/ColorScale' }
+      typography: { $ref: '#/types/Typography' }
+      spacing: { type: object }
+      radii: { type: object }
+  semantic:
+    type: object
+    properties:
+      color: { type: object }
+      typography: { type: object }
+      a11y: { type: object }
+required: [core]
