@@ -93,26 +93,31 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install conftest
+        env:
+          CONFTEST_VERSION: ${{ vars.CONFTEST_VERSION }}
         run: |
           set -euo pipefail
-          VER=0.53.1
-          BASE="https://github.com/open-policy-agent/conftest/releases/download/v${VER}"
-          # Try official tarball name first
-          if curl -sSfL -o conftest.tar.gz "$BASE/conftest_Linux_x86_64.tar.gz"; then
-            if file conftest.tar.gz | grep -q 'gzip compressed data'; then
-              tar -xzf conftest.tar.gz
-              sudo mv conftest /usr/local/bin/
-              conftest --version
-            else
-              echo "Downloaded file is not a gzip archive. Check the URL or asset type."
-              exit 1
-            fi
+          sudo apt-get update -y
+          sudo apt-get install -y jq file
+          if [ -n "${CONFTEST_VERSION:-}" ]; then
+            API_URL="https://api.github.com/repos/open-policy-agent/conftest/releases/tags/v${CONFTEST_VERSION}"
           else
-            echo "Tarball not found (404). Trying raw binary..."
-            curl -sSfL -o conftest "$BASE/conftest_Linux_x86_64"
-            chmod +x conftest
+            API_URL="https://api.github.com/repos/open-policy-agent/conftest/releases/latest"
+          fi
+          ASSET_URL=$(curl -sSfL "$API_URL" | jq -r '.assets[].browser_download_url' | grep -E 'Linux_(x86_64|amd64)\.tar\.gz$' | head -n1)
+          if [ -z "$ASSET_URL" ]; then
+            echo "Could not resolve Conftest asset URL via GitHub API: $API_URL" >&2
+            exit 1
+          fi
+          echo "Downloading Conftest from: $ASSET_URL"
+          curl -sSfL -o conftest.tar.gz "$ASSET_URL"
+          if file conftest.tar.gz | grep -q 'gzip compressed data'; then
+            tar -xzf conftest.tar.gz
             sudo mv conftest /usr/local/bin/
             conftest --version
+          else
+            echo "Downloaded asset is not a gzip archive; please verify asset type." >&2
+            exit 1
           fi
       - name: Test OpenAPI against policies
         run: |
