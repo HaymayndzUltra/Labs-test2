@@ -21,6 +21,12 @@ links:
 4. M4 — PR to Integration (Week 1)
    - Output: PR to `integration`
    - Gate: G1 sign-off recorded, KPIs linked
+5. M5 — F3 Prep: Tokens v1 acceptance inputs ready (Week 2)
+   - FE Deliverables: token names, categories, usage guidance
+   - Gate: UX/FE acceptance acknowledged
+6. M6 — F4 Prep: OpenAPI v1 acceptance inputs ready (Week 2)
+   - BE Deliverables: draft spec, validation passing, versioning plan
+   - Gate: BE/QA acceptance acknowledged
 
 ## Capacity & Estimates (Rough Order of Magnitude)
 - Discovery alignment: 0.5d
@@ -31,7 +37,7 @@ links:
 ## Dependencies & Sequencing
 - Requires Discovery artifacts (DBR-001, RAD-001)
 - Parallelizable: backlog curation with PRD drafting
-- Sequential: PR to integration after approvals
+- Sequential: PR to integration after approvals; F3/F4 prep after G1
 
 ## Risks & Mitigations
 - Scope drift: Anchor to DBR-001; enforce MVP cutline in backlog

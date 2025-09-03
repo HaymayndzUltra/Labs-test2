@@ -1,6 +1,6 @@
-id,title,description,priority,estimate,acceptance_criteria,depends_on
-BL-001,Author PRD,Draft and finalize PRD tied to DBR-001,High,1d,"PRD approved by Product & Engineering; KPIs linked; constraints captured",DBR-001
-BL-002,Backlog curation,Create prioritized backlog with MVP cutline,High,0.5d,"Backlog.csv committed; items have AC and estimates; MVP cutline noted",PRD-001
-BL-003,Roadmap & capacity,Write milestones and capacity/ROM estimates,Medium,0.5d,"Roadmap.md includes milestones, capacity ranges, risks",PRD-001
-BL-004,Compliance review,Integrate security/compliance overlay into acceptance criteria,Medium,0.25d,"AC include data, access, logging when applicable",RAD-001
-BL-005,PR to integration,Open PR to integration with planning artifacts,High,0.25d,"PR opened to integration; reviewers assigned; links included",BL-001|BL-002|BL-003
+id,title,description,priority,estimate,acceptance_criteria,depends_on,owner
+BL-001,Author PRD,Draft and finalize PRD tied to DBR-001,High,1d,"PRD approved by Product & Engineering; KPIs linked; constraints captured",DBR-001,PM
+BL-002,Backlog curation,Create prioritized backlog with MVP cutline,High,0.5d,"Backlog.csv committed; items have AC and estimates; MVP cutline noted",PRD-001,PM
+BL-003,Roadmap & capacity,Write milestones and capacity/ROM estimates,Medium,0.5d,"Roadmap.md includes milestones, capacity ranges, risks",PRD-001,Eng Lead
+BL-004,Compliance review,Integrate security/compliance overlay into acceptance criteria,Medium,0.25d,"AC include data, access, logging when applicable",RAD-001,Security
+BL-005,PR to integration,Open PR to integration with planning artifacts,High,0.25d,"PR opened to integration; reviewers assigned; links included",BL-001|BL-002|BL-003,Eng Lead

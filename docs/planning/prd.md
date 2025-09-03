@@ -25,6 +25,10 @@ Define the MVP scope, acceptance criteria, and constraints for planning artifact
 - Capture acceptance criteria for handoff to UX and Implementation.
 - Align with Discovery KPIs and RAD mitigations.
 
+### MVP Cutline
+- Included: PRD (PRD-001), Roadmap (RMP-001), Backlog CSV; acceptance criteria for F3/F4 freezes.
+- Excluded: Implementation work, production infra changes, non-critical experiments.
+
 ## Constraints
 - Follow documentation integrity and modification safety rules.
 - Ensure compliance overlay items are addressed where applicable.
@@ -45,6 +49,15 @@ Define the MVP scope, acceptance criteria, and constraints for planning artifact
 - KPIs linked in measurable outcomes section.
 - Compliance checklist items captured when relevant.
 
+### Pre-Freeze Acceptance for F3/F4
+- Tokens v1 (F3):
+  - Named tokens defined and documented; AA contrast guardrails noted.
+  - Token file(s) and generation process documented for UX/FE.
+  - Acceptance: UX confirms token set completeness; FE confirms import path and usage.
+- OpenAPI v1 (F4):
+  - Spec drafted and passes lint/policy validation; versioned with semver.
+  - Acceptance: BE confirms endpoints/contracts; QA confirms testability; CI check enabled.
+
 ## Measurable Outcomes (Linked to Discovery KPIs)
 - Sign-offs captured within 2 business days.
 - Backlog prioritized with clear MVP cutline.
@@ -52,6 +65,16 @@ Define the MVP scope, acceptance criteria, and constraints for planning artifact
 
 ## Risks
 - See RAD; ensure mitigations reflected in sequencing and scope.
+
+### RAD Linkage (R-01..R-06)
+| Risk | Mitigation | Owner | Where Tracked |
+|------|------------|-------|---------------|
+| R-01 Rule/doc drift | Single source of truth; CI sync check between `.cursor` and rules | Eng Lead | RAD-001 R-01 |
+| R-02 Ambiguous scope | Decision log; enforce MVP cutline and PRD approvals | PM | RAD-001 R-02 |
+| R-03 Late security/compliance | Early overlay checklist; include AC in backlog items | Security | RAD-001 R-03 |
+| R-04 Missing stakeholder inputs | Stakeholder matrix; calendar holds for reviews | Program | RAD-001 R-04 |
+| R-05 No telemetry for KPIs | Define metrics; add to PRD/Backlog; plan instrumentation | Data/ML | RAD-001 R-05 |
+| R-06 PR base mismatch | Confirm base branch (`integration`) before PR | Eng Lead | RAD-001 R-06 |
 
 ## Approval (G1)
 - Product: Name, Date
@@ -111,10 +134,10 @@ Define the MVP scope, acceptance criteria, and constraints for planning artifact
 ## Dependency Map (FE/BE split allowed)
 - Frontend/UX:
   - Consumers: UX acceptance criteria and flows
-  - Dependencies: PRD approval (A1)
+  - Dependencies: PRD approval (A1); Tokens v1 acceptance inputs
 - Backend/Architecture:
   - Consumers: Architecture constraints and interfaces
-  - Dependencies: Security/compliance overlay review
+  - Dependencies: Security/compliance overlay review; OpenAPI v1 acceptance inputs
 
 ## Metrics & KPIs
 - PRD approval; MVP scope locked; prioritized backlog; traceability to RAD risks
