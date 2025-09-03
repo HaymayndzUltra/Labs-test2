@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -47,6 +49,8 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Validate OpenAPI (swagger-cli)
         run: |
           if [ -f contracts/api/openapi.yaml ]; then npx -y swagger-cli@4.0.4 validate contracts/api/openapi.yaml; else echo "no openapi"; fi
@@ -69,10 +73,13 @@ jobs:
       security-events: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Gitleaks (secrets scan)
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with: {}
       - name: SBOM (CycloneDX)
         run: |
           if [ -f package.json ]; then npx -y @cyclonedx/cyclonedx-npm --output-file security/sbom/sbom.json --output-format json; else echo "skip"; fi

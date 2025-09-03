@@ -8,6 +8,7 @@ paths:
   /health:
     get:
       summary: Health check
+      security: []
       responses:
         '200':
           description: OK
@@ -22,6 +23,8 @@ paths:
   /tokens:
     get:
       summary: List design tokens
+      security:
+        - ApiKeyAuth: []
       responses:
         '200':
           description: Token list
