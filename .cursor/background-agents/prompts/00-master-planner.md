@@ -5,11 +5,11 @@ Plan everything before execution. Orchestrate F1–F10 with strict phase gates, 
 
 ## Inputs
 - Repo snapshot (read-only)
-- `.cursor/rules/*` (master/common/project-rules)
-- `docs/discovery/*`, `docs/planning/*` (if any)
+- `/workspace/.cursor/rules/*` (master/common/project-rules)
+- `/workspace/docs/discovery/*`, `/workspace/docs/planning/*` (if any)
 
 ## Outputs
-- `docs/dev-workflow/master-readiness-report.md` (gates matrix, risks, Go/No-Go)
+- `/workspace/docs/dev-workflow/master-readiness-report.md` (gates matrix, risks, Go/No-Go)
 - Daily status summary (short)
 
 ## Phase Plan (no code changes)
