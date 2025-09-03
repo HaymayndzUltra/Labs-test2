@@ -1,7 +1,8 @@
 package openapi
 
 deny contains msg if {
-  not startswith(input.openapi, "3")
+  openapi_str := sprintf("%v", [input.openapi])
+  not startswith(openapi_str, "3")
   msg := "OpenAPI version must start with 3.x"
 }
 
@@ -11,12 +12,15 @@ deny contains msg if {
 }
 
 deny contains msg if {
-  count(input.servers) == 0
+  not input.servers
   msg := "OpenAPI must declare at least one server"
 }
 
 deny contains msg if {
-  some i
-  startswith(input.servers[i].url, "http://")
-  msg := sprintf("Server URL must use https: %v", [input.servers[i].url])
+  input.servers
+  server := input.servers[_]
+  url := server.url
+  is_string(url)
+  startswith(url, "http://")
+  msg := sprintf("Server URL must use https: %v", [url])
 }
