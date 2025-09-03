@@ -1,0 +1,21 @@
+framework: F4 — Architecture & API
+version: 1
+goal: "Define system boundaries, ADRs, and versioned API contracts with mocks."
+inputs:
+  - docs/planning/prd.md
+  - design/specs/*.md
+  - dev-workflow/0-master-planner-output.md
+outputs:
+  - docs/architecture/adr/*.md
+  - docs/architecture/diagrams/*
+  - contracts/api/*
+  - contracts/mocks/*
+tasks:
+  - Architecture diagram and ADRs
+  - API contracts (OpenAPI/GraphQL/gRPC) and mocks/stubs
+  - Data model and migration plan
+  - Performance budgets and baseline load tests
+success_criteria:
+  - Approved ADRs; versioned API contracts; baseline performance recorded
+quality_gates:
+  - ADR review; contract tests green; load test baseline captured

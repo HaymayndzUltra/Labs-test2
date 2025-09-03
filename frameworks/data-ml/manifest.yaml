@@ -1,0 +1,21 @@
+framework: F5 — Data/ML
+version: 1
+goal: "Establish canonical schemas, data contracts, pipelines, and initial model baselines (if applicable)."
+inputs:
+  - docs/planning/prd.md
+  - data sources and DQ SLAs
+  - dev-workflow/0-master-planner-output.md
+outputs:
+  - docs/data/schemas/*.yaml
+  - docs/data/contracts/*.md
+  - data/pipelines/*
+  - docs/ml/*
+tasks:
+  - Canonical schemas and data contracts
+  - ETL/ELT pipeline specs and reproducible jobs
+  - Feature store or dataset definitions
+  - Baseline model, evaluation, and drift monitoring plan (optional)
+success_criteria:
+  - Validated schemas; pipelines reproducible; lineage documented
+quality_gates:
+  - Data quality thresholds met; privacy checks; reproducibility verified
