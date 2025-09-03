@@ -1,0 +1,54 @@
+---
+description: "TAGS: [frontend,implementation,development,react,vue,angular] | TRIGGERS: frontend,implementation,development,react,vue,angular,component,state,testing | SCOPE: implementation-fe | DESCRIPTION: Frontend implementation and development framework."
+alwaysApply: false
+---
+
+# Frontend Implementation
+
+## Development Standards
+
+### Code Quality
+- [ ] ESLint configuration
+- [ ] Prettier formatting
+- [ ] TypeScript usage
+- [ ] Code review process
+
+### Component Development
+- [ ] Component architecture
+- [ ] State management
+- [ ] Props and interfaces
+- [ ] Error boundaries
+
+## Testing Strategy
+
+### Unit Testing
+- [ ] Jest configuration
+- [ ] Component testing
+- [ ] Hook testing
+- [ ] Mock strategies
+
+### Integration Testing
+- [ ] API integration tests
+- [ ] User flow testing
+- [ ] Cross-browser testing
+- [ ] Performance testing
+
+## Performance Optimization
+
+### Bundle Optimization
+- [ ] Code splitting
+- [ ] Lazy loading
+- [ ] Tree shaking
+- [ ] Bundle analysis
+
+### Runtime Performance
+- [ ] React optimization techniques
+- [ ] Memory leak prevention
+- [ ] Image optimization
+- [ ] Caching strategies
+
+## Deliverables
+- [ ] Component library
+- [ ] Test suite
+- [ ] Performance benchmarks
+- [ ] Documentation

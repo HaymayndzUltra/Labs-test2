@@ -1,0 +1,40 @@
+---
+description: "TAGS: [frontend,planning,product,ui,ux] | TRIGGERS: frontend,planning,product,ui,ux,component,react,vue,angular | SCOPE: product-planning-fe | DESCRIPTION: Frontend product planning and development framework."
+alwaysApply: false
+---
+
+# Frontend Product Planning
+
+## User Experience Planning
+
+### User Research
+- [ ] User personas definition
+- [ ] User journey mapping
+- [ ] Usability testing plan
+- [ ] Accessibility requirements
+
+### Design System
+- [ ] Component library planning
+- [ ] Design tokens definition
+- [ ] Style guide creation
+- [ ] Responsive design strategy
+
+## Technical Planning
+
+### Architecture Decisions
+- [ ] Framework selection
+- [ ] State management strategy
+- [ ] Routing architecture
+- [ ] Performance optimization plan
+
+### Development Planning
+- [ ] Component hierarchy
+- [ ] API integration points
+- [ ] Testing strategy
+- [ ] Build and deployment pipeline
+
+## Deliverables
+- [ ] Technical specification
+- [ ] Component design
+- [ ] API contract
+- [ ] Development timeline

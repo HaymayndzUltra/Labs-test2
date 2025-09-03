@@ -1,0 +1,46 @@
+---
+description: "TAGS: [discovery,intake,requirements,analysis] | TRIGGERS: discovery,requirements,intake,analysis,stakeholder | SCOPE: discovery-intake | DESCRIPTION: Framework for discovery and requirements intake processes."
+alwaysApply: false
+---
+
+# Discovery & Intake Framework
+
+## Requirements Gathering
+
+### Stakeholder Analysis
+- [ ] Identify all stakeholders
+- [ ] Map stakeholder influence and interest
+- [ ] Document communication preferences
+- [ ] Establish feedback loops
+
+### Business Requirements
+- [ ] Define business objectives
+- [ ] Identify success metrics
+- [ ] Document constraints and assumptions
+- [ ] Prioritize requirements
+
+### Technical Requirements
+- [ ] System architecture requirements
+- [ ] Performance requirements
+- [ ] Security requirements
+- [ ] Integration requirements
+
+## Discovery Process
+
+### Information Collection
+- [ ] Stakeholder interviews
+- [ ] Document analysis
+- [ ] System audit
+- [ ] Market research
+
+### Analysis & Documentation
+- [ ] Requirements documentation
+- [ ] Gap analysis
+- [ ] Risk assessment
+- [ ] Feasibility study
+
+## Deliverables
+- [ ] Requirements specification
+- [ ] Stakeholder map
+- [ ] Risk register
+- [ ] Project charter
