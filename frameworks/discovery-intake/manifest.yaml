@@ -1,0 +1,24 @@
+framework: F1 — Discovery & Intake
+version: 1
+goal: "Synthesize problem definition, constraints, KPIs, and risks into an approved Discovery Brief."
+inputs:
+  - dev-workflow/0-master-planner-output.md
+  - README.md
+  - ADRs and planning docs (if any)
+outputs:
+  - docs/discovery/brief.md
+  - docs/discovery/rad.md
+tasks:
+  - Stakeholder map and interview plan
+  - Problem statements and KPIs
+  - Risks, assumptions, dependencies (RAD) register
+  - Discovery Brief (concise, actionable)
+success_criteria:
+  - Discovery Brief approved; KPIs defined; RAD prioritized
+integration_requirements:
+  - Provide inputs to Planning (PRD) and UX (user flows)
+quality_gates:
+  - Sign-off from product/engineering; traceability IDs assigned
+output_paths:
+  - docs/discovery/brief.md
+  - docs/discovery/rad.md

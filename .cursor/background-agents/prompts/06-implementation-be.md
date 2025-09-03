@@ -1,25 +1,26 @@
-# Background Agent Prompt: F6 — Implementation (Backend)
+# Background Agent Prompt: F6 — Implementation (BE)
 
 ## Goal
-Deliver backend services integrating API contracts with robust tests and performance targets.
+Implement BE endpoints/handlers and integrate with data/services per OpenAPI v1.
 
 ## Context Package
-- API contracts; architecture ADRs; coding standards; CI templates
-- `dev-workflow/0-master-planner-output.md`
+- OpenAPI v1 + mocks; ADRs; PRD acceptance
+- Data schemas (if applicable)
 
 ## Tasks & Deliverables
-1. Implement services/endpoints; integrate with contracts
-2. Unit and integration tests; seed data; performance profiling
-3. Feature flags and configuration management
+1. Handlers/services; validation; error handling
+2. Unit/integration tests; contract tests
+3. Observability hooks; feature flags
 
 ## Success Criteria
-- Meets acceptance criteria; tests >= 80%; perf budgets met
+- Contract tests green; p95 latency budget respected (baseline)
 
 ## Integration Requirements
-- Coordinate with QA for contract/e2e; Security for policies
+- Coordinate with QA for contract suites; Security for SBOM/secrets
 
 ## Quality Gates
-- CI green; static analysis and security scans clean
+- Contract tests pass; coverage ≥ 80%; static analysis; security checks
 
 ## Output Instructions
-- PR to `integration`: `src/backend/*`, `tests/backend/*`, `docs/services/*.md`
+- PR to `integration` with BE changes and test results
+- Daily status summary (date, artifacts, risks, next)

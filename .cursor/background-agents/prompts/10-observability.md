@@ -1,25 +1,23 @@
-# Background Agent Prompt: F10 — Observability & Improve (Retro)
+# Background Agent Prompt: F10 — Observability & Improve
 
 ## Goal
-Instrument telemetry, define SLOs, build dashboards/alerts, and run retros.
+Instrument SLOs/SLIs, dashboards, alerts, and drive retro actions.
 
 ## Context Package
-- Telemetry standards, metrics catalog, logging/trace schemas
-- `dev-workflow/0-master-planner-output.md`
+- Telemetry standards; metrics catalog; logging/trace schemas; incident data
 
 ## Tasks & Deliverables
-1. Instrumentation; dashboards; alert rules
-2. SLO/SLI definitions and error budgets
-3. Post-release analytics and retrospectives
+1. Instrumentation; SLO/SLI definition; dashboards; alert rules
+2. Post-release analytics; retrospectives with action items
 
 ## Success Criteria
-- Actionable dashboards; MTTR < target; retro action items with owners
+- SLOs monitored; actionable dashboards; MTTR within target
 
 ## Integration Requirements
-- Integrate with Release for deployment markers; feed insights to Planning
+- Integrate with Release for deploy markers; feed insights to Planning
 
 ## Quality Gates
-- Alert noise thresholds met; runbooks linked; retro completed
+- Alert noise thresholds met; runbooks linked; retro completed with owners
 
 ## Output Instructions
-- PR to `integration`: `observability/dashboards/*`, `observability/alerts/*`, `docs/retro/*.md`
+- PR with dashboards/config/docs; daily status summary

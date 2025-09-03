@@ -5,7 +5,7 @@ Produce an approved PRD, prioritized backlog, and milestone plan.
 
 ## Context Package
 - Discovery Brief, RAD
-- `dev-workflow/0-master-planner-output.md`
+- `/workspace/dev-workflow/0-master-planner-output.md`
 
 ## Tasks & Deliverables
 1. Draft PRD with scope, acceptance criteria, non-goals
@@ -19,8 +19,9 @@ Produce an approved PRD, prioritized backlog, and milestone plan.
 - Provide acceptance criteria to UX and Implementation; constraints to Architecture
 
 ## Quality Gates
-- PRD review sign-off; measurable outcomes linked to KPIs
+- G1: PRD review sign-off; measurable outcomes linked to KPIs
+- Pre-freeze note: This PRD must be sufficient to freeze Tokens v1 and OpenAPI v1 in F3/F4
 
 ## Output Instructions
-- PR to `integration`: `docs/planning/prd.md`, `docs/planning/roadmap.md`, `docs/planning/backlog.csv`
-- Daily status summary in the agent thread
+- PR to `integration`: `/workspace/docs/planning/prd.md`, `/workspace/docs/planning/roadmap.md`, `/workspace/docs/planning/backlog.csv`
+- Daily status summary (date, artifacts changed, risks, next)
