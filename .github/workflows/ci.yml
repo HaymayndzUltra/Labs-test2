@@ -95,14 +95,24 @@ jobs:
       - name: Install conftest
         run: |
           set -euo pipefail
-          curl -sSfL -o conftest.tar.gz https://github.com/open-policy-agent/conftest/releases/download/v0.53.1/conftest_0.53.1_Linux_x86_64.tar.gz
-          if file conftest.tar.gz | grep -q 'gzip compressed data'; then
-            tar -xzf conftest.tar.gz
+          VER=0.53.1
+          BASE="https://github.com/open-policy-agent/conftest/releases/download/v${VER}"
+          # Try official tarball name first
+          if curl -sSfL -o conftest.tar.gz "$BASE/conftest_Linux_x86_64.tar.gz"; then
+            if file conftest.tar.gz | grep -q 'gzip compressed data'; then
+              tar -xzf conftest.tar.gz
+              sudo mv conftest /usr/local/bin/
+              conftest --version
+            else
+              echo "Downloaded file is not a gzip archive. Check the URL or asset type."
+              exit 1
+            fi
+          else
+            echo "Tarball not found (404). Trying raw binary..."
+            curl -sSfL -o conftest "$BASE/conftest_Linux_x86_64"
+            chmod +x conftest
             sudo mv conftest /usr/local/bin/
             conftest --version
-          else
-            echo "Downloaded file is not a gzip archive. Check the URL or asset type."
-            exit 1
           fi
       - name: Test OpenAPI against policies
         run: |
