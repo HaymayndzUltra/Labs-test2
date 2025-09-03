@@ -24,5 +24,5 @@ Synthesize problem definition, constraints, KPIs, and risks into an approved Dis
 - Sign-off from product/engineering; traceability IDs assigned
 
 ## Output Instructions
-- Create PR to `integration` including: `docs/discovery/brief.md`, `docs/discovery/rad.md`
+including: `docs/discovery/brief.md`, `docs/discovery/rad.md`
 - Post a status summary in the agent thread daily
