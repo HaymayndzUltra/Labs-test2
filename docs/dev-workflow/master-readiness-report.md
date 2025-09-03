@@ -5,8 +5,8 @@
 
 ## Go/No-Go Recommendation
 - Status: No-Go for execution yet
-- Rationale: G1–G3 not fully met (pending sign-offs, tokens freeze note, policy-as-code)
-- Conditions to Go: Close all gaps listed in Gates Matrix (below)
+- Rationale: G2 not fully met; G3 near-ready pending `A11Y_TARGET_URL`
+- Conditions to Go: Close remaining gaps listed in Gates Matrix (below)
 
 ---
 
@@ -30,6 +30,11 @@
   - Pipeline: `data/pipelines/tokens_sync.py` → `data/pipelines/out/tokens.json`
 - Mocks: `contracts/mocks/health.json`, `contracts/mocks/tokens.json`
 - Mocks Policy: `docs/architecture/mocks-policy.md`
+
+### Tokens v1 Freeze (record)
+- Date: 2025-09-03T11:55:12Z
+- core.json SHA: 385cdac2dd87807d6c0d7e35f772d60f9c8c92e3
+- semantic.json SHA: 385cdac2dd87807d6c0d7e35f772d60f9c8c92e3
 
 ---
 
@@ -60,9 +65,9 @@
 ## Gates Matrix (G1–G3)
 | Gate | Requirement | Status | Evidence | Gaps | Owner | Next Action |
 |---|---|---|---|---|---|---|
-| G1 | Discovery+PRD approved; Tokens v1 frozen | PARTIAL | `docs/discovery/brief.md`, `docs/discovery/rad.md`, `docs/planning/prd.md`, `design/tokens/*.json` | Sign-offs not recorded in PR; tokens v1 freeze not documented | PM, Eng Lead, UX | Record approvals in PR; add tokens v1 freeze note and tag |
+| G1 | Discovery+PRD approved; Tokens v1 frozen | PASSED | `docs/discovery/brief.md`, `docs/discovery/rad.md`, `docs/planning/prd.md`, `design/tokens/*.json`; Freeze recorded below | None | PM, Eng Lead, UX | None |
 | G2 | Contract Freeze — OpenAPI v1 + Schemas v1 + mocks policy | PARTIAL | `contracts/api/openapi.yaml` (v1.0.0), `docs/data/schemas/tokens-schema.yaml` (v1), `contracts/mocks/*`, `docs/architecture/mocks-policy.md` | Formal “freeze” decision missing | Eng Lead, Arch | Capture freeze decision in ADR/PR |
-| G3 | CI design ready — contract/a11y/security gates defined | PARTIAL → NEAR-READY | `.github/workflows/ci.yml` (build/test, coverage gate, OpenAPI validate/lint, gitleaks, SBOM, Lighthouse CI via `A11Y_TARGET_URL`), `.lighthouserc.json` | Repo var `A11Y_TARGET_URL` not set; policy-as-code absent | DevOps, QA | Set `A11Y_TARGET_URL`; add policy-as-code checks |
+| G3 | CI design ready — contract/a11y/security gates defined | NEAR-READY | `.github/workflows/ci.yml` (build/test, coverage gate, OpenAPI validate/lint, gitleaks, SBOM, Lighthouse CI via `A11Y_TARGET_URL`, OPA/Conftest policy job), `.lighthouserc.json`, `security/policy/*.rego` | Repo var `A11Y_TARGET_URL` not set | DevOps, QA | Set `A11Y_TARGET_URL` and monitor LHCI |
 
 ---
 
@@ -82,18 +87,16 @@
 ---
 
 ## Immediate Next Actions (Pre-Go)
-1) Record Discovery and PRD approvals in PR; confirm base branch `integration`
-2) Document tokens v1 freeze (date, tag), add to `design/tokens/README.md` (or ADR)
-3) Capture contract freeze decision in ADR/PR referencing `docs/architecture/mocks-policy.md`
-4) Set repo variable `A11Y_TARGET_URL` and monitor Lighthouse CI results
-5) Add policy-as-code checks (e.g., OPA/Conftest) if applicable
+1) Confirm base branch `integration`
+2) Capture contract freeze decision in ADR/PR referencing `docs/architecture/mocks-policy.md`
+3) Set repo variable `A11Y_TARGET_URL` and monitor Lighthouse CI results
 
 ---
 
 ## Daily Status (short)
 - date: 2025-09-03
 - phase: F0 — Planning & Gates Definition
-- artifacts updated: `docs/dev-workflow/master-readiness-report.md`, `docs/architecture/mocks-policy.md`, `.github/workflows/ci.yml`
+- artifacts updated: `docs/dev-workflow/master-readiness-report.md`, `docs/architecture/mocks-policy.md`, `.github/workflows/ci.yml`, `design/tokens/README.md`, `security/policy/*.rego`
 - risks: R-01, R-02, R-03 elevated for pre-Go actions
-- blockers: Pending stakeholder sign-offs; policy-as-code not implemented; missing `A11Y_TARGET_URL`
-- next: Capture sign-offs; set repo var; document tokens freeze; add policy-as-code
+- blockers: Pending `A11Y_TARGET_URL` repo variable
+- next: Set repo var; capture contract freeze decision in ADR/PR
