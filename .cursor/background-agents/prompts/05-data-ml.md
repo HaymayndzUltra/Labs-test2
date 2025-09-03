@@ -24,4 +24,3 @@ Establish canonical schemas, data contracts, pipelines, and (if applicable) init
 
 ## Output Instructions
 - PR to `integration`: `docs/data/schemas/*.yaml`, `docs/data/contracts/*.md`, `data/pipelines/*`, `docs/ml/*` (if applicable)
-- Use handoff template: `/workspace/shared/templates/handoff-message.md`

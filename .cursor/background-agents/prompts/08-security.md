@@ -24,4 +24,3 @@ Embed security across SDLC with policy-as-code and compliance evidence.
 
 ## Output Instructions
 - PR to `integration`: `security/threat-model/*.md`, `.github/dependabot.yml`, `security/sbom/*`, `compliance/evidence/*`
-- Use handoff template: `/workspace/shared/templates/handoff-message.md`

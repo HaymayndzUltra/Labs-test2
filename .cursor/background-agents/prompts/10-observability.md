@@ -23,4 +23,3 @@ Instrument telemetry, define SLOs, build dashboards/alerts, and run retros.
 
 ## Output Instructions
 - PR to `integration`: `observability/dashboards/*`, `observability/alerts/*`, `docs/retro/*.md`
-- Use handoff template: `/workspace/shared/templates/handoff-message.md`

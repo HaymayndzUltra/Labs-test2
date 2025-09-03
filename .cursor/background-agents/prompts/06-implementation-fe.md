@@ -23,4 +23,3 @@ Deliver frontend components and flows meeting acceptance criteria and performanc
 
 ## Output Instructions
 - PR to `integration`: `src/frontend/*`, `tests/frontend/*`, `design/token-usage/*.md`
-- Use handoff template: `/workspace/shared/templates/handoff-message.md`
