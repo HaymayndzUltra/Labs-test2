@@ -1,3 +1,40 @@
+---
+title: "Risks, Assumptions, Dependencies (RAD) Register"
+traceability_id: RAD-001
+version: 0.1.0
+status: Draft
+date: "2025-09-03"
+links:
+  - "/workspace/docs/discovery/brief.md"
+---
+
+## Risks
+| ID | Risk | Impact | Likelihood | Owner | Mitigation | Status |
+|---|---|---|---|---|---|---|
+| R-001 | TBD | High | Medium | TBD | TBD | Open |
+| R-002 | TBD | Medium | High | TBD | TBD | Open |
+
+## Assumptions
+| ID | Assumption | Validation Method | Owner | Due |
+|---|---|---|---|---|
+| A-001 | TBD | Experiment/Interview/Log analysis | TBD | TBD |
+
+## Dependencies
+| ID | Dependency | Type | Owner | Needed By | Status |
+|---|---|---|---|---|---|
+| D-001 | TBD | Team/System/Vendor | TBD | TBD | Open |
+
+## Compliance & Privacy Checklist
+- Data minimization defined: TBD
+- Consent and transparency requirements: TBD
+- Retention policies: TBD
+- Access controls and audit logging: TBD
+
+## Decision Log
+| Date | Decision | Context | Approver |
+|---|---|---|---|
+| 2025-09-03 | Initialized RAD register | Discovery kickoff | TBD |
+
 # F1 — Risks, Assumptions, Dependencies (RAD) Register
 
 ## Legend

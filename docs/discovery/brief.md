@@ -1,3 +1,70 @@
+---
+title: "Discovery Brief"
+traceability_id: DBR-001
+version: 0.1.0
+status: Draft
+owners:
+  - product: TBD
+  - engineering: TBD
+date: "2025-09-03"
+links:
+  - "/workspace/dev-workflow/0-master-planner-output.md"
+  - "/workspace/docs/discovery/rad.md"
+---
+
+## Overview
+Establish a standardized Discovery & Intake baseline (Brief and RAD) for the AI Governor Framework in this repository. Define scope boundaries, constraints, measurable KPIs, and an approvals path to feed Planning (PRD) and UX (user flows).
+
+## Stakeholder Map
+- Executive sponsor: TBD (influence: high, interest: high)
+- Product lead: TBD (influence: high, interest: high)
+- Engineering lead: TBD (influence: high, interest: high)
+- Design lead: TBD (influence: medium, interest: high)
+- Data/Analytics: TBD (influence: medium, interest: medium)
+- Compliance/Security: TBD (influence: medium, interest: medium)
+- QA Lead: TBD (influence: medium, interest: high)
+- DevOps/SRE: TBD (influence: medium, interest: medium)
+- Legal/Privacy: TBD (influence: medium, interest: medium)
+
+## Interview Plan
+- Objectives: clarify goals, constraints, success metrics, risks.
+- Format: 30–45 min interviews; shared notes; confirm summaries within 24h.
+- Participants: sponsors, PM, Eng lead, Design, Ops/Sec, key users.
+- Schedule: TBD (insert calendar links).
+
+## Problem Statements
+- P1: Inconsistent discovery artifacts lead to variable quality and downstream PRD rework.
+- P2: Missing traceability and unrecorded approvals reduce auditability and slow delivery.
+- P3: Late discovery of security/compliance constraints causes scope churn and delays.
+
+## Success Metrics (KPIs)
+- G1 approvals: Product + Engineering sign-offs recorded within 2 business days of kickoff.
+- RAD coverage: ≥ 90% of risk categories captured with owners and mitigations.
+- Traceability: 100% discovery artifacts include stable IDs and cross-links.
+- Documentation integrity: 0 outstanding doc/rule drift findings at PR time.
+- Handoffs: PRD and UX receive inputs within 1 business day after sign-off.
+
+## Constraints
+- Business: budget/timebox defined by sponsors; approvals required before planning starts.
+- Technical: in-repo rules are source of truth; follow modification safety and code quality rules.
+- Platform: prefer native patterns; keep artifacts in `/workspace/docs/discovery/`.
+- Compliance: see RAD register; security overlay requirements apply (encryption, access controls, logging).
+
+## Integration Requirements
+- Handoff to Planning (PRD): user stories, acceptance criteria, non-functionals.
+- Handoff to UX: key personas, user flows, edge cases.
+
+## Open Questions
+- Q1: TBD
+- Q2: TBD
+
+## Approvals (G1)
+- Product sign-off: Name, Date, Notes
+- Engineering sign-off: Name, Date, Notes
+
+## Revision History
+- 0.1.0 (2025-09-03): Initial draft structure.
+
 # F1 — Discovery & Intake: Discovery Brief
 
 ## Project/Initiative
