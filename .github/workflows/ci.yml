@@ -6,6 +6,10 @@ on:
   push:
     branches: [ integration ]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-test:
     runs-on: ubuntu-latest
@@ -32,8 +36,53 @@ jobs:
           else echo "No coverage file; skipping"; fi
       - name: Security scan (npm audit)
         run: |
-          if [ -f package.json ]; then npm audit --audit-level=high || true; fi
+          if [ -f package.json ]; then npm audit --audit-level=high; else echo "skip"; fi
       - name: SBOM (CycloneDX)
         run: |
           if [ -f package.json ]; then npx @cyclonedx/cyclonedx-npm --output-file security/sbom/sbom.json --output-format json || true; fi
+
+  contracts:
+    name: Contracts & Schemas
+    runs-on: ubuntu-latest
+    needs: build-test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate OpenAPI (swagger-cli)
+        run: |
+          if [ -f contracts/api/openapi.yaml ]; then npx -y swagger-cli@4.0.4 validate contracts/api/openapi.yaml; else echo "no openapi"; fi
+      - name: Lint OpenAPI (redocly)
+        run: |
+          if [ -f contracts/api/openapi.yaml ]; then npx -y @redocly/cli@latest lint contracts/api/openapi.yaml; else echo "no openapi"; fi
+      - name: Run tokens pipeline merge
+        run: |
+          if [ -f data/pipelines/tokens_sync.py ]; then python3 data/pipelines/tokens_sync.py; else echo "no tokens pipeline"; fi
+      - name: Validate merged tokens JSON
+        run: |
+          if [ -f data/pipelines/out/tokens.json ]; then jq . data/pipelines/out/tokens.json > /dev/null; else echo "no merged tokens"; fi
+
+  security:
+    name: Secrets & Supply Chain
+    runs-on: ubuntu-latest
+    needs: build-test
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gitleaks (secrets scan)
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: --redact
+      - name: SBOM (CycloneDX)
+        run: |
+          if [ -f package.json ]; then npx -y @cyclonedx/cyclonedx-npm --output-file security/sbom/sbom.json --output-format json; else echo "skip"; fi
+
+  a11y_perf:
+    if: ${{ vars.A11Y_TARGET_URL != '' }}
+    name: A11y & Perf Smoke (optional)
+    runs-on: ubuntu-latest
+    needs: build-test
+    steps:
+      - name: Placeholder
+        run: echo "Run a11y/perf checks against ${{ vars.A11Y_TARGET_URL }}"
 
