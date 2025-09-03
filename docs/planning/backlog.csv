@@ -1,10 +1,6 @@
-id,title,description,priority,estimate,owner,depends_on,tags
-P-01,Author PRD v1,Compose PRD with scope/acceptance/non-goals,P1,1d,PM,"",planning
-P-02,PRD review & sign-off,Review with PM+Eng Lead and approve,P1,0.5d,PM;Eng Lead,P-01,planning
-P-03,Draft roadmap,Create milestones, capacity, rough estimates,P2,0.5d,PM,P-02,planning
-P-04,Roadmap review,Review roadmap with Eng Lead,P2,0.25d,Eng Lead,P-03,planning
-P-05,Backlog compilation,Create prioritized backlog with dependencies,P1,0.75d,PM,P-02;P-03,planning
-P-06,Backlog review,Review backlog with Eng Lead,P2,0.25d,Eng Lead,P-05,planning
-P-07,Security overlay reference,Ensure PRD constraints include overlay,P2,0.25d,Security,P-01,compliance
-P-08,CI rule drift check (proposal),Propose CI check to detect rules drift,P3,0.5d,Eng Lead,P-02,quality
-P-09,Handoff to Implementation,Confirm consumers and include links in doc,P2,0.25d,PM,P-04;P-06,handoff
+id,title,description,priority,estimate,acceptance_criteria,depends_on
+BL-001,Author PRD,Draft and finalize PRD tied to DBR-001,High,1d,"PRD approved by Product & Engineering; KPIs linked; constraints captured",DBR-001
+BL-002,Backlog curation,Create prioritized backlog with MVP cutline,High,0.5d,"Backlog.csv committed; items have AC and estimates; MVP cutline noted",PRD-001
+BL-003,Roadmap & capacity,Write milestones and capacity/ROM estimates,Medium,0.5d,"Roadmap.md includes milestones, capacity ranges, risks",PRD-001
+BL-004,Compliance review,Integrate security/compliance overlay into acceptance criteria,Medium,0.25d,"AC include data, access, logging when applicable",RAD-001
+BL-005,PR to integration,Open PR to integration with planning artifacts,High,0.25d,"PR opened to integration; reviewers assigned; links included",BL-001|BL-002|BL-003
