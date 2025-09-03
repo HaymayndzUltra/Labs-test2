@@ -9,18 +9,19 @@ Define system boundaries, ADRs, and versioned API contracts with mocks.
 
 ## Tasks & Deliverables
 1. Architecture diagram and ADRs
-2. API contracts (OpenAPI/GraphQL/gRPC) and mocks/stubs
-3. Data model and migration plan
-4. Performance budgets and baseline load tests
+2. API contracts (OpenAPI v1 preferred) and mocks/stubs
+3. Data model and migration plan; baseline performance budgets
 
 ## Success Criteria
-- Approved ADRs; versioned API contracts; baseline performance recorded
+- Approved ADRs; OpenAPI v1 frozen; mocks available; perf budgets documented
 
 ## Integration Requirements
 - Provide stubs/mocks to Implementation; align with Data/ML schemas
 
 ## Quality Gates
-- ADR review; contract tests green; load test baseline captured
+- G2: Contract Freeze — OpenAPI v1 + mocks policy approved
+- ADR review sign-off; baseline load test plan defined
 
 ## Output Instructions
-- PR to `integration`: `docs/architecture/adr/*.md`, `docs/architecture/diagrams/*`, `contracts/api/*`, `contracts/mocks/*`
+- PR: `docs/architecture/adr/*.md`, `docs/architecture/diagrams/*`, `contracts/api/*`, `contracts/mocks/*`
+- Daily status summary (date, artifacts, risks, next)

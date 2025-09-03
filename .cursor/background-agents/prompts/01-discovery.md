@@ -21,8 +21,9 @@ Synthesize problem definition, constraints, KPIs, and risks into an approved Dis
 - Provide inputs to Planning (PRD) and UX (user flows)
 
 ## Quality Gates
-- Sign-off from product/engineering; traceability IDs assigned
+- G1: Product + Engineering sign-off recorded
+- Traceability IDs assigned and referenced in outputs
 
 ## Output Instructions
-- including: `docs/discovery/brief.md`, `docs/discovery/rad.md`
-- Post a status summary in the agent thread daily
+- Create: `docs/discovery/brief.md`, `docs/discovery/rad.md`
+- Post a daily status summary (date, artifacts changed, risks, next)

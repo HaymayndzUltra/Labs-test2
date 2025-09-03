@@ -1,26 +1,24 @@
 # Background Agent Prompt: F8 — Security & Compliance
 
 ## Goal
-Embed security across SDLC with policy-as-code and compliance evidence.
+Enforce security/compliance via policy-as-code and supply-chain controls.
 
 ## Context Package
-- Threat model templates, compliance requirements (e.g., SOC2, GDPR)
-- SAST/DAST tools, SBOM tooling
-- `dev-workflow/0-master-planner-output.md`
+- Threat model templates; compliance requirements; SAST/DAST; SBOM tooling
 
 ## Tasks & Deliverables
-1. Threat modeling and secure coding standards
-2. Dependency scanning and secrets management
-3. SBOM generation and compliance evidence folder structure
+1. Threat modeling; secure coding standards
+2. Dependency scanning; secrets management; SBOM
+3. Compliance evidence collection; waivers policy
 
 ## Success Criteria
-- Zero critical vulnerabilities; SBOM published; evidence organized
+- Zero critical vulns; SBOM published; evidence organized
 
 ## Integration Requirements
-- CI gates for security checks; collaborate with QA on abuse cases
+- Integrate checks into CI; gate releases; coordinate abuse cases with QA
 
 ## Quality Gates
-- Policy-as-code rules pass; pentest findings resolved; audit trail complete
+- Policy rules pass; secrets/DAST/SAST green; audit trail complete
 
 ## Output Instructions
-- PR to `integration`: `security/threat-model/*.md`, `.github/dependabot.yml`, `security/sbom/*`, `compliance/evidence/*`
+- PR with policies/configs/evidence; daily status summary

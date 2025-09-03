@@ -20,7 +20,9 @@ Establish canonical schemas, data contracts, pipelines, and (if applicable) init
 - Provide data contracts to Architecture/Implementation; coordinate with Security on PII
 
 ## Quality Gates
-- Data quality thresholds met; privacy checks; reproducibility verified
+- Schema validity 100%; DQ thresholds documented and enforced
+- Reproducibility verified (seeded runs); privacy checks pass
 
 ## Output Instructions
-- PR to `integration`: `docs/data/schemas/*.yaml`, `docs/data/contracts/*.md`, `data/pipelines/*`, `docs/ml/*` (if applicable)
+- PR: `docs/data/schemas/*.yaml`, `docs/data/contracts/*.md`, `data/pipelines/*`, `docs/ml/*`
+- Daily status summary (date, artifacts, risks, next)

@@ -1,25 +1,23 @@
 # Background Agent Prompt: F9 — Release & Deployment
 
 ## Goal
-Implement CI/CD pipelines, artifact signing, and progressive delivery.
+Build repeatable pipelines, artifact signing, and progressive delivery.
 
 ## Context Package
 - CI/CD platform, infra-as-code, rollout strategies, SRE guidelines
-- `dev-workflow/0-master-planner-output.md`
 
 ## Tasks & Deliverables
-1. Build pipelines; artifact signing; environment promotion
-2. Canary/progressive delivery; rollback automation
-3. SRE runbooks and change review process
+1. Build pipelines; signing; environment promotion
+2. Canary/progressive delivery; rollback automation; runbooks
 
 ## Success Criteria
-- Repeatable deployments; DORA CFR < 15%; rollback < 5 min
+- Repeatable deployments; CFR < 15%; rollback < 5 min
 
 ## Integration Requirements
-- Inputs from QA/Security; outputs to Observability
+- Inputs from QA/Security; outputs to Observability; feature flags coordinated
 
 ## Quality Gates
-- Release checklist passed; change approvals; SLO alignment
+- Release checklist passed; approvals recorded; canary OK
 
 ## Output Instructions
-- PR to `integration`: `.github/workflows/*`, `infra/*`, `docs/release/runbooks/*.md`
+- PR with workflows/runbooks; daily status summary
