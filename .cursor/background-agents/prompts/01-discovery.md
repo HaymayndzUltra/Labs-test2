@@ -4,8 +4,8 @@
 Synthesize problem definition, constraints, KPIs, and risks into an approved Discovery Brief.
 
 ## Context Package
-- Repo snapshot; `dev-workflow/0-master-planner-output.md`
-- Any existing docs: README, ADRs, planning files
+- Repo snapshot; `/workspace/dev-workflow/0-master-planner-output.md`
+- Any existing docs: `/workspace/README.md`, ADRs, planning files
 - Compliance or domain constraints
 
 ## Tasks & Deliverables
@@ -25,5 +25,5 @@ Synthesize problem definition, constraints, KPIs, and risks into an approved Dis
 - Traceability IDs assigned and referenced in outputs
 
 ## Output Instructions
-- Create: `docs/discovery/brief.md`, `docs/discovery/rad.md`
+- Create: `/workspace/docs/discovery/brief.md`, `/workspace/docs/discovery/rad.md`
 - Post a daily status summary (date, artifacts changed, risks, next)

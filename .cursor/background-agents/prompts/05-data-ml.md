@@ -5,7 +5,7 @@ Establish canonical schemas, data contracts, pipelines, and (if applicable) init
 
 ## Context Package
 - Data sources, privacy constraints, schema drafts, DQ SLAs
-- `dev-workflow/0-master-planner-output.md`
+- `/workspace/dev-workflow/0-master-planner-output.md`
 
 ## Tasks & Deliverables
 1. Canonical schemas and data contracts
@@ -24,5 +24,5 @@ Establish canonical schemas, data contracts, pipelines, and (if applicable) init
 - Reproducibility verified (seeded runs); privacy checks pass
 
 ## Output Instructions
-- PR: `docs/data/schemas/*.yaml`, `docs/data/contracts/*.md`, `data/pipelines/*`, `docs/ml/*`
+- PR: `/workspace/docs/data/schemas/*.yaml`, `/workspace/docs/data/contracts/*.md`, `/workspace/data/pipelines/*`, `/workspace/docs/ml/*`
 - Daily status summary (date, artifacts, risks, next)
