@@ -1,0 +1,18 @@
+---
+description: "TAGS: [frontend,implementation] | TRIGGERS: frontend,components,tests,accessibility | SCOPE: implementation-fe | DESCRIPTION: Framework F6 Implementation FE PIC and auto-attach context."
+alwaysApply: false
+---
+
+# F6 — Implementation (FE) PIC
+
+## Auto-Attach Scope
+- Attach: `/workspace/.cursor/background-agents/prompts/06-implementation-fe.md`, `/workspace/shared/**`, `/workspace/src/frontend/**`, `/workspace/tests/frontend/**`, `/workspace/design/**`
+
+## Output Paths
+- `src/frontend/*`
+- `tests/frontend/*`
+- `design/token-usage/*.md`
+
+## Handoff Template
+- `/workspace/shared/templates/handoff-message.md`
+

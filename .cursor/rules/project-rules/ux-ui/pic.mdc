@@ -1,0 +1,18 @@
+---
+description: "TAGS: [ux,ui,design] | TRIGGERS: ux,ui,design,tokens,flows | SCOPE: ux-ui | DESCRIPTION: Framework F3 UX/UI PIC and auto-attach context."
+alwaysApply: false
+---
+
+# F3 — UX/UI PIC
+
+## Auto-Attach Scope
+- Attach: `/workspace/.cursor/background-agents/prompts/03-ux.md`, `/workspace/shared/**`, `/workspace/design/**`
+
+## Output Paths
+- `design/tokens/*.json`
+- `design/specs/*.md`
+- `design/flows/*.md`
+
+## Handoff Template
+- `/workspace/shared/templates/handoff-message.md`
+

@@ -1,0 +1,18 @@
+---
+description: "TAGS: [backend,implementation] | TRIGGERS: backend,services,tests,contracts | SCOPE: implementation-be | DESCRIPTION: Framework F6 Implementation BE PIC and auto-attach context."
+alwaysApply: false
+---
+
+# F6 — Implementation (BE) PIC
+
+## Auto-Attach Scope
+- Attach: `/workspace/.cursor/background-agents/prompts/06-implementation-be.md`, `/workspace/shared/**`, `/workspace/src/backend/**`, `/workspace/tests/backend/**`, `/workspace/docs/services/**`
+
+## Output Paths
+- `src/backend/*`
+- `tests/backend/*`
+- `docs/services/*.md`
+
+## Handoff Template
+- `/workspace/shared/templates/handoff-message.md`
+

@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ integration, main ]
+  push:
+    branches: [ integration ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install deps
+        run: |
+          if [ -f package.json ]; then npm ci; fi
+      - name: Lint
+        run: |
+          if [ -f package.json ] && npm run | grep -q lint; then npm run lint; else echo "skip"; fi
+      - name: Test
+        run: |
+          if [ -f package.json ] && npm run | grep -q test; then npm run test -- --ci --reporters=default --coverage; else echo "skip"; fi
+      - name: Enforce coverage gate (>=80%)
+        if: always()
+        run: |
+          if [ -f coverage/coverage-summary.json ]; then \
+            node -e "const s=require('./coverage/coverage-summary.json').total; const pct=s.lines.pct; if(pct<80){console.error('Coverage below 80%:',pct); process.exit(1)} else {console.log('Coverage OK:',pct)}"; \
+          else echo "No coverage file; skipping"; fi
+      - name: Security scan (npm audit)
+        run: |
+          if [ -f package.json ]; then npm audit --audit-level=high || true; fi
+      - name: SBOM (CycloneDX)
+        run: |
+          if [ -f package.json ]; then npx @cyclonedx/cyclonedx-npm --output-file security/sbom/sbom.json --output-format json || true; fi
+

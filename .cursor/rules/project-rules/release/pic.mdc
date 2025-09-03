@@ -1,0 +1,18 @@
+---
+description: "TAGS: [release,deployment,devops] | TRIGGERS: release,ci-cd,infra,runbooks | SCOPE: release-deployment | DESCRIPTION: Framework F9 Release PIC and auto-attach context."
+alwaysApply: false
+---
+
+# F9 — Release PIC
+
+## Auto-Attach Scope
+- Attach: `/workspace/.cursor/background-agents/prompts/09-release.md`, `/workspace/shared/**`, `/workspace/.github/workflows/**`, `/workspace/infra/**`, `/workspace/docs/release/**`
+
+## Output Paths
+- `.github/workflows/*`
+- `infra/*`
+- `docs/release/runbooks/*.md`
+
+## Handoff Template
+- `/workspace/shared/templates/handoff-message.md`
+

@@ -23,3 +23,4 @@ Implement CI/CD pipelines, artifact signing, and progressive delivery.
 
 ## Output Instructions
 - PR to `integration`: `.github/workflows/*`, `infra/*`, `docs/release/runbooks/*.md`
+- Use handoff template: `/workspace/shared/templates/handoff-message.md`

@@ -24,5 +24,6 @@ Synthesize problem definition, constraints, KPIs, and risks into an approved Dis
 - Sign-off from product/engineering; traceability IDs assigned
 
 ## Output Instructions
-including: `docs/discovery/brief.md`, `docs/discovery/rad.md`
+- PR to `integration`: `docs/discovery/brief.md`, `docs/discovery/rad.md`
+- Use handoff template: `/workspace/shared/templates/handoff-message.md`
 - Post a status summary in the agent thread daily

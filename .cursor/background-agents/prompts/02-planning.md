@@ -23,4 +23,5 @@ Produce an approved PRD, prioritized backlog, and milestone plan.
 
 ## Output Instructions
 - PR to `integration`: `docs/planning/prd.md`, `docs/planning/roadmap.md`, `docs/planning/backlog.csv`
+- Use handoff template: `/workspace/shared/templates/handoff-message.md`
 - Daily status summary in the agent thread

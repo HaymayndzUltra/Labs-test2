@@ -1,0 +1,19 @@
+---
+description: "TAGS: [data,ml,analytics] | TRIGGERS: data,ml,schemas,pipeline | SCOPE: data-ml | DESCRIPTION: Framework F5 Data/ML PIC and auto-attach context."
+alwaysApply: false
+---
+
+# F5 — Data/ML PIC
+
+## Auto-Attach Scope
+- Attach: `/workspace/.cursor/background-agents/prompts/05-data-ml.md`, `/workspace/shared/**`, `/workspace/docs/data/**`, `/workspace/data/**`, `/workspace/docs/ml/**`
+
+## Output Paths
+- `docs/data/schemas/*.yaml`
+- `docs/data/contracts/*.md`
+- `data/pipelines/*`
+- `docs/ml/*`
+
+## Handoff Template
+- `/workspace/shared/templates/handoff-message.md`
+

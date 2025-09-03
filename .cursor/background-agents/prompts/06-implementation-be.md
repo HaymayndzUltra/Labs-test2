@@ -23,3 +23,4 @@ Deliver backend services integrating API contracts with robust tests and perform
 
 ## Output Instructions
 - PR to `integration`: `src/backend/*`, `tests/backend/*`, `docs/services/*.md`
+- Use handoff template: `/workspace/shared/templates/handoff-message.md`

@@ -24,3 +24,4 @@ Define system boundaries, ADRs, and versioned API contracts with mocks.
 
 ## Output Instructions
 - PR to `integration`: `docs/architecture/adr/*.md`, `docs/architecture/diagrams/*`, `contracts/api/*`, `contracts/mocks/*`
+- Use handoff template: `/workspace/shared/templates/handoff-message.md`

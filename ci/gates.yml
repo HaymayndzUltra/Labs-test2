@@ -1,0 +1,11 @@
+coverage: 80
+flake_rate_max: 0.02
+security:
+  allow_critical: false
+release:
+  cfr_max_percent: 15
+ux:
+  require_tokens_versioned: true
+architecture:
+  require_contract_tests_green: true
+
