@@ -71,8 +71,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Gitleaks (secrets scan)
         uses: gitleaks/gitleaks-action@v2
-        with:
-          args: --redact
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: SBOM (CycloneDX)
         run: |
           if [ -f package.json ]; then npx -y @cyclonedx/cyclonedx-npm --output-file security/sbom/sbom.json --output-format json; else echo "skip"; fi
