@@ -1,0 +1,27 @@
+enforcement: block_on_fail
+cycle: "2025-09-02"
+paths:
+  security:
+    findings: frameworks/security/findings.yaml
+    exceptions: frameworks/security/waivers.yaml
+    manifest: frameworks/security/manifests/2025-09/handoff_manifest.yaml
+    digest: frameworks/security/digests/2025-09-02-digest.md
+  qa:
+    manifest: frameworks/qa-test/manifests/2025-09/handoff_manifest.yaml
+    digest: frameworks/qa-test/digests/2025-09-02-digest.md
+  planning:
+    fe_manifest: frameworks/planning-fe/manifests/2025-09-02-handoff_manifest.yaml
+    be_manifest: frameworks/planning-be/manifests/2025-09-02-handoff_manifest.yaml
+    central_manifest: frameworks/planning/manifests/2025-09/handoff_manifest.yaml
+    fe_digest: frameworks/planning-fe/digests/2025-09-02-digest.md
+    be_digest: frameworks/planning-be/digests/2025-09-02-digest.md
+  observability:
+    manifest: frameworks/observability/manifests/2025-09/handoff_manifest.yaml
+    digest: frameworks/observability/digests/2025-09-02-digest.md
+
+checks:
+  - schema_lint
+  - checksums_present
+  - security_critical_zero
+  - snapshot_consistency
+  - evidence_present
