@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,payload-cms] | TRIGGERS: programming,language,syntax,payload-cms,payloadcms,payload-cms | SCOPE: language | DESCRIPTION: You are an expert in Fullstack TypeScript development with deep knowledge of Payload CMS, MongoDB, a..."
+description: "TAGS: [language,programming,payload-cms] | TRIGGERS: programming,language,syntax,payload-cms,payloadcms | SCOPE: project-rules | DESCRIPTION: You are an expert in Fullstack TypeScript development with deep knowledge of Payload CMS, MongoDB, a..."
 alwaysApply: false
 ---
 

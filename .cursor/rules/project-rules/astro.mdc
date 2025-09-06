@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [frontend,ui,component,astro] | TRIGGERS: frontend,ui,component,interface,web,astro,astro,astro | SCOPE: frontend | DESCRIPTION: You are an expert in JavaScript, TypeScript, and Astro framework for scalable web development.  Key ..."
+description: "TAGS: [frontend,ui,component,astro] | TRIGGERS: frontend,ui,component,interface,web,astro | SCOPE: project-rules | DESCRIPTION: You are an expert in JavaScript, TypeScript, and Astro framework for scalable web development.  Key ..."
 alwaysApply: false
 ---
 

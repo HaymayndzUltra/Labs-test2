@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,cot] | TRIGGERS: programming,language,syntax,cot,cot,cot | SCOPE: language | DESCRIPTION: # CONTEXT  I am a native Chinese speaker who has just begun learning Swift 6 and Xcode 16, and I am ..."
+description: "TAGS: [language,programming,cot] | TRIGGERS: programming,language,syntax,cot | SCOPE: project-rules | DESCRIPTION: # CONTEXT  I am a native Chinese speaker who has just begun learning Swift 6 and Xcode 16, and I am ..."
 alwaysApply: false
 ---
 

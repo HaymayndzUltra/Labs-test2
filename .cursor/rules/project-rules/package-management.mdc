@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,package-management] | TRIGGERS: programming,language,syntax,package-management,packagemanagement,package-management | SCOPE: language | DESCRIPTION: # Package Management with `uv`  These rules define strict guidelines for managing Python dependencie..."
+description: "TAGS: [language,programming,package-management] | TRIGGERS: programming,language,syntax,package-management,packagemanagement | SCOPE: project-rules | DESCRIPTION: # Package Management with `uv`  These rules define strict guidelines for managing Python dependencie..."
 alwaysApply: false
 ---
 

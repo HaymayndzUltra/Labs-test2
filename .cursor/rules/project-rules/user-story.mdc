@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,user-story] | TRIGGERS: programming,language,syntax,user-story,userstory,user-story | SCOPE: language | DESCRIPTION: # CONTEXT  You are an experienced Technical Product Manager with deep knowledge of RESTful APIs and ..."
+description: "TAGS: [language,programming,user-story] | TRIGGERS: programming,language,syntax,user-story,userstory | SCOPE: project-rules | DESCRIPTION: # CONTEXT  You are an experienced Technical Product Manager with deep knowledge of RESTful APIs and ..."
 alwaysApply: false
 ---
 

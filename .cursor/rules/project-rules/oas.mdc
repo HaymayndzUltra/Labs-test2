@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,oas] | TRIGGERS: programming,language,syntax,oas,oas,oas | SCOPE: language | DESCRIPTION: # CONTEXT  You are an experienced Technical Product Manager with deep knowledge of RESTful APIs and ..."
+description: "TAGS: [language,programming,oas] | TRIGGERS: programming,language,syntax,oas | SCOPE: project-rules | DESCRIPTION: # CONTEXT  You are an experienced Technical Product Manager with deep knowledge of RESTful APIs and ..."
 alwaysApply: false
 ---
 

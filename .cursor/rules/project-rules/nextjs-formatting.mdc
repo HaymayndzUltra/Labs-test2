@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [fullstack,framework,nextjs,formatting] | TRIGGERS: formatting,indentation,style,nextjs | SCOPE: stack:nextjs | DESCRIPTION: Next.js formatting and stylistic conventions (indentation, semicolons, string quotes)."
+description: "TAGS: [fullstack,framework,nextjs,formatting] | TRIGGERS: formatting,indentation,style,nextjs | SCOPE: project-rules | DESCRIPTION: Next.js formatting and stylistic conventions (indentation, semicolons, string quotes)."
 alwaysApply: false
 ---
 # Rule: Next.js Formatting

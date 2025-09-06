@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,business-central] | TRIGGERS: programming,language,syntax,business-central,businesscentral,business-central | SCOPE: language | DESCRIPTION: You are an expert in AL, and Microsoft Business Central development.  Key Principles  - Write clear,..."
+description: "TAGS: [language,programming,business-central] | TRIGGERS: programming,language,syntax,business-central,businesscentral | SCOPE: project-rules | DESCRIPTION: You are an expert in AL, and Microsoft Business Central development.  Key Principles  - Write clear,..."
 alwaysApply: false
 ---
 

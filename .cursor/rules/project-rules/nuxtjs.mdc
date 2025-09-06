@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [fullstack,framework,nuxtjs] | TRIGGERS: fullstack,framework,app,nuxtjs,nuxtjs,nuxtjs | SCOPE: fullstack | DESCRIPTION: You are an expert in TypeScript, Node.js, NuxtJS, Vue 3, Shadcn Vue, Radix Vue, VueUse, and Tailwind..."
+description: "TAGS: [fullstack,framework,nuxtjs] | TRIGGERS: fullstack,framework,app,nuxtjs | SCOPE: project-rules | DESCRIPTION: You are an expert in TypeScript, Node.js, NuxtJS, Vue 3, Shadcn Vue, Radix Vue, VueUse, and Tailwind..."
 alwaysApply: false
 ---
 

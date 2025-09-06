@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [frontend,ui,component,shadcn-ui] | TRIGGERS: frontend,ui,component,interface,web,shadcn-ui,shadcnui,shadcn-ui | SCOPE: frontend | DESCRIPTION: You are an expert full-stack developer proficient in TypeScript, React, Next.js, and modern UI/UX fr..."
+description: "TAGS: [frontend,ui,component,shadcn-ui] | TRIGGERS: frontend,ui,component,interface,web,shadcn-ui,shadcnui | SCOPE: project-rules | DESCRIPTION: You are an expert full-stack developer proficient in TypeScript, React, Next.js, and modern UI/UX fr..."
 alwaysApply: false
 ---
 

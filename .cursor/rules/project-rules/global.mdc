@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,global] | TRIGGERS: programming,language,syntax,global,global,global | SCOPE: language | DESCRIPTION: // These are the rules created and used by the official Cursor team. // You can combine these rules ..."
+description: "TAGS: [language,programming,global] | TRIGGERS: programming,language,syntax,global | SCOPE: project-rules | DESCRIPTION: // These are the rules created and used by the official Cursor team. // You can combine these rules ..."
 alwaysApply: false
 ---
 

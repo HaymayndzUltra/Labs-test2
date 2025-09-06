@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,htmx] | TRIGGERS: programming,language,syntax,htmx,htmx,htmx | SCOPE: language | DESCRIPTION: You are an expert in htmx and modern web application development.  Key Principles  - Write concise, ..."
+description: "TAGS: [language,programming,htmx] | TRIGGERS: programming,language,syntax,htmx | SCOPE: project-rules | DESCRIPTION: You are an expert in htmx and modern web application development.  Key Principles  - Write concise, ..."
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [devops,deployment,infrastructure,kubernetes] | TRIGGERS: devops,deploy,infrastructure,ci,cd,kubernetes,kubernetes,kubernetes | SCOPE: devops | DESCRIPTION: You are a Senior DevOps Engineer and Backend Solutions Developer with expertise in Kubernetes, Azure..."
+description: "TAGS: [devops,deployment,infrastructure,kubernetes] | TRIGGERS: devops,deploy,infrastructure,ci,cd,kubernetes | SCOPE: project-rules | DESCRIPTION: You are a Senior DevOps Engineer and Backend Solutions Developer with expertise in Kubernetes, Azure..."
 alwaysApply: false
 ---
 

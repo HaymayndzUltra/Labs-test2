@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [backend,api,server,django] | TRIGGERS: backend,api,server,database,django,django,django | SCOPE: backend | DESCRIPTION: You are an expert in Python, Django, and scalable web application development.  Key Principles  - Wr..."
+description: "TAGS: [backend,api,server,django] | TRIGGERS: backend,api,server,database,django | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, Django, and scalable web application development.  Key Principles  - Wr..."
 alwaysApply: false
 ---
 

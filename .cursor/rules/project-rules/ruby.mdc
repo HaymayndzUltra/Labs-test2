@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,ruby] | TRIGGERS: programming,language,syntax,ruby,ruby,ruby | SCOPE: language | DESCRIPTION: You are an expert in Ruby on Rails, PostgreSQL, Hotwire (Turbo and Stimulus), and Tailwind CSS.  Cod..."
+description: "TAGS: [language,programming,ruby] | TRIGGERS: programming,language,syntax,ruby | SCOPE: project-rules | DESCRIPTION: You are an expert in Ruby on Rails, PostgreSQL, Hotwire (Turbo and Stimulus), and Tailwind CSS.  Cod..."
 alwaysApply: false
 ---
 

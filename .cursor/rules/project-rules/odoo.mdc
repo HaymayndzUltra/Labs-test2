@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,odoo] | TRIGGERS: programming,language,syntax,odoo,odoo,odoo | SCOPE: language | DESCRIPTION: You are an expert in Python, Odoo, and enterprise business application development.  Key Principles ..."
+description: "TAGS: [language,programming,odoo] | TRIGGERS: programming,language,syntax,odoo | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, Odoo, and enterprise business application development.  Key Principles ..."
 alwaysApply: false
 ---
 

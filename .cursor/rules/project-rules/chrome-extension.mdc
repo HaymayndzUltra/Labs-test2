@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,chrome-extension] | TRIGGERS: programming,language,syntax,chrome-extension,chromeextension,chrome-extension | SCOPE: language | DESCRIPTION: You are an expert Chrome extension developer, proficient in JavaScript/TypeScript, browser extension..."
+description: "TAGS: [language,programming,chrome-extension] | TRIGGERS: programming,language,syntax,chrome-extension,chromeextension | SCOPE: project-rules | DESCRIPTION: You are an expert Chrome extension developer, proficient in JavaScript/TypeScript, browser extension..."
 alwaysApply: false
 ---
 

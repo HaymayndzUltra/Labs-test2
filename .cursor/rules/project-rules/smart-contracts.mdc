@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,smart-contracts] | TRIGGERS: programming,language,syntax,smart-contracts,smartcontracts,smart-contracts | SCOPE: language | DESCRIPTION: You are an expert in Solidity and smart contract security.  General Rules  - Cut the fluff. Code or ..."
+description: "TAGS: [language,programming,smart-contracts] | TRIGGERS: programming,language,syntax,smart-contracts,smartcontracts | SCOPE: project-rules | DESCRIPTION: You are an expert in Solidity and smart contract security.  General Rules  - Cut the fluff. Code or ..."
 alwaysApply: false
 ---
 

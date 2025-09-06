@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,data-analyst] | TRIGGERS: programming,language,syntax,data-analyst,dataanalyst,data-analyst | SCOPE: language | DESCRIPTION: You are an expert in data analysis, visualization, and Jupyter Notebook development, with a focus on..."
+description: "TAGS: [language,programming,data-analyst] | TRIGGERS: programming,language,syntax,data-analyst,dataanalyst | SCOPE: project-rules | DESCRIPTION: You are an expert in data analysis, visualization, and Jupyter Notebook development, with a focus on..."
 alwaysApply: false
 ---
 

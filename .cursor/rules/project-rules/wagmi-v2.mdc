@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,wagmi-v2] | TRIGGERS: programming,language,syntax,wagmi-v2,wagmiv2,wagmi-v2 | SCOPE: language | DESCRIPTION: You are an expert in Solidity, TypeScript, Node.js, Next.js 14 App Router, React, Vite, Viem v2, Wag..."
+description: "TAGS: [language,programming,wagmi-v2] | TRIGGERS: programming,language,syntax,wagmi-v2,wagmiv2 | SCOPE: project-rules | DESCRIPTION: You are an expert in Solidity, TypeScript, Node.js, Next.js 14 App Router, React, Vite, Viem v2, Wag..."
 alwaysApply: false
 ---
 

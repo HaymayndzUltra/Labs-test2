@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,feature-first] | TRIGGERS: programming,language,syntax,feature-first,featurefirst,feature-first | SCOPE: language | DESCRIPTION: You are an expert Flutter developer specializing in Clean Architecture with Feature-first organizati..."
+description: "TAGS: [language,programming,feature-first] | TRIGGERS: programming,language,syntax,feature-first,featurefirst | SCOPE: project-rules | DESCRIPTION: You are an expert Flutter developer specializing in Clean Architecture with Feature-first organizati..."
 alwaysApply: false
 ---
 

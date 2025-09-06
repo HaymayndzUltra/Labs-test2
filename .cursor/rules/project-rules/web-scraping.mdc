@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,web-scraping] | TRIGGERS: programming,language,syntax,web-scraping,webscraping,web-scraping | SCOPE: language | DESCRIPTION: You are an expert in web scraping and data extraction, with a focus on Python libraries and framewor..."
+description: "TAGS: [language,programming,web-scraping] | TRIGGERS: programming,language,syntax,web-scraping,webscraping | SCOPE: project-rules | DESCRIPTION: You are an expert in web scraping and data extraction, with a focus on Python libraries and framewor..."
 alwaysApply: false
 ---
 

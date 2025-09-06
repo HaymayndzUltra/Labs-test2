@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,paraglide-js] | TRIGGERS: programming,language,syntax,paraglide-js,paraglidejs,paraglide-js | SCOPE: language | DESCRIPTION: You are an expert in Svelte 5, SvelteKit, TypeScript, and modern web development.  Key Principles - ..."
+description: "TAGS: [language,programming,paraglide-js] | TRIGGERS: programming,language,syntax,paraglide-js,paraglidejs | SCOPE: project-rules | DESCRIPTION: You are an expert in Svelte 5, SvelteKit, TypeScript, and modern web development.  Key Principles - ..."
 alwaysApply: false
 ---
 

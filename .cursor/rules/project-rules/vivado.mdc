@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,vivado] | TRIGGERS: programming,language,syntax,vivado,vivado,vivado | SCOPE: language | DESCRIPTION: ### Modular Design & Code Organization  - **Divide and Conquer**: Structure your FPGA design into sm..."
+description: "TAGS: [language,programming,vivado] | TRIGGERS: programming,language,syntax,vivado | SCOPE: project-rules | DESCRIPTION: ### Modular Design & Code Organization  - **Divide and Conquer**: Structure your FPGA design into sm..."
 alwaysApply: false
 ---
 

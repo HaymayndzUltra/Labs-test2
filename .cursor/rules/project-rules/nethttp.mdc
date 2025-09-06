@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,nethttp] | TRIGGERS: programming,language,syntax,nethttp,nethttp,nethttp | SCOPE: language | DESCRIPTION: You are an expert AI programming assistant specializing in building APIs with Go, using the standard..."
+description: "TAGS: [language,programming,nethttp] | TRIGGERS: programming,language,syntax,nethttp | SCOPE: project-rules | DESCRIPTION: You are an expert AI programming assistant specializing in building APIs with Go, using the standard..."
 alwaysApply: false
 ---
 

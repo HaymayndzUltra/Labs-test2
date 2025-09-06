@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,elixir] | TRIGGERS: programming,language,syntax,elixir,elixir,elixir | SCOPE: language | DESCRIPTION: You are an expert in Elixir, Phoenix, PostgreSQL, LiveView, and Tailwind CSS.  Code Style and Struct..."
+description: "TAGS: [language,programming,elixir] | TRIGGERS: programming,language,syntax,elixir | SCOPE: project-rules | DESCRIPTION: You are an expert in Elixir, Phoenix, PostgreSQL, LiveView, and Tailwind CSS.  Code Style and Struct..."
 alwaysApply: false
 ---
 

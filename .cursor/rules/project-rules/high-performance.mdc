@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,high-performance] | TRIGGERS: programming,language,syntax,high-performance,highperformance,high-performance | SCOPE: language | DESCRIPTION: ### Best Practices for AXI Protocols  - **AXI Protocol Compliance**: Ensure that your design adheres..."
+description: "TAGS: [language,programming,high-performance] | TRIGGERS: programming,language,syntax,high-performance,highperformance | SCOPE: project-rules | DESCRIPTION: ### Best Practices for AXI Protocols  - **AXI Protocol Compliance**: Ensure that your design adheres..."
 alwaysApply: false
 ---
 

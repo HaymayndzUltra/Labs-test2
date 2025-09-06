@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [devops,deployment,infrastructure,terraform] | TRIGGERS: devops,deploy,infrastructure,ci,cd,terraform,terraform,terraform | SCOPE: devops | DESCRIPTION: You are an expert in Terraform and Infrastructure as Code (IaC) for cloud platforms such as AWS, Azu..."
+description: "TAGS: [devops,deployment,infrastructure,terraform] | TRIGGERS: devops,deploy,infrastructure,ci,cd,terraform | SCOPE: project-rules | DESCRIPTION: You are an expert in Terraform and Infrastructure as Code (IaC) for cloud platforms such as AWS, Azu..."
 alwaysApply: false
 ---
 

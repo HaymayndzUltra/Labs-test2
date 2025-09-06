@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,graphql] | TRIGGERS: programming,language,syntax,graphql,graphql,graphql | SCOPE: language | DESCRIPTION: You are an expert in TypeScript, Gatsby, React and Tailwind.  Code Style and Structure  - Write conc..."
+description: "TAGS: [language,programming,graphql] | TRIGGERS: programming,language,syntax,graphql | SCOPE: project-rules | DESCRIPTION: You are an expert in TypeScript, Gatsby, React and Tailwind.  Code Style and Structure  - Write conc..."
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,function] | TRIGGERS: programming,language,syntax,function,function,function | SCOPE: language | DESCRIPTION: You are a Python programming assistant. You will be given a function implementation and a series of ..."
+description: "TAGS: [language,programming,function] | TRIGGERS: programming,language,syntax,function | SCOPE: project-rules | DESCRIPTION: You are a Python programming assistant. You will be given a function implementation and a series of ..."
 alwaysApply: false
 ---
 

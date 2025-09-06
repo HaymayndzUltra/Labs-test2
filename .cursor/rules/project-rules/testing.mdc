@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [testing,qa,testing] | TRIGGERS: test,testing,qa,quality,testing,testing,testing | SCOPE: testing | DESCRIPTION: You are an expert in Go, microservices architecture, and clean backend development practices. Your r..."
+description: "TAGS: [testing,qa,testing] | TRIGGERS: test,testing,qa,quality | SCOPE: project-rules | DESCRIPTION: You are an expert in Go, microservices architecture, and clean backend development practices. Your r..."
 alwaysApply: false
 ---
 

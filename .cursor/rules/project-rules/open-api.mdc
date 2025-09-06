@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,open-api] | TRIGGERS: programming,language,syntax,open-api,openapi,open-api | SCOPE: language | DESCRIPTION: # CONTEXT  You are an experienced Technical Product Manager with deep knowledge of RESTful APIs and ..."
+description: "TAGS: [language,programming,open-api] | TRIGGERS: programming,language,syntax,open-api,openapi | SCOPE: project-rules | DESCRIPTION: # CONTEXT  You are an experienced Technical Product Manager with deep knowledge of RESTful APIs and ..."
 alwaysApply: false
 ---
 

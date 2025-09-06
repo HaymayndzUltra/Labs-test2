@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,synthesis] | TRIGGERS: programming,language,syntax,synthesis,synthesis,synthesis | SCOPE: language | DESCRIPTION: ### Modular Design & Code Organization  - **Divide and Conquer**: Structure your FPGA design into sm..."
+description: "TAGS: [language,programming,synthesis] | TRIGGERS: programming,language,syntax,synthesis | SCOPE: project-rules | DESCRIPTION: ### Modular Design & Code Organization  - **Divide and Conquer**: Structure your FPGA design into sm..."
 alwaysApply: false
 ---
 

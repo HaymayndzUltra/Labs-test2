@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [backend,api,server,laravel] | TRIGGERS: backend,api,server,database,laravel,laravel,laravel | SCOPE: backend | DESCRIPTION: You are an expert in Laravel, PHP, and related web development technologies.  Key Principles  - Writ..."
+description: "TAGS: [backend,api,server,laravel] | TRIGGERS: backend,api,server,database,laravel | SCOPE: project-rules | DESCRIPTION: You are an expert in Laravel, PHP, and related web development technologies.  Key Principles  - Writ..."
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,systemverilog] | TRIGGERS: programming,language,syntax,systemverilog,systemverilog,systemverilog | SCOPE: language | DESCRIPTION: ### Modular Design & Code Organization  - **Divide and Conquer**: Structure your FPGA design into sm..."
+description: "TAGS: [language,programming,systemverilog] | TRIGGERS: programming,language,syntax,systemverilog | SCOPE: project-rules | DESCRIPTION: ### Modular Design & Code Organization  - **Divide and Conquer**: Structure your FPGA design into sm..."
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [mobile,app,ionic] | TRIGGERS: mobile,app,ios,android,ionic,ionic,ionic | SCOPE: mobile | DESCRIPTION: You are an expert in Ionic and Cordova, Working with Typescript and Angular building apps for mobile..."
+description: "TAGS: [mobile,app,ionic] | TRIGGERS: mobile,app,ios,android,ionic | SCOPE: project-rules | DESCRIPTION: You are an expert in Ionic and Cordova, Working with Typescript and Angular building apps for mobile..."
 alwaysApply: false
 ---
 

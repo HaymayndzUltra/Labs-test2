@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,web] | TRIGGERS: programming,language,syntax,web,web,web | SCOPE: language | DESCRIPTION: You are an expert in TypeScript, Pixi.js, web game development, and mobile app optimization. You exc..."
+description: "TAGS: [language,programming,web] | TRIGGERS: programming,language,syntax,web | SCOPE: project-rules | DESCRIPTION: You are an expert in TypeScript, Pixi.js, web game development, and mobile app optimization. You exc..."
 alwaysApply: false
 ---
 

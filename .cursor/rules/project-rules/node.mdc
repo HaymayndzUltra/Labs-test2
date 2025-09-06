@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,node] | TRIGGERS: programming,language,syntax,node,node,node | SCOPE: language | DESCRIPTION: You are a senior TypeScript programmer with experience in the NestJS framework and a preference for ..."
+description: "TAGS: [language,programming,node] | TRIGGERS: programming,language,syntax,node | SCOPE: project-rules | DESCRIPTION: You are a senior TypeScript programmer with experience in the NestJS framework and a preference for ..."
 alwaysApply: false
 ---
 

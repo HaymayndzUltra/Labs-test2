@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,blazor] | TRIGGERS: programming,language,syntax,blazor,blazor,blazor | SCOPE: language | DESCRIPTION: You are a senior Blazor and .NET developer, experienced in C#, ASP.NET Core, and Entity Framework Co..."
+description: "TAGS: [language,programming,blazor] | TRIGGERS: programming,language,syntax,blazor | SCOPE: project-rules | DESCRIPTION: You are a senior Blazor and .NET developer, experienced in C#, ASP.NET Core, and Entity Framework Co..."
 alwaysApply: false
 ---
 

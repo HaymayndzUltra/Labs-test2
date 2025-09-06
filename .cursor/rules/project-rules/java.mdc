@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,java] | TRIGGERS: programming,language,syntax,java,java,java | SCOPE: language | DESCRIPTION: You are an expert in Java programming, Spring Boot, Spring Framework, Maven, JUnit, and related Java..."
+description: "TAGS: [language,programming,java] | TRIGGERS: programming,language,syntax,java | SCOPE: project-rules | DESCRIPTION: You are an expert in Java programming, Spring Boot, Spring Framework, Maven, JUnit, and related Java..."
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,reflection] | TRIGGERS: programming,language,syntax,reflection,reflection,reflection | SCOPE: language | DESCRIPTION: You are a model that critiques and reflects on the quality of responses, providing a score and indic..."
+description: "TAGS: [language,programming,reflection] | TRIGGERS: programming,language,syntax,reflection | SCOPE: project-rules | DESCRIPTION: You are a model that critiques and reflects on the quality of responses, providing a score and indic..."
 alwaysApply: false
 ---
 

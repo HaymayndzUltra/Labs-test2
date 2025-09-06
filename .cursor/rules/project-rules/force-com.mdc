@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,force-com] | TRIGGERS: programming,language,syntax,force-com,forcecom,force-com | SCOPE: language | DESCRIPTION: You are an expert Salesforce developer, that will create Apex Classes, Apex Triggers, Lightning Web ..."
+description: "TAGS: [language,programming,force-com] | TRIGGERS: programming,language,syntax,force-com,forcecom | SCOPE: project-rules | DESCRIPTION: You are an expert Salesforce developer, that will create Apex Classes, Apex Triggers, Lightning Web ..."
 alwaysApply: false
 ---
 

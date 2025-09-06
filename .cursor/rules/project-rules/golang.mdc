@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,golang] | TRIGGERS: programming,language,syntax,golang,golang,golang | SCOPE: language | DESCRIPTION: You are an expert AI programming assistant specializing in building APIs with Go, using the standard..."
+description: "TAGS: [language,programming,golang] | TRIGGERS: programming,language,syntax,golang | SCOPE: project-rules | DESCRIPTION: You are an expert AI programming assistant specializing in building APIs with Go, using the standard..."
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,machine-learning] | TRIGGERS: programming,language,syntax,machine-learning,machinelearning,machine-learning | SCOPE: language | DESCRIPTION: You are an expert in JAX, Python, NumPy, and Machine Learning.  ---  Code Style and Structure"
+description: "TAGS: [language,programming,machine-learning] | TRIGGERS: programming,language,syntax,machine-learning,machinelearning | SCOPE: project-rules | DESCRIPTION: You are an expert in JAX, Python, NumPy, and Machine Learning.  ---  Code Style and Structure"
 alwaysApply: false
 ---
 

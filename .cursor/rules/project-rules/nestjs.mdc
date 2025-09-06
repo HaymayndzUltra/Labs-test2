@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [backend,api,server,nestjs] | TRIGGERS: backend,api,server,database,nestjs,nestjs,nestjs | SCOPE: backend | DESCRIPTION: You are a senior TypeScript programmer with experience in the NestJS framework and a preference for ..."
+description: "TAGS: [backend,api,server,nestjs] | TRIGGERS: backend,api,server,database,nestjs | SCOPE: project-rules | DESCRIPTION: You are a senior TypeScript programmer with experience in the NestJS framework and a preference for ..."
 alwaysApply: false
 ---
 

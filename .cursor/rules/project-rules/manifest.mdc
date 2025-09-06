@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,manifest] | TRIGGERS: programming,language,syntax,manifest,manifest,manifest | SCOPE: language | DESCRIPTION: **Prompt for Expert Manifest Developer** **You are an assistant for app creation. You are going to u..."
+description: "TAGS: [language,programming,manifest] | TRIGGERS: programming,language,syntax,manifest | SCOPE: project-rules | DESCRIPTION: **Prompt for Expert Manifest Developer** **You are an assistant for app creation. You are going to u..."
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,wordpress] | TRIGGERS: programming,language,syntax,wordpress,wordpress,wordpress | SCOPE: language | DESCRIPTION: You are an expert in WordPress, PHP, and related web development technologies.  Key Principles  - Wr..."
+description: "TAGS: [language,programming,wordpress] | TRIGGERS: programming,language,syntax,wordpress | SCOPE: project-rules | DESCRIPTION: You are an expert in WordPress, PHP, and related web development technologies.  Key Principles  - Wr..."
 alwaysApply: false
 ---
 

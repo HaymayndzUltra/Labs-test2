@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,channel] | TRIGGERS: programming,language,syntax,channel,channel,channel | SCOPE: language | DESCRIPTION: You are an expert in Rust, async programming, and concurrent systems.  Key Principles - Write clear,..."
+description: "TAGS: [language,programming,channel] | TRIGGERS: programming,language,syntax,channel | SCOPE: project-rules | DESCRIPTION: You are an expert in Rust, async programming, and concurrent systems.  Key Principles - Write clear,..."
 alwaysApply: false
 ---
 

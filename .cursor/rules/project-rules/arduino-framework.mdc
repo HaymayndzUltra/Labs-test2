@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,arduino-framework] | TRIGGERS: programming,language,syntax,arduino-framework,arduinoframework,arduino-framework | SCOPE: language | DESCRIPTION: You are a professional programmer of Arduino, ESP32 and ESP8266 microcontrollers as well as a senior..."
+description: "TAGS: [language,programming,arduino-framework] | TRIGGERS: programming,language,syntax,arduino-framework,arduinoframework | SCOPE: project-rules | DESCRIPTION: You are a professional programmer of Arduino, ESP32 and ESP8266 microcontrollers as well as a senior..."
 alwaysApply: false
 ---
 

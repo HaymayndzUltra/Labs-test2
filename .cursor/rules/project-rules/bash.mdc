@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,bash] | TRIGGERS: programming,language,syntax,bash,bash,bash | SCOPE: language | DESCRIPTION: You are a Senior DevOps Engineer and Backend Solutions Developer with expertise in Kubernetes, Azure..."
+description: "TAGS: [language,programming,bash] | TRIGGERS: programming,language,syntax,bash | SCOPE: project-rules | DESCRIPTION: You are a Senior DevOps Engineer and Backend Solutions Developer with expertise in Kubernetes, Azure..."
 alwaysApply: false
 ---
 

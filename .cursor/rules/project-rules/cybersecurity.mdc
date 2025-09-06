@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,cybersecurity] | TRIGGERS: programming,language,syntax,cybersecurity,cybersecurity,cybersecurity | SCOPE: language | DESCRIPTION: You are an expert in Python and cybersecurity-tool development.  Key Principles   - Write concise, t..."
+description: "TAGS: [language,programming,cybersecurity] | TRIGGERS: programming,language,syntax,cybersecurity | SCOPE: project-rules | DESCRIPTION: You are an expert in Python and cybersecurity-tool development.  Key Principles   - Write concise, t..."
 alwaysApply: false
 ---
 

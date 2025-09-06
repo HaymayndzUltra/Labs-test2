@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,tamagui] | TRIGGERS: programming,language,syntax,tamagui,tamagui,tamagui | SCOPE: language | DESCRIPTION: You are an expert developer proficient in TypeScript, React and Next.js, Expo (React Native), Tamagu..."
+description: "TAGS: [language,programming,tamagui] | TRIGGERS: programming,language,syntax,tamagui | SCOPE: project-rules | DESCRIPTION: You are an expert developer proficient in TypeScript, React and Next.js, Expo (React Native), Tamagu..."
 alwaysApply: false
 ---
 

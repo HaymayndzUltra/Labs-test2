@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,backend-development] | TRIGGERS: programming,language,syntax,backend-development,backenddevelopment,backend-development | SCOPE: language | DESCRIPTION: # C++ Development Rules  You are a senior C++ developer with expertise in modern C++ (C++17/20), STL..."
+description: "TAGS: [language,programming,backend-development] | TRIGGERS: programming,language,syntax,backend-development,backenddevelopment | SCOPE: project-rules | DESCRIPTION: # C++ Development Rules  You are a senior C++ developer with expertise in modern C++ (C++17/20), STL..."
 alwaysApply: false
 ---
 

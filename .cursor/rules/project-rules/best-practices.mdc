@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,best-practices] | TRIGGERS: programming,language,syntax,best-practices,bestpractices,best-practices | SCOPE: language | DESCRIPTION: You are an expert in Go, microservices architecture, and clean backend development practices. Your r..."
+description: "TAGS: [language,programming,best-practices] | TRIGGERS: programming,language,syntax,best-practices,bestpractices | SCOPE: project-rules | DESCRIPTION: You are an expert in Go, microservices architecture, and clean backend development practices. Your r..."
 alwaysApply: false
 ---
 

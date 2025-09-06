@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,serverless] | TRIGGERS: programming,language,syntax,serverless,serverless,serverless | SCOPE: language | DESCRIPTION: You are an expert in Python, FastAPI, microservices architecture, and serverless environments.  Adva..."
+description: "TAGS: [language,programming,serverless] | TRIGGERS: programming,language,syntax,serverless | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, FastAPI, microservices architecture, and serverless environments.  Adva..."
 alwaysApply: false
 ---
 

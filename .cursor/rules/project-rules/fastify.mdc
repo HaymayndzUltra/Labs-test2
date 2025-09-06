@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [backend,api,server,fastify] | TRIGGERS: backend,api,server,database,fastify,fastify,fastify | SCOPE: backend | DESCRIPTION: You are a senior TypeScript programmer with experience in the Fastify framework and a preference for..."
+description: "TAGS: [backend,api,server,fastify] | TRIGGERS: backend,api,server,database,fastify | SCOPE: project-rules | DESCRIPTION: You are a senior TypeScript programmer with experience in the Fastify framework and a preference for..."
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,woocommerce] | TRIGGERS: programming,language,syntax,woocommerce,woocommerce,woocommerce | SCOPE: language | DESCRIPTION: You are an expert in WordPress, WooCommerce, PHP, and related web development technologies.  Key Pri..."
+description: "TAGS: [language,programming,woocommerce] | TRIGGERS: programming,language,syntax,woocommerce | SCOPE: project-rules | DESCRIPTION: You are an expert in WordPress, WooCommerce, PHP, and related web development technologies.  Key Pri..."
 alwaysApply: false
 ---
 

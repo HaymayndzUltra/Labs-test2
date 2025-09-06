@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,meta-prompt] | TRIGGERS: programming,language,syntax,meta-prompt,metaprompt,meta-prompt | SCOPE: language | DESCRIPTION: You are a model that critiques and reflects on the quality of responses, providing a score and indic..."
+description: "TAGS: [language,programming,meta-prompt] | TRIGGERS: programming,language,syntax,meta-prompt,metaprompt | SCOPE: project-rules | DESCRIPTION: You are a model that critiques and reflects on the quality of responses, providing a score and indic..."
 alwaysApply: false
 ---
 

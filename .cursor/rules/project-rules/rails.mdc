@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [backend,api,server,rails] | TRIGGERS: backend,api,server,database,rails,rails,rails | SCOPE: backend | DESCRIPTION: You are an expert in Ruby on Rails, PostgreSQL, Hotwire (Turbo and Stimulus), and Tailwind CSS.  Cod..."
+description: "TAGS: [backend,api,server,rails] | TRIGGERS: backend,api,server,database,rails | SCOPE: project-rules | DESCRIPTION: You are an expert in Ruby on Rails, PostgreSQL, Hotwire (Turbo and Stimulus), and Tailwind CSS.  Cod..."
 alwaysApply: false
 ---
 

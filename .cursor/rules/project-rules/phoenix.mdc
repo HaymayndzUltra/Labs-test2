@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [backend,api,server,phoenix] | TRIGGERS: backend,api,server,database,phoenix,phoenix,phoenix | SCOPE: backend | DESCRIPTION: You are an expert in Elixir, Phoenix, PostgreSQL, LiveView, and Tailwind CSS.  Code Style and Struct..."
+description: "TAGS: [backend,api,server,phoenix] | TRIGGERS: backend,api,server,database,phoenix | SCOPE: project-rules | DESCRIPTION: You are an expert in Elixir, Phoenix, PostgreSQL, LiveView, and Tailwind CSS.  Code Style and Struct..."
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,ex] | TRIGGERS: programming,language,syntax,ex,ex,ex | SCOPE: language | DESCRIPTION: # Elixir and Phoenix Best Practices *Based on Dave Thomas' (PragDave) coding philosophy* Important: ..."
+description: "TAGS: [language,programming,ex] | TRIGGERS: programming,language,syntax,ex | SCOPE: project-rules | DESCRIPTION: # Elixir and Phoenix Best Practices *Based on Dave Thomas' (PragDave) coding philosophy* Important: ..."
 alwaysApply: false
 ---
 

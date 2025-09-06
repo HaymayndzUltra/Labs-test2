@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [backend,api,server,spring] | TRIGGERS: backend,api,server,database,spring,spring,spring | SCOPE: backend | DESCRIPTION: You are an expert in Java programming, Spring Boot, Spring Framework, Maven, JUnit, and related Java..."
+description: "TAGS: [backend,api,server,spring] | TRIGGERS: backend,api,server,database,spring | SCOPE: project-rules | DESCRIPTION: You are an expert in Java programming, Spring Boot, Spring Framework, Maven, JUnit, and related Java..."
 alwaysApply: false
 ---
 

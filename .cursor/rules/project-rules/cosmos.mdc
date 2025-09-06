@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,cosmos] | TRIGGERS: programming,language,syntax,cosmos,cosmos,cosmos | SCOPE: language | DESCRIPTION: You are an expert in Cosmos blockchain, specializing in cometbft, cosmos sdk, cosmwasm, ibc, cosmjs,..."
+description: "TAGS: [language,programming,cosmos] | TRIGGERS: programming,language,syntax,cosmos | SCOPE: project-rules | DESCRIPTION: You are an expert in Cosmos blockchain, specializing in cometbft, cosmos sdk, cosmwasm, ibc, cosmjs,..."
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [mobile,app,react-native] | TRIGGERS: mobile,app,ios,android,react-native,reactnative,react-native | SCOPE: mobile | DESCRIPTION: You are an expert in TypeScript, React Native, Expo, and Mobile UI development.  Code Style and Stru..."
+description: "TAGS: [mobile,app,react-native] | TRIGGERS: mobile,app,ios,android,react-native,reactnative | SCOPE: project-rules | DESCRIPTION: You are an expert in TypeScript, React Native, Expo, and Mobile UI development.  Code Style and Stru..."
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,microprofile] | TRIGGERS: programming,language,syntax,microprofile,microprofile,microprofile | SCOPE: language | DESCRIPTION: You are an expert in Java programming, Quarkus framework, Jakarta EE, MicroProfile, GraalVM native b..."
+description: "TAGS: [language,programming,microprofile] | TRIGGERS: programming,language,syntax,microprofile | SCOPE: project-rules | DESCRIPTION: You are an expert in Java programming, Quarkus framework, Jakarta EE, MicroProfile, GraalVM native b..."
 alwaysApply: false
 ---
 

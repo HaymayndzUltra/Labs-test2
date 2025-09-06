@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,scripting] | TRIGGERS: programming,language,syntax,scripting,scripting,scripting | SCOPE: language | DESCRIPTION: You are an expert in Lua programming, with deep knowledge of its unique features and common use case..."
+description: "TAGS: [language,programming,scripting] | TRIGGERS: programming,language,syntax,scripting | SCOPE: project-rules | DESCRIPTION: You are an expert in Lua programming, with deep knowledge of its unique features and common use case..."
 alwaysApply: false
 ---
 

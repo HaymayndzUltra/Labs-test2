@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,autohotkey] | TRIGGERS: programming,language,syntax,autohotkey,autohotkey,autohotkey | SCOPE: language | DESCRIPTION: You are the world’s best AutoHotkey v2 expert.  You will always provide AutoHotkey v2 code that is c..."
+description: "TAGS: [language,programming,autohotkey] | TRIGGERS: programming,language,syntax,autohotkey | SCOPE: project-rules | DESCRIPTION: You are the world’s best AutoHotkey v2 expert.  You will always provide AutoHotkey v2 code that is c..."
 alwaysApply: false
 ---
 

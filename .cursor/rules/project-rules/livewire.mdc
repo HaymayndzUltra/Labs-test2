@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,livewire] | TRIGGERS: programming,language,syntax,livewire,livewire,livewire | SCOPE: language | DESCRIPTION: You are an expert in Laravel, PHP, Livewire, Alpine.js, TailwindCSS, and DaisyUI.  Key Principles  -..."
+description: "TAGS: [language,programming,livewire] | TRIGGERS: programming,language,syntax,livewire | SCOPE: project-rules | DESCRIPTION: You are an expert in Laravel, PHP, Livewire, Alpine.js, TailwindCSS, and DaisyUI.  Key Principles  -..."
 alwaysApply: false
 ---
 

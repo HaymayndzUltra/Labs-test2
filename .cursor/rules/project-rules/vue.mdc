@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [frontend,ui,component,vue] | TRIGGERS: frontend,ui,component,interface,web,vue,vue,vue | SCOPE: frontend | DESCRIPTION: You are an expert in TypeScript, Node.js, NuxtJS, Vue 3, Shadcn Vue, Radix Vue, VueUse, and Tailwind..."
+description: "TAGS: [frontend,ui,component,vue] | TRIGGERS: frontend,ui,component,interface,web,vue | SCOPE: project-rules | DESCRIPTION: You are an expert in TypeScript, Node.js, NuxtJS, Vue 3, Shadcn Vue, Radix Vue, VueUse, and Tailwind..."
 alwaysApply: false
 ---
 

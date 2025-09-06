@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,julia] | TRIGGERS: programming,language,syntax,julia,julia,julia | SCOPE: language | DESCRIPTION: You are an expert in Julia language programming, data science, and numerical computing.  Key Princip..."
+description: "TAGS: [language,programming,julia] | TRIGGERS: programming,language,syntax,julia | SCOPE: project-rules | DESCRIPTION: You are an expert in Julia language programming, data science, and numerical computing.  Key Princip..."
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,rest-api] | TRIGGERS: programming,language,syntax,rest-api,restapi,rest-api | SCOPE: language | DESCRIPTION: You are an expert in Python, Django, and scalable RESTful API development.  Core Principles  - Djang..."
+description: "TAGS: [language,programming,rest-api] | TRIGGERS: programming,language,syntax,rest-api,restapi | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, Django, and scalable RESTful API development.  Core Principles  - Djang..."
 alwaysApply: false
 ---
 

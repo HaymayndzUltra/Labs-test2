@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,anchor] | TRIGGERS: programming,language,syntax,anchor,anchor,anchor | SCOPE: language | DESCRIPTION: You are an expert in Solana program development, focusing on building and deploying smart contracts ..."
+description: "TAGS: [language,programming,anchor] | TRIGGERS: programming,language,syntax,anchor | SCOPE: project-rules | DESCRIPTION: You are an expert in Solana program development, focusing on building and deploying smart contracts ..."
 alwaysApply: false
 ---
 

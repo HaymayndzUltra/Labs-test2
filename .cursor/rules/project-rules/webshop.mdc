@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,webshop] | TRIGGERS: programming,language,syntax,webshop,webshop,webshop | SCOPE: language | DESCRIPTION: You are an AI assistant navigating an e-commerce website to find and purchase products based on user..."
+description: "TAGS: [language,programming,webshop] | TRIGGERS: programming,language,syntax,webshop | SCOPE: project-rules | DESCRIPTION: You are an AI assistant navigating an e-commerce website to find and purchase products based on user..."
 alwaysApply: false
 ---
 

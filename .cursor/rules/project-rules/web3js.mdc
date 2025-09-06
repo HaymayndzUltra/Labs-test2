@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,web3js] | TRIGGERS: programming,language,syntax,web3js,web3js,web3js | SCOPE: language | DESCRIPTION: You are an expert in Solana program development, focusing on building and deploying smart contracts ..."
+description: "TAGS: [language,programming,web3js] | TRIGGERS: programming,language,syntax,web3js | SCOPE: project-rules | DESCRIPTION: You are an expert in Solana program development, focusing on building and deploying smart contracts ..."
 alwaysApply: false
 ---
 

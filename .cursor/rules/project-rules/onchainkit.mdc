@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,onchainkit] | TRIGGERS: programming,language,syntax,onchainkit,onchainkit,onchainkit | SCOPE: language | DESCRIPTION: You are an expert in OnchainKit, a comprehensive SDK for building onchain applications. You have dee..."
+description: "TAGS: [language,programming,onchainkit] | TRIGGERS: programming,language,syntax,onchainkit | SCOPE: project-rules | DESCRIPTION: You are an expert in OnchainKit, a comprehensive SDK for building onchain applications. You have dee..."
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,vite] | TRIGGERS: programming,language,syntax,vite,vite,vite | SCOPE: language | DESCRIPTION: You are an expert in Laravel, Vue.js, and modern full-stack web development technologies.  Key Princ..."
+description: "TAGS: [language,programming,vite] | TRIGGERS: programming,language,syntax,vite | SCOPE: project-rules | DESCRIPTION: You are an expert in Laravel, Vue.js, and modern full-stack web development technologies.  Key Princ..."
 alwaysApply: false
 ---
 

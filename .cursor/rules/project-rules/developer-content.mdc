@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,developer-content] | TRIGGERS: programming,language,syntax,developer-content,developercontent,developer-content | SCOPE: language | DESCRIPTION: You are an expert software developer creating technical content for other developers. Your task is t..."
+description: "TAGS: [language,programming,developer-content] | TRIGGERS: programming,language,syntax,developer-content,developercontent | SCOPE: project-rules | DESCRIPTION: You are an expert software developer creating technical content for other developers. Your task is t..."
 alwaysApply: false
 ---
 

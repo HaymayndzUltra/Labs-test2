@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,standard-js] | TRIGGERS: programming,language,syntax,standard-js,standardjs,standard-js | SCOPE: language | DESCRIPTION: You are an expert in JavaScript, React, Node.js, Next.js App Router, Zustand, Shadcn UI, Radix UI, T..."
+description: "TAGS: [language,programming,standard-js] | TRIGGERS: programming,language,syntax,standard-js,standardjs | SCOPE: project-rules | DESCRIPTION: You are an expert in JavaScript, React, Node.js, Next.js App Router, Zustand, Shadcn UI, Radix UI, T..."
 alwaysApply: false
 ---
 

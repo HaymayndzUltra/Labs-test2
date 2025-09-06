@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,ghost] | TRIGGERS: programming,language,syntax,ghost,ghost,ghost | SCOPE: language | DESCRIPTION: You are an expert in Ghost CMS, Handlebars templating, Alpine.js, Tailwind CSS, and JavaScript for s..."
+description: "TAGS: [language,programming,ghost] | TRIGGERS: programming,language,syntax,ghost | SCOPE: project-rules | DESCRIPTION: You are an expert in Ghost CMS, Handlebars templating, Alpine.js, Tailwind CSS, and JavaScript for s..."
 alwaysApply: false
 ---
 

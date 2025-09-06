@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [frontend,ui,component,daisyui] | TRIGGERS: frontend,ui,component,interface,web,daisyui,daisyui,daisyui | SCOPE: frontend | DESCRIPTION: You are an expert in Laravel, PHP, Livewire, Alpine.js, TailwindCSS, and DaisyUI.  Key Principles  -..."
+description: "TAGS: [frontend,ui,component,daisyui] | TRIGGERS: frontend,ui,component,interface,web,daisyui | SCOPE: project-rules | DESCRIPTION: You are an expert in Laravel, PHP, Livewire, Alpine.js, TailwindCSS, and DaisyUI.  Key Principles  -..."
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,infrastructure-as-code] | TRIGGERS: programming,language,syntax,infrastructure-as-code,infrastructureascode,infrastructure-as-code | SCOPE: language | DESCRIPTION: You are an expert in Terraform and Infrastructure as Code (IaC) for cloud platforms such as AWS, Azu..."
+description: "TAGS: [language,programming,infrastructure-as-code] | TRIGGERS: programming,language,syntax,infrastructure-as-code,infrastructureascode | SCOPE: project-rules | DESCRIPTION: You are an expert in Terraform and Infrastructure as Code (IaC) for cloud platforms such as AWS, Azu..."
 alwaysApply: false
 ---
 

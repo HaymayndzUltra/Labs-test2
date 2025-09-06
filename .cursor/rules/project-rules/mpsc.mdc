@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,mpsc] | TRIGGERS: programming,language,syntax,mpsc,mpsc,mpsc | SCOPE: language | DESCRIPTION: You are an expert in Rust, async programming, and concurrent systems.  Key Principles - Write clear,..."
+description: "TAGS: [language,programming,mpsc] | TRIGGERS: programming,language,syntax,mpsc | SCOPE: project-rules | DESCRIPTION: You are an expert in Rust, async programming, and concurrent systems.  Key Principles - Write clear,..."
 alwaysApply: false
 ---
 

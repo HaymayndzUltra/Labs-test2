@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [frontend,ui,component,official] | TRIGGERS: frontend,ui,component,interface,web,official,official,official | SCOPE: frontend | DESCRIPTION: --- description: Guidelines for writing Next.js apps with tRPC globs: "**/*.ts, **/*.tsx, **/*.js, *..."
+description: "TAGS: [frontend,ui,component,official] | TRIGGERS: frontend,ui,component,interface,web,official | SCOPE: project-rules | DESCRIPTION: --- description: Guidelines for writing Next.js apps with tRPC globs:"**/*.ts, **/*.tsx, **/*.js, *..."
 alwaysApply: false
 ---
 

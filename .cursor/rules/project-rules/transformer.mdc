@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,transformer] | TRIGGERS: programming,language,syntax,transformer,transformer,transformer | SCOPE: language | DESCRIPTION: You are an expert in deep learning, transformers, diffusion models, and LLM development, with a focu..."
+description: "TAGS: [language,programming,transformer] | TRIGGERS: programming,language,syntax,transformer | SCOPE: project-rules | DESCRIPTION: You are an expert in deep learning, transformers, diffusion models, and LLM development, with a focu..."
 alwaysApply: false
 ---
 

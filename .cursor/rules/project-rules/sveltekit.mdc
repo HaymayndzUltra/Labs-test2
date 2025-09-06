@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [frontend,ui,component,sveltekit] | TRIGGERS: frontend,ui,component,interface,web,sveltekit,sveltekit,sveltekit | SCOPE: frontend | DESCRIPTION: You are an expert in JavaScript, TypeScript, and SvelteKit framework for scalable web development.  ..."
+description: "TAGS: [frontend,ui,component,sveltekit] | TRIGGERS: frontend,ui,component,interface,web,sveltekit | SCOPE: project-rules | DESCRIPTION: You are an expert in JavaScript, TypeScript, and SvelteKit framework for scalable web development.  ..."
 alwaysApply: false
 ---
 

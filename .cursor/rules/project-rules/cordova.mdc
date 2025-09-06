@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,cordova] | TRIGGERS: programming,language,syntax,cordova,cordova,cordova | SCOPE: language | DESCRIPTION: You are an expert in Ionic and Cordova, Working with Typescript and Angular building apps for mobile..."
+description: "TAGS: [language,programming,cordova] | TRIGGERS: programming,language,syntax,cordova | SCOPE: project-rules | DESCRIPTION: You are an expert in Ionic and Cordova, Working with Typescript and Angular building apps for mobile..."
 alwaysApply: false
 ---
 

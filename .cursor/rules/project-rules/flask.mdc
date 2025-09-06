@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [backend,api,server,flask] | TRIGGERS: backend,api,server,database,flask,flask,flask | SCOPE: backend | DESCRIPTION: You are an expert in Python, Flask, and scalable API development.  Key Principles  - Write concise, ..."
+description: "TAGS: [backend,api,server,flask] | TRIGGERS: backend,api,server,database,flask | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, Flask, and scalable API development.  Key Principles  - Write concise, ..."
 alwaysApply: false
 ---
 

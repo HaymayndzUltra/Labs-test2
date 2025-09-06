@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [frontend,ui,component,tailwindcss] | TRIGGERS: frontend,ui,component,interface,web,tailwindcss,tailwindcss,tailwindcss | SCOPE: frontend | DESCRIPTION: You are an expert in Ghost CMS, Handlebars templating, Alpine.js, Tailwind CSS, and JavaScript for s..."
+description: "TAGS: [frontend,ui,component,tailwindcss] | TRIGGERS: frontend,ui,component,interface,web,tailwindcss | SCOPE: project-rules | DESCRIPTION: You are an expert in Ghost CMS, Handlebars templating, Alpine.js, Tailwind CSS, and JavaScript for s..."
 alwaysApply: false
 ---
 

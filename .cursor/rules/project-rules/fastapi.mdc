@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [backend,api,server,fastapi] | TRIGGERS: backend,api,server,database,fastapi,fastapi,fastapi | SCOPE: backend | DESCRIPTION: You are an expert in Python, FastAPI, and scalable API development.  Key Principles  - Write concise..."
+description: "TAGS: [backend,api,server,fastapi] | TRIGGERS: backend,api,server,database,fastapi | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, FastAPI, and scalable API development.  Key Principles  - Write concise..."
 alwaysApply: false
 ---
 
