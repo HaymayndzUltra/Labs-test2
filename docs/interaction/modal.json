@@ -1,0 +1,8 @@
+{
+  "component":"Modal",
+  "states":["closed","opening","open","closing"],
+  "keyboard":{"tab_order":"trap","escape":"close"},
+  "aria":{"role":"dialog","aria-modal":true},
+  "timings_ms":{"open":280,"close":180}
+}
+

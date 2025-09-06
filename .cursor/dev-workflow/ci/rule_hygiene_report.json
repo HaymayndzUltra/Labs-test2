@@ -2944,13 +2944,10 @@
   "summary": {
     "total_rules_checked": 276,
     "files_with_errors": 260,
-    "ui_artifacts_missing": [
-      "tokens.json",
-      "interaction_specs_present"
-    ]
+    "ui_artifacts_missing": []
   },
   "ui_artifacts": {
-    "tokens.json": false,
-    "interaction_specs_present": false
+    "tokens.json": true,
+    "interaction_specs_present": true
   }
 }
