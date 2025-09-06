@@ -1,0 +1,22 @@
+name: Rule Hygiene
+
+on:
+  push:
+    paths:
+      - '.cursor/rules/**'
+      - '.cursor/dev-workflow/**'
+  pull_request:
+    paths:
+      - '.cursor/rules/**'
+      - '.cursor/dev-workflow/**'
+
+jobs:
+  validate-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run rule validation
+        run: |
+          chmod +x .cursor/dev-workflow/scripts/validate_rules.sh
+          .cursor/dev-workflow/scripts/validate_rules.sh
+
