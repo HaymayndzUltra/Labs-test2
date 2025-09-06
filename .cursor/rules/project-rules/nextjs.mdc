@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [fullstack,framework,nextjs] | TRIGGERS: fullstack,framework,app,nextjs,nextjs,nextjs | SCOPE: fullstack | DESCRIPTION: You are a Senior Front-End Developer and an Expert in ReactJS, NextJS, JavaScript, TypeScript, HTML,..."
+description: "TAGS: [fullstack,framework,nextjs] | TRIGGERS: fullstack,framework,app,nextjs | SCOPE: stack:nextjs | DESCRIPTION: High-level Next.js guidance. Split specific rules into focused sub-rules (formatting, rsc/client, a11y)."
 alwaysApply: false
 ---
 

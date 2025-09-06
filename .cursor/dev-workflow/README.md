@@ -21,7 +21,7 @@ This workflow guides you through the entire development process, from initial se
 For building complete ecosystems with multiple frameworks in parallel, use this protocol to design strategic approaches and coordinate background agents.
 
 ```
-Apply instructions from .ai-governor/dev-workflow/0-master-planner.md
+Apply instructions from .cursor/dev-workflow/0-master-planner.md
 ```
 
 ### Step 0B: Bootstrap Your Project (One-Time Setup)
@@ -30,7 +30,7 @@ Apply instructions from .ai-governor/dev-workflow/0-master-planner.md
 For single-feature development, the AI analyzes your entire codebase to build a "Context Kit"—a set of foundational `READMEs` and project-specific rules. This is a one-time protocol that turns a generic AI into a project-specific expert.
 
 ```
-Apply instructions from .ai-governor/dev-workflow/0-bootstrap-your-project.md
+Apply instructions from .cursor/dev-workflow/0-bootstrap-your-project.md
 ```
 *(For best results, Cursor users should use Max Mode for this step.)*
 
@@ -111,3 +111,12 @@ Apply instructions from .ai-governor/dev-workflow/5-background-agent-coordinatio
 ### A Note on the Learning Curve
 
 Your first few interactions with this framework might require more corrections. **This is normal and by design.** You are actively *teaching* the AI the nuances of your codebase. The initial investment pays off exponentially as the AI's context gets richer, its proposals become more accurate, and it evolves into a true expert companion for your project.
+
+## CI Gates: New Checks
+
+The CI gating configuration now includes two additional checks that enforce rule hygiene and UI artifact schemas:
+
+- `rule_hygiene`: Validates rule frontmatter, placement, and presence of ✅/❌ examples.
+- `ui_schema_checks`: Validates presence and JSON schema compliance for design tokens and interaction specs.
+
+These checks are declared in `ci/gates_config.yaml` and are part of the `enforcement: block_on_fail` pipeline.

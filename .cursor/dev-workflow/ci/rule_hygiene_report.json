@@ -1,0 +1,2956 @@
+{
+  "files": [
+    {
+      "path": "/workspace/.cursor/rules/security-compliance-overlay.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/cross-platform-desktop-app.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular---Initialize-outputs-as-FileOu-22.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/synthesis.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/unity.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/open-api.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular--------------------------------25.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/viem-v2.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/liquid.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/ruby.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/backend-development.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular-----Code-Implementation-Guidel-13.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/graalvm.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/solito.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular----Pillow---19.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/prisma.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/theme-development.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/scripting.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/devops.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/typescript-----Testing-3.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/global.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/design.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/async.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/game-development.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/uv.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular---Process----8.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/typescript---Process----4.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/ansible.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/radix-ui.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/bash.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/tailwindcss.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/cpp.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular---Process----1.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/official-----Realtime-Streams-10.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/feature-first.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/redux.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/ghost.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/trajectory-analysis.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular-----Testing-6.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/web.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/official----CONSEQUENCES-OF-INCORRECT-I-3.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/vuejs.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/stripe.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/java.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/golang.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/spring.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/sveltekit.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/django.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/technical-writing.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/python.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/channel.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/oas.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/woocommerce.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/sanity.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/wordpress.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/franework.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/livewire.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/rails.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/reflection.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/bootstrap.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/solidity.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/node.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/tutorials.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular-----HTML---14.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/azure.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/nextjs-rsc-and-client.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/al.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/dma.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/fastapi.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/nextjs-formatting.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/svelte.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/salesforce.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/html.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/critique.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/daisyui.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular-----Basic-Principles-2.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/fpga.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/developer-content.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/chrome-extension.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/typescript-----Nomenclature-2.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/official-----Attach-a-Declarative-sched-6.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/cosmos.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/zod.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/pytorch.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/official.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/web-scraping.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/web-development.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/rust.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/zustand.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/high-performance.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/official-----tasks-triggerAndPoll---7.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/jupyter.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/blockchain.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/shadcn-ui.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/official------Retry-options-4.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/official-----Time-To-Live--TTL--12.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/kotlin.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/convex.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/accessibility.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/python---you-can-use-any-function-tha-7.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/python---Key-Conventions---3.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular---you-can-use-any-function-tha-24.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/cloud.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/payload-cms.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/remix.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/vivado.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/transformer.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/enterprise.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/swift.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/fastify.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/typescript---Overview-5.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/graphql.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/anchor.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/terraform.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/tauri.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/nestjs.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/data-analyst.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/timing-optimization.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/observability.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular-----Nomenclature-5.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/manifest.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/react-native.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/user-story.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/onchainkit.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/javascript.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/testing.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/react.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/css.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/shopify.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/i18n.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/nethttp.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/web3js.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/mobile.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/supabase.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/clean-architecture.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/mongodb.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/microprofile.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/firebase.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/robocorp.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/llm.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/lua.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular-----Testing-3.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/ui.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/nuxtjs.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/julia.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/smart-contracts.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/infrastructure-as-code.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular---Reinstall-all-script-depende-20.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/vert-x.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/elixir.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/vue.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/phoenix.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/python-----Get-your-API-parameters-4.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/function.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/deep-learning.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular-----18.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/swiftui.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/playwright.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/official----Best-Practices-1.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/webshop.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/axi.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/python-----1.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/orm.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/cms.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/python---Initialize-outputs-as-FileOu-5.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/security.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/go.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/paraglide-js.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/-appcommon.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/systemverilog.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/jina-ai.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/kubernetes.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/gatsby.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/astro.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/-net.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/official-----Passing-tokens-to-the-fron-11.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/machine-learning.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/vite.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/typescript.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/jakarta-ee.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/cybersecurity.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/ionic.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/flutter.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/tamagui.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/python---For-non-SSE-responses--read--6.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/blazor.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/aspnet.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/react-three-fiber.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/arduino-framework.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/nodejs.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular---Process----11.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular-----Testing-and-Documentation-10.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/cordova.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular---For-non-SSE-responses--read--23.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/metaplex.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular-----Folder-Structure-15.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/tooling.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/official-----Parent---root-updates-9.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/official----CORRECT-SERVER-CLIENT-IMPLE-2.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/ex.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular--myPrivateMethod-----17.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/best-practices.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular-----Get-your-API-parameters-21.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/cot.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/force-com.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular-----BEM-16.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/official----AI-MODEL-RESPONSE-TEMPLATE-14.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular-AI-SDK-9.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/firestore.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/threejs.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/business-central.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/rspec.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/pixijs.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/acting.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/php.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/ux.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/solana.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/htmx.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular-AI-SDK-12.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/package-management.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/diffusion.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/jax.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/wagmi-v2.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/responsive-design.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/microservices.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/ibc.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/datascience.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/expo.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/laravel.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/official-----batch-triggerAndWait---8.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/python--------------------------------8.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/autohotkey.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/monorepo.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/mpsc.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/tailwind.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/ethereum.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/headless.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/typescript----Git-Commit-Rules-6.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/rest-api.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/drupal.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/odoo.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular-----Testing-and-Documentation-7.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/sfdx.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/angular.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/official------Telemetry-instrumentation-13.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/nextjs.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/flask.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/nextjs-a11y.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/meta-prompt.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/official------onStart-5.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/api.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/python---Reinstall-all-script-depende-2.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/quarkus.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/c.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/alpine-js.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/typescript-----Functions-1.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/popular-AI-SDK-4.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/serverless.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/performance.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/browser-api.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/cosmwasm.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/standard-js.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/android.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/project-rules/bloc.mdc",
+      "errors": [
+        "duplicate_triggers",
+        "invalid_scope"
+      ],
+      "suggestions": [
+        "dedupe TRIGGERS list",
+        "use one of: global, common-rules, project-rules, stack:<tech>, project:<slug>"
+      ]
+    },
+    {
+      "path": "/workspace/.cursor/rules/common-rules/common-rule-ui-foundation-design-system.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/common-rules/common-rule-ui-premium-brand-dataviz-enterprise-gated.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/common-rules/common-rule-ui-interaction-a11y-perf.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/common-rules/common-rule-monorepo-setup-conventions.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/master-rules/4-master-rule-code-modification-safety-protocol.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/master-rules/3-master-rule-code-quality-checklist.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/master-rules/1-master-rule-context-discovery.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/master-rules/2-master-rule-ai-collaboration-guidelines.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/master-rules/6-master-rule-complex-feature-context-preservation.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/master-rules/0-how-to-create-effective-rules.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/master-rules/5-master-rule-documentation-and-context-guidelines.mdc",
+      "errors": [],
+      "suggestions": []
+    }
+  ],
+  "summary": {
+    "total_rules_checked": 276,
+    "files_with_errors": 260,
+    "ui_artifacts_missing": [
+      "tokens.json",
+      "interaction_specs_present"
+    ]
+  },
+  "ui_artifacts": {
+    "tokens.json": false,
+    "interaction_specs_present": false
+  }
+}

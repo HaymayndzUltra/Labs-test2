@@ -14,6 +14,14 @@ To optimize performance and context stability, this protocol operates exclusivel
 
 ---
 
+**[STRICT] Rule Announcement Requirement:** Before entering the execution loop for a parent task, the agent **MUST** announce the loaded governance rules using the exact format required by `1-master-rule-context-discovery.mdc`:
+
+> "I have loaded the `{rule-name-1}` and `{rule-name-2}` rules, which cover {relevant_domain} for your request. I am ready to begin."
+
+This announcement must list the primary `master-rules` and any `project-rules` consulted for the task.
+
+---
+
 ## 3. CONTEXT MANAGEMENT: THE "ONE PARENT TASK, ONE CHAT" RULE
 
 **[CRITICAL] To prevent context window saturation ("token cannibalization") and ensure high performance, each parent task MUST be executed in a separate, clean chat session.**

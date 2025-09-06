@@ -22,6 +22,8 @@ paths:
 checks:
   - schema_lint
   - checksums_present
+  - rule_hygiene
+  - ui_schema_checks
   - security_critical_zero
   - snapshot_consistency
   - evidence_present
