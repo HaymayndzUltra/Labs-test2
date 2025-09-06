@@ -101,3 +101,63 @@ If you find this framework valuable, please consider showing your support. It is
 This framework is an enhanced and structured adaptation inspired by the foundational work on AI-driven development by [snarktank/ai-dev-tasks](https://github.com/snarktank/ai-dev-tasks).
 
 It is shared under the **Apache 2.0 License**. See the `LICENSE` file for more details. For contribution guidelines, please see `CONTRIBUTING.md`. 
+
+### .cursor Architecture
+
+For a full technical specification of the `.cursor` architecture, logic flow, contracts, and integration points, see:
+
+- [The .cursor Architecture and Logic Flow](./docs/architecture/cursor-architecture.md)
+
+### Master Rules & Workflow Protocols
+
+For decision trees, activation logic, and interactions of master rules and dev-workflow protocols, see:
+
+- [Master Rules & Workflow Protocols — Logic Flows and Decision Trees](./docs/architecture/master-rules-and-workflows.md)
+
+### API-style Reference
+
+Programmatic contracts for each component, including inputs, outputs, triggers, and behaviors:
+
+- [AI Governor Framework — API-style Reference](./docs/architecture/governor-api.md)
+
+### Communication & Integration Protocol
+
+How external AI systems communicate and integrate with the Governor (data formats, APIs, handoffs):
+
+- [Communication & Integration Protocol](./docs/architecture/communication-protocol.md)
+
+### Technical Specification
+
+Complete internal workings, data flows, and integration mechanisms:
+
+- [AI Governor Framework — Technical Specification](./docs/architecture/technical-specification.md)
+
+### Technical Integration Specification
+
+Required protocols, data structures, and communication mechanisms for external AI systems:
+
+- [Technical Integration Specification — External AI × AI Governor](./docs/architecture/technical-integration-spec.md)
+
+### External Integration Guide
+
+How to integrate external frameworks and AI systems with the Governor (protocols, interfaces, extension points):
+
+- [External Frameworks Integration Guide](./docs/architecture/external-integration-guide.md)
+
+### System Documentation
+
+Comprehensive overview of architecture, components, workflows, and integration mechanisms:
+
+- [AI Governor Framework — System Documentation](./docs/architecture/system-documentation.md)
+
+### Framework Extension Guide
+
+How to add new frameworks (requirements, interfaces, protocols, gates, policies):
+
+- [Framework Extension Points & Integration Patterns](./docs/architecture/framework-extension-guide.md)
+
+### AI Integration Architecture
+
+For details on how to extend or integrate this framework with external AI systems (LLM providers, embeddings, vector stores, tool APIs), see:
+
+- [AI Integration Architecture and Interfaces](./docs/architecture/ai-integration.md)
