@@ -47,6 +47,10 @@ THIRD_PARTY_APPS = [
     'django_filters',
     'drf_spectacular',
     'guardian',
+    'health_check',
+    'health_check.db',
+    'health_check.cache',
+    'health_check.storage',
 ]
 
 LOCAL_APPS = [
