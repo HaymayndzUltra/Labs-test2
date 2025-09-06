@@ -14,7 +14,6 @@ from datetime import datetime
 from .validator import ProjectValidator
 from .industry_config import IndustryConfig
 from ..templates.template_engine import TemplateEngine
-from ..integrations.ai_governor import AIGovernorIntegration
 
 
 class ProjectGenerator:
@@ -64,9 +63,6 @@ class ProjectGenerator:
             
             # Generate documentation
             self._generate_documentation()
-            
-            # Integrate with AI Governor Framework
-            integration_results = self._integrate_ai_governor()
             
             # Initialize git repository
             if not self.args.no_git:
@@ -204,13 +200,9 @@ class ProjectGenerator:
     
     def _generate_devex_assets(self):
         """Generate developer experience assets"""
-        # Create .devcontainer directory
-        devcontainer_dir = self.project_root / '.devcontainer'
-        devcontainer_dir.mkdir(parents=True, exist_ok=True)
-        
         # .devcontainer/devcontainer.json
         devcontainer_config = self._generate_devcontainer_config()
-        (devcontainer_dir / 'devcontainer.json').write_text(
+        (self.project_root / '.devcontainer' / 'devcontainer.json').write_text(
             json.dumps(devcontainer_config, indent=2)
         )
         
@@ -290,87 +282,6 @@ class ProjectGenerator:
             compliance_docs = self._generate_compliance_documentation()
             (docs_dir / 'COMPLIANCE.md').write_text(compliance_docs)
     
-    def _integrate_ai_governor(self) -> Dict[str, Any]:
-        """Integrate with AI Governor Framework"""
-        integration_results = {
-            'timestamp': datetime.now().isoformat(),
-            'completed': [],
-            'warnings': [],
-            'errors': []
-        }
-        
-        try:
-            # Initialize AI Governor integration
-            ai_governor = AIGovernorIntegration(self.project_root)
-            
-            # Create project configuration for validation
-            project_config = {
-                'name': self.args.name,
-                'industry': self.args.industry,
-                'project_type': self.args.project_type,
-                'stack': {
-                    'frontend': self.args.frontend,
-                    'backend': self.args.backend,
-                    'database': self.args.database,
-                    'auth': self.args.auth,
-                    'deploy': self.args.deploy
-                },
-                'compliance': self.args.compliance.split(',') if self.args.compliance else [],
-                'features': self.config.merge_features(self.args.features)
-            }
-            
-            # Validate against policies
-            validation_result = ai_governor.validate_project_config(project_config)
-            integration_results['validation'] = validation_result
-            
-            if validation_result.get('warnings'):
-                integration_results['warnings'].extend(validation_result['warnings'])
-            
-            if not validation_result.get('valid'):
-                integration_results['errors'].extend(validation_result.get('errors', []))
-                # Continue anyway but log the issues
-            
-            integration_results['completed'].append('Policy validation completed')
-            
-            # Copy master rules
-            copied_rules = ai_governor.copy_master_rules(self.project_root)
-            integration_results['master_rules'] = copied_rules
-            integration_results['completed'].append(f'Copied {len(copied_rules)} master rules')
-            
-            # Create workflow integration
-            workflows = ai_governor.create_workflow_integration(project_config)
-            
-            # Write workflow files
-            workflow_dir = self.project_root / '.cursor' / 'dev-workflow'
-            workflow_dir.mkdir(parents=True, exist_ok=True)
-            
-            (workflow_dir / 'router_config.json').write_text(workflows['router_config'])
-            (workflow_dir / 'ai_context.json').write_text(workflows['ai_context'])
-            
-            integration_results['workflows'] = list(workflows.keys())
-            integration_results['completed'].append('Created workflow integration files')
-            
-            # Setup pre-commit hooks
-            if ai_governor.setup_pre_commit_hooks(self.project_root, project_config):
-                integration_results['pre_commit_installed'] = True
-                integration_results['completed'].append('Installed pre-commit hooks')
-            else:
-                integration_results['warnings'].append('Failed to install pre-commit hooks')
-            
-            # Generate AI instructions
-            ai_instructions = ai_governor.generate_ai_instructions(project_config)
-            (self.project_root / '.cursor' / 'AI_INSTRUCTIONS.md').write_text(ai_instructions)
-            integration_results['completed'].append('Generated AI development instructions')
-            
-            # Create integration report
-            report = ai_governor.create_integration_report(self.project_root, integration_results)
-            (self.project_root / '.cursor' / 'INTEGRATION_REPORT.md').write_text(report)
-            
-        except Exception as e:
-            integration_results['errors'].append(f'AI Governor integration error: {str(e)}')
-        
-        return integration_results
-    
     def _initialize_git(self):
         """Initialize git repository"""
         subprocess.run(['git', 'init'], cwd=self.project_root, capture_output=True)
@@ -449,9 +360,9 @@ class ProjectGenerator:
         # Backend setup
         if self.args.backend != 'none':
             if self.args.backend == 'fastapi':
-                commands.append('cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt')
+                commands.append('cd backend && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt')
             elif self.args.backend == 'django':
-                commands.append('cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python3 manage.py migrate')
+                commands.append('cd backend && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python manage.py migrate')
             elif self.args.backend == 'nestjs':
                 commands.append('cd backend && npm install')
             elif self.args.backend == 'go':
@@ -459,7 +370,7 @@ class ProjectGenerator:
         
         # Docker setup
         if self.args.database != 'none':
-            commands.append('docker compose up -d')
+            commands.append('docker-compose up -d')
         
         return commands
     
@@ -769,83 +680,46 @@ Proprietary - All rights reserved
     
     def _generate_makefile(self) -> str:
         """Generate Makefile content"""
-        # Build commands based on configuration
-        frontend_setup = '\tcd frontend && npm install' if self.args.frontend != 'none' else ''
-        backend_setup = ''
-        if self.args.backend in ['fastapi', 'django']:
-            backend_setup = '\tcd backend && python3 -m venv venv && . venv/bin/activate && pip install -r requirements.txt'
-        elif self.args.backend == 'nestjs':
-            backend_setup = '\tcd backend && npm install'
-        elif self.args.backend == 'go':
-            backend_setup = '\tcd backend && go mod download'
-        
-        frontend_dev = '\tcd frontend && npm run dev &' if self.args.frontend != 'none' else ''
-        backend_dev = ''
-        if self.args.backend == 'fastapi':
-            backend_dev = '\tcd backend && . venv/bin/activate && python3 main.py'
-        elif self.args.backend == 'django':
-            backend_dev = '\tcd backend && . venv/bin/activate && python3 manage.py runserver'
-        elif self.args.backend == 'nestjs':
-            backend_dev = '\tcd backend && npm run start:dev'
-        elif self.args.backend == 'go':
-            backend_dev = '\tcd backend && go run main.go'
-        
-        frontend_test = '\tcd frontend && npm test' if self.args.frontend != 'none' else ''
-        backend_test = ''
-        if self.args.backend in ['fastapi', 'django']:
-            backend_test = '\tcd backend && pytest'
-        elif self.args.backend == 'nestjs':
-            backend_test = '\tcd backend && npm test'
-        elif self.args.backend == 'go':
-            backend_test = '\tcd backend && go test ./...'
-        
-        frontend_lint = '\tcd frontend && npm run lint' if self.args.frontend != 'none' else ''
-        backend_lint = ''
-        if self.args.backend in ['fastapi', 'django']:
-            backend_lint = '\tcd backend && black . && flake8'
-        elif self.args.backend == 'nestjs':
-            backend_lint = '\tcd backend && npm run lint'
-        elif self.args.backend == 'go':
-            backend_lint = '\tcd backend && golangci-lint run'
-        
-        frontend_build = '\tcd frontend && npm run build' if self.args.frontend != 'none' else ''
-        backend_build = ''
-        if self.args.backend in ['fastapi', 'django']:
-            backend_build = '\tcd backend && python -m build'
-        elif self.args.backend == 'nestjs':
-            backend_build = '\tcd backend && npm run build'
-        elif self.args.backend == 'go':
-            backend_build = '\tcd backend && go build -o app'
-        
         return f""".PHONY: setup dev test lint build deploy clean
 
 # Setup project
 setup:
 	@echo "Setting up {self.args.name}..."
-{frontend_setup}
-{backend_setup}
+{'	cd frontend && npm install' if self.args.frontend != 'none' else ''}
+{'	cd backend && python -m venv venv && . venv/bin/activate && pip install -r requirements.txt' if self.args.backend in ['fastapi', 'django'] else ''}
+{'	cd backend && npm install' if self.args.backend == 'nestjs' else ''}
+{'	cd backend && go mod download' if self.args.backend == 'go' else ''}
 	@echo "Setup complete!"
 
 # Start development environment
 dev:
-	docker compose up -d
-{frontend_dev}
-{backend_dev}
+	docker-compose up -d
+{'	cd frontend && npm run dev &' if self.args.frontend != 'none' else ''}
+{'	cd backend && python main.py' if self.args.backend == 'fastapi' else ''}
+{'	cd backend && python manage.py runserver' if self.args.backend == 'django' else ''}
+{'	cd backend && npm run start:dev' if self.args.backend == 'nestjs' else ''}
+{'	cd backend && go run main.go' if self.args.backend == 'go' else ''}
 
 # Run tests
 test:
-{frontend_test}
-{backend_test}
+{'	cd frontend && npm test' if self.args.frontend != 'none' else ''}
+{'	cd backend && pytest' if self.args.backend in ['fastapi', 'django'] else ''}
+{'	cd backend && npm test' if self.args.backend == 'nestjs' else ''}
+{'	cd backend && go test ./...' if self.args.backend == 'go' else ''}
 
 # Run linters
 lint:
-{frontend_lint}
-{backend_lint}
+{'	cd frontend && npm run lint' if self.args.frontend != 'none' else ''}
+{'	cd backend && black . && flake8' if self.args.backend in ['fastapi', 'django'] else ''}
+{'	cd backend && npm run lint' if self.args.backend == 'nestjs' else ''}
+{'	cd backend && golangci-lint run' if self.args.backend == 'go' else ''}
 
 # Build for production
 build:
-{frontend_build}
-{backend_build}
+{'	cd frontend && npm run build' if self.args.frontend != 'none' else ''}
+{'	cd backend && python -m build' if self.args.backend in ['fastapi', 'django'] else ''}
+{'	cd backend && npm run build' if self.args.backend == 'nestjs' else ''}
+{'	cd backend && go build -o app' if self.args.backend == 'go' else ''}
 
 # Deploy application
 deploy:
@@ -859,7 +733,7 @@ clean:
 	rm -rf __pycache__/
 	rm -rf dist/
 	rm -rf build/
-	docker compose down -v
+	docker-compose down -v
 """
     
     def _generate_vscode_snippets(self):
@@ -929,9 +803,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-{'    - name: Setup Node.js\n      uses: actions/setup-node@v3\n      with:\n        node-version: \'18\'\n        cache: \'npm\'\n        cache-dependency-path: frontend/package-lock.json\n    \n    - name: Install frontend dependencies\n      run: cd frontend && npm ci\n    \n    - name: Run frontend lint\n      run: cd frontend && npm run lint' if self.args.frontend != 'none' else ''}
+{"    - name: Setup Node.js\n      uses: actions/setup-node@v3\n      with:\n        node-version: '18'\n        cache: 'npm'\n        cache-dependency-path: frontend/package-lock.json\n    \n    - name: Install frontend dependencies\n      run: cd frontend && npm ci\n    \n    - name: Run frontend lint\n      run: cd frontend && npm run lint" if self.args.frontend != 'none' else ''}
     
-{'    - name: Setup Python\n      uses: actions/setup-python@v4\n      with:\n        python-version: \'3.11\'\n    \n    - name: Install backend dependencies\n      run: |\n        cd backend\n        pip install -r requirements-dev.txt\n    \n    - name: Run backend lint\n      run: |\n        cd backend\n        black --check .\n        flake8 .' if self.args.backend in ['fastapi', 'django'] else ''}
+{"    - name: Setup Python\n      uses: actions/setup-python@v4\n      with:\n        python-version: '3.11'\n    \n    - name: Install backend dependencies\n      run: |\n        cd backend\n        pip install -r requirements-dev.txt\n    \n    - name: Run backend lint\n      run: |\n        cd backend\n        black --check .\n        flake8 ." if self.args.backend in ['fastapi', 'django'] else ''}
 """
     
     def _generate_test_workflow(self) -> str:
@@ -954,9 +828,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-{'    - name: Setup Node.js\n      uses: actions/setup-node@v3\n      with:\n        node-version: \'18\'\n    \n    - name: Install and test frontend\n      run: |\n        cd frontend\n        npm ci\n        npm test -- --coverage' if self.args.frontend != 'none' else ''}
+{"    - name: Setup Node.js\n      uses: actions/setup-node@v3\n      with:\n        node-version: '18'\n    \n    - name: Install and test frontend\n      run: |\n        cd frontend\n        npm ci\n        npm test -- --coverage" if self.args.frontend != 'none' else ''}
     
-{'    - name: Setup Python\n      uses: actions/setup-python@v4\n      with:\n        python-version: \'3.11\'\n    \n    - name: Install and test backend\n      run: |\n        cd backend\n        pip install -r requirements-test.txt\n        pytest --cov=. --cov-report=xml' if self.args.backend in ['fastapi', 'django'] else ''}
+{"    - name: Setup Python\n      uses: actions/setup-python@v4\n      with:\n        python-version: '3.11'\n    \n    - name: Install and test backend\n      run: |\n        cd backend\n        pip install -r requirements-test.txt\n        pytest --cov=. --cov-report=xml" if self.args.backend in ['fastapi', 'django'] else ''}
     
     - name: Upload coverage
       uses: codecov/codecov-action@v3
@@ -1138,18 +1012,18 @@ description: "TAGS: [project,client,standards] | TRIGGERS: development,coding,im
 4. **Performance**: Optimize for {self.args.industry}-specific performance requirements
 
 ### Frontend Standards
-{'- Framework: ' + self.args.frontend + '''
+{f'''- Framework: {self.args.frontend}
 - State Management: Use built-in state management solutions
 - Component Structure: Follow atomic design principles
 - Styling: Use CSS modules or styled-components
 - Accessibility: WCAG 2.1 AA compliance required''' if self.args.frontend != 'none' else '- No frontend in this project'}
 
 ### Backend Standards
-{'- Framework: ' + self.args.backend + '''
+{f'''- Framework: {self.args.backend}
 - API Design: RESTful principles with OpenAPI documentation
 - Error Handling: Consistent error response format
 - Logging: Structured logging with correlation IDs
-- Database: Follow ''' + self.args.database + ' best practices' if self.args.backend != 'none' else '- No backend in this project'}
+- Database: Follow {self.args.database} best practices''' if self.args.backend != 'none' else '- No backend in this project'}
 
 ### Security Requirements
 {'- HIPAA Compliance: PHI encryption, audit logging, access controls' if 'hipaa' in (self.args.compliance or '') else ''}
@@ -2074,7 +1948,7 @@ docker exec -it {self.args.name} /bin/bash
    # Start application
    ssh user@server
    cd /opt/{name}
-   docker compose up -d
+   docker-compose up -d
    ```
 
 3. **Configure Nginx**
@@ -2092,7 +1966,7 @@ docker exec -it {self.args.name} /bin/bash
             'azure': 'az container restart --name {name}-container-previous --resource-group {name}-rg',
             'gcp': 'gcloud run services update-traffic {name} --to-revisions {name}-previous=100',
             'vercel': 'vercel rollback',
-            'self-hosted': 'docker compose down && git checkout previous-tag && docker compose up -d'
+            'self-hosted': 'docker-compose down && git checkout previous-tag && docker-compose up -d'
         }
         
         return commands.get(self.args.deploy, '# Platform-specific rollback command').format(name=self.args.name)
@@ -2104,9 +1978,9 @@ docker exec -it {self.args.name} /bin/bash
 ## Getting Started
 
 ### Prerequisites
-{'- Node.js 18+' if self.args.frontend != 'none' or self.args.backend == 'nestjs' else ''}
-{'- Python 3.11+' if self.args.backend in ['fastapi', 'django'] else ''}
-{'- Go 1.21+' if self.args.backend == 'go' else ''}
+- {'Node.js 18+' if self.args.frontend != 'none' or self.args.backend == 'nestjs' else ''}
+- {'Python 3.11+' if self.args.backend in ['fastapi', 'django'] else ''}
+- {'Go 1.21+' if self.args.backend == 'go' else ''}
 - Docker and Docker Compose
 - Git
 
@@ -2195,7 +2069,7 @@ docker exec -it {self.args.name} /bin/bash
 - Add tests for new features
 - Document complex logic
 
-{'### Frontend Standards (' + self.args.frontend + ''')
+{f'''### Frontend Standards ({self.args.frontend})
 - Use TypeScript for type safety
 - Follow component-based architecture
 - Implement responsive design
@@ -2203,28 +2077,28 @@ docker exec -it {self.args.name} /bin/bash
 
 Example component:
 ```typescript
-interface Props {
+interface Props {{
   title: string;
   onClick: () => void;
-}
+}}
 
-export const MyComponent: React.FC<Props> = ({ title, onClick }) => {
+export const MyComponent: React.FC<Props> = ({{ title, onClick }}) => {{
   return (
-    <button onClick={onClick} className="btn btn-primary">
-      {title}
+    <button onClick={{onClick}} className="btn btn-primary">
+      {{title}}
     </button>
   );
-};
+}};
 ```''' if self.args.frontend != 'none' else ''}
 
-{'### Backend Standards (' + self.args.backend + ''')
-''' + ('- Use type hints' if self.args.backend in ['fastapi', 'django'] else '- Use TypeScript' if self.args.backend == 'nestjs' else '- Follow Go conventions') + '''
+{f'''### Backend Standards ({self.args.backend})
+{'- Use type hints' if self.args.backend in ['fastapi', 'django'] else '- Use TypeScript' if self.args.backend == 'nestjs' else '- Follow Go conventions'}
 - Implement proper error handling
-- Add OpenAPI documentation  
+- Add OpenAPI documentation
 - Write unit tests for all endpoints
 
 Example endpoint:
-''' + self._generate_backend_example() if self.args.backend != 'none' else ''}
+{self._generate_backend_example()}''' if self.args.backend != 'none' else ''}
 
 ## Testing
 
@@ -2243,8 +2117,8 @@ tests/
 make test
 
 # Unit tests only
-{'cd frontend && npm run test:unit' if self.args.frontend != 'none' else '# No frontend tests'}
-{'cd backend && pytest tests/unit' if self.args.backend in ['fastapi', 'django'] else '# No backend unit tests'}
+{'cd frontend && npm run test:unit' if self.args.frontend != 'none' else ''}
+{'cd backend && pytest tests/unit' if self.args.backend in ['fastapi', 'django'] else ''}
 
 # Integration tests
 make test-integration
@@ -2263,14 +2137,14 @@ make test-e2e
 
 ### Local Debugging
 
-{'''#### Frontend Debugging
+{f'''#### Frontend Debugging
 1. Open Chrome DevTools
 2. Set breakpoints in Sources tab
 3. Use React DevTools extension
 4. Check Network tab for API calls''' if self.args.frontend != 'none' else ''}
 
-{'''#### Backend Debugging
-''' + ('1. Use debugpy for VS Code\n2. Set breakpoints in code\n3. Attach debugger to running process' if self.args.backend in ['fastapi', 'django'] else '1. Use Node.js debugger\n2. Set breakpoints in VS Code\n3. Launch debug configuration' if self.args.backend == 'nestjs' else '1. Use delve debugger\n2. Set breakpoints\n3. Debug with VS Code') if self.args.backend != 'none' else ''}
+{f'''#### Backend Debugging
+{'1. Use debugpy for VS Code\n2. Set breakpoints in code\n3. Attach debugger to running process' if self.args.backend in ['fastapi', 'django'] else '1. Use Node.js debugger\n2. Set breakpoints in VS Code\n3. Launch debug configuration' if self.args.backend == 'nestjs' else '1. Use delve debugger\n2. Set breakpoints\n3. Debug with VS Code'}''' if self.args.backend != 'none' else ''}
 
 ### Common Issues
 
@@ -2285,26 +2159,26 @@ make test-e2e
 2. **Docker issues**
    ```bash
    # Reset Docker
-   docker compose down -v
+   docker-compose down -v
    docker system prune -a
    ```
 
 3. **Dependency issues**
    ```bash
    # Clear caches and reinstall
-{'   rm -rf node_modules package-lock.json && npm install' if self.args.frontend != 'none' else '   # No frontend dependencies'}
-{'   rm -rf venv && python3 -m venv venv && pip install -r requirements.txt' if self.args.backend in ['fastapi', 'django'] else '   # No Python dependencies'}
+   {'rm -rf node_modules package-lock.json && npm install' if self.args.frontend != 'none' else ''}
+   {'rm -rf venv && python -m venv venv && pip install -r requirements.txt' if self.args.backend in ['fastapi', 'django'] else ''}
    ```
 
 ## Performance
 
 ### Optimization Tips
-{'''- Use React.memo for expensive components
+{f'''- Use React.memo for expensive components
 - Implement code splitting
 - Optimize images with next/image
 - Use CSS modules for styling''' if self.args.frontend == 'nextjs' else '- Optimize bundle size\n- Implement lazy loading\n- Use performance profiler' if self.args.frontend != 'none' else ''}
 
-{'''- Use connection pooling
+{f'''- Use connection pooling
 - Implement caching (Redis)
 - Optimize database queries
 - Use async operations''' if self.args.backend != 'none' else ''}
@@ -2335,8 +2209,8 @@ make test-e2e
 ## Resources
 
 ### Documentation
-{'- [' + self.args.frontend + ' Docs](https://docs.' + self.args.frontend + '.com)' if self.args.frontend != 'none' else ''}
-{'- [' + self.args.backend + ' Docs](https://docs.' + self.args.backend + '.com)' if self.args.backend != 'none' else ''}
+- [{self.args.frontend} Docs](https://docs.{self.args.frontend}.com) {if self.args.frontend != 'none' else ''}
+- [{self.args.backend} Docs](https://docs.{self.args.backend}.com) {if self.args.backend != 'none' else ''}
 - [Project Wiki](https://github.com/yourorg/{self.args.name}/wiki)
 
 ### Tools
