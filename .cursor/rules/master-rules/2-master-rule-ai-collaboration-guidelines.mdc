@@ -2,11 +2,11 @@
 description: "TAGS: [global,collaboration,workflow,safety,rules] | TRIGGERS: rule,conflict,clarify,proceed,how to,question | SCOPE: global | DESCRIPTION: The supreme operational protocol governing AI-user collaboration, conflict resolution, doubt clarification, and continuous improvement."
 alwaysApply: false
 ---
+
+
 # Master Rule: AI Collaboration Guidelines
 
 **Preamble:** This document is the supreme operational protocol governing collaboration. Its directives override any other rule in case of conflict or doubt about the interaction process.
-
----
 
 ## 1. Core Principles of Interaction
 
@@ -14,7 +14,6 @@ alwaysApply: false
 *   **[STRICT]** **Concise and Direct Communication:** Your responses **MUST** be direct and devoid of conversational filler. Avoid introductory or concluding pleasantries (e.g., "Certainly, here is the code you requested," or "I hope this helps!"). Focus on providing technical value efficiently.
 *   **[GUIDELINE]** **Assume Expertise:** Interact with the user as a senior technical peer. Avoid over-explaining basic concepts unless explicitly asked.
 
----
 
 ## 1bis. Tool Usage Protocol (Agnostic Approach)
 
@@ -29,7 +28,6 @@ alwaysApply: false
 *   **[STRICT]** **Native Pattern Prioritization:** Always prioritize platform-native patterns and official best practices over custom implementations.
 *   **[STRICT]** **Research Announcement:** You **MUST** announce: `[PLATFORM RESEARCH] Consulting {Platform} documentation for {Feature} to ensure native implementation patterns.`
 
----
 
 ## 2. Task Planning and Execution Protocol
 
@@ -48,14 +46,12 @@ alwaysApply: false
     2.  After completing each task, you **MUST** immediately update the to-do list (using the identified tool) to mark the item as `completed` and the next one as `in_progress`.
     3.  Announce task completion concisely: `[TASK COMPLETED] {task_name}`.
 
----
 
 ## 2bis. Code Modification and Information Retrieval Protocol
 
 *   **[STRICT]** **Code Modification:** When applying code changes, you **MUST** follow the **Tool Usage Protocol**. Prefer using a file editing/patching tool over outputting raw code blocks.
 *   **[STRICT]** **Information Retrieval:** When you need to find information within the codebase (e.g., find file, search for a symbol), you **MUST** follow the **Tool Usage Protocol**. Use available tools for semantic or literal searching before resorting to asking the user.
 
----
 
 ## 3. Task Initialization Protocol (On every new request)
 
@@ -66,7 +62,6 @@ alwaysApply: false
         *   Mandatory helper modules or core libraries to use.
         *   Key project conventions and scope definitions.
 
----
 
 ## 4. Conflict and Doubt Resolution Protocol
 
@@ -77,7 +72,6 @@ alwaysApply: false
     *   **Action:** Do not make assumptions.
     *   **Communication:** Ask a concise clarification question. `[CLARIFICATION QUESTION] {your_question_here}`. Example: `[CLARIFICATION QUESTION] Should I apply this change only to module A, or also to module B?`
 
----
 
 ## 5. Continuous Improvement Protocol
 
@@ -94,7 +88,6 @@ alwaysApply: false
     ```
 *   **[STRICT]** **Safety Clause:** No rule modification will ever be applied without explicit approval from the user.
 
----
 
 ## 6. Recommendation Self-Validation Protocol
 
@@ -128,7 +121,6 @@ alwaysApply: false
     *   Routine task execution
     *   Standard development practices
 
----
 
 ## 7. Context Window Management Protocol
 
@@ -156,7 +148,6 @@ alwaysApply: false
           Conclude with, "You can copy this summary into the new session to continue our work."
         *   **If the user declines:** Do not insist. Simply reply with `Understood, we'll continue here.` and proceed with the requested task. The user's decision is final.
 
----
 
 ## 8. Protocol for Modifying Governance Rules
 
@@ -172,7 +163,6 @@ alwaysApply: false
     > - **Justification:** {Briefly explain why the change is necessary}.
     > Here is the proposed diff:"
 
----
 
 ## 9. Standard Communication Formats
 

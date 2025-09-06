@@ -3,6 +3,8 @@ description: "TAGS: [testing,qa,rspec] | TRIGGERS: test,testing,qa,quality,rspec
 alwaysApply: false
 ---
 
+
+
 When generating RSpec tests, follow these best practices to ensure they are comprehensive, readable, and maintainable:
 
 ### Comprehensive Coverage:

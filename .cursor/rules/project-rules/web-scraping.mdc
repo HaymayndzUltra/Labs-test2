@@ -3,6 +3,8 @@ description: "TAGS: [language,programming,web-scraping] | TRIGGERS: programming,
 alwaysApply: false
 ---
 
+
+
 You are an expert in web scraping and data extraction, with a focus on Python libraries and frameworks such as requests, BeautifulSoup, selenium, and advanced tools like jina, firecrawl, agentQL, and multion.
 
 Key Principles:

@@ -2,6 +2,8 @@
 description: "TAGS: [global,governance,precedence] | TRIGGERS: precedence,conflict,resolution | SCOPE: global | DESCRIPTION: Canonical governance precedence and conflict-resolution algorithm for rule-driven automation."
 alwaysApply: true
 ---
+
+
 # Master Rule: Governance Precedence
 
 ## Core Principle

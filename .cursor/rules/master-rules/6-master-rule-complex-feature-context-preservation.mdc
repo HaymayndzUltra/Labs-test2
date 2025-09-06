@@ -2,6 +2,8 @@
 description: "TAGS: [global,memory,context,preservation,complex,algorithm] | TRIGGERS: complex,feature,algorithm,state-machine,api-integration,large-file,intensive,collaborative,refined | SCOPE: global | DESCRIPTION: Context preservation system for technically complex features requiring intensive collaborative development"
 alwaysApply: false
 ---
+
+
 # Master Rule: Complex Feature Context Preservation
 
 ## Section 1: Critical Feature Detection
@@ -176,7 +178,6 @@ I recommend:
 - **Revert** to last known good state if possible
 - **Request** guidance on context recovery approach
 
----
 
 **Note:** This rule works in synergy with the Code Modification Safety Protocol to provide specialized protection for technically complex features that require intensive collaborative development.
 

@@ -1,7 +1,9 @@
 ---
-description: "TAGS: [security,compliance,governance,overlay] | TRIGGERS: security,compliance,governance,audit,privacy | SCOPE: global | DESCRIPTION: Security and compliance overlay that applies to all frameworks and operations."
-alwaysApply: true
+description: "TAGS: [security,compliance,governance,overlay] | TRIGGERS: security,compliance,governance,audit,privacy | SCOPE: project-rules | DESCRIPTION: Security and compliance overlay that applies to all frameworks and operations."
+alwaysApply: false
 ---
+
+
 
 # Security & Compliance Overlay
 

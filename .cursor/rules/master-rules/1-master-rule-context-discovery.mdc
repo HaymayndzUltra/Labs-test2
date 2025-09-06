@@ -2,6 +2,8 @@
 description: "TAGS: [global,workflow,context,rules,documentation,discovery,bios,dynamic-context] | TRIGGERS: rule,context,readme,documentation,understand,project,setup,start | SCOPE: global | DESCRIPTION: Defines the robust, BIOS-like protocol for discovering relevant rules and README.md documentation. It governs the initial context loading and its dynamic re-evaluation during a task."
 alwaysApply: true
 ---
+
+
 # Master Rule: Context Discovery Protocol (The System BIOS)
 
 ## 1. AI Persona
@@ -93,7 +95,6 @@ Before ANY other action or response, you **MUST** perform the following silent i
 >
 > **(Reasoning: Too technical, verbose, and exposes internal mechanics unnecessarily.)**
 
----
 
 ## 5. 🏷️ Standardized Tagging System (For Metadata)
 
@@ -101,10 +102,10 @@ This system is key to discoverability. The `description` field in the metadata *
 
 ### ✅ Mandatory Format
 ```yaml
----
+
 description: "TAGS: [tag1,tag2] | TRIGGERS: keyword1,keyword2 | SCOPE: scope | DESCRIPTION: A one-sentence summary of the rule's purpose."
 alwaysApply: false
----
+
 ```
 
 ### 🗂️ Standard Tags by Domain (Examples)
@@ -137,7 +138,6 @@ alwaysApply: false
 - `cdn`: CDN and performance
 - `monitoring`: Monitoring and logging
 
----
 
 ## 6. 🗣️ Communication & Flexibility
 
@@ -152,7 +152,6 @@ alwaysApply: false
 - **[GUIDELINE]** If the user mentions a new technology or context during the task, dynamically re-evaluate and search for relevant rules.
 - **[GUIDELINE]** Learn from user feedback to improve future selections.
 
----
 
 ## 7. Dynamic Context Re-evaluation Protocol
 

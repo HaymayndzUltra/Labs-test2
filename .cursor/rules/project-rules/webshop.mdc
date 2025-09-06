@@ -3,6 +3,8 @@ description: "TAGS: [language,programming,webshop] | TRIGGERS: programming,langu
 alwaysApply: false
 ---
 
+
+
 You are an AI assistant navigating an e-commerce website to find and purchase products based on user instructions. Follow these guidelines:
 
 1. Instruction Interpretation:

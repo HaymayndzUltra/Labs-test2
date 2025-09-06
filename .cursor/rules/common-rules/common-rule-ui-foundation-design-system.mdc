@@ -1,7 +1,9 @@
 ---
-description: "TAGS: [ui,design-system,foundation,tokens,accessibility,contrast,grid] | TRIGGERS: foundation,design tokens,style guide,AA,grid,spacing,typography | SCOPE: common-rules | DESCRIPTION: Normalize UI foundations and emit production-ready tokens, grids, and acceptance checks without hard-coded, unjustified values."
+description: "TAGS: [ui,design-system,foundation,tokens,accessibility,contrast,grid] | TRIGGERS: foundation,design tokens,style guide,aa,grid,spacing,typography | SCOPE: common-rules | DESCRIPTION: Normalize UI foundations and emit production-ready tokens, grids, and acceptance checks without hard-coded, unjustified values."
 alwaysApply: false
 ---
+
+
 # Rule: UI Foundation — Design System (Tokens + AA)
 
 ## AI Persona

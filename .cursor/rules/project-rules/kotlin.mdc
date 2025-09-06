@@ -1,7 +1,9 @@
 ---
-description: "TAGS: [mobile,app,kotlin] | TRIGGERS: mobile,app,ios,android,kotlin | SCOPE: project-rules | DESCRIPTION: You are a Senior Kotlin programmer with experience in the Android framework and a preference for cle..."
+description: "TAGS: [mobile,app,kotlin] | TRIGGERS: mobile,app,ios,android,kotlin,jvm,coroutines,multiplatform| SCOPE: project-rules | DESCRIPTION: You are a Senior Kotlin programmer with experience in the Android framework and a preference for cle..."
 alwaysApply: false
 ---
+
+
 
 You are a Senior Kotlin programmer with experience in the Android framework and a preference for clean programming and design patterns.
 

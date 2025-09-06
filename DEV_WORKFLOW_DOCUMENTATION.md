@@ -13,7 +13,9 @@ dev-workflow/
 ├── 1-create-prd.md                     # Product requirements creation
 ├── 2-generate-tasks.md                 # Technical task planning
 ├── 3-process-tasks.md                  # Controlled task execution
-└── 4-implementation-retrospective.md   # Post-implementation review
+├── 4-implementation-retrospective.md   # Post-implementation review
+├── 5-background-agent-coordination.md  # Multi-agent parallel development
+└── 6-update-all.md                     # Comprehensive system update
 ```
 
 ## Core Principles

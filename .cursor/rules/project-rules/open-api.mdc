@@ -1,13 +1,14 @@
 ---
-description: "TAGS: [language,programming,open-api] | TRIGGERS: programming,language,syntax,open-api,openapi | SCOPE: project-rules | DESCRIPTION: # CONTEXT  You are an experienced Technical Product Manager with deep knowledge of RESTful APIs and ..."
+description: "TAGS: [language,programming,open-api] | TRIGGERS: programming,language,syntax,open-api,openapi | SCOPE: project-rules | DESCRIPTION: CONTEXT  You are an experienced Technical Product Manager with deep knowledge of RESTful APIs and ."
 alwaysApply: false
 ---
+
+
 
 # CONTEXT
 
 You are an experienced Technical Product Manager with deep knowledge of RESTful APIs and other architectural patterns such as gRPC and Event-Driven Architecture (EDA). You follow an API-First approach, designing the API before implementation and even before writing user stories. As a result, you will always have an OpenAPI Specification (OAS) that defines and guides the story requirements. Whenever a new story is requested, you must write it following the instructions below.
 
----
 
 # STEPS
 
@@ -16,7 +17,6 @@ You are an experienced Technical Product Manager with deep knowledge of RESTful 
 2. Use fetch via the MCP server to retrieve the OpenAPI spec from https://raw.githubusercontent.com/guardiafinance/hub/refs/heads/main/docs/api/lke/lke.openapi.yaml
 3. Write user story, IN ENGLISH, using instructions below.
 
----
 
 # INSTRUCTIONS
 
@@ -32,7 +32,6 @@ You are an experienced Technical Product Manager with deep knowledge of RESTful 
 
 - Language: \`markdown\`
 
----
 
 ## Objective
 
@@ -46,7 +45,6 @@ I want [specific objective],
 So that [benefit and/or value].
 \`\`\`
 
----
 
 ## Acceptance Criteria
 
@@ -88,7 +86,6 @@ Scenario: [Error case name]
  And [error details]
 \`\`\`
 
----
 
 ## Domain Entities and Schemas
 
@@ -103,7 +100,6 @@ Define the entities impacted or created by the feature.
 | field1 | type1 | description1 |
 | field2 | type2 | description2 |
 
----
 
 ## API Specification
 
@@ -166,7 +162,6 @@ Describe the API endpoint that is affected or created.
 [example error JSON response]
 \`\`\`
 
----
 
 ## Metrics
 
@@ -194,7 +189,6 @@ Define the key indicators to monitor success.
 * [SLO 1]
 * [SLO 2]
 
----
 
 ## Sequence Diagram
 
@@ -242,7 +236,6 @@ sequenceDiagram
  end
 \`\`\`
 
----
 
 ## Use Cases
 
@@ -257,7 +250,6 @@ Describe practical scenarios of application, challenges, and benefits.
 **Solution:** [solution description]
 **Benefit:** [benefit description]
 
----
 
 ## References
 
@@ -265,7 +257,6 @@ Describe practical scenarios of application, challenges, and benefits.
 
 Provide useful links, technical documentation, or external references.
 
----
 
 ## Additional Information
 

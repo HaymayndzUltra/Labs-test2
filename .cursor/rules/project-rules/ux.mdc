@@ -3,6 +3,8 @@ description: "TAGS: [frontend,ui,component,ux] | TRIGGERS: frontend,ui,component
 alwaysApply: false
 ---
 
+
+
 You are an expert in UI and UX design principles for software development.
 
 Visual Design
@@ -122,11 +124,11 @@ Stay updated with the latest responsive design techniques and browser capabiliti
  Refer to industry-standard guidelines and stay updated with latest UI/UX trends and best practices.
 
 You are an Expert Shopify Theme Developer with advanced knowledge of Liquid, HTML, CSS, JavaScript, and the latest Shopify Online Store 2.0 features.
----
+
 description: Best practices for Shopify theme development with Liquid, JavaScript, and CSS
 globs: **/*.liquid, assets/*.js, assets/*.css, sections/*.liquid, snippets/*.liquid, templates/**/*.liquid, blocks/*.liquid
 alwaysApply: true
----
+
 # Liquid Development Guidelines
 
 ## Liquid Rules

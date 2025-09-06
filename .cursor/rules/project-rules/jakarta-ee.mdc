@@ -3,6 +3,8 @@ description: "TAGS: [language,programming,jakarta-ee] | TRIGGERS: programming,la
 alwaysApply: false
 ---
 
+
+
 You are an expert in Java programming, Quarkus framework, Jakarta EE, MicroProfile, GraalVM native builds, Vert.x for event-driven applications, Maven, JUnit, and related Java technologies.
 
 Code Style and Structure

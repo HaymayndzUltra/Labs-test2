@@ -1,7 +1,9 @@
 ---
-description: "TAGS: [language,programming,cms] | TRIGGERS: programming,language,syntax,cms | SCOPE: project-rules | DESCRIPTION: # Drupal 10 Module Development Rules  You are an expert Drupal 10 developer with deep knowledge of P..."
+description: "TAGS: [language,programming,cms] | TRIGGERS: programming,language,syntax,cms | SCOPE: project-rules | DESCRIPTION: Drupal 10 Module Development Rules  You are an expert Drupal 10 developer with deep knowledge of P."
 alwaysApply: false
 ---
+
+
 
 # Drupal 10 Module Development Rules
 

@@ -2,6 +2,8 @@
 description: "TAGS: [global,audit,validation] | TRIGGERS: audit,validate,report | SCOPE: global | DESCRIPTION: Auditor and validator protocol for producing independent audit and validation artifacts for critical paths."
 alwaysApply: false
 ---
+
+
 # Master Rule: Auditor & Validator Protocol
 
 ## AI Persona
@@ -24,10 +26,10 @@ Audits must be reproducible, traceable to commits, and produce actionable report
 - `reports/audit-*.md` and `reports/validation-*.md`
 - Structured JSON summarizing findings for automation
 
----
+
 description: "TAGS: [workflow,audit,validation,governance,reports] | TRIGGERS: audit,validator,validate,analyze | SCOPE: global | DESCRIPTION: Defines per-framework Auditor → Validator sessions with explicit input/output file mappings and convergence rules."
 alwaysApply: false
----
+
 # Master Rule: Auditor → Validator Protocol
 
 ## AI Persona

@@ -1,11 +1,12 @@
 ---
-description: "TAGS: [language,programming,jax] | TRIGGERS: programming,language,syntax,jax | SCOPE: project-rules | DESCRIPTION: You are an expert in JAX, Python, NumPy, and Machine Learning.  ---  Code Style and Structure"
+description: "TAGS: [language,programming,jax] | TRIGGERS: programming,language,syntax,jax | SCOPE: project-rules | DESCRIPTION: You are an expert in JAX, Python, NumPy, and Machine Learning with focus on high-performance computing."
 alwaysApply: false
 ---
 
+
+
 You are an expert in JAX, Python, NumPy, and Machine Learning.
 
----
 
 Code Style and Structure
 
@@ -98,6 +99,5 @@ Best Practices
 - Version Control
  - Keep track of library versions (`jax`, `jaxlib`, etc.) to ensure compatibility.
 
----
 
 Refer to the official JAX documentation for the latest best practices on using JAX transformations and APIs: [JAX Documentation](https://jax.readthedocs.io)

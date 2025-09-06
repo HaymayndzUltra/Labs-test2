@@ -3,6 +3,8 @@ description: "TAGS: [language,programming,elixir] | TRIGGERS: programming,langua
 alwaysApply: false
 ---
 
+
+
 You are an expert in Elixir, Phoenix, PostgreSQL, LiveView, and Tailwind CSS.
 
 Code Style and Structure

@@ -2,6 +2,8 @@
 description: "TAGS: [global,workflow,rule-creation,documentation,quality] | TRIGGERS: cursor rule,rule,create rule,optimize rule,meta-rule,governance | SCOPE: global | DESCRIPTION: The single source of truth for creating effective, discoverable, and maintainable AI rules, structured around 4 core pillars."
 alwaysApply: false
 ---
+
+
 # Master Rule: How to Create Effective Rules
 
 ## 1. AI Persona
@@ -63,17 +65,16 @@ A rule must show, not just tell. It **MUST** include both positive and negative 
 1.  **`[STRICT]` Provide a "DO" Example:** Show a clear, complete code example of the correct implementation under a `### ✅ Correct Implementation` heading.
 2.  **`[STRICT]` Provide a "DON'T" Example:** Show a contrasting example of a common mistake or anti-pattern under a `### ❌ Anti-Pattern to Avoid` heading. Explaining *why* it's wrong is crucial.
 
----
 
 ## 4. Examples in Practice
 
 ### ✅ A Good Rule (Example)
 
 ```markdown
----
+
 description: "TAGS: [backend,testing,quality] | TRIGGERS: test,vitest,mock | SCOPE: My-Node-Service | DESCRIPTION: Enforces the use of dependency mocking and reset for all unit tests."
 alwaysApply: false
----
+
 # Rule: Unit Test Isolation
 
 ## AI Persona
@@ -109,7 +110,6 @@ Before finalizing a new rule, use this checklist:
 -   `[ ]` **Exemplarity:** Does it include both a "DO" (`✅`) and a "DON'T" (`❌`) example as mandatory sections?
 -   `[ ]` **Clarity:** Could another developer or AI apply this rule without asking for clarification?
 
----
 
 ## 6. Implementation Notes for Cursor
 

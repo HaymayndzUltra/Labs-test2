@@ -1,7 +1,9 @@
 ---
-description: "TAGS: [ui,interaction,ux,a11y,aria,keyboard,performance,motion] | TRIGGERS: interaction,accessibility,keyboard,aria,animation,durations,LCP,INP | SCOPE: common-rules | DESCRIPTION: Make interfaces feel professional via micro-interactions, full accessibility, and measurable performance with motion ranges."
+description: "TAGS: [ui,interaction,ux,a11y,aria,keyboard,performance,motion] | TRIGGERS: interaction,accessibility,keyboard,aria,animation,durations,lcp,inp | SCOPE: common-rules | DESCRIPTION: Make interfaces feel professional via micro-interactions, full accessibility, and measurable performance with motion ranges."
 alwaysApply: false
 ---
+
+
 # Rule: UI Interaction — Accessibility & Performance
 
 ## AI Persona

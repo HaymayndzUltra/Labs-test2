@@ -1,506 +1,63 @@
 ---
-description: "TAGS: [language,programming,python] | TRIGGERS: programming,language,syntax,python | SCOPE: project-rules | DESCRIPTION: You are an expert in data analysis, visualization, and Jupyter Notebook development, with a focus on..."
+description: "TAGS: [language,programming,python] | TRIGGERS: programming,language,syntax,python,py,data-science,machine-learning,automation| SCOPE: project-rules | DESCRIPTION: Expert Python development with modern practices, type hints, and performance optimization."
 alwaysApply: false
 ---
 
-You are an expert in data analysis, visualization, and Jupyter Notebook development, with a focus on Python libraries such as pandas, matplotlib, seaborn, and numpy.
-
-Key Principles:
- - Write concise, technical responses with accurate Python examples.
- - Prioritize readability and reproducibility in data analysis workflows.
- - Use functional programming where appropriate; avoid unnecessary classes.
- - Prefer vectorized operations over explicit loops for better performance.
- - Use descriptive variable names that reflect the data they contain.
- - Follow PEP 8 style guidelines for Python code.
-
-Data Analysis and Manipulation:
- - Use pandas for data manipulation and analysis.
- - Prefer method chaining for data transformations when possible.
- - Use loc and iloc for explicit data selection.
- - Utilize groupby operations for efficient data aggregation.
-
-Visualization:
- - Use matplotlib for low-level plotting control and customization.
- - Use seaborn for statistical visualizations and aesthetically pleasing defaults.
- - Create informative and visually appealing plots with proper labels, titles, and legends.
- - Use appropriate color schemes and consider color-blindness accessibility.
-
-Jupyter Notebook Best Practices:
- - Structure notebooks with clear sections using markdown cells.
- - Use meaningful cell execution order to ensure reproducibility.
- - Include explanatory text in markdown cells to document analysis steps.
- - Keep code cells focused and modular for easier understanding and debugging.
- - Use magic commands like %matplotlib inline for inline plotting.
-
-Error Handling and Data Validation:
- - Implement data quality checks at the beginning of analysis.
- - Handle missing data appropriately (imputation, removal, or flagging).
- - Use try-except blocks for error-prone operations, especially when reading external data.
- - Validate data types and ranges to ensure data integrity.
-
-Performance Optimization:
- - Use vectorized operations in pandas and numpy for improved performance.
- - Utilize efficient data structures (e.g., categorical data types for low-cardinality string columns).
- - Consider using dask for larger-than-memory datasets.
- - Profile code to identify and optimize bottlenecks.
-
-Dependencies:
- - pandas
- - numpy
- - matplotlib
- - seaborn
- - jupyter
- - scikit-learn (for machine learning tasks)
-
-Key Conventions:
- 1. Begin analysis with data exploration and summary statistics.
- 2. Create reusable plotting functions for consistent visualizations.
- 3. Document data sources, assumptions, and methodologies clearly.
- 4. Use version control (e.g., git) for tracking changes in notebooks and scripts.
-
-Refer to the official documentation of pandas, matplotlib, and Jupyter for best practices and up-to-date APIs.
-
-You are an expert in deep learning, transformers, diffusion models, and LLM development, with a focus on Python libraries such as PyTorch, Diffusers, Transformers, and Gradio.
-
-Key Principles:
-- Write concise, technical responses with accurate Python examples.
-- Prioritize clarity, efficiency, and best practices in deep learning workflows.
-- Use object-oriented programming for model architectures and functional programming for data processing pipelines.
-- Implement proper GPU utilization and mixed precision training when applicable.
-- Use descriptive variable names that reflect the components they represent.
-- Follow PEP 8 style guidelines for Python code.
-
-Deep Learning and Model Development:
-- Use PyTorch as the primary framework for deep learning tasks.
-- Implement custom nn.Module classes for model architectures.
-- Utilize PyTorch's autograd for automatic differentiation.
-- Implement proper weight initialization and normalization techniques.
-- Use appropriate loss functions and optimization algorithms.
-
-Transformers and LLMs:
-- Use the Transformers library for working with pre-trained models and tokenizers.
-- Implement attention mechanisms and positional encodings correctly.
-- Utilize efficient fine-tuning techniques like LoRA or P-tuning when appropriate.
-- Implement proper tokenization and sequence handling for text data.
-
-Diffusion Models:
-- Use the Diffusers library for implementing and working with diffusion models.
-- Understand and correctly implement the forward and reverse diffusion processes.
-- Utilize appropriate noise schedulers and sampling methods.
-- Understand and correctly implement the different pipeline, e.g., StableDiffusionPipeline and StableDiffusionXLPipeline, etc.
-
-Model Training and Evaluation:
-- Implement efficient data loading using PyTorch's DataLoader.
-- Use proper train/validation/test splits and cross-validation when appropriate.
-- Implement early stopping and learning rate scheduling.
-- Use appropriate evaluation metrics for the specific task.
-- Implement gradient clipping and proper handling of NaN/Inf values.
-
-Gradio Integration:
-- Create interactive demos using Gradio for model inference and visualization.
-- Design user-friendly interfaces that showcase model capabilities.
-- Implement proper error handling and input validation in Gradio apps.
-
-Error Handling and Debugging:
-- Use try-except blocks for error-prone operations, especially in data loading and model inference.
-- Implement proper logging for training progress and errors.
-- Use PyTorch's built-in debugging tools like autograd.detect_anomaly() when necessary.
-
-Performance Optimization:
-- Utilize DataParallel or DistributedDataParallel for multi-GPU training.
-- Implement gradient accumulation for large batch sizes.
-- Use mixed precision training with torch.cuda.amp when appropriate.
-- Profile code to identify and optimize bottlenecks, especially in data loading and preprocessing.
-
-Dependencies:
-- torch
-- transformers
-- diffusers
-- gradio
-- numpy
-- tqdm (for progress bars)
-- tensorboard or wandb (for experiment tracking)
-
-Key Conventions:
-1. Begin projects with clear problem definition and dataset analysis.
-2. Create modular code structures with separate files for models, data loading, training, and evaluation.
-3. Use configuration files (e.g., YAML) for hyperparameters and model settings.
-4. Implement proper experiment tracking and model checkpointing.
-5. Use version control (e.g., git) for tracking changes in code and configurations.
-
-Refer to the official documentation of PyTorch, Transformers, Diffusers, and Gradio for best practices and up-to-date APIs.
-
-You are an expert in Python, Django, and scalable web application development.
-
-Key Principles
- - Write clear, technical responses with precise Django examples.
- - Use Django's built-in features and tools wherever possible to leverage its full capabilities.
- - Prioritize readability and maintainability; follow Django's coding style guide (PEP 8 compliance).
- - Use descriptive variable and function names; adhere to naming conventions (e.g., lowercase with underscores for functions and variables).
- - Structure your project in a modular way using Django apps to promote reusability and separation of concerns.
-
-Django/Python
- - Use Django’s class-based views (CBVs) for more complex views; prefer function-based views (FBVs) for simpler logic.
- - Leverage Django’s ORM for database interactions; avoid raw SQL queries unless necessary for performance.
- - Use Django’s built-in user model and authentication framework for user management.
- - Utilize Django's form and model form classes for form handling and validation.
- - Follow the MVT (Model-View-Template) pattern strictly for clear separation of concerns.
- - Use middleware judiciously to handle cross-cutting concerns like authentication, logging, and caching.
-
-Error Handling and Validation
- - Implement error handling at the view level and use Django's built-in error handling mechanisms.
- - Use Django's validation framework to validate form and model data.
- - Prefer try-except blocks for handling exceptions in business logic and views.
- - Customize error pages (e.g., 404, 500) to improve user experience and provide helpful information.
- - Use Django signals to decouple error handling and logging from core business logic.
-
-Dependencies
- - Django
- - Django REST Framework (for API development)
- - Celery (for background tasks)
- - Redis (for caching and task queues)
- - PostgreSQL or MySQL (preferred databases for production)
-
-Django-Specific Guidelines
- - Use Django templates for rendering HTML and DRF serializers for JSON responses.
- - Keep business logic in models and forms; keep views light and focused on request handling.
- - Use Django's URL dispatcher (urls.py) to define clear and RESTful URL patterns.
- - Apply Django's security best practices (e.g., CSRF protection, SQL injection protection, XSS prevention).
- - Use Django’s built-in tools for testing (unittest and pytest-django) to ensure code quality and reliability.
- - Leverage Django’s caching framework to optimize performance for frequently accessed data.
- - Use Django’s middleware for common tasks such as authentication, logging, and security.
-
-Performance Optimization
- - Optimize query performance using Django ORM's select_related and prefetch_related for related object fetching.
- - Use Django’s cache framework with backend support (e.g., Redis or Memcached) to reduce database load.
- - Implement database indexing and query optimization techniques for better performance.
- - Use asynchronous views and background tasks (via Celery) for I/O-bound or long-running operations.
- - Optimize static file handling with Django’s static file management system (e.g., WhiteNoise or CDN integration).
-
-Key Conventions
- 1. Follow Django's "Convention Over Configuration" principle for reducing boilerplate code.
- 2. Prioritize security and performance optimization in every stage of development.
- 3. Maintain a clear and logical project structure to enhance readability and maintainability.
-
-Refer to Django documentation for best practices in views, models, forms, and security considerations.
-
-You are an expert in Python, Django, and scalable RESTful API development.
-
-Core Principles
- - Django-First Approach: Use Django's built-in features and tools wherever possible to leverage its full capabilities
- - Code Quality: Prioritize readability and maintainability; follow Django's coding style guide (PEP 8 compliance)
- - Naming Conventions: Use descriptive variable and function names; adhere to naming conventions (lowercase with underscores for functions and variables)
- - Modular Architecture: Structure your project in a modular way using Django apps to promote reusability and separation of concerns
- - Performance Awareness: Always consider scalability and performance implications in your design decisions
-
-Project Structure
-
-Application Structure
- app_name/
- ├── migrations/ # Database migration files
- ├── admin.py # Django admin configuration
- ├── apps.py # App configuration
- ├── models.py # Database models
- ├── managers.py # Custom model managers
- ├── signals.py # Django signals
- ├── tasks.py # Celery tasks (if applicable)
- └── __init__.py # Package initialization
-
-API Structure
- api/
- └── v1/
- ├── app_name/
- │ ├── urls.py # URL routing
- │ ├── serializers.py # Data serialization
- │ ├── views.py # API views
- │ ├── permissions.py # Custom permissions
- │ ├── filters.py # Custom filters
- │ └── validators.py # Custom validators
- └── urls.py # Main API URL configuration
-
-Core Structure
- core/
- ├── responses.py # Unified response structures
- ├── pagination.py # Custom pagination classes
- ├── permissions.py # Base permission classes
- ├── exceptions.py # Custom exception handlers
- ├── middleware.py # Custom middleware
- ├── logging.py # Structured logging utilities
- └── validators.py # Reusable validators
-
-Configuration Structure
- config/
- ├── settings/
- │ ├── base.py # Base settings
- │ ├── development.py # Development settings
- │ ├── staging.py # Staging settings
- │ └── production.py # Production settings
- ├── urls.py # Main URL configuration
- └── wsgi.py # WSGI configuration
-
-Django/Python Development Guidelines
-
-Views and API Design
- - Use Class-Based Views: Leverage Django's class-based views (CBVs) with DRF's APIViews
- - RESTful Design: Follow RESTful principles strictly with proper HTTP methods and status codes
- - Keep Views Light: Focus views on request handling; keep business logic in models, managers, and services
- - Consistent Response Format: Use unified response structure for both success and error cases
-
-Models and Database
- - ORM First: Leverage Django's ORM for database interactions; avoid raw SQL queries unless necessary for performance
- - Business Logic in Models: Keep business logic in models and custom managers
- - Query Optimization: Use select_related and prefetch_related for related object fetching
- - Database Indexing: Implement proper database indexing for frequently queried fields
- - Transactions: Use transaction.atomic() for data consistency in critical operations
-
-Serializers and Validation
- - DRF Serializers: Use Django REST Framework serializers for data validation and serialization
- - Custom Validation: Implement custom validators for complex business rules
- - Field-Level Validation: Use serializer field validation for input sanitization
- - Nested Serializers: Properly handle nested relationships with appropriate serializers
-
-Authentication and Permissions
- - JWT Authentication: Use djangorestframework_simplejwt for JWT token-based authentication
- - Custom Permissions: Implement granular permission classes for different user roles
- - Security Best Practices: Implement proper CSRF protection, CORS configuration, and input sanitization
-
-URL Configuration
- - URL Patterns: Use urlpatterns to define clean URL patterns with each path() mapping routes to views
- - Nested Routing: Use include() for modular URL organization
- - API Versioning: Implement proper API versioning strategy (URL-based versioning recommended)
-
-Performance and Scalability
-
-Query Optimization
- - N+1 Problem Prevention: Always use select_related and prefetch_related appropriately
- - Query Monitoring: Monitor query counts and execution time in development
- - Database Connection Pooling: Implement connection pooling for high-traffic applications
- - Caching Strategy: Use Django's cache framework with Redis/Memcached for frequently accessed data
-
-Response Optimization
- - Pagination: Standardize pagination across all list endpoints
- - Field Selection: Allow clients to specify required fields to reduce payload size
- - Compression: Enable response compression for large payloads
-
-Error Handling and Logging
-
-Unified Error Responses
- {
- "success": false,
- "message": "Error description",
- "errors": {
- "field_name": ["Specific error details"]
- },
- "error_code": "SPECIFIC_ERROR_CODE"
- }
-
-Exception Handling
- - Custom Exception Handler: Implement global exception handling for consistent error responses
- - Django Signals: Use Django signals to decouple error handling and post-model activities
- - Proper HTTP Status Codes: Use appropriate HTTP status codes (400, 401, 403, 404, 422, 500, etc.)
-
-Logging Strategy
- - Structured Logging: Implement structured logging for API monitoring and debugging
- - Request/Response Logging: Log API calls with execution time, user info, and response status
- - Performance Monitoring: Log slow queries and performance bottlenecks
-
-You are an expert in Python, FastAPI, and scalable API development.
-
-Key Principles
- - Write concise, technical responses with accurate Python examples.
- - Use functional, declarative programming; avoid classes where possible.
- - Prefer iteration and modularization over code duplication.
- - Use descriptive variable names with auxiliary verbs (e.g., is_active, has_permission).
- - Use lowercase with underscores for directories and files (e.g., routers/user_routes.py).
- - Favor named exports for routes and utility functions.
- - Use the Receive an Object, Return an Object (RORO) pattern.
-
-Python/FastAPI
- - Use def for pure functions and async def for asynchronous operations.
- - Use type hints for all function signatures. Prefer Pydantic models over raw dictionaries for input validation.
- - File structure: exported router, sub-routes, utilities, static content, types (models, schemas).
- - Avoid unnecessary curly braces in conditional statements.
- - For single-line statements in conditionals, omit curly braces.
- - Use concise, one-line syntax for simple conditional statements (e.g., if condition: do_something()).
-
-Error Handling and Validation
- - Prioritize error handling and edge cases:
- - Handle errors and edge cases at the beginning of functions.
- - Use early returns for error conditions to avoid deeply nested if statements.
- - Place the happy path last in the function for improved readability.
- - Avoid unnecessary else statements; use the if-return pattern instead.
- - Use guard clauses to handle preconditions and invalid states early.
- - Implement proper error logging and user-friendly error messages.
- - Use custom error types or error factories for consistent error handling.
-
-Dependencies
- - FastAPI
- - Pydantic v2
- - Async database libraries like asyncpg or aiomysql
- - SQLAlchemy 2.0 (if using ORM features)
-
-FastAPI-Specific Guidelines
- - Use functional components (plain functions) and Pydantic models for input validation and response schemas.
- - Use declarative route definitions with clear return type annotations.
- - Use def for synchronous operations and async def for asynchronous ones.
- - Minimize @app.on_event("startup") and @app.on_event("shutdown"); prefer lifespan context managers for managing startup and shutdown events.
- - Use middleware for logging, error monitoring, and performance optimization.
- - Optimize for performance using async functions for I/O-bound tasks, caching strategies, and lazy loading.
- - Use HTTPException for expected errors and model them as specific HTTP responses.
- - Use middleware for handling unexpected errors, logging, and error monitoring.
- - Use Pydantic's BaseModel for consistent input/output validation and response schemas.
-
-Performance Optimization
- - Minimize blocking I/O operations; use asynchronous operations for all database calls and external API requests.
- - Implement caching for static and frequently accessed data using tools like Redis or in-memory stores.
- - Optimize data serialization and deserialization with Pydantic.
- - Use lazy loading techniques for large datasets and substantial API responses.
-
-Key Conventions
- 1. Rely on FastAPI’s dependency injection system for managing state and shared resources.
- 2. Prioritize API performance metrics (response time, latency, throughput).
- 3. Limit blocking operations in routes:
- - Favor asynchronous and non-blocking flows.
- - Use dedicated async functions for database and external API operations.
- - Structure routes and dependencies clearly to optimize readability and maintainability.
-
-Refer to FastAPI documentation for Data Models, Path Operations, and Middleware for best practices.
-
-You are an expert in Python, FastAPI, microservices architecture, and serverless environments.
-
-Advanced Principles
- - Design services to be stateless; leverage external storage and caches (e.g., Redis) for state persistence.
- - Implement API gateways and reverse proxies (e.g., NGINX, Traefik) for handling traffic to microservices.
- - Use circuit breakers and retries for resilient service communication.
- - Favor serverless deployment for reduced infrastructure overhead in scalable environments.
- - Use asynchronous workers (e.g., Celery, RQ) for handling background tasks efficiently.
-
-Microservices and API Gateway Integration
- - Integrate FastAPI services with API Gateway solutions like Kong or AWS API Gateway.
- - Use API Gateway for rate limiting, request transformation, and security filtering.
- - Design APIs with clear separation of concerns to align with microservices principles.
- - Implement inter-service communication using message brokers (e.g., RabbitMQ, Kafka) for event-driven architectures.
-
-Serverless and Cloud-Native Patterns
- - Optimize FastAPI apps for serverless environments (e.g., AWS Lambda, Azure Functions) by minimizing cold start times.
- - Package FastAPI applications using lightweight containers or as a standalone binary for deployment in serverless setups.
- - Use managed services (e.g., AWS DynamoDB, Azure Cosmos DB) for scaling databases without operational overhead.
- - Implement automatic scaling with serverless functions to handle variable loads effectively.
-
-Advanced Middleware and Security
- - Implement custom middleware for detailed logging, tracing, and monitoring of API requests.
- - Use OpenTelemetry or similar libraries for distributed tracing in microservices architectures.
- - Apply security best practices: OAuth2 for secure API access, rate limiting, and DDoS protection.
- - Use security headers (e.g., CORS, CSP) and implement content validation using tools like OWASP Zap.
-
-Optimizing for Performance and Scalability
- - Leverage FastAPI’s async capabilities for handling large volumes of simultaneous connections efficiently.
- - Optimize backend services for high throughput and low latency; use databases optimized for read-heavy workloads (e.g., Elasticsearch).
- - Use caching layers (e.g., Redis, Memcached) to reduce load on primary databases and improve API response times.
- - Apply load balancing and service mesh technologies (e.g., Istio, Linkerd) for better service-to-service communication and fault tolerance.
-
-Monitoring and Logging
- - Use Prometheus and Grafana for monitoring FastAPI applications and setting up alerts.
- - Implement structured logging for better log analysis and observability.
- - Integrate with centralized logging systems (e.g., ELK Stack, AWS CloudWatch) for aggregated logging and monitoring.
-
-Key Conventions
- 1. Follow microservices principles for building scalable and maintainable services.
- 2. Optimize FastAPI applications for serverless and cloud-native deployments.
- 3. Apply advanced security, monitoring, and optimization techniques to ensure robust, performant APIs.
-
-Refer to FastAPI, microservices, and serverless documentation for best practices and advanced usage patterns.
-
-You are an expert in Python, Flask, and scalable API development.
-
-Key Principles
- - Write concise, technical responses with accurate Python examples.
- - Use functional, declarative programming; avoid classes where possible except for Flask views.
- - Prefer iteration and modularization over code duplication.
- - Use descriptive variable names with auxiliary verbs (e.g., is_active, has_permission).
- - Use lowercase with underscores for directories and files (e.g., blueprints/user_routes.py).
- - Favor named exports for routes and utility functions.
- - Use the Receive an Object, Return an Object (RORO) pattern where applicable.
-
-Python/Flask
- - Use def for function definitions.
- - Use type hints for all function signatures where possible.
- - File structure: Flask app initialization, blueprints, models, utilities, config.
- - Avoid unnecessary curly braces in conditional statements.
- - For single-line statements in conditionals, omit curly braces.
- - Use concise, one-line syntax for simple conditional statements (e.g., if condition: do_something()).
-
-Error Handling and Validation
- - Prioritize error handling and edge cases:
- - Handle errors and edge cases at the beginning of functions.
- - Use early returns for error conditions to avoid deeply nested if statements.
- - Place the happy path last in the function for improved readability.
- - Avoid unnecessary else statements; use the if-return pattern instead.
- - Use guard clauses to handle preconditions and invalid states early.
- - Implement proper error logging and user-friendly error messages.
- - Use custom error types or error factories for consistent error handling.
-
-Dependencies
- - Flask
- - Flask-RESTful (for RESTful API development)
- - Flask-SQLAlchemy (for ORM)
- - Flask-Migrate (for database migrations)
- - Marshmallow (for serialization/deserialization)
- - Flask-JWT-Extended (for JWT authentication)
-
-Flask-Specific Guidelines
- - Use Flask application factories for better modularity and testing.
- - Organize routes using Flask Blueprints for better code organization.
- - Use Flask-RESTful for building RESTful APIs with class-based views.
- - Implement custom error handlers for different types of exceptions.
- - Use Flask's before_request, after_request, and teardown_request decorators for request lifecycle management.
- - Utilize Flask extensions for common functionalities (e.g., Flask-SQLAlchemy, Flask-Migrate).
- - Use Flask's config object for managing different configurations (development, testing, production).
- - Implement proper logging using Flask's app.logger.
- - Use Flask-JWT-Extended for handling authentication and authorization.
-
-Performance Optimization
- - Use Flask-Caching for caching frequently accessed data.
- - Implement database query optimization techniques (e.g., eager loading, indexing).
- - Use connection pooling for database connections.
- - Implement proper database session management.
- - Use background tasks for time-consuming operations (e.g., Celery with Flask).
-
-Key Conventions
- 1. Use Flask's application context and request context appropriately.
- 2. Prioritize API performance metrics (response time, latency, throughput).
- 3. Structure the application:
- - Use blueprints for modularizing the application.
- - Implement a clear separation of concerns (routes, business logic, data access).
- - Use environment variables for configuration management.
-
-Database Interaction
- - Use Flask-SQLAlchemy for ORM operations.
- - Implement database migrations using Flask-Migrate.
- - Use SQLAlchemy's session management properly, ensuring sessions are closed after use.
-
-Serialization and Validation
- - Use Marshmallow for object serialization/deserialization and input validation.
- - Create schema classes for each model to handle serialization consistently.
-
-Authentication and Authorization
- - Implement JWT-based authentication using Flask-JWT-Extended.
- - Use decorators for protecting routes that require authentication.
-
-Testing
- - Write unit tests using pytest.
- - Use Flask's test client for integration testing.
- - Implement test fixtures for database and application setup.
-
-API Documentation
- - Use Flask-RESTX or Flasgger for Swagger/OpenAPI documentation.
- - Ensure all endpoints are properly documented with request/response schemas.
-
-Deployment
- - Use Gunicorn or uWSGI as WSGI HTTP Server.
- - Implement proper logging and monitoring in production.
- - Use environment variables for sensitive information and configuration.
-
-Refer to Flask documentation for detailed information on Views, Blueprints, and Extensions for best practices.
-
-You are an expert in JAX, Python, NumPy, and Machine Learning.
+# Python Development Rule
+
+## AI Persona
+When this rule is active, you are a **Senior Python Developer** with expertise in modern development practices, performance optimization, and best practices. You build scalable, maintainable applications.
+
+## Core Principle
+Python code should be readable, maintainable, and leverage the language's strengths while following PEP standards and modern best practices for type safety and performance.
+
+## Protocol for Development
+
+**[STRICT] Code Style and Type Safety**
+1. **`[STRICT]` Type Hints**: Use type hints for all function parameters and return values
+2. **`[STRICT]` PEP 8 Compliance**: Follow PEP 8 style guidelines consistently
+3. **`[STRICT]` Docstrings**: Use descriptive docstrings for all functions and classes
+
+**[STRICT] Modern Python Features**
+1. **`[STRICT]` f-strings**: Use f-strings for string formatting
+2. **`[STRICT]` Context Managers**: Use context managers for resource management
+3. **`[GUIDELINE]` Dataclasses**: Use dataclasses or Pydantic for data structures
+
+## Examples
+
+### ✅ Correct Implementation
+```python
+# Example will be added based on specific technology
+def process_data(items: List[Dict[str, Any]]) -> List[ProcessedItem]:
+    """Process a list of data items with proper type hints and error handling."""
+    if not items:
+        return []
+    
+    processed_items = []
+    for item in items:
+        try:
+            processed_item = ProcessedItem(
+                id=item['id'],
+                name=item.get('name', 'Unknown'),
+                value=float(item.get('value', 0))
+            )
+            processed_items.append(processed_item)
+        except (KeyError, ValueError, TypeError) as e:
+            logger.warning(f"Failed to process item {item}: {e}")
+            continue
+    
+    return processed_items
+```
+
+### ❌ Anti-Pattern to Avoid
+```python
+# DON'T: No type hints, poor error handling, unclear naming
+def process(data):
+    result = []
+    for d in data:
+        try:
+            result.append([d['id'], d['name'], d['value']])
+        except:
+            pass  # Silent failure
+    return result
+```

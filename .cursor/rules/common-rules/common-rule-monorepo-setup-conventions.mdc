@@ -2,6 +2,8 @@
 description: "TAGS: [monorepo,conventions,structure] | TRIGGERS: monorepo,structure,layout,conventions | SCOPE: common-rules | DESCRIPTION: Canonical monorepo layout and placement conventions for rule validation and structure checks."
 alwaysApply: false
 ---
+
+
 # Rule: Monorepo Setup Conventions
 
 ## AI Persona

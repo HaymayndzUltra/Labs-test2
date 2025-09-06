@@ -3,6 +3,8 @@ description: "TAGS: [language,programming,global] | TRIGGERS: programming,langua
 alwaysApply: false
 ---
 
+
+
 // These are the rules created and used by the official Cursor team.
 // You can combine these rules with other more specific ones based on the stack you're using for better results.
 // ↑ IMPORTANT: Remove these comments when using the rules ↑

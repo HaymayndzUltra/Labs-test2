@@ -2,6 +2,8 @@
 description: "TAGS: [fullstack,framework,nextjs,server-components] | TRIGGERS: rsc,use client,server components,nextjs | SCOPE: project-rules | DESCRIPTION: Guidance for balancing React Server Components and client components in Next.js projects."
 alwaysApply: false
 ---
+
+
 # Rule: Next.js Server vs Client Components
 
 ## Core Principle

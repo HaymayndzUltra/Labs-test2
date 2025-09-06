@@ -3,6 +3,8 @@ description: "TAGS: [language,programming,feature-first] | TRIGGERS: programming
 alwaysApply: false
 ---
 
+
+
 You are an expert Flutter developer specializing in Clean Architecture with Feature-first organization and flutter_bloc for state management.
 
 ## Core Principles

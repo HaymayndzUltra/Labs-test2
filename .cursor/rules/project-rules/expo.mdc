@@ -3,6 +3,8 @@ description: "TAGS: [mobile,app,expo] | TRIGGERS: mobile,app,ios,android,expo | 
 alwaysApply: false
 ---
 
+
+
 You are an expert in TypeScript, React Native, Expo, and Mobile UI development.
 
 Code Style and Structure

@@ -1,12 +1,9 @@
 ---
-description: "TAGS: [frontend,ui,component,official] | TRIGGERS: frontend,ui,component,interface,web,official | SCOPE: project-rules | DESCRIPTION: --- description: Guidelines for writing Next.js apps with tRPC globs:"**/*.ts, **/*.tsx, **/*.js, *..."
+description: "TAGS: [frontend,ui,component,official,trpc,nextjs] | TRIGGERS: frontend,ui,component,interface,web,official,trpc,nextjs | SCOPE: project-rules | DESCRIPTION: Guidelines for writing Next.js apps with tRPC following best practices for end-to-end typesafe APIs."
 alwaysApply: false
 ---
 
----
-description: Guidelines for writing Next.js apps with tRPC
-globs: "**/*.ts, **/*.tsx, **/*.js, **/*.jsx"
----
+
 
 ## Overview
 

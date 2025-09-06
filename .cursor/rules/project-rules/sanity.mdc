@@ -1,7 +1,9 @@
 ---
-description: "TAGS: [language,programming,sanity] | TRIGGERS: programming,language,syntax,sanity | SCOPE: project-rules | DESCRIPTION: # Sanity Development Guidelines  ## Sanity Schema Rules  When creating sanity schema make sure to in..."
+description: "TAGS: [language,programming,sanity] | TRIGGERS: programming,language,syntax,sanity | SCOPE: project-rules | DESCRIPTION: Sanity Development Guidelines   Sanity Schema Rules  When creating sanity schema make sure to in."
 alwaysApply: false
 ---
+
+
 
 # Sanity Development Guidelines
 

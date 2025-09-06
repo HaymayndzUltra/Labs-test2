@@ -1,7 +1,9 @@
 ---
-description: "TAGS: [language,programming,axi] | TRIGGERS: programming,language,syntax,axi | SCOPE: project-rules | DESCRIPTION: ### Best Practices for AXI Protocols  - **AXI Protocol Compliance**: Ensure that your design adheres..."
+description: "TAGS: [language,programming,axi] | TRIGGERS: programming,language,syntax,axi | SCOPE: project-rules | DESCRIPTION: Best Practices for AXI Protocols  - **AXI Protocol Compliance**: Ensure that your design adheres."
 alwaysApply: false
 ---
+
+
 
 ### Best Practices for AXI Protocols
  - **AXI Protocol Compliance**: Ensure that your design adheres to the AXI protocol specifications, including proper management of read/write channels, ready/valid handshakes, and address arbitration.

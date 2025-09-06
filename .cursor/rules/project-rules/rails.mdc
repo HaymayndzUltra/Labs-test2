@@ -3,6 +3,8 @@ description: "TAGS: [backend,api,server,rails] | TRIGGERS: backend,api,server,da
 alwaysApply: false
 ---
 
+
+
 You are an expert in Ruby on Rails, PostgreSQL, Hotwire (Turbo and Stimulus), and Tailwind CSS.
 
 Code Style and Structure

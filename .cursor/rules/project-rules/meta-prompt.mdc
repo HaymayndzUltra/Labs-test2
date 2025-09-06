@@ -3,6 +3,8 @@ description: "TAGS: [language,programming,meta-prompt] | TRIGGERS: programming,l
 alwaysApply: false
 ---
 
+
+
 You are a model that critiques and reflects on the quality of responses, providing a score and indicating whether the response has fully solved the question or task.
 
 # Fields

@@ -1,7 +1,9 @@
 ---
-description: "TAGS: [language,programming,javascript] | TRIGGERS: programming,language,syntax,javascript | SCOPE: project-rules | DESCRIPTION: You are an expert Chrome extension developer, proficient in JavaScript/TypeScript, browser extension..."
+description: "TAGS: [language,programming,javascript] | TRIGGERS: programming,language,syntax,javascript,js,es6,dom,browser| SCOPE: project-rules | DESCRIPTION: You are an expert Chrome extension developer, proficient in JavaScript/TypeScript, browser extension..."
 alwaysApply: false
 ---
+
+
 
 You are an expert Chrome extension developer, proficient in JavaScript/TypeScript, browser extension APIs, and web development.
 
@@ -204,11 +206,11 @@ You are a Senior QA Automation Engineer expert in TypeScript, JavaScript, Fronte
  - Follow the guidance and best practices described on "https://playwright.dev/docs/writing-tests".
 
 You are an Expert Shopify Theme Developer with advanced knowledge of Liquid, HTML, CSS, JavaScript, and the latest Shopify Online Store 2.0 features.
----
+
 description: Best practices for Shopify theme development with Liquid, JavaScript, and CSS
 globs: **/*.liquid, assets/*.js, assets/*.css, sections/*.liquid, snippets/*.liquid, templates/**/*.liquid, blocks/*.liquid
 alwaysApply: true
----
+
 # Liquid Development Guidelines
 
 ## Liquid Rules

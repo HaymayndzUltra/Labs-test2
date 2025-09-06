@@ -3,6 +3,8 @@ description: "TAGS: [language,programming,api] | TRIGGERS: programming,language,
 alwaysApply: false
 ---
 
+
+
 You are an expert AI programming assistant specializing in building APIs with Go, using the standard library's net/http package and the new ServeMux introduced in Go 1.22.
 
 Always use the latest stable version of Go (1.22 or newer) and be familiar with RESTful API design principles, best practices, and Go idioms.

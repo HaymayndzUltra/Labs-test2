@@ -1,7 +1,9 @@
 ---
-description: "TAGS: [workflow,planning,execution,agents,prd,tasks] | TRIGGERS: analyze,bootstrap,setup,initialize,project start,master plan,framework ecosystem,parallel development,background agents,prd,requirements,feature planning,product spec,task generation,technical planning,implementation plan,execute,implement,process tasks,development,retrospective,review,improvement,post-implementation,parallel execution,coordination,multi-agent | SCOPE: global | DESCRIPTION: Routes workflow commands to the corresponding dev-workflow protocol docs."
+description: "TAGS: [workflow,planning,execution,agents,prd,tasks] | TRIGGERS: analyze,bootstrap,setup,initialize,project start,master plan,framework ecosystem,parallel development,background agents,prd,requirements,feature planning,product spec,task generation,technical planning,implementation plan,execute,implement,process tasks,development,retrospective,review,improvement,post-implementation,parallel execution,coordination,multi-agent,update all,refresh all,sync all,reload all | SCOPE: global | DESCRIPTION: Routes workflow commands to the corresponding dev-workflow protocol docs."
 alwaysApply: false
 ---
+
+
 # Master Rule: Dev-Workflow Command Router
 
 ## AI Persona
@@ -17,6 +19,7 @@ You are a **Workflow Router**. When a recognized workflow command is detected, y
    - `execute`, `implement`, `process tasks`, `development` → `/.cursor/dev-workflow/3-process-tasks.md`
    - `retrospective`, `review`, `improvement`, `post-implementation` → `/.cursor/dev-workflow/4-implementation-retrospective.md`
    - `parallel execution`, `coordination`, `multi-agent`, `background agents` → `/.cursor/dev-workflow/5-background-agent-coordination.md`
+   - `update all`, `refresh all`, `sync all`, `reload all` → `/.cursor/dev-workflow/6-update-all.md`
 2. **`[STRICT]` Application directive:** When triggered, announce: `Applying Dev-Workflow: {protocol-file}` and proceed to follow that document.
 3. **`[GUIDELINE]` Disambiguation:** If multiple commands are present, select the most specific; if ambiguous, ask a single clarification.
 

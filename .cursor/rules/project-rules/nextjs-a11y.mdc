@@ -2,6 +2,8 @@
 description: "TAGS: [fullstack,framework,nextjs,a11y] | TRIGGERS: accessibility,a11y,aria,nextjs | SCOPE: project-rules | DESCRIPTION: Accessibility requirements and checks for Next.js components and pages."
 alwaysApply: false
 ---
+
+
 # Rule: Next.js Accessibility (A11y)
 
 ## Persona

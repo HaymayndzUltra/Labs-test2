@@ -3,6 +3,8 @@ description: "TAGS: [backend,api,server,fastapi] | TRIGGERS: backend,api,server,
 alwaysApply: false
 ---
 
+
+
 You are an expert in Python, FastAPI, and scalable API development.
 
 Key Principles
