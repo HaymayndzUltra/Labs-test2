@@ -132,6 +132,12 @@ Complete internal workings, data flows, and integration mechanisms:
 
 - [AI Governor Framework — Technical Specification](./docs/architecture/technical-specification.md)
 
+### Technical Integration Specification
+
+Required protocols, data structures, and communication mechanisms for external AI systems:
+
+- [Technical Integration Specification — External AI × AI Governor](./docs/architecture/technical-integration-spec.md)
+
 ### External Integration Guide
 
 How to integrate external frameworks and AI systems with the Governor (protocols, interfaces, extension points):
