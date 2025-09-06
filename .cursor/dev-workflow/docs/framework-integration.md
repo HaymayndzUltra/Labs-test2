@@ -55,7 +55,7 @@ Define extension points, contracts, and protocols to onboard new frameworks (e.g
   "scope": "framework:react",
   "priority": 80,
   "conditions": ["framework:react", "contracts-first"],
-  "actions": {"require": ["tokens_v1", "interaction_specs", "openapi_v1"]}
+  "actions": ["require:tokens_v1", "require:interaction_specs", "require:openapi_v1"]
 }
 ```
 
@@ -127,7 +127,7 @@ Define extension points, contracts, and protocols to onboard new frameworks (e.g
   "scope": "framework:react",
   "priority": 80,
   "conditions": ["framework:react"],
-  "actions": {"require": ["tokens_v1", "interaction_specs"]}
+  "actions": ["require:tokens_v1", "require:interaction_specs"]
 }
 ```
 - Expected: Router chooses `fw-react-plan-first` when context includes `framework:react`; CI requires tokens and interactions present before merge.

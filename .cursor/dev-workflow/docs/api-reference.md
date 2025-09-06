@@ -158,7 +158,7 @@ Select an action based on policies and governance precedence; emit auditable rou
 - `name` (string)
 - `scope` (string)
 - `priority` (number)
-- `actions` (object|array)
+- `actions` (array<string>) — controlled vocabulary, e.g., `require:tokens_v1`
 
 ### Optional Keys
 - `conditions` (array<string>) — matched as substrings against context values
@@ -312,8 +312,8 @@ Select an action based on policies and governance precedence; emit auditable rou
   "name": "plan-first-ui",
   "scope": "ui",
   "priority": 90,
-  "conditions": ["ui", "design-tokens"],
-  "actions": {"require": ["tokens_v1", "interaction_specs"]},
+  "conditions": ["framework:react", "contracts-first"],
+  "actions": ["require:tokens_v1", "require:interaction_specs"],
   "waiver_allowed": false
 }
 ```

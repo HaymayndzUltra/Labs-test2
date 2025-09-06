@@ -49,7 +49,7 @@ Policy JSON (required keys):
   "name": "<unique-name>",
   "scope": "<scope-string>",
   "priority": 0,
-  "actions": {"require": ["tokens_v1"]},
+  "actions": ["require:tokens_v1"],
   "conditions": ["framework:react"],
   "waiver_allowed": false
 }
@@ -103,7 +103,7 @@ Conventions:
   "scope": "string",
   "priority": 10,
   "conditions": ["key:value"],
-  "actions": {"require": ["artifact_a", "artifact_b"]},
+  "actions": ["require:artifact_a", "require:artifact_b"],
   "waiver_allowed": true
 }
 ```
