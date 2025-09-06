@@ -1,0 +1,16 @@
+---
+description: "TAGS: [global,workflow,documentation] | TRIGGERS: create rule,rule creation | SCOPE: global | DESCRIPTION: Protocol for creating and maintaining governance rules."
+alwaysApply: false
+---
+
+# Rule 0: How to Create Effective Rules
+
+Purpose: Defines the protocol for creating and maintaining the governance system itself. See `RULES_DOCUMENTATION.md` for extended guidance.
+
+## 4 Pillars
+1. Structure & Discoverability
+2. Personality & Intent
+3. Precision & Clarity
+4. Exemplarity & Contrast
+
+Final Review Checklist: Structure completeness, metadata integrity, personality definition, protocol precision, exemplarity coverage, overall clarity.
