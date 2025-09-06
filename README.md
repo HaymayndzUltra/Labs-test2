@@ -138,6 +138,12 @@ How to integrate external frameworks and AI systems with the Governor (protocols
 
 - [External Frameworks Integration Guide](./docs/architecture/external-integration-guide.md)
 
+### System Documentation
+
+Comprehensive overview of architecture, components, workflows, and integration mechanisms:
+
+- [AI Governor Framework — System Documentation](./docs/architecture/system-documentation.md)
+
 ### AI Integration Architecture
 
 For details on how to extend or integrate this framework with external AI systems (LLM providers, embeddings, vector stores, tool APIs), see:
