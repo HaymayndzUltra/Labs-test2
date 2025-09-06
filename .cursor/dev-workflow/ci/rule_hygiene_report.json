@@ -1356,6 +1356,16 @@
       "suggestions": []
     },
     {
+      "path": "/workspace/.cursor/rules/master-rules/8-auditor-validator-protocol.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/master-rules/F8-security-and-compliance-overlay.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
       "path": "/workspace/.cursor/rules/master-rules/1-master-rule-context-discovery.mdc",
       "errors": [],
       "suggestions": []
@@ -1379,10 +1389,15 @@
       "path": "/workspace/.cursor/rules/master-rules/5-master-rule-documentation-and-context-guidelines.mdc",
       "errors": [],
       "suggestions": []
+    },
+    {
+      "path": "/workspace/.cursor/rules/master-rules/7-dev-workflow-command-router.mdc",
+      "errors": [],
+      "suggestions": []
     }
   ],
   "summary": {
-    "total_rules_checked": 276,
+    "total_rules_checked": 279,
     "files_with_errors": 0,
     "ui_artifacts_missing": []
   },
