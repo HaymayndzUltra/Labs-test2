@@ -1,0 +1,117 @@
+---
+description: "TAGS: [frontend,ui,component,official] | TRIGGERS: frontend,ui,component,interface,web,official,official,official | SCOPE: frontend | DESCRIPTION: --- description: Guidelines for writing Next.js apps with tRPC globs: "**/*.ts, **/*.tsx, **/*.js, *..."
+alwaysApply: false
+---
+
+### Attach an Imperative schedule
+
+Create schedules explicitly for tasks using the dashboard's "New schedule" button or the SDK.
+
+#### Benefits
+- Dynamic creation (e.g., one schedule per user)
+- Manage without code deployment:
+ - Activate/disable
+ - Edit
+ - Delete
+
+#### Implementation
+1. Define a task using `⁠schedules.task()`
+2. Attach one or more schedules via:
+ - Dashboard
+ - SDK
+
+#### Attach schedules with the SDK like this
+
+```typescript
+const createdSchedule = await schedules.create({
+ //The id of the scheduled task you want to attach to.
+ task: firstScheduledTask.id,
+ //The schedule in cron format.
+ cron: "0 0 * * *",
+ //this is required, it prevents you from creating duplicate schedules. It will update the schedule if it already exists.
+ deduplicationKey: "my-deduplication-key",
+});
+```
+
+## Correct Schema task implementations
+
+Schema tasks validate payloads against a schema before execution:
+
+```typescript
+import { schemaTask } from "@trigger.dev/sdk/v3";
+import { z } from "zod";
+
+const myTask = schemaTask({
+ id: "my-task",
+ schema: z.object({
+ name: z.string(),
+ age: z.number(),
+ }),
+ run: async (payload) => {
+ // Payload is typed and validated
+ console.log(payload.name, payload.age);
+ },
+});
+```
+
+## Correct implementations for triggering a task from your backend
+
+When you trigger a task from your backend code, you need to set the `TRIGGER_SECRET_KEY` environment variable. You can find the value on the API keys page in the Trigger.dev dashboard.
+
+### tasks.trigger()
+
+Triggers a single run of a task with specified payload and options without importing the task. Use type-only imports for full type checking.
+
+```typescript
+import { tasks } from "@trigger.dev/sdk/v3";
+import type { emailSequence } from "~/trigger/emails";
+
+export async function POST(request: Request) {
+ const data = await request.json();
+ const handle = await tasks.trigger<typeof emailSequence>("email-sequence", {
+ to: data.email,
+ name: data.name,
+ });
+ return Response.json(handle);
+}
+```
+
+### tasks.batchTrigger()
+
+Triggers multiple runs of a single task with different payloads without importing the task.
+
+```typescript
+import { tasks } from "@trigger.dev/sdk/v3";
+import type { emailSequence } from "~/trigger/emails";
+
+export async function POST(request: Request) {
+ const data = await request.json();
+ const batchHandle = await tasks.batchTrigger<typeof emailSequence>(
+ "email-sequence",
+ data.users.map((u) => ({ payload: { to: u.email, name: u.name } }))
+ );
+ return Response.json(batchHandle);
+}
+```
+
+### tasks.triggerAndPoll()
+
+Triggers a task and polls until completion. Not recommended for web requests as it blocks until the run completes. Consider using Realtime docs for better alternatives.
+
+```typescript
+import { tasks } from "@trigger.dev/sdk/v3";
+import type { emailSequence } from "~/trigger/emails";
+
+export async function POST(request: Request) {
+ const data = await request.json();
+ const result = await tasks.triggerAndPoll<typeof emailSequence>(
+ "email-sequence",
+ {
+ to: data.email,
+ name: data.name,
+ },
+ { pollIntervalMs: 5000 }
+ );
+ return Response.json(result);
+}
+```

@@ -178,9 +178,7 @@ tests/{unit,integration,contract,e2e,load}/
 
 **Checklist.**
 
--
-
----
+- ***
 
 ## F5 — Data/ML (Optional)
 

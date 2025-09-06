@@ -1,0 +1,116 @@
+---
+description: "TAGS: [frontend,ui,component,official] | TRIGGERS: frontend,ui,component,interface,web,official,official,official | SCOPE: frontend | DESCRIPTION: --- description: Guidelines for writing Next.js apps with tRPC globs: "**/*.ts, **/*.tsx, **/*.js, *..."
+alwaysApply: false
+---
+
+## Realtime hooks
+
+### Installation
+
+```bash
+npm add @trigger.dev/react-hooks
+```
+
+### Authentication
+
+All hooks require a Public Access Token. You can provide it directly to each hook:
+
+```typescriptx
+import { useRealtimeRun } from "@trigger.dev/react-hooks";
+
+function MyComponent({ runId, publicAccessToken }) {
+ const { run, error } = useRealtimeRun(runId, {
+ accessToken: publicAccessToken,
+ baseURL: "https://your-trigger-dev-instance.com", // Optional for self-hosting
+ });
+}
+```
+
+Or use the `TriggerAuthContext` provider:
+
+```typescriptx
+import { TriggerAuthContext } from "@trigger.dev/react-hooks";
+
+function SetupTrigger({ publicAccessToken }) {
+ return (
+ <TriggerAuthContext.Provider value={{ accessToken: publicAccessToken }}>
+ <MyComponent />
+ </TriggerAuthContext.Provider>
+ );
+}
+```
+
+For Next.js App Router, wrap the provider in a client component:
+
+```typescriptx
+// components/TriggerProvider.tsx
+"use client";
+
+import { TriggerAuthContext } from "@trigger.dev/react-hooks";
+
+export function TriggerProvider({ accessToken, children }) {
+ return (
+ <TriggerAuthContext.Provider value={{ accessToken }}>
+ {children}
+ </TriggerAuthContext.Provider>
+ );
+}
+```
+
+### Passing tokens to the frontend
+
+Several approaches for Next.js App Router:
+
+1. **Using cookies**:
+```typescriptx
+// Server action
+export async function startRun() {
+ const handle = await tasks.trigger<typeof exampleTask>("example", { foo: "bar" });
+ cookies().set("publicAccessToken", handle.publicAccessToken);
+ redirect(`/runs/${handle.id}`);
+}
+
+// Page component
+export default function RunPage({ params }) {
+ const publicAccessToken = cookies().get("publicAccessToken");
+ return (
+ <TriggerProvider accessToken={publicAccessToken}>
+ <RunDetails id={params.id} />
+ </TriggerProvider>
+ );
+}
+```
+
+2. **Using query parameters**:
+```typescriptx
+// Server action
+export async function startRun() {
+ const handle = await tasks.trigger<typeof exampleTask>("example", { foo: "bar" });
+ redirect(`/runs/${handle.id}?publicAccessToken=${handle.publicAccessToken}`);
+}
+```
+
+3. **Server-side token generation**:
+```typescriptx
+// Page component
+export default async function RunPage({ params }) {
+ const publicAccessToken = await generatePublicAccessToken(params.id);
+ return (
+ <TriggerProvider accessToken={publicAccessToken}>
+ <RunDetails id={params.id} />
+ </TriggerProvider>
+ );
+}
+
+// Token generation function
+export async function generatePublicAccessToken(runId: string) {
+ return auth.createPublicToken({
+ scopes: {
+ read: {
+ runs: [runId],
+ },
+ },
+ expirationTime: "1h",
+ });
+}
+```

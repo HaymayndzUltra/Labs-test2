@@ -1,0 +1,127 @@
+---
+description: "TAGS: [frontend,ui,component,official] | TRIGGERS: frontend,ui,component,interface,web,official,official,official | SCOPE: frontend | DESCRIPTION: --- description: Guidelines for writing Next.js apps with tRPC globs: "**/*.ts, **/*.tsx, **/*.js, *..."
+alwaysApply: false
+---
+
+### Type safety
+
+Metadata accepts any JSON-serializable object. For type safety, consider wrapping with Zod:
+
+```typescript
+import { z } from "zod";
+
+const Metadata = z.object({
+ user: z.object({
+ name: z.string(),
+ id: z.string(),
+ }),
+ date: z.coerce.date(),
+});
+
+function getMetadata() {
+ return Metadata.parse(metadata.current());
+}
+```
+
+### Important notes
+
+- Metadata methods only work inside run functions or task lifecycle hooks
+- Metadata is NOT automatically propagated to child tasks
+- Maximum size is 256KB (configurable if self-hosting)
+- Objects like Dates are serialized to strings and must be deserialized when retrieved
+
+## Correct Realtime implementation
+
+### Overview
+
+Trigger.dev Realtime enables subscribing to runs for real-time updates on run status, useful for monitoring tasks, updating UIs, and building realtime dashboards. It's built on Electric SQL, a PostgreSQL syncing engine.
+
+### Basic usage
+
+Subscribe to a run after triggering a task:
+
+```typescript
+import { runs, tasks } from "@trigger.dev/sdk/v3";
+
+async function myBackend() {
+ const handle = await tasks.trigger("my-task", { some: "data" });
+
+for await (const run of runs.subscribeToRun(handle.id)) {
+ console.log(run); // Logs the run every time it changes
+ }
+}
+```
+
+### Subscription methods
+
+- **subscribeToRun**: Subscribe to changes for a specific run
+- **subscribeToRunsWithTag**: Subscribe to changes for all runs with a specific tag
+- **subscribeToBatch**: Subscribe to changes for all runs in a batch
+
+### Type safety
+
+You can infer types of run's payload and output by passing the task type:
+
+```typescript
+import { runs } from "@trigger.dev/sdk/v3";
+import type { myTask } from "./trigger/my-task";
+
+for await (const run of runs.subscribeToRun<typeof myTask>(handle.id)) {
+ console.log(run.payload.some); // Type-safe access to payload
+
+if (run.output) {
+ console.log(run.output.result); // Type-safe access to output
+ }
+}
+```
+
+### Realtime Streams
+
+Stream data in realtime from inside your tasks using the metadata system:
+
+```typescript
+import { task, metadata } from "@trigger.dev/sdk/v3";
+import OpenAI from "openai";
+
+export type STREAMS = {
+ openai: OpenAI.ChatCompletionChunk;
+};
+
+export const myTask = task({
+ id: "my-task",
+ run: async (payload: { prompt: string }) => {
+ const completion = await openai.chat.completions.create({
+ messages: [{ role: "user", content: payload.prompt }],
+ model: "gpt-3.5-turbo",
+ stream: true,
+ });
+
+// Register the stream with the key "openai"
+ const stream = await metadata.stream("openai", completion);
+
+let text = "";
+ for await (const chunk of stream) {
+ text += chunk.choices.map((choice) => choice.delta?.content).join("");
+ }
+
+return { text };
+ },
+});
+```
+
+Subscribe to streams using `withStreams`:
+
+```typescript
+for await (const part of runs.subscribeToRun<typeof myTask>(runId).withStreams<STREAMS>()) {
+ switch (part.type) {
+ case "run": {
+ console.log("Received run", part.run);
+ break;
+ }
+ case "openai": {
+ console.log("Received OpenAI chunk", part.chunk);
+ break;
+ }
+ }
+}
+```

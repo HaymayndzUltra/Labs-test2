@@ -1,0 +1,105 @@
+---
+description: "TAGS: [frontend,ui,component,popular] | TRIGGERS: frontend,ui,component,interface,web,popular,popular,popular | SCOPE: frontend | DESCRIPTION: You are a Senior Front-End Developer and an Expert in ReactJS, NextJS, JavaScript, TypeScript, HTML,..."
+alwaysApply: false
+---
+
+### Valid Tags
+* **Theme**
+ * `content_for`
+ * `layout`
+ * `include`
+ * `render`
+ * `javascript`
+ * `section`
+ * `stylesheet`
+ * `sections`
+* **HTML**
+ * `form`
+ * `style`
+* **Variable**
+ * `assign`
+ * `capture`
+ * `decrement`
+ * `increment`
+* **Iteration**
+ * `break`
+ * `continue`
+ * `cycle`
+ * `for`
+ * `tablerow`
+ * `paginate`
+ * `else`
+* **Conditional**
+ * `case`
+ * `if`
+ * `unless`
+ * `else`
+* **Syntax**
+ * `comment`
+ * `echo`
+ * `raw`
+ * `liquid`
+
+### Valid Objects
+* `collections`
+* `pages`
+* `all_products`
+* `articles`
+* `blogs`
+* `cart`
+* `closest`
+* `content_for_header`
+* `customer`
+* `images`
+* `linklists`
+* `localization`
+* `metaobjects`
+* `request`
+* `routes`
+* `shop`
+* `theme`
+* `settings`
+* `template`
+* `additional_checkout_buttons`
+* `all_country_option_tags`
+* `canonical_url`
+* `content_for_additional_checkout_buttons`
+* `content_for_index`
+* `content_for_layout`
+* `country_option_tags`
+* `current_page`
+* `handle`
+* `page_description`
+* `page_image`
+* `page_title`
+* `powered_by_link`
+* `scripts`
+
+### Validation Rules
+* **Syntax**
+ * Use `{% liquid %}` for multiline code.
+ * Use `{% # comments %}` for inline comments.
+ * Never invent new filters, tags, or objects.
+ * Follow proper tag closing order.
+ * Use proper object dot notation.
+ * Respect object scope and availability.
+* **Theme Structure**
+ * Place files in appropriate directories.
+ * Follow naming conventions.
+ * Respect template hierarchy.
+ * Maintain proper section/block structure.
+ * Use appropriate schema settings.
+
+## Theme Architecture
+
+### Folder Structure
+* `sections`: Liquid files that define customizable sections of a page. They include blocks and settings defined via a schema, allowing merchants to modify them in the theme editor.
+* `blocks`: Configurable elements within sections that can be added, removed, or reordered. They are defined with a schema tag for merchant customization in the theme editor.
+* `layout`: Defines the structure for repeated content such as headers and footers, wrapping other template files. It's the frame that holds the page together, but it's not the content.
+* `snippets`: Reusable code fragments included in templates, sections, and layouts via the render tag. Ideal for logic that needs to be reused but not directly edited in the theme editor.
+* `config`: Holds settings data and schema for theme customization options like typography and colors, accessible through the Admin theme editor.
+* `assets`: Contains static files such as CSS, JavaScript, and images. These assets can be referenced in Liquid files using the `asset_url` filter.
+* `locales`: Stores translation files for localizing theme editor and storefront content.
+* `templates`: JSON files that specify which sections appear on each page type (e.g., product, collection, blog). They are wrapped by layout files for consistent header/footer content. Templates can be Liquid files as well, but JSON is preferred as a good practice.
+* `templates/customers`: Templates for customer-related pages such as login and account overview.
+* `templates/metaobject`: Templates for rendering custom content types defined as metaobjects.

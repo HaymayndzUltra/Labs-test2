@@ -1,0 +1,124 @@
+---
+description: "TAGS: [frontend,ui,component,official] | TRIGGERS: frontend,ui,component,interface,web,official,official,official | SCOPE: frontend | DESCRIPTION: --- description: Guidelines for writing Next.js apps with tRPC globs: "**/*.ts, **/*.tsx, **/*.js, *..."
+alwaysApply: false
+---
+
+### Hook types
+
+#### SWR hooks
+
+Data fetching hooks that use SWR for caching:
+
+```typescriptx
+"use client";
+import { useRun } from "@trigger.dev/react-hooks";
+import type { myTask } from "@/trigger/myTask";
+
+function MyComponent({ runId }) {
+ const { run, error, isLoading } = useRun<typeof myTask>(runId);
+
+if (isLoading) return <div>Loading...</div>;
+ if (error) return <div>Error: {error.message}</div>;
+
+return <div>Run: {run.id}</div>;
+}
+```
+
+Common options:
+- `revalidateOnFocus`: Revalidate when window regains focus
+- `revalidateOnReconnect`: Revalidate when network reconnects
+- `refreshInterval`: Polling interval in milliseconds
+
+#### Realtime hooks
+
+Hooks that use Trigger.dev's realtime API for live updates (recommended over polling).
+
+For most use cases, Realtime hooks are preferred over SWR hooks with polling due to better performance and lower API usage.
+
+### Authentication
+
+For client-side usage, generate a public access token with appropriate scopes:
+
+```typescript
+import { auth } from "@trigger.dev/sdk/v3";
+
+const publicToken = await auth.createPublicToken({
+ scopes: {
+ read: {
+ runs: ["run_1234"],
+ },
+ },
+});
+```
+
+## Correct Idempotency implementation
+
+Idempotency ensures that an operation produces the same result when called multiple times. Trigger.dev supports idempotency at the task level through the `idempotencyKey` option.
+
+### Using idempotencyKey
+
+Provide an `idempotencyKey` when triggering a task to ensure it runs only once with that key:
+
+```typescript
+import { idempotencyKeys, task } from "@trigger.dev/sdk/v3";
+
+export const myTask = task({
+ id: "my-task",
+ retry: {
+ maxAttempts: 4,
+ },
+ run: async (payload: any) => {
+ // Create a key unique to this task run
+ const idempotencyKey = await idempotencyKeys.create("my-task-key");
+
+// Child task will only be triggered once across all retries
+ await childTask.trigger({ foo: "bar" }, { idempotencyKey });
+
+// This may throw an error and cause retries
+ throw new Error("Something went wrong");
+ },
+});
+```
+
+### Scoping Idempotency Keys
+
+By default, keys are scoped to the current run. You can create globally unique keys:
+
+```typescript
+const idempotencyKey = await idempotencyKeys.create("my-task-key", { scope: "global" });
+```
+
+When triggering from backend code:
+
+```typescript
+const idempotencyKey = await idempotencyKeys.create([myUser.id, "my-task"]);
+await tasks.trigger("my-task", { some: "data" }, { idempotencyKey });
+```
+
+You can also pass a string directly:
+
+```typescript
+await myTask.trigger({ some: "data" }, { idempotencyKey: myUser.id });
+```
+
+### Time-To-Live (TTL)
+
+The `idempotencyKeyTTL` option defines a time window during which duplicate triggers return the original run:
+
+```typescript
+await childTask.trigger(
+ { foo: "bar" }, 
+ { idempotencyKey, idempotencyKeyTTL: "60s" }
+);
+
+await wait.for({ seconds: 61 });
+
+// Key expired, will trigger a new run
+await childTask.trigger({ foo: "bar" }, { idempotencyKey });
+```
+
+Supported time units:
+- `s` for seconds (e.g., `60s`)
+- `m` for minutes (e.g., `5m`)
+- `h` for hours (e.g., `2h`)
+- `d` for days (e.g., `3d`)

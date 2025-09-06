@@ -1,0 +1,120 @@
+---
+description: "TAGS: [frontend,ui,component,popular] | TRIGGERS: frontend,ui,component,interface,web,popular,popular,popular | SCOPE: frontend | DESCRIPTION: You are a Senior Front-End Developer and an Expert in ReactJS, NextJS, JavaScript, TypeScript, HTML,..."
+alwaysApply: false
+---
+
+================================================
+FILE: other_resources/guide_to_setting_up_and_using_ViewComfy_API.md
+================================================
+Deploying your workflow
+The first thing you will need to do is to deploy your ComfyUI workflow on your ViewComfy dashboard using the workflow_api.json file.
+
+Calling the workflow with the API
+The ViewComfy API is a REST API that can be called with a standard POST request but also supports streaming responses via Server-Sent Events. This second option allows for real-time tracking of the ComfyUI logs.
+
+Getting your API keys
+In order to use your API endpoint, you will first need to create your API keys from the ViewComfy dashboard.
+
+2. Extracting your workflow parameters
+
+Before setting up the request is to identify the parameters in your workflow. This is done by using ViewComfy_API/Python/workflow_parameters_maker.py from the example API code to flatten your workflow_api.json.
+
+The flattened json file should look like this:
+
+{
+"_3-node-class_type-info": "KSampler",
+"3-inputs-cfg": 6,
+
+… 
+
+"_6-node-class_type-info": "CLIP Text Encode (Positive Prompt)", 
+"6-inputs-clip": [ 
+ "38", 
+ 0 
+], 
+"6-inputs-text": "A woman raising her head with hair blowing in the wind", 
+
+… 
+
+"_52-node-class_type-info": "Load Image", 
+"52-inputs-image": "<path_to_my_image>", 
+
+… 
+}
+
+This dictionary contains all the parameters in your workflow. The key for each parameter contains the node id from your workflow_api.json file, whether it is an input, and the parameter’s input name. Keys that start with “_” are just there to give you context on the node corresponding to id, they are not parameters.
+
+In this example, the first key-value pair shows that node 3 is the KSampler and that “3-inputs-cfg” sets its corresponding cfg value.
+
+**3. Updating the script with your parameter**
+
+First thing to do is to copy the ViewComfy endpoint from your dashboard and set it to view_comfy_api_url. You should also get the “Client ID” and “Client Secret” you made earlier, and set the client_id and client_secret values:
+
+view_comfy_api_url = "<Your_ViewComfy_endpoint>"
+client_id = "<Your_ViewComfy_client_id>"
+client_secret = "<Your_ViewComfy_client_secret>"
+
+You can then set the parameters using the keys from the json file you created in the previous step. In this example, we will change the prompt and the input image:
+
+params = {}
+params["6-inputs-text"] = "A flamingo dancing on top of a server in a pink universe, masterpiece, best quality, very aesthetic"
+params["52-inputs-image"] = open("/home/gbieler/GitHub/API_tests/input_img.png", "rb")
+
+**4. Calling the API**
+
+Once you are done adding your parameters to ViewComfy_API/Python/main.py, you can call the API by running:
+
+python main.py
+
+This will send your parameters to ViewComfy_API/Python/api.py where all the functions to call the API and handle the outputs are stored.
+
+By default the script runs the “infer_with_logs” function which returns the generation logs from ComfyUI via a streaming response. If you would rather call the API via a standard POST request, you can use “infer” instead.
+
+The result object returned by the API will contain the workflow outputs as well as the generation details.
+
+Your outputs will automatically be saved in your working directory.
+
+================================================
+FILE: ViewComfy_API/README.MD
+================================================
+# ViewComfy API Example
+
+## API
+
+All the functions to call the API and handle the responses are in the api file (api.py). The main file (main.py) takes in the parameters that are specific from your workflow and in most cases will be the only file you need to edit.
+
+#### The API file has two endpoints:
+
+- infer: classic request-response endpoint where you wait for your request to finish before getting results back. 
+
+- infer_with_logs: receives real-time updates with the ComfyUI logs (eg. progress bar). To make use of this endpoint, you need to pass a function that will be called each time a log message is received.
+
+The endpoints can also take a workflow_api.json as a parameter. This is useful if you want to run a different workflow than the one you used when deploying.
+
+### Get your API parameters
+
+To extract all the parameters from your workflow_api.json, you can run the workflow_api_parameter_creator function. This will create a dictionary with all of the parameters inside the workflow.
+
+```python
+
+python workflow_parameters_maker.py --workflow_api_path "<Path to your workflow_api.json file>"
+
+Running the example
+Install the dependencies:
+
+pip install -r requirements.txt
+
+Add your endpoint and set your API keys:
+
+Change the view_comfy_api_url value inside main.py to the ViewComfy endpoint from your ViewComfy Dashboard. Do the same with the "client_id" and "client_secret" values using your API keys (you can also get them from your dashboard). If you want, you can change the parameters of the workflow inside main.py at the same time.
+
+Call the API:
+
+python main.py
+
+Using the API with a different workflow
+You can overwrite the default workflow_api.json when sending a request. Be careful if you need to install new node packs to run the new workflow. Having too many custom node packages can create some issues between the Python packages. This can increase ComfyUI start up time and in some cases break the ComfyUI installation.
+
+To use an updated workflow (that works with your deployment) with the API, you can send the new workflow_api.json as a parameter by changing the override_workflow_api_path value. For example, using python:
+
+override_workflow_api_path = "<path_to_your_new_workflow_api_file>"
