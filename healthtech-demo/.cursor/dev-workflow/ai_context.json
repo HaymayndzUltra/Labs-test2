@@ -1,15 +1,16 @@
 {
-  "name": "healthtech-demo",
+  "project_name": "healthtech-demo",
   "industry": "healthcare",
-  "project_type": "fullstack",
-  "created_at": "2025-09-06T21:49:54.250772",
-  "stack": {
+  "technology_stack": {
     "frontend": "nextjs",
     "backend": "fastapi",
     "database": "postgres",
     "auth": "auth0",
     "deploy": "aws"
   },
+  "compliance_requirements": [
+    "hipaa"
+  ],
   "features": [
     "access_control",
     "appointment-scheduling",
@@ -23,7 +24,10 @@
     "secure_messaging",
     "telehealth"
   ],
-  "compliance": [
-    "hipaa"
-  ]
+  "workflow_commands": {
+    "analyze": "Analyze requirements and create PRD",
+    "plan": "Create actionable development plan",
+    "execute": "Execute tasks in parallel",
+    "review": "Conduct retrospective and capture learnings"
+  }
 }

@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "project": "healthtech-demo",
+  "workflows": {
+    "analyze": "dev-workflow/1-analyze-and-plan-prd.md",
+    "plan": "dev-workflow/2-create-actionable-plan.md",
+    "execute": "dev-workflow/3-execute-tasks-parallel.md",
+    "review": "dev-workflow/4-retrospective-learnings.md"
+  },
+  "rules": {
+    "quality": ".cursor/rules/master-rules/3-master-rule-code-quality-checklist.md",
+    "safety": ".cursor/rules/master-rules/4-master-rule-code-modification-safety-protocol.md",
+    "compliance": ".cursor/rules/industry-compliance-hipaa.mdc"
+  }
+}
