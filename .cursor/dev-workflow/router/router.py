@@ -35,13 +35,19 @@ def list_policies():
                 continue
     return out
 
-def evaluate_policies(policies, context):
-    # simple evaluator: pick highest priority action whose conditions match substrings in context
+def evaluate_policies(policies, context_map):
+    # Normalize context values to a single lower-cased string for robust substring matching
+    try:
+        normalized_context = " ".join(str(v) for v in context_map.values()).lower()
+    except Exception:
+        normalized_context = str(context_map).lower()
     matches = []
-    for p in policies:
-        conds = p.get('conditions') or []
-        if all(any(c in str(context) for context in context.values()) for c in conds):
-            matches.append(p)
+    for policy in policies:
+        conditions = policy.get('conditions') or []
+        conditions_lc = [str(c).lower() for c in conditions]
+        if all(c in normalized_context for c in conditions_lc):
+            matches.append(policy)
+    # Primary ordering by priority (desc). Tie-break left as stable order for now
     matches.sort(key=lambda x: x.get('priority', 0), reverse=True)
     return matches
 
@@ -49,18 +55,28 @@ def route_decision(context):
     precedence = load_precedence()
     policies = list_policies()
     matched = evaluate_policies(policies, context)
-    winning = None
-    if matched:
-        # pick first by priority then precedence
-        winning = matched[0]
-    # fallback: pick highest precedence rule from precedence list if any
+    winning = matched[0] if matched else None
+
+    # Non-null, type-safe fields
+    considered = []
+    for p in matched:
+        name = p.get('name')
+        if isinstance(name, str) and name:
+            considered.append(name)
+
+    decision = 'none'
+    if winning:
+        win_name = winning.get('name')
+        if isinstance(win_name, str) and win_name:
+            decision = win_name
+
     log = {
         'session_id': str(uuid.uuid4()),
         'timestamp': datetime.datetime.utcnow().isoformat() + 'Z',
-        'decision': winning.get('name') if winning else 'none',
+        'decision': decision,
         'confidence': 1.0 if winning else 0.0,
-        'rules_considered': [p.get('name') for p in matched],
-        'winning_rule': winning.get('name') if winning else None,
+        'rules_considered': considered,
+        'winning_rule': decision,
         'override_reason': None,
         'approver': None,
         'snapshot_id': context.get('snapshot_id')
