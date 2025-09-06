@@ -121,6 +121,11 @@ Select an action based on policies and governance precedence; emit auditable rou
 - Context (dict):
   - `git_commit` (string) — optional CLI arg
   - `snapshot_id` (string|null) — set by caller when snapshot is active
+  - Standard context tokens (normalized to lower-case):
+    - `framework:<name>`
+    - `contracts-first`
+    - `risk:<low|med|high>`
+    - `stage:<plan|impl|qa|release>`
 
 ### Outputs
 - Routing log JSON at `.cursor/dev-workflow/routing_logs/<session_id>.json`

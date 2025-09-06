@@ -38,7 +38,13 @@ def list_policies():
 def evaluate_policies(policies, context_map):
     # Normalize context values to a single lower-cased string for robust substring matching
     try:
-        normalized_context = " ".join(str(v) for v in context_map.values()).lower()
+        tokens = []
+        for v in context_map.values():
+            if isinstance(v, (list, tuple, set)):
+                tokens.extend([str(x).strip().lower() for x in v])
+            else:
+                tokens.append(str(v).strip().lower())
+        normalized_context = " ".join(tokens)
     except Exception:
         normalized_context = str(context_map).lower()
     matches = []
