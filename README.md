@@ -144,6 +144,12 @@ Comprehensive overview of architecture, components, workflows, and integration m
 
 - [AI Governor Framework — System Documentation](./docs/architecture/system-documentation.md)
 
+### Framework Extension Guide
+
+How to add new frameworks (requirements, interfaces, protocols, gates, policies):
+
+- [Framework Extension Points & Integration Patterns](./docs/architecture/framework-extension-guide.md)
+
 ### AI Integration Architecture
 
 For details on how to extend or integrate this framework with external AI systems (LLM providers, embeddings, vector stores, tool APIs), see:
