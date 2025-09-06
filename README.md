@@ -102,6 +102,12 @@ This framework is an enhanced and structured adaptation inspired by the foundati
 
 It is shared under the **Apache 2.0 License**. See the `LICENSE` file for more details. For contribution guidelines, please see `CONTRIBUTING.md`. 
 
+### .cursor Architecture
+
+For a full technical specification of the `.cursor` architecture, logic flow, contracts, and integration points, see:
+
+- [The .cursor Architecture and Logic Flow](./docs/architecture/cursor-architecture.md)
+
 ### AI Integration Architecture
 
 For details on how to extend or integrate this framework with external AI systems (LLM providers, embeddings, vector stores, tool APIs), see:
