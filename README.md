@@ -101,3 +101,9 @@ If you find this framework valuable, please consider showing your support. It is
 This framework is an enhanced and structured adaptation inspired by the foundational work on AI-driven development by [snarktank/ai-dev-tasks](https://github.com/snarktank/ai-dev-tasks).
 
 It is shared under the **Apache 2.0 License**. See the `LICENSE` file for more details. For contribution guidelines, please see `CONTRIBUTING.md`. 
+
+### AI Integration Architecture
+
+For details on how to extend or integrate this framework with external AI systems (LLM providers, embeddings, vector stores, tool APIs), see:
+
+- [AI Integration Architecture and Interfaces](./docs/architecture/ai-integration.md)
