@@ -4,9 +4,10 @@
   "decision": "none",
   "confidence": 0.0,
   "rules_considered": [
+    null,
     "allow-all"
   ],
-  "winning_rule": "none",
+  "winning_rule": null,
   "override_reason": null,
   "approver": null,
   "snapshot_id": null

@@ -126,6 +126,37 @@ jobs:
         run: |
           if [ -f .lighthouserc.json ]; then conftest test --policy security/policy .lighthouserc.json; else echo "no lh config"; fi
 
+  governor:
+    name: AI Governor Gates
+    runs-on: ubuntu-latest
+    needs: build-test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install deps
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install jsonschema pyyaml
+      - name: Generate snapshot (if missing)
+        run: |
+          python3 .cursor/dev-workflow/snapshots/generate_snapshot.py || true
+      - name: Run all AI Governor gates
+        run: |
+          python3 .cursor/dev-workflow/ci/run_all_gates.py
+        env:
+          GOVERNOR_ADVISORY_MODE: ${{ vars.GOVERNOR_ADVISORY_MODE || 'true' }}
+      - name: Rule normalization (dry-run)
+        run: |
+          python3 .cursor/dev-workflow/ci/normalize_rules.py || true
+      - name: Policy decision tests
+        run: |
+          python3 scripts/test_policy_decisions.py || true
+
   a11y_perf:
     if: ${{ vars.A11Y_TARGET_URL != '' }}
     name: A11y & Perf Smoke (optional)

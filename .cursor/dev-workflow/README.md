@@ -120,3 +120,15 @@ The CI gating configuration now includes two additional checks that enforce rule
 - `ui_schema_checks`: Validates presence and JSON schema compliance for design tokens and interaction specs.
 
 These checks are declared in `ci/gates_config.yaml` and are part of the `enforcement: block_on_fail` pipeline.
+
+## API Reference
+
+See the full input/output and trigger specifications in `.cursor/dev-workflow/docs/api-reference.md`.
+
+## Framework Integration
+
+To add a new framework with consistent governance and CI enforcement, follow `.cursor/dev-workflow/docs/framework-integration.md`.
+
+## External Integrations
+
+For integrating external AI systems (agents/orchestrators/CI bots), see `.cursor/dev-workflow/docs/external-integration.md`.

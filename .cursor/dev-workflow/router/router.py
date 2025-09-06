@@ -35,13 +35,25 @@ def list_policies():
                 continue
     return out
 
-def evaluate_policies(policies, context):
-    # simple evaluator: pick highest priority action whose conditions match substrings in context
+def evaluate_policies(policies, context_map):
+    # Normalize context values to a single lower-cased string for robust substring matching
+    try:
+        tokens = []
+        for v in context_map.values():
+            if isinstance(v, (list, tuple, set)):
+                tokens.extend([str(x).strip().lower() for x in v])
+            else:
+                tokens.append(str(v).strip().lower())
+        normalized_context = " ".join(tokens)
+    except Exception:
+        normalized_context = str(context_map).lower()
     matches = []
-    for p in policies:
-        conds = p.get('conditions') or []
-        if all(any(c in str(context) for context in context.values()) for c in conds):
-            matches.append(p)
+    for policy in policies:
+        conditions = policy.get('conditions') or []
+        conditions_lc = [str(c).lower() for c in conditions]
+        if all(c in normalized_context for c in conditions_lc):
+            matches.append(policy)
+    # Primary ordering by priority (desc). Tie-break left as stable order for now
     matches.sort(key=lambda x: x.get('priority', 0), reverse=True)
     return matches
 
@@ -49,18 +61,44 @@ def route_decision(context):
     precedence = load_precedence()
     policies = list_policies()
     matched = evaluate_policies(policies, context)
-    winning = None
+    # Tie-break using precedence_tag against precedence file when priorities tie
     if matched:
-        # pick first by priority then precedence
-        winning = matched[0]
-    # fallback: pick highest precedence rule from precedence list if any
+        # group by priority
+        top_pri = matched[0].get('priority', 0)
+        top = [p for p in matched if p.get('priority', 0) == top_pri]
+        if len(top) > 1 and precedence:
+            # build order map from precedence file
+            prec_index = {k: i for i, k in enumerate(precedence)}
+            def prec_rank(p):
+                tag = p.get('precedence_tag')
+                return prec_index.get(str(tag), len(prec_index))
+            top.sort(key=prec_rank)
+            winning = top[0]
+        else:
+            winning = matched[0]
+    else:
+        winning = None
+
+    # Non-null, type-safe fields
+    considered = []
+    for p in matched:
+        name = p.get('name')
+        if isinstance(name, str) and name:
+            considered.append(name)
+
+    decision = 'none'
+    if winning:
+        win_name = winning.get('name')
+        if isinstance(win_name, str) and win_name:
+            decision = win_name
+
     log = {
         'session_id': str(uuid.uuid4()),
         'timestamp': datetime.datetime.utcnow().isoformat() + 'Z',
-        'decision': winning.get('name') if winning else 'none',
+        'decision': decision,
         'confidence': 1.0 if winning else 0.0,
-        'rules_considered': [p.get('name') for p in matched],
-        'winning_rule': winning.get('name') if winning else None,
+        'rules_considered': considered,
+        'winning_rule': decision,
         'override_reason': None,
         'approver': None,
         'snapshot_id': context.get('snapshot_id')

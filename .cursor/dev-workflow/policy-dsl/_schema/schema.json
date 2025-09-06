@@ -8,7 +8,8 @@
     "priority": {"type":"integer","minimum":0},
     "conditions": {"type":"array","items":{"type":"string"}},
     "actions": {"type":"array","items":{"type":"string"}},
-    "waiver_allowed": {"type":"boolean"}
+    "waiver_allowed": {"type":"boolean"},
+    "precedence_tag": {"type":"string"}
   },
   "required":["name","scope","priority","actions"]
 }

@@ -32,5 +32,5 @@ There MUST be a single, canonical precedence ordering used by automated routers 
 
 ## Implementation notes
 
-Provide a single machine-readable precedence file consumed by the router; see `/.cursor/dev-workflow/policy-dsl/schema.json` and `/.cursor/dev-workflow/schemas/routing_log.json` for companion artifacts.
+Provide a single machine-readable precedence file consumed by the router; see `/.cursor/dev-workflow/policy-dsl/_schema/schema.json` and `/.cursor/dev-workflow/schemas/routing_log.json` for companion artifacts.
 
