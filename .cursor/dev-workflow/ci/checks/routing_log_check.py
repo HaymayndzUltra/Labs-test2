@@ -29,10 +29,10 @@ def main():
                         errors.append({'path':path,'error':'session_id must be non-empty string'})
                     if not isinstance(doc['timestamp'], str) or not doc['timestamp'].strip():
                         errors.append({'path':path,'error':'timestamp must be non-empty string'})
-                    if not isinstance(doc['decision'], str):
-                        errors.append({'path':path,'error':'decision must be string'})
-                    if not isinstance(doc['winning_rule'], str):
-                        errors.append({'path':path,'error':'winning_rule must be string'})
+                    if not isinstance(doc['decision'], str) or not doc['decision'].strip():
+                        errors.append({'path':path,'error':'decision must be non-empty string'})
+                    if not isinstance(doc['winning_rule'], str) or not doc['winning_rule'].strip():
+                        errors.append({'path':path,'error':'winning_rule must be non-empty string'})
                     rc = doc['rules_considered']
                     if not isinstance(rc, list):
                         errors.append({'path':path,'error':'rules_considered must be array'})
