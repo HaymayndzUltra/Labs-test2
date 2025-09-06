@@ -24,6 +24,10 @@ checks:
   - checksums_present
   - rule_hygiene
   - ui_schema_checks
+  - policy_dsl_lint
+  - routing_log_schema_check
+  - f8_waiver_check
+  - context_snapshot_check
   - security_critical_zero
   - snapshot_consistency
   - evidence_present
