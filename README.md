@@ -53,6 +53,18 @@ The AI Governor Framework is composed of two distinct but complementary parts:
 
 Ready to install the framework and run your first governed task?
 
+### Integration for External Frameworks
+
+For authors of AI assistants, IDE extensions, or orchestration frameworks who want to integrate with the AI Governor system, see the detailed guide:
+
+- [External Framework Integration Guide](./docs/external-frameworks-integration.md)
+
+### Full System Documentation
+
+For a complete architectural and integration overview of the AI Governor Framework:
+
+- [AI Governor Framework: System Architecture & Integration Guide](./docs/system-documentation.md)
+
 
 ## 3. Quick Start: Installation
 
