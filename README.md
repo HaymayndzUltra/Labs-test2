@@ -120,6 +120,12 @@ Programmatic contracts for each component, including inputs, outputs, triggers, 
 
 - [AI Governor Framework — API-style Reference](./docs/architecture/governor-api.md)
 
+### Communication & Integration Protocol
+
+How external AI systems communicate and integrate with the Governor (data formats, APIs, handoffs):
+
+- [Communication & Integration Protocol](./docs/architecture/communication-protocol.md)
+
 ### AI Integration Architecture
 
 For details on how to extend or integrate this framework with external AI systems (LLM providers, embeddings, vector stores, tool APIs), see:
