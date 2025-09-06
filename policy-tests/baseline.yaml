@@ -1,0 +1,8 @@
+- name: default-none
+  context: {}
+  expect_decision: "none"
+- name: framework-react-none
+  context:
+    tokens:
+      - "framework:react"
+  expect_decision: "none"
