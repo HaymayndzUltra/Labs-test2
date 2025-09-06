@@ -126,6 +126,12 @@ How external AI systems communicate and integrate with the Governor (data format
 
 - [Communication & Integration Protocol](./docs/architecture/communication-protocol.md)
 
+### Technical Specification
+
+Complete internal workings, data flows, and integration mechanisms:
+
+- [AI Governor Framework — Technical Specification](./docs/architecture/technical-specification.md)
+
 ### AI Integration Architecture
 
 For details on how to extend or integrate this framework with external AI systems (LLM providers, embeddings, vector stores, tool APIs), see:
