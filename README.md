@@ -1,103 +1,280 @@
-# AI Governor Framework
-### The Keystone for AI-Driven Code
+# Client Project Generator
 
-**Stop fighting your AI assistant. Start governing it.**
+A comprehensive, industry-aware project generator that creates production-ready applications with built-in compliance, CI/CD pipelines, and AI Governor Framework integration.
 
-Tired of AI-generated code that's buggy, inconsistent, and ignores your architecture? The AI Governor Framework is a safe, plug-and-play system designed to teach your AI your project's unique DNA. It provides a set of rules and workflows to turn any AI assistant from a chaotic tool into a disciplined engineering partner that respects your architectural decisions, best practices, and non-negotiable constraints.
+## 🚀 Features
 
-Reclaim control. Enforce your coding standards. Ship with confidence.
+- **Industry-Specific Templates**: Pre-configured for Healthcare, Finance, E-commerce, SaaS, and Enterprise
+- **Compliance Ready**: Built-in support for HIPAA, GDPR, SOX, and PCI compliance
+- **Full Stack Support**: Frontend (Next.js, Nuxt, Angular, Expo), Backend (FastAPI, Django, NestJS, Go)
+- **DevEx Excellence**: Docker, DevContainers, Makefile, VS Code configurations
+- **CI/CD Pipelines**: GitHub Actions with quality gates and security scanning
+- **AI Governor Integration**: Seamless integration with AI development workflows
+- **Smart Selection**: Policy-driven technology recommendations based on industry
 
----
+## 📋 Prerequisites
 
-## ✨ The Philosophy: From Prompting & Fixing to Governing
-This approach is rooted in one core principle: **Context Engineering**.
+- Python 3.8+
+- Docker and Docker Compose
+- Git
+- Node.js 18+ (for frontend projects)
+- Make
 
-This isn't about bigger prompts or dumping your entire codebase into one, which is both ineffective and expensive. It's about giving the AI the *right information* at the *right time*. This framework achieves that by building a knowledge base of robust `rules` (the orders) and architectural `READMEs` (the context) that the AI consults on-demand.
+## 🛠️ Installation
 
-> #### Architectural Choice: An In-Repo Knowledge Base
->
-> This framework is built on a simple, robust principle: **Treat your project's knowledge base like your codebase.**
->
-> We leverage an **In-Repo** approach, keeping all governance rules and architectural context directly inside the repository. This makes the AI's knowledge base:
-> -   **Simple & Efficient:** Zero network latency and no complex external systems.
-> -   **Evolutive & Maintainable:** The AI's context evolves in lock-step with your code.
-> -   **Auditable & Versioned:** Every change is tracked in `git`, providing a clear, human-readable history.
-> -   **Portable & Robust:** Any developer can clone the repo and have the full, up-to-date context instantly, ensuring stability and consistency.
->
-> For complex external documentation, such as third-party APIs or external library, this in-repo system can be seamlessly combined with a RAG-based MCP server, such as Context7, to fetch and inject that external knowledge on demand. This leverages the best of both worlds: robust and versioned in-Repo governance for your internal architecture, and dynamic, on-demand context for external dependencies.
-
-This is how we shift from the endless loop of **prompting and fixing** to strategic **Governing**.
-
----
-
-## 🚀 How It Works: Two Core Components
-
-The AI Governor Framework is composed of two distinct but complementary parts:
-
-| Component | What It Is | How It's Used |
-| :--- | :--- | :--- |
-| **The Governance Engine** (`/rules`) | A set of powerful, passive rules that run in the background. | Your AI assistant discovers and applies these rules **automatically** to ensure quality and consistency. |
-| **The Operator's Playbook** (`/dev-workflow`) | A set of active, step-by-step protocols for the entire development lifecycle. | You **manually** invoke these protocols to guide the AI through complex tasks like planning and implementation. |
-
-#### At a Glance: The 4-Step Operator's Playbook
-> The framework is built around a series of sequential protocols that move a feature from idea to production with clarity and control:
-> -   0️⃣ **Bootstrap:** Turns a generic AI into a project-specific expert. (One-Time Setup)
-> -   1️⃣ **Define:** Transforms an idea into a detailed PRD.
-> -   2️⃣ **Plan:** Converts the PRD into a step-by-step technical plan.
-> -   3️⃣ **Implement:** Executes the plan with human validation at each step.
-> -   4️⃣ **Improve:** Audits the code to make the AI smarter for the future.
-
----
-
-## ▶️ Get Started
-
-Ready to install the framework and run your first governed task?
-
-
-## 3. Quick Start: Installation
-
-This guide provides a safe, non-destructive process to integrate the framework into any project.
-
-**1. Clone the Framework**
-
-Open a terminal at the root of your project and run the following command:
+1. Clone the repository:
 ```bash
-git clone https://github.com/Fr-e-d/The-Governor-Framework.git .ai-governor
-```
-This downloads the entire framework into a hidden `.ai-governor` directory within your project.
-
-**2. Configure for Your Assistant**
-
-The final step depends on your AI assistant:
-
-#### For Cursor Users
-Cursor requires rules to be in a specific `.cursor` directory to load them automatically. Run this command to copy them:
-```bash
-mkdir -p .cursor/rules && cp -r .ai-governor/rules/master-rules .cursor/rules/ && cp -r .ai-governor/rules/*
+git clone https://github.com/your-org/client-project-generator.git
+cd client-project-generator
 ```
 
-#### For Other AI Assistants
-The framework is ready to use. You can point your assistant to the rules and workflows inside the `.ai-governor` directory.
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
 
+3. Make the generator executable:
+```bash
+chmod +x scripts/generate_client_project.py
+```
 
-> [!NOTE]
-> ## Ready to Start?
->
-> **[➡️ Go to the Full Workflow Guide](./dev-workflow)**
->
-> Got questions or ideas?
->
-> **[🗣️ Join the Community on GitHub Discussions](https://github.com/Fr-e-d/The-Governor-Framework/discussions)**
+## 🎯 Quick Start
 
+### Interactive Mode (Recommended for first-time users)
 
-## ❤️ Support This Project
+```bash
+./scripts/generate_client_project.py --name my-app --industry healthcare --project-type web -i
+```
 
-If you find this framework valuable, please consider showing your support. It is greatly appreciated!
+### Command Line Mode
 
--   **[Sponsor on GitHub](https://github.com/sponsors/Fr-e-d)**
+```bash
+./scripts/generate_client_project.py \
+  --name acme-health \
+  --industry healthcare \
+  --project-type fullstack \
+  --frontend nextjs \
+  --backend fastapi \
+  --database postgres \
+  --auth auth0 \
+  --deploy aws \
+  --compliance hipaa
+```
 
-## 🤝 Attribution & License
+## 📚 Usage Guide
 
-This framework is an enhanced and structured adaptation inspired by the foundational work on AI-driven development by [snarktank/ai-dev-tasks](https://github.com/snarktank/ai-dev-tasks).
+### Available Options
 
-It is shared under the **Apache 2.0 License**. See the `LICENSE` file for more details. For contribution guidelines, please see `CONTRIBUTING.md`. 
+| Flag | Options | Description |
+|------|---------|-------------|
+| `--name` | Any string | Project name (required) |
+| `--industry` | healthcare, finance, ecommerce, saas, enterprise | Industry vertical (required) |
+| `--project-type` | web, mobile, api, fullstack, microservices | Project type (required) |
+| `--frontend` | nextjs, nuxt, angular, expo, none | Frontend framework |
+| `--backend` | fastapi, django, nestjs, go, none | Backend framework |
+| `--database` | postgres, mongodb, firebase, none | Database technology |
+| `--auth` | auth0, firebase, cognito, custom, none | Authentication provider |
+| `--deploy` | aws, azure, gcp, vercel, self-hosted | Deployment target |
+| `--compliance` | hipaa, gdpr, sox, pci | Compliance requirements (comma-separated) |
+| `--features` | Custom features | Additional features (comma-separated) |
+
+### Industry Examples
+
+#### Healthcare Application
+```bash
+./scripts/generate_client_project.py \
+  --name patient-portal \
+  --industry healthcare \
+  --project-type fullstack \
+  --frontend nextjs \
+  --backend fastapi \
+  --database postgres \
+  --auth auth0 \
+  --deploy aws \
+  --compliance hipaa \
+  --features "telehealth,appointment-scheduling,secure-messaging"
+```
+
+#### Financial Services API
+```bash
+./scripts/generate_client_project.py \
+  --name trading-api \
+  --industry finance \
+  --project-type api \
+  --backend go \
+  --database postgres \
+  --auth cognito \
+  --deploy aws \
+  --compliance sox,pci \
+  --features "real-time-quotes,transaction-processing,audit-trail"
+```
+
+#### E-commerce Platform
+```bash
+./scripts/generate_client_project.py \
+  --name shop-platform \
+  --industry ecommerce \
+  --project-type fullstack \
+  --frontend nextjs \
+  --backend django \
+  --database postgres \
+  --auth firebase \
+  --deploy vercel \
+  --compliance pci,gdpr \
+  --features "inventory,payment-processing,recommendations"
+```
+
+## 📁 Generated Project Structure
+
+```
+<project-name>/
+├── .cursor/                    # AI Governor integration
+│   ├── rules/                  # Project and compliance rules
+│   │   ├── client-specific-rules.mdc
+│   │   ├── industry-compliance-*.mdc
+│   │   └── master-rules/
+│   ├── dev-workflow/           # AI workflow configurations
+│   └── AI_INSTRUCTIONS.md      # AI development guide
+├── .devcontainer/              # VS Code DevContainer
+├── .github/workflows/          # CI/CD pipelines
+│   ├── ci-lint.yml
+│   ├── ci-test.yml
+│   ├── ci-security.yml
+│   └── ci-deploy.yml
+├── .vscode/                    # VS Code configurations
+├── frontend/                   # Frontend application
+├── backend/                    # Backend application
+├── database/                   # Database schemas and migrations
+├── docs/                       # Documentation
+├── tests/                      # Test suites
+├── docker-compose.yml          # Local development
+├── Makefile                    # Development commands
+├── gates_config.yaml           # CI/CD quality gates
+└── README.md                   # Project documentation
+```
+
+## 🔧 Development Workflow
+
+After generating a project:
+
+1. **Navigate to project**:
+   ```bash
+   cd <project-name>
+   ```
+
+2. **Initial setup**:
+   ```bash
+   make setup
+   ```
+
+3. **Start development**:
+   ```bash
+   make dev
+   ```
+
+4. **Available commands**:
+   - `make test` - Run tests
+   - `make lint` - Run linters
+   - `make build` - Build for production
+   - `make deploy` - Deploy application
+   - `make help` - Show all commands
+
+## 🤖 AI Governor Integration
+
+Each generated project includes:
+
+### AI Development Workflows
+- **Analyze**: `Apply instructions from .cursor/dev-workflow/1-analyze-and-plan-prd.md`
+- **Plan**: `Apply instructions from .cursor/dev-workflow/2-create-actionable-plan.md`
+- **Execute**: `Apply instructions from .cursor/dev-workflow/3-execute-tasks-parallel.md`
+- **Review**: `Apply instructions from .cursor/dev-workflow/4-retrospective-learnings.md`
+
+### Active Rules
+- Client-specific development standards
+- Industry compliance requirements
+- Master quality and safety rules
+- Documentation guidelines
+
+## 🔒 Compliance Features
+
+### HIPAA (Healthcare)
+- PHI encryption at rest and in transit
+- Audit logging for all data access
+- 15-minute session timeout
+- Access controls and user authentication
+
+### GDPR (EU Privacy)
+- Consent management
+- Right to deletion
+- Data portability
+- Privacy by design
+
+### SOX (Financial)
+- Change control procedures
+- Audit trails
+- Segregation of duties
+- Financial data integrity
+
+### PCI (Payment Cards)
+- Cardholder data protection
+- Network segmentation
+- Tokenization
+- Security scanning
+
+## 🚦 CI/CD Pipeline
+
+Generated projects include:
+
+1. **Lint Stage**: Code quality checks
+2. **Test Stage**: Unit, integration, and E2E tests
+3. **Security Stage**: Dependency scanning, SAST, secret detection
+4. **Build Stage**: Docker image creation
+5. **Deploy Stage**: Environment-specific deployment
+
+Quality gates are configured based on industry requirements.
+
+## 📊 Policy-Driven Selection
+
+The generator uses a Policy DSL to recommend technologies:
+
+```yaml
+healthcare:
+  web_stack:
+    required:
+      frontend: ["nextjs", "nuxt"]
+      backend: ["fastapi", "django"]
+      auth: ["auth0", "cognito"]  # HIPAA-compliant
+```
+
+## 🛡️ Security Features
+
+- Pre-commit hooks for secret detection
+- Security headers configuration
+- Input validation templates
+- Encryption utilities
+- Rate limiting setup
+- CORS configuration
+
+## 📖 Additional Documentation
+
+- [Architecture Guide](docs/ARCHITECTURE.md)
+- [Compliance Guide](docs/COMPLIANCE.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
+- [Contributing Guide](CONTRIBUTING.md)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Add your templates or improvements
+4. Submit a pull request
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file for details
+
+## 🆘 Support
+
+- GitHub Issues: [Report bugs or request features](https://github.com/your-org/client-project-generator/issues)
+- Documentation: [Full documentation](https://docs.your-org.com/client-generator)
+- Community: [Join our Discord](https://discord.gg/your-org)
