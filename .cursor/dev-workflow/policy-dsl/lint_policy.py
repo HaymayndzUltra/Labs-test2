@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import json
 import sys
 try:
@@ -7,13 +8,17 @@ try:
 except Exception:
     HAS_JSONSCHEMA = False
 
-SCHEMA = '/workspace/.cursor/dev-workflow/policy-dsl/schema.json'
+SCHEMA = '/workspace/.cursor/dev-workflow/policy-dsl/_schema/schema.json'
 
 def main():
     import glob
     schema = json.load(open(SCHEMA))
     errors = []
     for path in glob.glob('/workspace/.cursor/dev-workflow/policy-dsl/*.json'):
+        # skip schema files or internal schema folder
+        fname = os.path.basename(path)
+        if fname == 'schema.json' or fname.startswith('_'):
+            continue
         try:
             doc = json.load(open(path))
             if HAS_JSONSCHEMA:

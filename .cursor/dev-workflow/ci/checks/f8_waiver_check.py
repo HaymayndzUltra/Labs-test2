@@ -15,7 +15,8 @@ def main():
         p = os.path.join(WAIVER_DIR, fn)
         if os.path.isfile(p):
             txt = open(p,'r',encoding='utf-8').read()
-            if 'Decision: (approved' in txt or 'Decision: approved' in txt:
+            # accept both markdown-style and plain text approvals
+            if ('**Decision**: approved' in txt) or ('Decision: approved' in txt) or ('**Decision**: (approved' in txt):
                 found = True
                 break
     if found:
