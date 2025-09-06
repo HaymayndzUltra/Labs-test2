@@ -9,3 +9,7 @@ This folder contains everything needed to launch Cursor Background Agents for th
 
 Agent environments are isolated VMs with automatic repository snapshots. Outputs are pull requests or structured changes for your review.
 
+## Integrating a New Framework
+
+Follow `.cursor/dev-workflow/docs/framework-integration.md` for required prompts, policies, manifests, snapshots, and CI gates.
+

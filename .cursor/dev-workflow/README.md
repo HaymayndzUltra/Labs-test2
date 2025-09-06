@@ -124,3 +124,7 @@ These checks are declared in `ci/gates_config.yaml` and are part of the `enforce
 ## API Reference
 
 See the full input/output and trigger specifications in `.cursor/dev-workflow/docs/api-reference.md`.
+
+## Framework Integration
+
+To add a new framework with consistent governance and CI enforcement, follow `.cursor/dev-workflow/docs/framework-integration.md`.
