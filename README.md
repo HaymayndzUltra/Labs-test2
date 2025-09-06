@@ -114,6 +114,12 @@ For decision trees, activation logic, and interactions of master rules and dev-w
 
 - [Master Rules & Workflow Protocols — Logic Flows and Decision Trees](./docs/architecture/master-rules-and-workflows.md)
 
+### API-style Reference
+
+Programmatic contracts for each component, including inputs, outputs, triggers, and behaviors:
+
+- [AI Governor Framework — API-style Reference](./docs/architecture/governor-api.md)
+
 ### AI Integration Architecture
 
 For details on how to extend or integrate this framework with external AI systems (LLM providers, embeddings, vector stores, tool APIs), see:
