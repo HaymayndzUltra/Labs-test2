@@ -128,3 +128,7 @@ See the full input/output and trigger specifications in `.cursor/dev-workflow/do
 ## Framework Integration
 
 To add a new framework with consistent governance and CI enforcement, follow `.cursor/dev-workflow/docs/framework-integration.md`.
+
+## External Integrations
+
+For integrating external AI systems (agents/orchestrators/CI bots), see `.cursor/dev-workflow/docs/external-integration.md`.
