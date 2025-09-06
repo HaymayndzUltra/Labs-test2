@@ -2294,8 +2294,8 @@ make test-e2e
 ## Resources
 
 ### Documentation
-- [{self.args.frontend} Docs](https://docs.{self.args.frontend}.com) {if self.args.frontend != 'none' else ''}
-- [{self.args.backend} Docs](https://docs.{self.args.backend}.com) {if self.args.backend != 'none' else ''}
+{f'- [{self.args.frontend} Docs](https://docs.{self.args.frontend}.com)' if self.args.frontend != 'none' else ''}
+{f'- [{self.args.backend} Docs](https://docs.{self.args.backend}.com)' if self.args.backend != 'none' else ''}
 - [Project Wiki](https://github.com/yourorg/{self.args.name}/wiki)
 
 ### Tools

@@ -1,0 +1,29 @@
+{
+  "name": "healthtech-demo",
+  "industry": "healthcare",
+  "project_type": "fullstack",
+  "created_at": "2025-09-06T21:33:39.729731",
+  "stack": {
+    "frontend": "nextjs",
+    "backend": "fastapi",
+    "database": "postgres",
+    "auth": "auth0",
+    "deploy": "aws"
+  },
+  "features": [
+    "access_control",
+    "appointment-scheduling",
+    "appointment_scheduling",
+    "audit_logging",
+    "data_backup",
+    "encryption",
+    "medical_records",
+    "patient-portal",
+    "patient_portal",
+    "secure_messaging",
+    "telehealth"
+  ],
+  "compliance": [
+    "hipaa"
+  ]
+}
