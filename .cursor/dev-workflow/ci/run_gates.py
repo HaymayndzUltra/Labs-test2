@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import hashlib, os, sys, yaml
 
-CFG = '/workspace/dev-workflow/ci/gates_config.yaml'
+CFG = '/workspace/.cursor/dev-workflow/ci/gates_config.yaml'
 
 def sha256_file(path):
     with open(path,'rb') as f:
