@@ -449,9 +449,9 @@ class ProjectGenerator:
         # Backend setup
         if self.args.backend != 'none':
             if self.args.backend == 'fastapi':
-                commands.append('cd backend && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt')
+                commands.append('cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt')
             elif self.args.backend == 'django':
-                commands.append('cd backend && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python manage.py migrate')
+                commands.append('cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python3 manage.py migrate')
             elif self.args.backend == 'nestjs':
                 commands.append('cd backend && npm install')
             elif self.args.backend == 'go':
@@ -459,7 +459,7 @@ class ProjectGenerator:
         
         # Docker setup
         if self.args.database != 'none':
-            commands.append('docker-compose up -d')
+            commands.append('docker compose up -d')
         
         return commands
     
@@ -773,7 +773,7 @@ Proprietary - All rights reserved
         frontend_setup = '\tcd frontend && npm install' if self.args.frontend != 'none' else ''
         backend_setup = ''
         if self.args.backend in ['fastapi', 'django']:
-            backend_setup = '\tcd backend && python -m venv venv && . venv/bin/activate && pip install -r requirements.txt'
+            backend_setup = '\tcd backend && python3 -m venv venv && . venv/bin/activate && pip install -r requirements.txt'
         elif self.args.backend == 'nestjs':
             backend_setup = '\tcd backend && npm install'
         elif self.args.backend == 'go':
@@ -782,9 +782,9 @@ Proprietary - All rights reserved
         frontend_dev = '\tcd frontend && npm run dev &' if self.args.frontend != 'none' else ''
         backend_dev = ''
         if self.args.backend == 'fastapi':
-            backend_dev = '\tcd backend && python main.py'
+            backend_dev = '\tcd backend && . venv/bin/activate && python3 main.py'
         elif self.args.backend == 'django':
-            backend_dev = '\tcd backend && python manage.py runserver'
+            backend_dev = '\tcd backend && . venv/bin/activate && python3 manage.py runserver'
         elif self.args.backend == 'nestjs':
             backend_dev = '\tcd backend && npm run start:dev'
         elif self.args.backend == 'go':
@@ -828,7 +828,7 @@ setup:
 
 # Start development environment
 dev:
-	docker-compose up -d
+	docker compose up -d
 {frontend_dev}
 {backend_dev}
 
@@ -859,7 +859,7 @@ clean:
 	rm -rf __pycache__/
 	rm -rf dist/
 	rm -rf build/
-	docker-compose down -v
+	docker compose down -v
 """
     
     def _generate_vscode_snippets(self):
@@ -2074,7 +2074,7 @@ docker exec -it {self.args.name} /bin/bash
    # Start application
    ssh user@server
    cd /opt/{name}
-   docker-compose up -d
+   docker compose up -d
    ```
 
 3. **Configure Nginx**
@@ -2092,7 +2092,7 @@ docker exec -it {self.args.name} /bin/bash
             'azure': 'az container restart --name {name}-container-previous --resource-group {name}-rg',
             'gcp': 'gcloud run services update-traffic {name} --to-revisions {name}-previous=100',
             'vercel': 'vercel rollback',
-            'self-hosted': 'docker-compose down && git checkout previous-tag && docker-compose up -d'
+            'self-hosted': 'docker compose down && git checkout previous-tag && docker compose up -d'
         }
         
         return commands.get(self.args.deploy, '# Platform-specific rollback command').format(name=self.args.name)
@@ -2285,7 +2285,7 @@ make test-e2e
 2. **Docker issues**
    ```bash
    # Reset Docker
-   docker-compose down -v
+   docker compose down -v
    docker system prune -a
    ```
 
@@ -2293,7 +2293,7 @@ make test-e2e
    ```bash
    # Clear caches and reinstall
 {'   rm -rf node_modules package-lock.json && npm install' if self.args.frontend != 'none' else '   # No frontend dependencies'}
-{'   rm -rf venv && python -m venv venv && pip install -r requirements.txt' if self.args.backend in ['fastapi', 'django'] else '   # No Python dependencies'}
+{'   rm -rf venv && python3 -m venv venv && pip install -r requirements.txt' if self.args.backend in ['fastapi', 'django'] else '   # No Python dependencies'}
    ```
 
 ## Performance
