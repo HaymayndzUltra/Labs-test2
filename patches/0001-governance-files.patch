@@ -1,0 +1,11 @@
+---
+description: "TAGS: [ui,interaction,ux,a11y,performance] | TRIGGERS: interaction,accessibility,keyboard,aria,animation,durations,LCP,INP | SCOPE: common-rules | DESCRIPTION: Interaction, accessibility, and performance protocols for UI components."
+alwaysApply: false
+---
+
+# Common Rule: UI Interaction & Accessibility
+
+Purpose: Make interfaces accessible, responsive, and performant. See `RULES_DOCUMENTATION.md` for detailed checks.
+
+Deliverables: Interaction spec (JSON), a11y acceptance table, perf checklist.
+
