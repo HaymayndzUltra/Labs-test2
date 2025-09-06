@@ -1391,13 +1391,18 @@
       "suggestions": []
     },
     {
+      "path": "/workspace/.cursor/rules/master-rules/9-governance-precedence.mdc",
+      "errors": [],
+      "suggestions": []
+    },
+    {
       "path": "/workspace/.cursor/rules/master-rules/7-dev-workflow-command-router.mdc",
       "errors": [],
       "suggestions": []
     }
   ],
   "summary": {
-    "total_rules_checked": 279,
+    "total_rules_checked": 280,
     "files_with_errors": 0,
     "ui_artifacts_missing": []
   },
