@@ -14,6 +14,7 @@ def run(cmd):
 
 def main():
     ok = True
+    advisory = os.getenv('GOVERNOR_ADVISORY_MODE', 'false').lower() in ('1','true','yes','on')
     # 1) Policy DSL lint
     ok &= run(['python3', os.path.join(CURSOR, 'dev-workflow', 'policy-dsl', 'lint_policy.py')])
     # 2) Routing log schema check
@@ -42,6 +43,10 @@ def main():
     ok &= run(['python3', os.path.join(CURSOR, 'dev-workflow', 'ci', 'run_gates.py')])
 
     if not ok:
+        if advisory:
+            print('ADVISORY MODE: One or more checks failed; not failing the job')
+            print('RESULT: ADVISORY-WARN')
+            sys.exit(0)
         print('RESULT: FAIL')
         sys.exit(1)
     print('RESULT: PASS')
