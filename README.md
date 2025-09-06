@@ -108,6 +108,12 @@ For a full technical specification of the `.cursor` architecture, logic flow, co
 
 - [The .cursor Architecture and Logic Flow](./docs/architecture/cursor-architecture.md)
 
+### Master Rules & Workflow Protocols
+
+For decision trees, activation logic, and interactions of master rules and dev-workflow protocols, see:
+
+- [Master Rules & Workflow Protocols — Logic Flows and Decision Trees](./docs/architecture/master-rules-and-workflows.md)
+
 ### AI Integration Architecture
 
 For details on how to extend or integrate this framework with external AI systems (LLM providers, embeddings, vector stores, tool APIs), see:
