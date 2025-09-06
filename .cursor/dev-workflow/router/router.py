@@ -55,7 +55,23 @@ def route_decision(context):
     precedence = load_precedence()
     policies = list_policies()
     matched = evaluate_policies(policies, context)
-    winning = matched[0] if matched else None
+    # Tie-break using precedence_tag against precedence file when priorities tie
+    if matched:
+        # group by priority
+        top_pri = matched[0].get('priority', 0)
+        top = [p for p in matched if p.get('priority', 0) == top_pri]
+        if len(top) > 1 and precedence:
+            # build order map from precedence file
+            prec_index = {k: i for i, k in enumerate(precedence)}
+            def prec_rank(p):
+                tag = p.get('precedence_tag')
+                return prec_index.get(str(tag), len(prec_index))
+            top.sort(key=prec_rank)
+            winning = top[0]
+        else:
+            winning = matched[0]
+    else:
+        winning = None
 
     # Non-null, type-safe fields
     considered = []
