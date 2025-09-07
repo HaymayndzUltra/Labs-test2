@@ -68,6 +68,12 @@ Examples:
                         default='none',
                         help='Backend framework')
     
+    # NestJS ORM selection (parallel templates: typeorm (default) or prisma)
+    parser.add_argument('--nestjs-orm',
+                        choices=['typeorm', 'prisma'],
+                        default='typeorm',
+                        help='Select ORM for NestJS backend (typeorm | prisma)')
+    
     parser.add_argument('--database',
                         choices=['postgres', 'mongodb', 'firebase', 'none'],
                         default='none',

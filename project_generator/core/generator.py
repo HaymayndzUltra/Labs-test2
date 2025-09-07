@@ -191,18 +191,29 @@ class ProjectGenerator:
         template_path = Path(__file__).parent.parent.parent / 'template-packs' / 'backend' / self.args.backend
         
         if template_path.exists():
-            # Use the appropriate template variant
-            variant = 'microservice' if self.args.project_type == 'microservices' else 'base'
-            variant = 'enterprise' if self.args.industry in ['healthcare', 'finance', 'enterprise'] else variant
-            
-            variant_path = template_path / variant
-            if variant_path.exists():
-                shutil.copytree(variant_path, backend_dir, dirs_exist_ok=True)
+            # Special-case: NestJS Prisma variant selection via --nestjs-orm
+            if self.args.backend == 'nestjs' and getattr(self.args, 'nestjs_orm', 'typeorm') == 'prisma':
+                prisma_path = template_path / 'prisma'
+                if prisma_path.exists():
+                    shutil.copytree(prisma_path, backend_dir, dirs_exist_ok=True)
+                else:
+                    # Fallback to base if prisma variant missing
+                    base_path = template_path / 'base'
+                    if base_path.exists():
+                        shutil.copytree(base_path, backend_dir, dirs_exist_ok=True)
             else:
-                # Fallback to base template
-                base_path = template_path / 'base'
-                if base_path.exists():
-                    shutil.copytree(base_path, backend_dir, dirs_exist_ok=True)
+                # Use the appropriate template variant for other backends
+                variant = 'microservice' if self.args.project_type == 'microservices' else 'base'
+                variant = 'enterprise' if self.args.industry in ['healthcare', 'finance', 'enterprise'] else variant
+                
+                variant_path = template_path / variant
+                if variant_path.exists():
+                    shutil.copytree(variant_path, backend_dir, dirs_exist_ok=True)
+                else:
+                    # Fallback to base template
+                    base_path = template_path / 'base'
+                    if base_path.exists():
+                        shutil.copytree(base_path, backend_dir, dirs_exist_ok=True)
         
         # Process templates
         self._process_templates(backend_dir)
