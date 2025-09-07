@@ -1,0 +1,47 @@
+---
+description: "TAGS: [compliance,governance] | TRIGGERS: [security,compliance,governance,audit ] | SCOPE: project-rules | DESCRIPTION: Security and compliance overlay that applies to all frameworks and operations."
+alwaysApply: false
+---
+
+
+# Security & Compliance Overlay
+
+## Core Security Principles
+
+### Data Protection
+- [ ] All sensitive data must be encrypted at rest and in transit
+- [ ] Implement proper access controls and authentication
+- [ ] Follow data minimization principles
+- [ ] Ensure GDPR/CCPA compliance where applicable
+
+### Code Security
+- [ ] No hardcoded secrets or credentials
+- [ ] Regular dependency vulnerability scanning
+- [ ] Input validation and sanitization
+- [ ] Secure coding practices
+
+### Infrastructure Security
+- [ ] Network security best practices
+- [ ] Regular security updates and patches
+- [ ] Monitoring and logging for security events
+- [ ] Incident response procedures
+
+## Compliance Checklist
+
+### Privacy
+- [ ] Data collection transparency
+- [ ] User consent mechanisms
+- [ ] Data retention policies
+- [ ] Right to deletion implementation
+
+### Audit Trail
+- [ ] Comprehensive logging
+- [ ] Change tracking
+- [ ] Access logging
+- [ ] Regular security reviews
+
+## Emergency Protocols
+- [ ] Security incident response plan
+- [ ] Data breach notification procedures
+- [ ] Rollback capabilities
+- [ ] Communication protocols
