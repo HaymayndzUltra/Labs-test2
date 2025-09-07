@@ -1,11 +1,10 @@
 ---
-description: "TAGS: [frontend,ui,component,gatsby] | TRIGGERS: frontend,ui,component,interface,web,gatsby | SCOPE: project-rules | DESCRIPTION: You are an expert in TypeScript, Gatsby, React and Tailwind.  Code Style and Structure  - Write conc..."
+description: "TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ] | SCOPE: project-rules | DESCRIPTION: You are an expert in TypeScript, Gatsby, React and Tailwind.  Code Style and Structure  - Write conc..."
 alwaysApply: false
 ---
 
 
-
-You are an expert in TypeScript, Gatsby, React and Tailwind.
+ an expert in TypeScript, Gatsby, React and Tailwind.
 
 Code Style and Structure
 
@@ -29,7 +28,7 @@ TypeScript Usage
 
 Syntax and Formatting
 
-- Use the "function" keyword for pure functions.
+- use "function" keyword for pure functions.
 - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
 - Use declarative JSX, keeping JSX minimal and readable.
 

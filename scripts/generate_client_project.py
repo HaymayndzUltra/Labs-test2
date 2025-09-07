@@ -108,6 +108,24 @@ Examples:
     
     parser.add_argument('--no-install', action='store_true',
                         help='Skip dependency installation')
+
+    parser.add_argument('--force', action='store_true',
+                        help='Overwrite existing target directory if it exists (idempotent)')
+
+    parser.add_argument('--config-out',
+                        help='Path to write resolved generator config as JSON (default: ./generator-config.json)')
+
+    parser.add_argument('--yes', action='store_true',
+                        help='Proceed without interactive confirmation (non-interactive mode)')
+
+    # Generator isolation: avoid emitting .cursor assets when running inside repos with root .cursor
+    parser.add_argument('--no-cursor-assets', action='store_true',
+                        help='Do not emit .cursor assets (rules, tools) into the generated project')
+    
+    # Project categorization
+    parser.add_argument('--category', choices=['test', 'example', 'demo', 'archived'], 
+                        default='example',
+                        help='Category for the generated project (test/example/demo/archived)')
     
     return parser.parse_args()
 
@@ -221,7 +239,62 @@ def interactive_mode(args):
         if features_input:
             args.features = features_input
     
+    # Persist resolved configuration for reproducibility
+    try:
+        config_path = args.config_out or os.path.join(os.getcwd(), 'generator-config.json')
+        resolved = {
+            'name': args.name,
+            'industry': args.industry,
+            'project_type': args.project_type,
+            'frontend': args.frontend,
+            'backend': args.backend,
+            'database': args.database,
+            'auth': args.auth,
+            'deploy': args.deploy,
+            'features': args.features,
+            'compliance': args.compliance,
+        }
+        with open(config_path, 'w') as f:
+            json.dump(resolved, f, indent=2, sort_keys=True)
+        print(f"\n💾 Saved generator config to: {config_path}")
+    except Exception as e:
+        print(f"⚠️  Could not write generator config: {e}")
+
     return args
+
+
+def check_dependencies(args) -> Dict[str, List[str]]:
+    """Check required CLI dependencies are available. Returns {'missing': [...], 'warnings': [...]}"""
+    from shutil import which
+
+    missing: List[str] = []
+    warnings: List[str] = []
+
+    # Always required
+    if which('docker') is None:
+        missing.append('docker')
+
+    # Frontend dependencies
+    if args.frontend != 'none' or args.backend == 'nestjs':
+        if which('node') is None:
+            missing.append('node')
+        if which('npm') is None:
+            missing.append('npm')
+
+    # Python backends
+    if args.backend in ['fastapi', 'django']:
+        if which('python3') is None and which('python') is None:
+            missing.append('python3')
+        else:
+            # Optional but recommended
+            if which('pip') is None and which('pip3') is None:
+                warnings.append('pip/pip3 not found; ensure virtualenv can install requirements')
+
+    # Go backend
+    if args.backend == 'go' and which('go') is None:
+        missing.append('go')
+
+    return {'missing': missing, 'warnings': warnings}
 
 
 def display_project_summary(args, generator):
@@ -246,31 +319,62 @@ def main():
     """Main entry point"""
     args = parse_arguments()
     
+    # Safe defaults when a root .cursor/ exists in the current repo:
+    # - Default output_dir to ../_generated (outside repo) if user did not change from '.'
+    # - Default to --no-cursor-assets to prevent nested rulesets
+    try:
+        repo_root = os.getcwd()
+        has_root_cursor = os.path.isdir(os.path.join(repo_root, '.cursor'))
+        if has_root_cursor:
+            if getattr(args, 'output_dir', '.') == '.':
+                # Use internal _generated directory instead of outside repo
+                default_out = os.path.abspath(os.path.join(repo_root, '_generated'))
+                os.makedirs(default_out, exist_ok=True)
+                args.output_dir = default_out
+                if getattr(args, 'verbose', False):
+                    print(f"ℹ️  Detected root .cursor/. Defaulting output_dir to: {args.output_dir}")
+            if not getattr(args, 'no_cursor_assets', False):
+                args.no_cursor_assets = True
+                if getattr(args, 'verbose', False):
+                    print("ℹ️  Detected root .cursor/. Enabling --no-cursor-assets by default.")
+    except Exception:
+        pass
+    
+    # Apply category-based organization
+    if hasattr(args, 'category') and args.category != 'example':
+        category_dir = os.path.join(args.output_dir, f"{args.category}s")
+        os.makedirs(category_dir, exist_ok=True)
+        args.output_dir = category_dir
+        if getattr(args, 'verbose', False):
+            print(f"ℹ️  Using category directory: {args.output_dir}")
+    
     # Run interactive mode if requested or if critical args are missing
     if args.interactive or (
         args.project_type in ['web', 'fullstack'] and args.frontend == 'none' and args.backend == 'none'
     ):
         args = interactive_mode(args)
     
-    # Initialize components
+    # Comprehensive validation (fail-fast with clear exit code 2)
     validator = ProjectValidator()
+    validation = validator.validate_comprehensive(args)
+    
+    if validation['warnings']:
+        print("\n⚠️  Configuration warnings:")
+        for warning in validation['warnings']:
+            print(f"  - {warning}")
+    
+    if not validation['valid']:
+        print("\n❌ Configuration errors:")
+        for error in validation['errors']:
+            print(f"  - {error}")
+        print("\nPlease fix configuration errors before proceeding.")
+        sys.exit(2)
+
+    print("\n🔍 Validating project configuration...")
+    
+    # Initialize components (validator already created above for comprehensive validation)
     config = IndustryConfig(args.industry)
     generator = ProjectGenerator(args, validator, config)
-    
-    # Validate the configuration
-    print("\n🔍 Validating project configuration...")
-    validation_result = validator.validate_configuration(args)
-    
-    if not validation_result['valid']:
-        print("\n❌ Configuration validation failed:")
-        for error in validation_result['errors']:
-            print(f"  - {error}")
-        sys.exit(1)
-    
-    if validation_result['warnings']:
-        print("\n⚠️  Configuration warnings:")
-        for warning in validation_result['warnings']:
-            print(f"  - {warning}")
     
     # Display summary
     display_project_summary(args, generator)
@@ -283,12 +387,13 @@ def main():
         generator.display_structure(structure)
         return
     
-    # Confirm generation
-    print("\n")
-    response = input("Proceed with project generation? (y/n): ").strip().lower()
-    if response != 'y':
-        print("Generation cancelled.")
-        return
+    # Confirm generation unless --yes is provided
+    if not args.yes:
+        print("\n")
+        response = input("Proceed with project generation? (y/n): ").strip().lower()
+        if response != 'y':
+            print("Generation cancelled.")
+            return
     
     try:
         # Generate the project

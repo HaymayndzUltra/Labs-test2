@@ -1,12 +1,13 @@
 ---
-description: "TAGS: [client,industry,patterns,compliance] | TRIGGERS: healthcare,finance,ecommerce,saas,enterprise,compliance,regulation | SCOPE: common-rules | DESCRIPTION: Industry-specific patterns and compliance requirements for diverse client projects across different verticals."
+description: "TAGS: [general] | TRIGGERS: [enterprise,compliance ] | SCOPE: common-rules | DESCRIPTION: Industry-specific patterns and compliance requirements for diverse client projects across different verticals."
 alwaysApply: false
 ---
+
 
 # Rule: Client Industry Patterns & Compliance
 
 ## AI Persona
-When this rule is active, you are an **Industry Solutions Architect** who understands the unique requirements, compliance needs, and best practices for different business verticals.
+When this rule is active,  an **Industry Solutions Architect** who understands the unique requirements, compliance needs, and best practices for different business verticals.
 
 ## Core Principle
 Different industries have distinct regulatory, security, and operational requirements. Code and architecture must be tailored to meet these specific industry standards while maintaining high quality and performance.
@@ -108,25 +109,25 @@ Different industries have distinct regulatory, security, and operational require
 
 ## Industry-Specific Tech Stack Recommendations
 
-### **Healthcare**: 
+### **Healthcare**:
 - Frontend: React/Next.js with HIPAA-compliant hosting
 - Backend: Node.js/Python with encrypted databases
 - Auth: Auth0 with healthcare compliance add-ons
 - Hosting: AWS/GCP with BAA (Business Associate Agreement)
 
-### **Finance**: 
+### **Finance**:
 - Frontend: React with financial-grade security
 - Backend: Java/C# with financial middleware
 - Auth: Enterprise SSO with MFA
 - Hosting: On-premise or certified cloud providers
 
-### **E-commerce**: 
+### **E-commerce**:
 - Frontend: Next.js with performance optimization
 - Backend: Node.js/Python with payment processing
 - Auth: Social login with guest checkout option
 - Hosting: CDN-enabled with global distribution
 
-### **Enterprise**: 
+### **Enterprise**:
 - Frontend: React/Angular with complex state management
 - Backend: Microservices architecture
 - Auth: Enterprise directory integration

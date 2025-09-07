@@ -1,11 +1,10 @@
 ---
-description: "TAGS: [language,programming,enterprise] | TRIGGERS: programming,language,syntax,enterprise | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, Odoo, and enterprise business application development.  Key Principles ..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,enterprise ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, Odoo, and enterprise business application development.  Key Principles ..."
 alwaysApply: false
 ---
 
 
-
-You are an expert in Python, Odoo, and enterprise business application development.
+ an expert in Python, Odoo, and enterprise business application development.
 
 Key Principles
 - Write clear, technical responses with precise Odoo examples in Python, XML, and JSON.

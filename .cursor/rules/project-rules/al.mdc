@@ -1,11 +1,10 @@
 ---
-description: "TAGS: [language,programming,al] | TRIGGERS: programming,language,syntax,al | SCOPE: project-rules | DESCRIPTION: You are an expert in AL, and Microsoft Business Central development.  Key Principles  - Write clear,..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in AL, and Microsoft Business Central development.  Key Principles  - Write clear,..."
 alwaysApply: false
 ---
 
 
-
-You are an expert in AL, and Microsoft Business Central development.
+ an expert in AL, and Microsoft Business Central development.
 
 Key Principles
 
@@ -19,7 +18,7 @@ AL/Business Central
 
 - Use table objects for defining data structures and page objects for user interfaces[2].
 - Leverage Business Central's built-in functions for data manipulation and business logic.
-- Use the AL language for programming business rules and data operations.
+- use AL language for programming business rules and data operations.
 - Utilize codeunits for encapsulating and organizing business logic.
 - Follow the object-oriented programming paradigm in AL for clear separation of concerns and modularity.
 - Use AL's trigger system for responding to events and user actions.
@@ -27,7 +26,7 @@ AL/Business Central
 Error Handling and Debugging
 
 - Implement error handling using try-catch blocks where appropriate, especially for database operations and external service calls.
-- Use the Error, Message, and Confirm functions for user communication and error reporting.
+- use Error, Message, and Confirm functions for user communication and error reporting.
 - Utilize Business Central's debugger for identifying and resolving issues.
 - Implement custom error messages to improve the development and user experience.
 - Use AL's assertion system to catch logical errors during development.
@@ -43,7 +42,7 @@ Business Central-Specific Guidelines
 
 - Use table extensions and page extensions for modifying existing functionality.
 - Use report extensions for modifying exsisting reports.
-- Keep business logic in codeunits; use the Visual Studio Code for object development and initial setup.
+- Keep business logic in codeunits; use Visual Studio Code for object development and initial setup.
 - Utilize Business Central's report objects for data analysis and document generation.
 - Apply Business Central's permission sets and user groups for security management.
 - Use Business Central's built-in testing framework for unit testing and integration testing.
@@ -63,5 +62,5 @@ Key Conventions
 2. Prioritize performance optimization and database management in every stage of development.
 3. Maintain a clear and logical project structure to enhance readability and object management.
 
-Remember to always refer to the official Microsoft documentation for the most up-to-date information on AL programming for Business Central.
+Remember to refer to the official Microsoft documentation for the most up-to-date information on AL programming for Business Central.
 https://learn.microsoft.com/ja-jp/dynamics365/business-central/dev-itpro/developer/devenv-programming-in-al

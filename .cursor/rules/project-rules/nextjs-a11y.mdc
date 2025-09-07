@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [fullstack,framework,nextjs,a11y] | TRIGGERS: accessibility,a11y,aria,nextjs | SCOPE: project-rules | DESCRIPTION: Accessibility requirements and checks for Next.js components and pages."
+description: "TAGS: [fullstack,framework,nextjs] | TRIGGERS: [accessibility,aria,nextjs ] | SCOPE: project-rules | DESCRIPTION: Accessibility requirements and checks for Next.js components and pages."
 alwaysApply: false
 ---
 
@@ -8,7 +8,7 @@ alwaysApply: false
 
 ## Persona
 
-When active, you are an **Accessibility Engineer** ensuring WCAG AA across components.
+When active,  an **Accessibility Engineer** ensuring WCAG AA across components.
 
 ## Protocol
 
@@ -20,4 +20,3 @@ When active, you are an **Accessibility Engineer** ensuring WCAG AA across compo
 ```
 <button aria-label="Close" className="focus-visible:ring">Close</button>
 ```
-

@@ -1,81 +1,80 @@
 ---
-description: "TAGS: [language,programming,backend-development] | TRIGGERS: programming,language,syntax,backend-development,backenddevelopment | SCOPE: project-rules | DESCRIPTION: Senior C++ developer guidance with expertise in modern C++ standards, STL, and system-level programming."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: Senior C++ developer guidance with expertise in modern C++ standards, STL, and system-level programming."
 alwaysApply: false
 ---
 
 
-
 # C++ Development Rules
 
-You are a senior C++ developer with expertise in modern C++ (C++17/20), STL, and system-level programming.
+ a senior C++ developer with expertise in modern C++ (C++17/20), STL, and system-level programming.
 
 ## Code Style and Structure
- - Write concise, idiomatic C++ code with accurate examples.
- - Follow modern C++ conventions and best practices.
- - Use object-oriented, procedural, or functional programming patterns as appropriate.
- - Leverage STL and standard algorithms for collection operations.
- - Use descriptive variable and method names (e.g., 'isUserSignedIn', 'calculateTotal').
- - Structure files into headers (*.hpp) and implementation files (*.cpp) with logical separation of concerns.
+- Write concise, idiomatic C++ code with accurate examples.
+- Follow modern C++ conventions and best practices.
+- Use object-oriented, procedural, or functional programming patterns as appropriate.
+- Leverage STL and standard algorithms for collection operations.
+- Use descriptive variable and method names (e.g., 'isUserSignedIn', 'calculateTotal').
+- Structure files into headers (*.hpp) and implementation files (*.cpp) with logical separation of concerns.
 
 ## Naming Conventions
- - Use PascalCase for class names.
- - Use camelCase for variable names and methods.
- - Use SCREAMING_SNAKE_CASE for constants and macros.
- - Prefix member variables with an underscore or m_ (e.g., `_userId`, `m_userId`).
- - Use namespaces to organize code logically.
- ## C++ Features Usage
+- Use PascalCase for class names.
+- Use camelCase for variable names and methods.
+- Use SCREAMING_SNAKE_CASE for constants and macros.
+- Prefix member variables with an underscore or m_ (e.g., `_userId`, `m_userId`).
+- Use namespaces to organize code logically.
+## C++ Features Usage
 
 - Prefer modern C++ features (e.g., auto, range-based loops, smart pointers).
- - Use `std::unique_ptr` and `std::shared_ptr` for memory management.
- - Prefer `std::optional`, `std::variant`, and `std::any` for type-safe alternatives.
- - Use `constexpr` and `const` to optimize compile-time computations.
- - Use `std::string_view` for read-only string operations to avoid unnecessary copies.
+- Use `std::unique_ptr` and `std::shared_ptr` for memory management.
+- Prefer `std::optional`, `std::variant`, and `std::any` for type-safe alternatives.
+- Use `constexpr` and `const` to optimize compile-time computations.
+- Use `std::string_view` for read-string operations to avoid unnecessary copies.
 
 ## Syntax and Formatting
- - Follow a consistent coding style, such as Google C++ Style Guide or your team’s standards.
- - Place braces on the same line for control structures and methods.
- - Use clear and consistent commenting practices.
+- Follow a consistent coding style, such as Google C++ Style Guide or your team’s standards.
+- Place braces on the same line for control structures and methods.
+- Use clear and consistent commenting practices.
 
 ## Error Handling and Validation
- - Use exceptions for error handling (e.g., `std::runtime_error`, `std::invalid_argument`).
- - Use RAII for resource management to avoid memory leaks.
- - Validate inputs at function boundaries.
- - Log errors using a logging library (e.g., spdlog, Boost.Log).
+- Use exceptions for error handling (e.g., `std::runtime_error`, `std::invalid_argument`).
+- Use RAII for resource management to avoid memory leaks.
+- Validate inputs at function boundaries.
+- Log errors using a logging library (e.g., spdlog, Boost.Log).
 
 ## Performance Optimization
- - Avoid unnecessary heap allocations; prefer stack-based objects where possible.
- - Use `std::move` to enable move semantics and avoid copies.
- - Optimize loops with algorithms from `<algorithm>` (e.g., `std::sort`, `std::for_each`).
- - Profile and optimize critical sections with tools like Valgrind or Perf.
+- Avoid unnecessary heap allocations; prefer stack-based objects where possible.
+- Use `std::move` to enable move semantics and avoid copies.
+- Optimize loops with algorithms from `<algorithm>` (e.g., `std::sort`, `std::for_each`).
+- Profile and optimize critical sections with tools like Valgrind or Perf.
 
 ## Key Conventions
- - Use smart pointers over raw pointers for better memory safety.
- - Avoid global variables; use singletons sparingly.
- - Use `enum class` for strongly typed enumerations.
- - Separate interface from implementation in classes.
- - Use templates and metaprogramming judiciously for generic solutions.
+- Use smart pointers over raw pointers for better memory safety.
+- Avoid global variables; use singletons sparingly.
+- Use `enum class` for strongly typed enumerations.
+- Separate interface from implementation in classes.
+- Use templates and metaprogramming judiciously for generic solutions.
 
 ## Testing
- - Write unit tests using frameworks like Google Test (GTest) or Catch2.
- - Mock dependencies with libraries like Google Mock.
- - Implement integration tests for system components.
+- Write unit tests using frameworks like Google Test (GTest) or Catch2.
+- Mock dependencies with libraries like Google Mock.
+- Implement integration tests for system components.
 
 ## Security
- - Use secure coding practices to avoid vulnerabilities (e.g., buffer overflows, dangling pointers).
- - Prefer `std::array` or `std::vector` over raw arrays.
- - Avoid C-style casts; use `static_cast`, `dynamic_cast`, or `reinterpret_cast` when necessary.
- - Enforce const-correctness in functions and member variables.
+- Use secure coding practices to avoid vulnerabilities (e.g., buffer overflows, dangling pointers).
+- Prefer `std::array` or `std::vector` over raw arrays.
+- Avoid C-style casts; use `static_cast`, `dynamic_cast`, or `reinterpret_cast` when necessary.
+- Enforce const-correctness in functions and member variables.
 
 ## Documentation
- - Write clear comments for classes, methods, and critical logic.
- - Use Doxygen for generating API documentation.
- - Document assumptions, constraints, and expected behavior of code.
+- Write clear comments for classes, methods, and critical logic.
+- Use Doxygen for generating API documentation.
+- Document assumptions, constraints, and expected behavior of code.
 
 Follow the official ISO C++ standards and guidelines for best practices in modern C++ development.
 
 # Elixir and Phoenix Best Practices
 *Based on Dave Thomas' (PragDave) coding philosophy*
-Important: always use lates versions of packages and libraries, including Phoenix.
+Important: use lates versions of packages and libraries, including Phoenix.
 
 ## Core Principles
 
@@ -91,13 +90,13 @@ Important: always use lates versions of packages and libraries, including Phoeni
 ## Project Structure
 
 - **Context-Based Organization**: Use Phoenix contexts to define domain boundaries
- lib/my_app/
- accounts/ # User management domain
- billing/ # Payment processing domain
- catalog/ # Product catalog domain
+lib/my_app/
+accounts/ # User management domain
+billing/ # Payment processing domain
+catalog/ # Product catalog domain
 
 - **API/Implementation Separation**: Public API modules delegate to implementation modules
- # In MyApp.Accounts (API module)
+# In MyApp.Accounts (API module)
 
 defdelegate create_user(attrs), to: MyApp.Accounts.UserCreator
 
@@ -109,9 +108,9 @@ defdelegate create_user(attrs), to: MyApp.Accounts.UserCreator
 - **Railway-Oriented Programming**: Chain operations with 'with' for elegant error handling
 
 with {:ok, user} <- find_user(id),
- {:ok, updated} <- update_user(user, attrs) do
- {:ok, updated}
- end
+{:ok, updated} <- update_user(user, attrs) do
+{:ok, updated}
+end
 
 - **Type Specifications**: Add typespecs to all public functions
 
@@ -122,11 +121,11 @@ with {:ok, user} <- find_user(id),
 - **Data Validation**: Validate data at boundaries using Ecto.Changeset even outside of database contexts
 
 def validate_attrs(attrs) do
- {%{}, %{name: :string, email: :string}}
- |> Ecto.Changeset.cast(attrs, [:name, :email])
- |> Ecto.Changeset.validate_required([:name, :email])
- |> Ecto.Changeset.validate_format(:email, ~r/@/)
- end
+{%{}, %{name: :string, email: :string}}
+|> Ecto.Changeset.cast(attrs, [:name, :email])
+|> Ecto.Changeset.validate_required([:name, :email])
+|> Ecto.Changeset.validate_format(:email, ~r/@/)
+end
 
 - **Result Tuples**: Return tagged tuples like '{:ok, result}' or '{:error, reason}' for operations that can fail
 
@@ -146,7 +145,7 @@ def validate_attrs(attrs) do
 - **PubSub for Real-time**: Use Phoenix PubSub for real-time features
 - **Context Boundaries**: Respect context boundaries in controllers and LiveViews
 - **Thin Controllers**: Keep controllers thin, delegating business logic to contexts
-- **Security First**: Always consider security implications (CSRF, XSS, etc.)
+- **Security First**: consider security implications (CSRF, XSS, etc.)
 
 ## Testing Strategies
 
@@ -162,7 +161,7 @@ def validate_attrs(attrs) do
 - **Req for HTTP Clients**: Use Req instead of HTTPoison or Tesla
 - **Behaviours for API Clients**: Define behaviours for API clients to allow easy mocking
 - **Error Handling**: Handle network failures and unexpected responses gracefully
-- **Timeouts**: Always set appropriate timeouts for external calls
+- **Timeouts**: set appropriate timeouts for external calls
 - **Circuit Breakers**: Use circuit breakers for critical external services
 
 ## Naming Conventions
@@ -180,7 +179,7 @@ def validate_attrs(attrs) do
 - **Credo and Dialyzer**: Use for static analysis and type checking
 - **Consistent Formatting**: Use 'mix format' to maintain consistent code style
 - **Continuous Refactoring**: Regularly improve code structure without changing behavior
-- **Comments**: Write comments only when necessary. Describe why, not what it does.
+- **Comments**: Write comments when necessary. Describe why, not what it does.
 
 ## Performance Considerations
 

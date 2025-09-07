@@ -1,172 +1,125 @@
 // MongoDB initialization script
-// This runs when the container is first created
+// This script runs when the MongoDB container starts for the first time
 
 // Switch to the application database
-db = db.getSiblingDB(process.env.MONGO_INITDB_DATABASE || '{{PROJECT_NAME}}');
+db = db.getSiblingDB(process.env.MONGO_INITDB_DATABASE || 'appdb');
 
-// Create application user with read/write permissions
+// Create application user
 db.createUser({
-  user: process.env.MONGO_APP_USER || '{{PROJECT_NAME}}_app',
-  pwd: process.env.MONGO_APP_PASSWORD || 'app_password',
+  user: process.env.MONGO_APP_USER || 'appuser',
+  pwd: process.env.MONGO_APP_PASSWORD || 'apppassword',
   roles: [
     {
       role: 'readWrite',
-      db: process.env.MONGO_INITDB_DATABASE || '{{PROJECT_NAME}}'
+      db: process.env.MONGO_INITDB_DATABASE || 'appdb'
     }
   ]
 });
 
-// Create collections with validators
+// Create collections with validation
 db.createCollection('users', {
   validator: {
     $jsonSchema: {
       bsonType: 'object',
-      required: ['email', 'username', 'createdAt'],
+      required: ['email', 'name', 'createdAt'],
       properties: {
         email: {
           bsonType: 'string',
           pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
-          description: 'Must be a valid email address'
+          description: 'Email must be a valid email address'
         },
-        username: {
+        name: {
           bsonType: 'string',
-          minLength: 3,
-          maxLength: 30,
-          description: 'Username must be between 3 and 30 characters'
-        },
-        password: {
-          bsonType: 'string',
-          description: 'Hashed password'
+          minLength: 2,
+          maxLength: 100,
+          description: 'Name must be a string between 2 and 100 characters'
         },
         role: {
+          bsonType: 'string',
           enum: ['user', 'admin', 'moderator'],
-          description: 'User role'
+          description: 'Role must be one of: user, admin, moderator'
         },
         isActive: {
           bsonType: 'bool',
-          description: 'Account active status'
+          description: 'isActive must be a boolean'
         },
         createdAt: {
           bsonType: 'date',
-          description: 'Account creation timestamp'
+          description: 'createdAt must be a date'
         },
         updatedAt: {
           bsonType: 'date',
-          description: 'Last update timestamp'
+          description: 'updatedAt must be a date'
         }
       }
     }
   }
 });
 
-// Create indexes
-db.users.createIndex({ email: 1 }, { unique: true });
-db.users.createIndex({ username: 1 }, { unique: true });
-db.users.createIndex({ createdAt: -1 });
-
-// Sessions collection for JWT refresh tokens
 db.createCollection('sessions', {
   validator: {
     $jsonSchema: {
       bsonType: 'object',
-      required: ['userId', 'refreshToken', 'expiresAt'],
+      required: ['userId', 'token', 'expiresAt', 'createdAt'],
       properties: {
         userId: {
           bsonType: 'objectId',
-          description: 'Reference to user'
+          description: 'userId must be an ObjectId'
         },
-        refreshToken: {
+        token: {
           bsonType: 'string',
-          description: 'JWT refresh token'
-        },
-        userAgent: {
-          bsonType: 'string',
-          description: 'User agent string'
-        },
-        ipAddress: {
-          bsonType: 'string',
-          description: 'IP address'
+          minLength: 32,
+          description: 'Token must be a string with at least 32 characters'
         },
         expiresAt: {
           bsonType: 'date',
-          description: 'Token expiration timestamp'
+          description: 'expiresAt must be a date'
         },
         createdAt: {
           bsonType: 'date',
-          description: 'Session creation timestamp'
+          description: 'createdAt must be a date'
+        },
+        isActive: {
+          bsonType: 'bool',
+          description: 'isActive must be a boolean'
         }
       }
     }
   }
 });
 
-db.sessions.createIndex({ refreshToken: 1 }, { unique: true });
+// Create indexes for better performance
+db.users.createIndex({ email: 1 }, { unique: true });
+db.users.createIndex({ role: 1 });
+db.users.createIndex({ isActive: 1 });
+db.users.createIndex({ createdAt: 1 });
+
 db.sessions.createIndex({ userId: 1 });
+db.sessions.createIndex({ token: 1 }, { unique: true });
 db.sessions.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+db.sessions.createIndex({ isActive: 1 });
 
-// Audit logs collection (if compliance is required)
-db.createCollection('auditLogs', {
-  validator: {
-    $jsonSchema: {
-      bsonType: 'object',
-      required: ['action', 'timestamp', 'userId'],
-      properties: {
-        action: {
-          bsonType: 'string',
-          description: 'Action performed'
-        },
-        userId: {
-          bsonType: 'objectId',
-          description: 'User who performed the action'
-        },
-        resource: {
-          bsonType: 'string',
-          description: 'Resource affected'
-        },
-        resourceId: {
-          bsonType: 'string',
-          description: 'ID of affected resource'
-        },
-        changes: {
-          bsonType: 'object',
-          description: 'Before and after values'
-        },
-        ipAddress: {
-          bsonType: 'string',
-          description: 'Client IP address'
-        },
-        userAgent: {
-          bsonType: 'string',
-          description: 'Client user agent'
-        },
-        timestamp: {
-          bsonType: 'date',
-          description: 'When the action occurred'
-        }
-      }
-    }
-  }
-});
-
-db.auditLogs.createIndex({ timestamp: -1 });
-db.auditLogs.createIndex({ userId: 1, timestamp: -1 });
-db.auditLogs.createIndex({ action: 1, timestamp: -1 });
-
-// Create a sample admin user (remove in production)
-if (process.env.CREATE_SAMPLE_DATA === 'true') {
-  db.users.insertOne({
-    email: 'admin@{{PROJECT_NAME}}.com',
-    username: 'admin',
-    password: '$2b$10$YourHashedPasswordHere', // Replace with actual hashed password
+// Insert sample data
+db.users.insertMany([
+  {
+    email: 'admin@example.com',
+    name: 'Admin User',
     role: 'admin',
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
-  });
-  
-  print('Sample admin user created');
-}
+  },
+  {
+    email: 'user@example.com',
+    name: 'Regular User',
+    role: 'user',
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+]);
 
-print('MongoDB initialization completed successfully');
-print('Database: ' + db.getName());
-print('Collections created: users, sessions, auditLogs');
+print('MongoDB initialization completed successfully!');
+print('Created collections: users, sessions');
+print('Created indexes for performance optimization');
+print('Inserted sample data');

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [fullstack,framework,nextjs,formatting] | TRIGGERS: formatting,indentation,style,nextjs | SCOPE: project-rules | DESCRIPTION: Next.js formatting and stylistic conventions (indentation, semicolons, string quotes)."
+description: "TAGS: [fullstack,framework,nextjs] | TRIGGERS: [nextjs ] | SCOPE: project-rules | DESCRIPTION: Next.js formatting and stylistic conventions (indentation, semicolons, string quotes)."
 alwaysApply: false
 ---
 
@@ -8,7 +8,7 @@ alwaysApply: false
 
 ## AI Persona
 
-When this rule is active, you are a **Style Steward** ensuring consistent formatting across Next.js code.
+When this rule is active,  a **Style Steward** ensuring consistent formatting across Next.js code.
 
 ## Protocol
 
@@ -19,14 +19,13 @@ When this rule is active, you are a **Style Steward** ensuring consistent format
 ### ✅ Correct Implementation
 ```javascript
 function greet(name) {
-  return 'hello ' + name
+return 'hello ' + name
 }
 ```
 
 ### ❌ Anti-Pattern to Avoid
 ```javascript
 function greet(name) {
-	return "hello " + name;
+return "hello " + name;
 }
 ```
-

@@ -1,8 +1,7 @@
 ---
-description: "TAGS: [language,programming,package-management] | TRIGGERS: programming,language,syntax,package-management,packagemanagement | SCOPE: project-rules | DESCRIPTION: Package Management with `uv`  These rules define strict guidelines for managing Python dependencie."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: Package Management with `uv`  These rules define strict guidelines for managing Python dependencie."
 alwaysApply: false
 ---
-
 
 
 # Package Management with `uv`
@@ -12,11 +11,11 @@ These rules define strict guidelines for managing Python dependencies in this pr
 **✅ Use `uv` exclusively**
 
 - All Python dependencies **must be installed, synchronized, and locked** using `uv`.
-- Never use `pip`, `pip-tools`, or `poetry` directly for dependency management.
+- use `pip`, `pip-tools`, or `poetry` directly for dependency management.
 
 **🔁 Managing Dependencies**
 
-Always use these commands:
+use these commands:
 
 ```bash
 # Add or upgrade dependencies
@@ -36,7 +35,7 @@ uv sync
 uv run script.py
 ```
 
-You can edit inline-metadata manually:
+ edit inline-metadata manually:
 
 ```python
 # /// script

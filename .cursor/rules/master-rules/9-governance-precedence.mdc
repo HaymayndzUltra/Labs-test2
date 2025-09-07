@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [global,governance,precedence] | TRIGGERS: precedence,conflict,resolution | SCOPE: global | DESCRIPTION: Canonical governance precedence and conflict-resolution algorithm for rule-driven automation."
+description: "TAGS: [global,governance] | TRIGGERS: [conflict ] | SCOPE: global | DESCRIPTION: Canonical governance precedence and conflict-resolution algorithm for rule-driven automation."
 alwaysApply: true
 ---
 
@@ -13,26 +13,25 @@ There MUST be a single, canonical precedence ordering used by automated routers 
 ## Protocol
 
 1. **Priority Order (highest → lowest)**
-   - `F8-security-and-compliance-overlay` (critical security/compliance)
-   - `8-auditor-validator-protocol` (audit/validation requirements)
-   - `4-master-rule-code-modification-safety-protocol` (modification safety)
-   - `3-master-rule-code-quality-checklist` (quality rules)
-   - `6-master-rule-complex-feature-context-preservation` (context invariants)
-   - `2-master-rule-ai-collaboration-guidelines` (collaboration behavior)
-   - `5-master-rule-documentation-and-context-guidelines` (docs sync)
-   - `7-dev-workflow-command-router` (workflow routing)
-   - `project-rules/*` (local/project-level guidance)
+- `F8-security-and-compliance-overlay` (critical security/compliance)
+- `8-auditor-validator-protocol` (audit/validation requirements)
+- `4-master-rule-code-modification-safety-protocol` (modification safety)
+- `3-master-rule-code-quality-checklist` (quality rules)
+- `6-master-rule-complex-feature-context-preservation` (context invariants)
+- `2-master-rule-ai-collaboration-guidelines` (collaboration behavior)
+- `5-master-rule-documentation-and-context-guidelines` (docs sync)
+- `7-dev-workflow-command-router` (workflow routing)
+- `project-rules/*` (local/project-level guidance)
 
 2. **Conflict resolution algorithm**
-   - If multiple rules assert mutually exclusive actions, the rule with higher priority wins.
-   - If priorities equal and actions are mergeable (non-conflicting), compose actions.
-   - If priorities equal and actions conflict, produce a `clarify` event and pause automation until human confirmation or an allowed waiver is present.
-   - All override events MUST be recorded in the routing log with `override_reason`, `approver`, and `snapshot_id`.
+- If multiple rules assert mutually exclusive actions, the rule with higher priority wins.
+- If priorities equal and actions are mergeable (non-conflicting), compose actions.
+- If priorities equal and actions conflict, produce a `clarify` event and pause automation until human confirmation or an allowed waiver is present.
+- All override events MUST be recorded in the routing log with `override_reason`, `approver`, and `snapshot_id`.
 
 3. **Auditability**
-   - The router MUST attach `rules_considered` and `winning_rule` to the `routing_log` for each decision.
+- The router MUST attach `rules_considered` and `winning_rule` to the `routing_log` for each decision.
 
 ## Implementation notes
 
 Provide a single machine-readable precedence file consumed by the router; see `/.cursor/dev-workflow/policy-dsl/_schema/schema.json` and `/.cursor/dev-workflow/schemas/routing_log.json` for companion artifacts.
-

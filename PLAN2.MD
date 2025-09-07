@@ -1,413 +1,258 @@
-# Phase-by-Phase Operating Manual (v1)
 
-**Purpose.** Turn the agreed flow into concrete documents, artifacts, and gates that Cursor agents and human reviewers can follow without ambiguity.
-
-**Principles.**
-
-- **Layer 0: AI-Governor** enforces behavior (policy, orchestration, gates, audit trail). Not a framework step.
-- **ACL (Anti-Corruption Layer)**: all cross-framework comms via **shared artifacts** only (tokens, API specs, data contracts, test contracts). No direct internal coupling.
-- **Dual Checker**: **Auditor → Validator** must reach consensus before coding.
-- **Overlays**: **QA (F7)** and **Security (F8)** run throughout Implementation and gate Release.
-
-**Folder baseline** (aligns with repo layout):
-
-your-repo/
-
-.cursor/rules/ # Governor/Rules (to be added after docs are done)
-
-frameworks/
-
-discovery-intake/.cursor/rules/
-
-product-planning/{fe,be}/.cursor/rules/
-
-ux-ui/.cursor/rules/
-
-architecture-api/.cursor/rules/
-
-data-ml/.cursor/rules/
-
-implementation/{fe,be}/.cursor/rules/
-
-qa-test/.cursor/rules/
-
-release-deployment/.cursor/rules/
-
-observability-retro/.cursor/rules/
-
-contracts/{api,data}/ # ACL artifacts (OpenAPI, mocks, schemas)
-
-docs/ # All phase docs (see below)
-
-src/{frontend,backend}/
-
-tests/{unit,integration,contract,e2e,load}/
-
-.github/workflows/
-
-## Layer 0 — AI-Governor (Meta-Layer)
-
-**Role.** Orchestrate, guard, and record. Enforce triggers, immutability, and consensus before phase transitions.
-
-**Key objects.**
-
-- **RunID**: `YYYYMMDD-<feature>-<module>` (e.g., `20250904-auth-fe`).
-- **Artifacts**: immutable markdown/JSON files with frontmatter (`runId`, `version`, `status`).
-- **Triggers (IDs)**: see _Trigger Table_ below.
-
-**Trigger Table (authoritative).**
-
-| Trigger ID           | Meaning                                  | Requires Artifacts                                                              |
-| -------------------- | ---------------------------------------- | ------------------------------------------------------------------------------- |
-| `TRIG-F1-APPROVED`   | Discovery brief approved                 | `docs/discovery/brief.md`, `docs/discovery/rad.md`                              |
-| `TRIG-F2-PRD-LOCKED` | PRD & backlog locked                     | `docs/planning/prd.md`, `docs/planning/roadmap.md`, `docs/planning/backlog.csv` |
-| `TRIG-AUD-PASS`      | Auditor report passes (≥80, no Blockers) | `reports/AUD-<RunID>-vN.md`                                                     |
-| `TRIG-VAL-PASS`      | Validator agrees (≥80, no Blockers)      | `reports/VAL-<RunID>-vN.md`, evidence refs                                      |
-| `TRIG-F3-F4-READY`   | UX tokens + API contracts ready          | `design/tokens/*.json`, `contracts/api/*`                                       |
-| `TRIG-F6-START`      | Implementation may begin                 | `reports/DECISION-<RunID>-vN.md` = Go                                           |
-| `TRIG-F7-GREEN`      | QA gates green                           | CI reports + `docs/qa/strategy.md`                                              |
-| `TRIG-F8-GREEN`      | Security gates green                     | SBOM + scans + `security/threat-model/*.md`                                     |
-| `TRIG-F9-READY`      | Release approved                         | `.github/workflows/*`, runbook, sign-off                                        |
-| `TRIG-F10-RETRO`     | Retro complete                           | `docs/retro/<RunID>-retro.md`                                                   |
-|                      |                                          |                                                                                 |
-
-**Governor Rules (summary).**
-
-- Only triggers change phase. No implicit transitions.
-- All agent communication via artifacts; no shared scratchpads.
-- Auditor cannot open repo unless a specific file is cited by Planner; Validator must consult artifacts before repo.
-- If `AUD` and `VAL` disagree → create `reports/AUD-VAL-CONFLICT-<RunID>-vN.md`; loop max 2 cycles; if still Major → scope freeze & feature-flag.
-
----
-
-## F1 — Discovery & Intake
-
-**Goal.** Define the problem, constraints, KPIs, and risks.
-
-**Inputs.** Repo snapshot, any existing docs/policies.
-
-**Deliverables + Paths.**
-
-- `docs/discovery/brief.md`
-- `docs/discovery/rad.md` (Risks/Assumptions/Dependencies)
-
-**Definition of Done (DoD).**
-
-- KPIs measurable; top risks ranked; constraints explicit; traceability IDs present.
-
-**ACL Guard.** Only approved brief & KPIs pass to F2.
-
-**Exit Trigger.** `TRIG-F1-APPROVED`.
-
-**Template (brief.md).**
-
-# Discovery Brief — <RunID>
-
-- Problem statement
-
-- Users & constraints
-
-- KPIs (with measurement plan)
-
-- Risks/Assumptions/Dependencies summary
-
-- Trace IDs
-
-## F2 — Product Planning
-
-**Goal.** Turn discovery into PRD, backlog, and milestones.
-
-**Deliverables + Paths.**
-
-- `docs/planning/prd.md`
-- `docs/planning/roadmap.md`
-- `docs/planning/backlog.csv`
-
-**DoD.** PRD signed; MVP scope fixed; acceptance criteria per feature; non-goals listed.
-
-**ACL Guard.** Only acceptance criteria & milestones pass outward; internal estimation sheets remain private.
-
-**Exit Trigger.** `TRIG-F2-PRD-LOCKED`.
-
-**Template (prd.md).**
-
-# PRD — <RunID>
-
-- Goals & non-goals
-
-- User stories / acceptance criteria
-
-- NFRs (perf/availability/security)
-
-- Rollback strategy / flags
-
-## F3 — UX/UI Design (parallel with F4)
-
-**Goal.** User flows, tokens, component contracts, accessibility.
-
-**Deliverables + Paths.**
-
-- `design/tokens/*.json`
-- `design/specs/*.md`
-- `design/flows/*.md`
-
-**DoD.** Tokens versioned; Storybook/preview linked; WCAG checks pass.
-
-**ACL Guard.** Expose only tokens & component contracts, not raw explorations.
-
-**Readiness Trigger.** contributes to `TRIG-F3-F4-READY`.
-
-**Checklists.**
-
-## F4 — Architecture & API (parallel with F3)
-
-**Goal.** Boundaries, ADRs, API contracts, performance baseline.
-
-**Deliverables + Paths.**
-
-- `docs/architecture/adr/*.md`
-- `docs/architecture/diagrams/*`
-- `contracts/api/*.yaml|json` (OpenAPI/GraphQL/gRPC)
-- `contracts/mocks/*`
-
-**DoD.** ADR approved; versioned contracts; baseline load test captured.
-
-**ACL Guard.** Publish stubs/mocks; no internal debates.
-
-**Readiness Trigger.** contributes to `TRIG-F3-F4-READY`.
-
-**Checklist.**
-
-- ***
-
-## F5 — Data/ML (Optional)
-
-**Goal.** Canonical schemas, pipelines, (if ML) baseline.
-
-**Deliverables + Paths.**
-
-- `docs/data/schemas/*.yaml`
-- `docs/data/contracts/*.md`
-- `data/pipelines/*`
-
-**DoD.** Schemas validated; lineage documented; privacy checks green.
-
-**Skip Logic.** If out of scope, mark `F5: SKIPPED` in `DECISION-<RunID>-vN.md`; ensure no other phase assumes pipelines exist.
-
----
-
-## Pre-Implementation Gate — Dual Checker
-
-**Auditor (First Pass).** `reports/AUD-<RunID>-vN.md`
-
-- Traceability (PRD → UX/API/(Data))
-- Logic Completeness/Consistency/Testability
-- Risks & change requests
-- **Score** (0–100) and Blocking list
-
-**Validator (Second Pass).** `reports/VAL-<RunID>-vN.md`
-
-- Agreement matrix vs Auditor
-- Repo alignment (contracts, stubs, CI gates)
-- Evidence (paths/lines), recommended tests
-- **Score** (0–100) and Go/No-Go
-
-**Scoring rubric.** 0–3 per criterion → normalize to 100; **Proceed** if both ≥ 80 and **no Blocking**.
-
-**Conflict protocol.** `reports/AUD-VAL-CONFLICT-<RunID>-vN.md`; loop ≤ 2; else scope freeze/flag.
-
-**Exit Trigger to Implementation.** `TRIG-AUD-PASS` + `TRIG-VAL-PASS` → `TRIG-F6-START` with `reports/DECISION-<RunID>-vN.md` (Go).
-
----
-
-## F6 — Implementation (Coding)
-
-**Tracks.** `src/frontend/*` and `src/backend/*`.
-
-**DoD (both tracks).**
-
-- Tests: ≥80% on critical paths; contract & integration tests pass
-- Perf smoke within budgets
-- Telemetry hooks added
-- No direct cross-framework calls (ACL enforced)
-
-**Artifacts.**
-
-- FE: `src/frontend/*`, `tests/frontend/*`, `design/token-usage/*.md`
-- BE: `src/backend/*`, `tests/backend/*`, `docs/services/*.md`
-
-**Branching & IDs.**
-
-- Branch: `feat/<feature>/<RunID>`; PR label `ready-for-qa` only if tests/local checks pass.
-
-**Overlays.** QA & Security run continuously.
-
----
-
-## F7 — QA & Test Strategy (Overlay)
-
-**Goal.** Gate quality by tests and CI stability.
-
-**Deliverables + Paths.**
-
-- `docs/qa/strategy.md`
-- `tests/**/*`, `ci/*`
-
-**Gate.** `TRIG-F7-GREEN` if: coverage ≥80%, flake <2%, contract tests green on `integration` branch.
-
----
-
-## F8 — Security & Compliance (Overlay)
-
-**Goal.** Threat model, scans, SBOM, compliance evidence.
-
-**Deliverables + Paths.**
-
-- `security/threat-model/*.md`
-- `.github/dependabot.yml`
-- `security/sbom/*`
-- `compliance/evidence/*`
-
-**Gate.** `TRIG-F8-GREEN` if: no critical vulns; SBOM published; policies pass.
-
----
-
-## F9 — Release & Deployment
-
-**Goal.** CI/CD, signing, progressive delivery, rollback.
-
-**Deliverables + Paths.**
-
-- `.github/workflows/*`
-- `infra/*`
-- `docs/release/runbooks/*.md`
-
-**Gate.** `TRIG-F9-READY` if: QA/Sec green; artifacts signed; rollback ≤5 min; approvals complete.
-
----
-
-## F10 — Observability & Improve (Retro)
-
-**Goal.** Instrumentation, dashboards, SLOs, retros.
-
-**Deliverables + Paths.**
-
-- `observability/dashboards/*`
-- `observability/alerts/*`
-- `docs/retro/<RunID>-retro.md`
-
-**Loop.** Retro creates actions routed back to Planning/Discovery.
-
-**Exit Trigger.** `TRIG-F10-RETRO`.
-
----
-
-## ACL (Anti-Corruption Layer) — Contract Types & Enforcement
-
-**Shared artifacts only:**
-
-- **Design tokens & component contracts** (`design/tokens/*.json`, `design/specs/*.md`)
-- **API contracts & mocks** (`contracts/api/*`, `contracts/mocks/*`)
-- **Data contracts & schemas** (`docs/data/schemas/*.yaml`, `docs/data/contracts/*.md`)
-- **Test contracts** (QA: `tests/contract/*`)
-
-**Enforcement hooks.**
-
-- Contract diff → semver check
-- No imports across frameworks except through generated clients
-- CI jobs: `check:contracts`, `check:tokens`, `check:sbom`
-
----
-
-## PR Labels & Status Gates (minimal)
-
-- `ready-for-audit` → run Auditor
-- `ready-for-validate` → run Validator
-- `ready-for-implementation` → requires `DECISION-<RunID>-vN.md=Go`
-- `ready-for-release` → requires `TRIG-F7-GREEN` + `TRIG-F8-GREEN`
-
----
-
-## Minimal Templates (copy-paste)
-
-`**reports/AUD-<RunID>-vN.md**`
-
-# AUD Report — <RunID> vN
-
-Score: <0–100> | Blockers: [ ]Yes [ ]No
-
-1. Traceability
-
-2. Logic Completeness/Consistency/Testability
-
-3. Risks & Mitigations
-
-4. Change Requests
-
-5. Confidence & Next Steps
-
-reports/VAL-<RunID>-vN.md
-
-# VAL Report — <RunID> vN
-
-Score: <0–100> | Blockers: [ ]Yes [ ]No
-
-Agreement Matrix (AUD item → Agree/Disagree/Partial + reason)
-
-Repo Alignment (paths/lines)
-
-Recommended Tests / CI Gates
-
-Go/No-Go & Residual Risk
-
-reports/DECISION-<RunID>-vN.md
-
-# Decision — <RunID> vN
-
-Result: Go / No-Go
-
-Scope Freezes / Feature Flags
-
-Triggers satisfied: AUD, VAL, F3/F4 readiness
-
-Notes
-
-## Working Agreement (RACI-ish)
-
-- **Planner**: owns F2 artifacts
-- **Auditor**: owns AUD report
-- **Validator**: owns VAL report + evidence
-- **Implementors (FE/BE)**: own F6
-- **QA**: owns F7 gates
-- **Security**: owns F8 gates
-- **Release**: owns F9
-- **Observability**: owns F10 & retro
-- **AI-Governor**: owns triggers & policy enforcement
-
----
-
-## Quick Start (what to do next)
-
-1. Create the folders/doc stubs listed above (empty files are okay to start).
-2. Fill F1 → get `TRIG-F1-APPROVED`.
-3. Fill F2 → lock PRD & backlog (`TRIG-F2-PRD-LOCKED`).
-4. Run Auditor → Validator; resolve conflicts; issue `DECISION` (Go) when ready.
-5. Only then trigger Implementation (`TRIG-F6-START`).
-
----
-
-### Simple Tagalog na paliwanag
-
-Ito ang kumpletong gabay na “hakbang-hakbang.” May mga **file na dapat mong likhain** per phase, may **checklist** kung ano ang DoD, at may **triggers** na pipindutin ng AI-Governor para makausad ang trabaho. Bago mag-code, kailangan munang magkasundo si **Auditor at Validator**. Habang nagco-code, bantay ang **QA at Security**. Pag-release, meron tayong **runbooks at rollback**; tapos sa **Observability**, may **retro** para bumalik ang aral sa susunod na cycle.
-
-Done — nilagay ko na sa canvas ang **Phase-by-Phase Operating Manual (v1)** with all phases, deliverables, DoD checklists, ACL rules, and the exact **trigger table** for the AI-Governor.
-
-Kung ok ang structure, next step natin:
-
-1. Fill out **F1 Discovery** stubs → get `TRIG-F1-APPROVED`.
-2. Draft **F2 PRD/Backlog** → lock with `TRIG-F2-PRD-LOCKED`.
-3. Run **Auditor → Validator** using the provided report templates.
-4. Pag **Go**, saka natin i-wire ang **Cursor Rules** to enforce the triggers in the doc.
-
-maikling Tagalog paliwanag:  
-Kompleto na ang dokumento ng mga hakbang at requirements. Gagamitin natin ito bilang “script” ng buong cycle. Kapag napunan mo ang bawat section at na-trigger ang mga naka-lista, tuloy-tuloy at kontrolado ang daloy—walang makakalusot na step.
+- Phase 1: Template Completion (Templates - 2-3 days)
+1.1 Backend Templates
+1.2 Frontend Templates
+
+✅ FastAPI (complete)
+✅ Django (complete):
+   - Complete apps structure with models, views, urls
+   - Security settings and management commands
+   - JWT authentication and testing
+   - Docker support and setup scripts
+   
+✅ NestJS (complete):
+   - TypeScript implementation with TypeORM
+   - Controllers, services, DTOs, guards
+   - JWT auth, RBAC, rate limiting
+   - Swagger docs and E2E tests
+   
+✅ Go (complete):
+   - Echo framework with clean architecture
+   - JWT authentication and RBAC
+   - GORM with migrations
+   - Rate limiting and validation
+
+1.2 Frontend Templates
+✅ Next.js (complete)
+✅ Nuxt (complete):
+   - Nuxt 3 with pages, components, layouts
+   - Pinia store and TypeScript
+   - JWT authentication and API composables
+   - Tailwind CSS and component library
+   
+✅ Angular (complete):
+   - Angular 17 with standalone components
+   - Services, guards, and routing
+   - Tailwind CSS and HTTP interceptors
+   - Signals and lazy loading
+   
+✅ Expo (complete):
+   - React Native with Expo SDK
+   - React Navigation and Zustand
+   - JWT authentication and secure storage
+   - EAS build configuration
+
+1.3 Database Templates
+✅ PostgreSQL (complete)
+✅ MongoDB (complete):
+   - docker-compose.yml with health checks
+   - init-mongo.js with collections/indexes
+   - README.md with connection strings
+   - Sample schemas and backup scripts
+   
+✅ Firebase (complete):
+   - firebase.json configured
+   - Firestore security rules
+   - Firestore indexes defined
+   - Cloud Functions with TypeScript
+   - Storage rules and README
+
+Phase 2: Generator Enhancement (1-2 days)
+2.1 Interactive Mode
+
+def run_interactive_mode():
+    """Interactive wizard for project configuration"""
+    print("🎯 Client Project Generator - Interactive Mode")
+    
+    # Step 1: Project basics
+    name = input("Project name: ")
+    industry = select_from_list("Industry", INDUSTRIES)
+    
+    # Step 2: Technology stack
+    if confirm("Use recommended stack for {}?".format(industry)):
+        stack = get_recommended_stack(industry)
+    else:
+        stack = custom_stack_selection()
+    
+    # Step 3: Features
+    features = multi_select("Features", get_industry_features(industry))
+    
+    # Step 4: Compliance
+    compliance = auto_select_compliance(industry)
+    
+    return build_args(name, industry, stack, features, compliance)
+
+2.2 Validation Enhancement
+
+def validate_comprehensive(args):
+    """Enhanced validation with dependency checks"""
+    - Check technology compatibility
+    - Validate feature requirements
+    - Ensure compliance prerequisites
+    - Check system dependencies (node, python, docker)
+
+Phase 3: Missing Compliance Rules (1 day)
+3.1 SOX Compliance
+
+# industry-compliance-sox.mdc
+- Financial controls
+- Audit trails
+- Change management
+- Access segregation
+- Data retention (7 years)
+
+3.2 PCI DSS Compliance
+
+# industry-compliance-pci.mdc
+- Card data encryption
+- Network segmentation
+- Vulnerability scanning
+- Access control
+- Security testing
+
+Phase 4: Enhanced CI/CD (1 day)
+4.1 Industry-Specific Gates
+
+# gates_config_healthcare.yaml
+quality_gates:
+  test_coverage:
+    threshold: 90  # Higher for healthcare
+  security_scan:
+    critical_threshold: 0
+    high_threshold: 0
+  
+compliance_gates:
+  hipaa:
+    phi_encryption: required
+    audit_logging: required
+    session_timeout: 15
+
+4.2 Multi-Cloud Deployment
+# AWS deployment
+- ECS/Fargate configs
+- RDS setup
+- S3 buckets
+- CloudFront
+
+# Azure deployment
+- AKS configs
+- Cosmos DB
+- Blob storage
+- CDN
+
+# GCP deployment
+- Cloud Run
+- Cloud SQL
+- Cloud Storage
+- Cloud CDN
+
+Phase 5: AI Governor Integration (1 day)
+5.1 Pre-commit Hooks
+
+#!/bin/bash
+# .git/hooks/pre-commit
+python3 .cursor/tools/validate_rules.py
+python3 .cursor/tools/check_compliance.py
+
+5.2 Workflow Automation
+def setup_ai_workflows(project_path):
+    """Configure AI Governor workflows"""
+    - Copy master rules
+    - Generate router_config.json
+    - Create workflow mappings
+    - Setup context preservation
+
+Phase 6: Testing Implementation (2 days)
+6.1 Unit Tests
+
+# tests/test_generator.py
+def test_project_generation():
+    """Test basic project generation"""
+    
+def test_template_selection():
+    """Test template selection logic"""
+    
+def test_compliance_validation():
+    """Test compliance rule application"""
+
+6.2 Integration Tests
+
+# tests/test_integration.py
+def test_full_stack_generation():
+    """Test complete project generation"""
+    
+def test_cicd_generation():
+    """Test CI/CD pipeline generation"""
+
+6.3 E2E Tests
+
+# tests/e2e/test_generated_project.sh
+- Generate project
+- Run setup
+- Start services
+- Run health checks
+- Execute sample requests
+
+Phase 7: Documentation (1 day)
+7.1 Generator Documentation
+
+# README.md
+- Installation guide
+- Usage examples
+- Template customization
+- Troubleshooting
+
+# CONTRIBUTING.md
+- Development setup
+- Template guidelines
+- Testing requirements
+- PR process
+
+# docs/TEMPLATES.md
+- Template structure
+- Customization guide
+- Adding new templates
+
+7.2 Template Documentation
+
+# Each template folder README.md
+- Technology overview
+- Prerequisites
+- Structure explanation
+- Customization points
+- Common issues
+
+Phase 8: Polish & Optimization (1 day)
+8.1 Performance
+Parallel template copying
+Lazy loading of templates
+Progress indicators
+Better error messages
+8.2 UX Improvements
+
+# Enhanced output
+with Progress() as progress:
+    task = progress.add_task("Generating project...", total=100)
+    # Update progress during generation
+Phase 9: Advanced Features (Optional - 2 days)
+9.1 Plugin System
+
+9.2 Template Marketplace
+Template versioning
+Community templates
+Template validation
+Auto-updates
+📅 Total Timeline: 12-15 days
+🎯 Priority Order:
+Critical: Complete missing templates (Django, NestJS, MongoDB)
+Important: Interactive mode, SOX/PCI compliance
+Nice-to-have: Plugin system, marketplace
+🚀 Immediate Next Steps:
+✅ Create Django backend template - DONE
+✅ Create NestJS backend template - DONE
+✅ Create Go backend template - DONE
+✅ Create frontend templates (Nuxt, Angular, Expo) - DONE
+✅ Create database templates (MongoDB, Firebase) - DONE
+Implement interactive mode
+Add SOX/PCI compliance rules
+Write basic unit tests

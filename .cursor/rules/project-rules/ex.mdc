@@ -1,13 +1,12 @@
 ---
-description: "TAGS: [language,programming,ex] | TRIGGERS: programming,language,syntax,ex | SCOPE: project-rules | DESCRIPTION: Elixir and Phoenix Best Practices *Based on Dave Thomas' (PragDave) coding philosophy* Important: ."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: Elixir and Phoenix Best Practices *Based on Dave Thomas' (PragDave) coding philosophy* Important: ."
 alwaysApply: false
 ---
 
 
-
 # Elixir and Phoenix Best Practices
 *Based on Dave Thomas' (PragDave) coding philosophy*
-Important: always use lates versions of packages and libraries, including Phoenix.
+Important: use lates versions of packages and libraries, including Phoenix.
 
 ## Core Principles
 
@@ -23,13 +22,13 @@ Important: always use lates versions of packages and libraries, including Phoeni
 ## Project Structure
 
 - **Context-Based Organization**: Use Phoenix contexts to define domain boundaries
- lib/my_app/
- accounts/ # User management domain
- billing/ # Payment processing domain
- catalog/ # Product catalog domain
+lib/my_app/
+accounts/ # User management domain
+billing/ # Payment processing domain
+catalog/ # Product catalog domain
 
 - **API/Implementation Separation**: Public API modules delegate to implementation modules
- # In MyApp.Accounts (API module)
+# In MyApp.Accounts (API module)
 
 defdelegate create_user(attrs), to: MyApp.Accounts.UserCreator
 
@@ -41,9 +40,9 @@ defdelegate create_user(attrs), to: MyApp.Accounts.UserCreator
 - **Railway-Oriented Programming**: Chain operations with 'with' for elegant error handling
 
 with {:ok, user} <- find_user(id),
- {:ok, updated} <- update_user(user, attrs) do
- {:ok, updated}
- end
+{:ok, updated} <- update_user(user, attrs) do
+{:ok, updated}
+end
 
 - **Type Specifications**: Add typespecs to all public functions
 
@@ -54,11 +53,11 @@ with {:ok, user} <- find_user(id),
 - **Data Validation**: Validate data at boundaries using Ecto.Changeset even outside of database contexts
 
 def validate_attrs(attrs) do
- {%{}, %{name: :string, email: :string}}
- |> Ecto.Changeset.cast(attrs, [:name, :email])
- |> Ecto.Changeset.validate_required([:name, :email])
- |> Ecto.Changeset.validate_format(:email, ~r/@/)
- end
+{%{}, %{name: :string, email: :string}}
+|> Ecto.Changeset.cast(attrs, [:name, :email])
+|> Ecto.Changeset.validate_required([:name, :email])
+|> Ecto.Changeset.validate_format(:email, ~r/@/)
+end
 
 - **Result Tuples**: Return tagged tuples like '{:ok, result}' or '{:error, reason}' for operations that can fail
 
@@ -78,7 +77,7 @@ def validate_attrs(attrs) do
 - **PubSub for Real-time**: Use Phoenix PubSub for real-time features
 - **Context Boundaries**: Respect context boundaries in controllers and LiveViews
 - **Thin Controllers**: Keep controllers thin, delegating business logic to contexts
-- **Security First**: Always consider security implications (CSRF, XSS, etc.)
+- **Security First**: consider security implications (CSRF, XSS, etc.)
 
 ## Testing Strategies
 
@@ -94,7 +93,7 @@ def validate_attrs(attrs) do
 - **Req for HTTP Clients**: Use Req instead of HTTPoison or Tesla
 - **Behaviours for API Clients**: Define behaviours for API clients to allow easy mocking
 - **Error Handling**: Handle network failures and unexpected responses gracefully
-- **Timeouts**: Always set appropriate timeouts for external calls
+- **Timeouts**: set appropriate timeouts for external calls
 - **Circuit Breakers**: Use circuit breakers for critical external services
 
 ## Naming Conventions
@@ -112,7 +111,7 @@ def validate_attrs(attrs) do
 - **Credo and Dialyzer**: Use for static analysis and type checking
 - **Consistent Formatting**: Use 'mix format' to maintain consistent code style
 - **Continuous Refactoring**: Regularly improve code structure without changing behavior
-- **Comments**: Write comments only when necessary. Describe why, not what it does.
+- **Comments**: Write comments when necessary. Describe why, not what it does.
 
 ## Performance Considerations
 

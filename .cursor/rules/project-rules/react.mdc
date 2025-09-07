@@ -1,12 +1,13 @@
 ---
-description: "TAGS: [frontend,ui,component,react] | TRIGGERS: frontend,ui,component,interface,web,react,reactjs,jsx,hooks,components,state-management| SCOPE: project-rules | DESCRIPTION: Expert React development with modern hooks, TypeScript, and performance optimization best practices."
+description: "TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ] | SCOPE: project-rules | DESCRIPTION: Expert React development with modern hooks, TypeScript, and performance optimization best practices."
 alwaysApply: false
 ---
+
 
 # React Development Rule
 
 ## AI Persona
-When this rule is active, you are a **Senior React Engineer** with expertise in modern React patterns, TypeScript, performance optimization, and accessibility. You build scalable, maintainable applications using React's latest features and best practices.
+When this rule is active,  a **Senior React Engineer** with expertise in modern React patterns, TypeScript, performance optimization, and accessibility. You build scalable, maintainable applications using React's latest features and best practices.
 
 ## Core Principle
 React components should be simple, focused, and reusable. Every component should have a single responsibility, leverage React's declarative nature, and prioritize user experience through performance and accessibility.
@@ -21,7 +22,7 @@ React components should be simple, focused, and reusable. Every component should
 
 ### **[STRICT] State Management and Effects**
 1. **`[STRICT]` useState for Local State**: Use useState for component-specific state
-2. **`[STRICT]` useEffect Cleanup**: Always clean up effects to prevent memory leaks
+2. **`[STRICT]` useEffect Cleanup**: clean up effects to prevent memory leaks
 3. **`[STRICT]` Dependency Arrays**: Include all dependencies in useEffect dependency arrays
 4. **`[GUIDELINE]` Custom Hooks**: Extract complex logic into custom hooks for reusability
 
@@ -39,50 +40,50 @@ React components should be simple, focused, and reusable. Every component should
 import React, { useState, useEffect, useCallback } from 'react';
 
 interface User {
-  id: string;
-  name: string;
-  email: string;
+id: string;
+name: string;
+email: string;
 }
 
 interface UserProfileProps {
-  userId: string;
-  onUserUpdate?: (user: User) => void;
+userId: string;
+onUserUpdate?: (user: User) => void;
 }
 
-export const UserProfile: React.FC<UserProfileProps> = ({ 
-  userId, 
-  onUserUpdate 
+export const UserProfile: React.FC<UserProfileProps> = ({
+userId,
+onUserUpdate
 }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  const fetchUser = useCallback(async () => {
-    
-    try {
-      setIsLoading(true);
-      const response = await fetch(`/api/users/${userId}`);
-      const userData = await response.json();
-      setUser(userData);
-      onUserUpdate?.(userData);
-    } catch (err) {
-      console.error('Failed to fetch user:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [userId, onUserUpdate]);
+const [user, setUser] = useState<User | null>(null);
+const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+const fetchUser = useCallback(async () => {
 
-  if (isLoading) return <div>Loading...</div>;
+try {
+setIsLoading(true);
+const response = await fetch(`/api/users/${userId}`);
+const userData = await response.json();
+setUser(userData);
+onUserUpdate?.(userData);
+} catch (err) {
+console.error('Failed to fetch user:', err);
+} finally {
+setIsLoading(false);
+}
+}, [userId, onUserUpdate]);
 
-  return (
-    <article className="p-6 bg-white rounded-lg shadow-sm">
-      <h1 className="text-2xl font-bold">{user.name}</h1>
-      <p className="text-gray-600">{user.email}</p>
-    </article>
-  );
+useEffect(() => {
+fetchUser();
+}, [fetchUser]);
+
+if (isLoading) return <div>Loading...</div>;
+
+return (
+<article className="p-6 bg-white rounded-lg shadow-sm">
+<h1 className="text-2xl font-bold">{user.name}</h1>
+<p className="text-gray-600">{user.email}</p>
+</article>
+);
 };
 ```
 
@@ -90,27 +91,27 @@ export const UserProfile: React.FC<UserProfileProps> = ({
 ```tsx
 // DON'T: Missing TypeScript, poor structure, no error handling
 export default function UserProfile(props) {
-  const [user, setUser] = React.useState();
-  
-  React.useEffect(() => {
-    // Missing dependency array - runs every render
-    fetch('/api/users/' + props.userId)
-      .then(response => response.json())
-      .then(data => setUser(data));
-  });
+const [user, setUser] = React.useState();
 
-  // Deep nesting instead of early returns
-  return (
-    <div>
-      {user ? (
-        <div>
-          <div>{user.name}</div>
-          <div>{user.email}</div>
-        </div>
-      ) : (
-        <div>Loading...</div>
-      )}
-    </div>
-  );
+React.useEffect(() => {
+// Missing dependency array - runs every render
+fetch('/api/users/' + props.userId)
+.then(response => response.json())
+.then(data => setUser(data));
+});
+
+// Deep nesting instead of early returns
+return (
+<div>
+{user ? (
+<div>
+<div>{user.name}</div>
+<div>{user.email}</div>
+</div>
+) : (
+<div>Loading...</div>
+)}
+</div>
+);
 }
 ```

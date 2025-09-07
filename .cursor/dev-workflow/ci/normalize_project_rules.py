@@ -2,7 +2,7 @@
 import os
 import re
 
-ROOT = '/workspace'
+ROOT = '/home/haymayndz/Labs-test2'
 PR_DIR = os.path.join(ROOT, '.cursor', 'rules', 'project-rules')
 
 fm_re = re.compile(r'^(---\n)(.*?\n)(---\n)', re.S)

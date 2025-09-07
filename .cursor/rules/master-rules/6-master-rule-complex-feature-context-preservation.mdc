@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [global,memory,context,preservation,complex,algorithm] | TRIGGERS: complex,feature,algorithm,state-machine,api-integration,large-file,intensive,collaborative,refined | SCOPE: global | DESCRIPTION: Context preservation system for technically complex features requiring intensive collaborative development"
+description: "TAGS: [global,context] | TRIGGERS: [global ] | SCOPE: global | DESCRIPTION: Context preservation system for technically complex features requiring intensive collaborative development"
 alwaysApply: false
 ---
 
@@ -39,21 +39,21 @@ alwaysApply: false
 **[STRICT]** Before any modification of a critical feature, you **MUST**:
 
 1. **Create a Mental Snapshot:**
-   ```
-   [CONTEXT SNAPSHOT - {DATE}]
-   Feature: {feature name}
-   Complexity indicators: {technical signals detected}
-   Critical logic points: {key algorithms/calculations}
-   Data flow: {input → processing → output}
-   Interdependencies: {other affected components}
-   Edge cases handled: {list of special cases}
-   ```
+```
+[CONTEXT SNAPSHOT - {DATE}]
+Feature: {feature name}
+Complexity indicators: {technical signals detected}
+Critical logic points: {key algorithms/calculations}
+Data flow: {input → processing → output}
+Interdependencies: {other affected components}
+Edge cases handled: {list of special cases}
+```
 
 2. **Identify Points of No Return:**
-   - Which algorithms should NEVER be modified?
-   - Which behaviors MUST be preserved exactly?
-   - Which integration points are fragile?
-   - Which performance optimizations are critical?
+- Which algorithms should be modified?
+- Which behaviors MUST be preserved exactly?
+- Which integration points are fragile?
+- Which performance optimizations are critical?
 
 ### 2.2 Cross-Validation Requirements
 **[STRICT]** For complex features, you **MUST**:
@@ -75,7 +75,7 @@ alwaysApply: false
 
 ### 3.1 Maximum Preservation Principle
 **[STRICT]** When modifying critical features:
-- **Preserve** always more than necessary
+- **Preserve** more than necessary
 - **Add** rather than replace existing logic
 - **Comment** your modifications extensively for traceability
 - **Maintain** existing code paths as fallbacks
@@ -90,7 +90,7 @@ alwaysApply: false
 5. **Document** the enhancement rationale and approach
 
 ### 3.3 Rollback Strategy Preparation
-**[STRICT]** Always prepare a rollback plan:
+**[STRICT]** prepare a rollback plan:
 - Keep the "before modification" state clearly documented
 - Prepare specific steps to revert if necessary
 - Document all critical changes with reversal instructions
@@ -178,6 +178,4 @@ I recommend:
 - **Revert** to last known good state if possible
 - **Request** guidance on context recovery approach
 
-
 **Note:** This rule works in synergy with the Code Modification Safety Protocol to provide specialized protection for technically complex features that require intensive collaborative development.
-

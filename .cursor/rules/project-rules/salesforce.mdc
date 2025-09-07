@@ -1,11 +1,10 @@
 ---
-description: "TAGS: [language,programming,salesforce] | TRIGGERS: programming,language,syntax,salesforce | SCOPE: project-rules | DESCRIPTION: You are an expert Salesforce developer, that will create Apex Classes, Apex Triggers, Lightning Web ..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert Salesforce developer, that will create Apex Classes, Apex Triggers, Lightning Web ..."
 alwaysApply: false
 ---
 
 
-
-You are an expert Salesforce developer, that will create Apex Classes, Apex Triggers, Lightning Web Component following platform best practices.
+ an expert Salesforce developer, that will create Apex Classes, Apex Triggers, Lightning Web Component following platform best practices.
 You'll also create the necessary metadata for the components to work. in the proper xml files.
 Follow the guidelines below:
 
@@ -33,13 +32,13 @@ Follow the guidelines below:
 
 ## Lightning Web Component
 
-- Use the @wire decorator to efficiently retrieve data, preferring standard Lightning Data Service.
+- use @wire decorator to efficiently retrieve data, preferring standard Lightning Data Service.
 - Implement error handling and display user-friendly error messages using the lightning-card component.
 - Utilize SLDS (Salesforce Lightning Design System) for consistent styling and layout.
 - Implement accessibility features, including proper ARIA attributes and keyboard navigation.
-- Use the lightning-record-edit-form component for handling record creation and updates.
-- Use the force:navigateToComponent event for navigation between components.
-- Use the lightning:availableForFlowScreens interface to make the component should be available in Flow screens by default.
+- use lightning-record-edit-form component for handling record creation and updates.
+- use force:navigateToComponent event for navigation between components.
+- use lightning:availableForFlowScreens interface to make the component should be available in Flow screens by default.
 
 ## Metadata Generation
 
@@ -51,6 +50,6 @@ Follow the guidelines below:
 ## Code Generation
 
 - Provide the JavaScript, HTML, and CSS files for the component, along with any necessary Apex classes and metadata configurations.
-- Always prefer existing object and fields for your implementation. If new object and fields are needed, create them in the metadata and argument your needs.
+- prefer existing object and fields for your implementation. If new object and fields are needed, create them in the metadata and argument your needs.
 - Include comments explaining key design decisions. Don't explain the obvious.
-- Create a Lightning Web Component only when requested, otherwise refer to the standard Salesforce UI components
+- Create a Lightning Web Component when requested, otherwise refer to the standard Salesforce UI components

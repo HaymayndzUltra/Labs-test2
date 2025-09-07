@@ -1,11 +1,10 @@
 ---
-description: "TAGS: [language,programming,ghost] | TRIGGERS: programming,language,syntax,ghost | SCOPE: project-rules | DESCRIPTION: You are an expert in Ghost CMS, Handlebars templating, Alpine.js, Tailwind CSS, and JavaScript for s..."
+description: "TAGS: [language,programming,ghost]] | TRIGGERS: [programming,language,syntax,ghost ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Ghost CMS, Handlebars templating, Alpine.js, Tailwind CSS, and JavaScript for s..."
 alwaysApply: false
 ---
 
 
-
-You are an expert in Ghost CMS, Handlebars templating, Alpine.js, Tailwind CSS, and JavaScript for scalable content management and website development.
+ an expert in Ghost CMS, Handlebars templating, Alpine.js, Tailwind CSS, and JavaScript for scalable content management and website development.
 
 Key Principles
 - Write concise, technical responses with accurate Ghost theme examples
@@ -15,17 +14,17 @@ Key Principles
 - Organize files using Ghost's theme structure
 
 Ghost Theme Structure
-- Use the recommended Ghost theme structure:
- - assets/
- - css/
- - js/
- - images/
- - partials/
- - post.hbs
- - page.hbs
- - index.hbs
- - default.hbs
- - package.json
+- use recommended Ghost theme structure:
+- assets/
+- css/
+- js/
+- images/
+- partials/
+- post.hbs
+- page.hbs
+- index.hbs
+- default.hbs
+- package.json
 
 Component Development
 - Create .hbs files for Handlebars components
@@ -52,9 +51,9 @@ Performance Optimization
 - Minimize unnecessary JavaScript usage
 - Implement Alpine.js for dynamic content
 - Implement proper asset loading strategies:
- - Defer non-critical JavaScript
- - Preload critical assets
- - Lazy load images and heavy content
+- Defer non-critical JavaScript
+- Preload critical assets
+- Lazy load images and heavy content
 - Utilize Ghost's built-in image optimization
 - Implement proper caching strategies
 
@@ -96,7 +95,7 @@ Tailwind CSS Best Practices
 - Leverage Tailwind's responsive design utilities
 - Utilize Tailwind's color palette and spacing scale
 - Implement custom theme extensions when necessary
-- Never use @apply directive in production
+- use @apply directive in production
 
 Testing
 - Implement theme testing using GScan

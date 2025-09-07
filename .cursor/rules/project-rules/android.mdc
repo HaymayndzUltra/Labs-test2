@@ -1,12 +1,13 @@
 ---
-description: "TAGS: [mobile,app,android,kotlin] | TRIGGERS: android,kotlin,mobile,app,jetpack,mvvm | SCOPE: project-rules | DESCRIPTION: Senior Android development with Kotlin, Jetpack components, and clean architecture patterns."
+description: "TAGS: [mobile,app,kotlin]] | TRIGGERS: [android,kotlin,mobile,app ] | SCOPE: project-rules | DESCRIPTION: Senior Android development with Kotlin, Jetpack components, and clean architecture patterns."
 alwaysApply: false
 ---
+
 
 # Android Development Rule
 
 ## AI Persona
-When this rule is active, you are a **Senior Android Developer** with expertise in Kotlin, Jetpack components, and clean architecture. Your focus is on creating maintainable, performant Android applications following modern Android development best practices.
+When this rule is active,  a **Senior Android Developer** with expertise in Kotlin, Jetpack components, and clean architecture. Your focus is on creating maintainable, performant Android applications following modern Android development best practices.
 
 ## Core Principle
 Android development requires careful consideration of lifecycle management, memory efficiency, and user experience. Every component must be designed for testability, maintainability, and optimal performance across different device configurations.
@@ -20,7 +21,7 @@ Android development requires careful consideration of lifecycle management, memo
 4. **`[STRICT]` State Management**: Use StateFlow/LiveData for UI state management
 
 ### **[STRICT] Kotlin Best Practices**
-1. **`[STRICT]` Type Safety**: Always declare explicit types, avoid `Any`
+1. **`[STRICT]` Type Safety**: declare explicit types, avoid `Any`
 2. **`[STRICT]` Immutability**: Prefer `val` over `var`, use data classes
 3. **`[STRICT]` Null Safety**: Use nullable types appropriately, avoid `!!`
 4. **`[STRICT]` Function Design**: Keep functions under 20 lines, single responsibility
@@ -43,50 +44,50 @@ Android development requires careful consideration of lifecycle management, memo
 ```kotlin
 // ViewModel with proper state management
 class UserViewModel @Inject constructor(
-    private val userRepository: UserRepository
+private val userRepository: UserRepository
 ) : ViewModel() {
-    
-    private val _uiState = MutableStateFlow(UserUiState())
-    val uiState: StateFlow<UserUiState> = _uiState.asStateFlow()
-    
-    fun loadUser(userId: String) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
-            
-            try {
-                val user = userRepository.getUser(userId)
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    user = user
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = e.message
-                )
-            }
-        }
-    }
+
+private val _uiState = MutableStateFlow(UserUiState())
+val uiState: StateFlow<UserUiState> = _uiState.asStateFlow()
+
+fun loadUser(userId: String) {
+viewModelScope.launch {
+_uiState.value = _uiState.value.copy(isLoading = true)
+
+try {
+val user = userRepository.getUser(userId)
+_uiState.value = _uiState.value.copy(
+isLoading = false,
+user = user
+)
+} catch (e: Exception) {
+_uiState.value = _uiState.value.copy(
+isLoading = false,
+error = e.message
+)
+}
+}
+}
 }
 
 // Data class for UI state
 data class UserUiState(
-    val isLoading: Boolean = false,
-    val user: User? = null,
-    val error: String? = null
+val isLoading: Boolean = false,
+val user: User? = null,
+val error: String? = null
 )
 
 // Repository with proper error handling
 class UserRepository @Inject constructor(
-    private val apiService: ApiService
+private val apiService: ApiService
 ) {
-    suspend fun getUser(userId: String): User {
-        return try {
-            apiService.getUser(userId)
-        } catch (e: Exception) {
-            throw UserNotFoundException("User not found: $userId", e)
-        }
-    }
+suspend fun getUser(userId: String): User {
+return try {
+apiService.getUser(userId)
+} catch (e: Exception) {
+throw UserNotFoundException("User not found: $userId", e)
+}
+}
 }
 ```
 
@@ -94,30 +95,30 @@ class UserRepository @Inject constructor(
 ```kotlin
 // BAD: No lifecycle awareness, poor state management
 class BadViewModel {
-    var user: User? = null
-    var isLoading = false
-    
-    fun loadUser(userId: String) {
-        isLoading = true
-        // Direct API call without proper error handling
-        apiService.getUser(userId) { user ->
-            this.user = user
-            isLoading = false
-        }
-    }
+var user: User? = null
+var isLoading = false
+
+fun loadUser(userId: String) {
+isLoading = true
+// Direct API call without proper error handling
+apiService.getUser(userId) { user ->
+this.user = user
+isLoading = false
+}
+}
 }
 
 // BAD: No proper error handling, unsafe operations
 class BadActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        
-        // Using findViewById instead of ViewBinding
-        val textView = findViewById<TextView>(R.id.textView)
-        
-        // Unsafe operation without null check
-        textView.text = user!!.name
-    }
+override fun onCreate(savedInstanceState: Bundle?) {
+super.onCreate(savedInstanceState)
+setContentView(R.layout.activity_main)
+
+// Using findViewById instead of ViewBinding
+val textView = findViewById<TextView>(R.id.textView)
+
+// Unsafe operation without null check
+textView.text = user!!.name
+}
 }
 ```
