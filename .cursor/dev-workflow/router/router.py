@@ -5,7 +5,25 @@ import uuid
 import datetime
 from pathlib import Path
 
-ROOT = Path('/workspace')
+# Dynamic ROOT detection: prefer env, else walk up until .cursor found, else cwd
+def _detect_root() -> Path:
+    env_root = os.environ.get('CURSOR_WORKSPACE_ROOT') or os.environ.get('WORKSPACE_ROOT')
+    if env_root:
+        p = Path(env_root)
+        if (p / '.cursor').exists():
+            return p
+    # Walk up from cwd to find a directory containing .cursor
+    cur = Path.cwd()
+    for _ in range(10):
+        if (cur / '.cursor').exists():
+            return cur
+        if cur.parent == cur:
+            break
+        cur = cur.parent
+    # Fallback to original default
+    return Path('/workspace') if Path('/workspace/.cursor').exists() else Path.cwd()
+
+ROOT = _detect_root()
 RULES_DIR = ROOT / '.cursor' / 'rules'
 PRECEDENCE_FILE = RULES_DIR / 'master-rules' / '9-governance-precedence.mdc'
 POLICY_DIR = ROOT / '.cursor' / 'dev-workflow' / 'policy-dsl'
@@ -38,15 +56,20 @@ def list_policies():
 def evaluate_policies(policies, context_map):
     # Normalize context values to a single lower-cased string for robust substring matching
     try:
-        tokens = []
-        for v in context_map.values():
-            if isinstance(v, (list, tuple, set)):
-                tokens.extend([str(x).strip().lower() for x in v])
-            else:
-                tokens.append(str(v).strip().lower())
-        normalized_context = " ".join(tokens)
+        if isinstance(context_map, str):
+            normalized_context = context_map.strip().lower().replace('-', ' ')
+        elif isinstance(context_map, dict):
+            tokens = []
+            for v in context_map.values():
+                if isinstance(v, (list, tuple, set)):
+                    tokens.extend([str(x).strip().lower().replace('-', ' ') for x in v])
+                else:
+                    tokens.append(str(v).strip().lower().replace('-', ' '))
+            normalized_context = " ".join(tokens)
+        else:
+            normalized_context = str(context_map).lower().replace('-', ' ')
     except Exception:
-        normalized_context = str(context_map).lower()
+        normalized_context = str(context_map).lower().replace('-', ' ')
     matches = []
     for policy in policies:
         conditions = policy.get('conditions') or []
