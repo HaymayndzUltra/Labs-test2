@@ -118,6 +118,11 @@ Examples:
     parser.add_argument('--yes', action='store_true',
                         help='Proceed without interactive confirmation (non-interactive mode)')
 
+    # Generator isolation: explicit opt-in to include .cursor assets even when a root .cursor exists
+    parser.add_argument('--include-cursor-assets', '--ai-governor', dest='include_cursor_assets',
+                        action='store_true',
+                        help='Include .cursor assets (rules, tools) in the generated project even if a root .cursor exists')
+
     # Generator isolation: avoid emitting .cursor assets when running inside repos with root .cursor
     parser.add_argument('--no-cursor-assets', action='store_true',
                         help='Do not emit .cursor assets (rules, tools) into the generated project')
@@ -320,20 +325,26 @@ def main():
     args = parse_arguments()
     
     # Safe defaults when a root .cursor/ exists in the current repo:
-    # - Default output_dir to ../_generated (outside repo) if user did not change from '.'
-    # - Default to --no-cursor-assets to prevent nested rulesets
+    # - Default output_dir to ../_generated (sibling outside repo) if user did not change from '.'
+    # - Default to --no-cursor-assets to prevent nested rulesets unless --include-cursor-assets is set
     try:
         repo_root = os.getcwd()
         has_root_cursor = os.path.isdir(os.path.join(repo_root, '.cursor'))
+        include_assets = bool(getattr(args, 'include_cursor_assets', False))
         if has_root_cursor:
             if getattr(args, 'output_dir', '.') == '.':
-                # Use internal _generated directory instead of outside repo
-                default_out = os.path.abspath(os.path.join(repo_root, '_generated'))
+                # Use sibling _generated directory one level outside the repo root
+                default_out = os.path.abspath(os.path.join(repo_root, '..', '_generated'))
                 os.makedirs(default_out, exist_ok=True)
                 args.output_dir = default_out
                 if getattr(args, 'verbose', False):
                     print(f"ℹ️  Detected root .cursor/. Defaulting output_dir to: {args.output_dir}")
-            if not getattr(args, 'no_cursor_assets', False):
+            # Isolation defaults unless explicitly overridden
+            if include_assets:
+                args.no_cursor_assets = False
+                if getattr(args, 'verbose', False):
+                    print("ℹ️  --include-cursor-assets enabled. Emitting .cursor assets in generated project.")
+            else:
                 args.no_cursor_assets = True
                 if getattr(args, 'verbose', False):
                     print("ℹ️  Detected root .cursor/. Enabling --no-cursor-assets by default.")

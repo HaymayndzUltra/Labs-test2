@@ -78,8 +78,11 @@ class ProjectGenerator:
             # Initialize git repository
             if not self.args.no_git:
                 self._initialize_git()
-                # Install pre-commit hook to run rule/compliance checks
-                self._install_precommit_hook()
+                # Install pre-commit hook ONLY when .cursor assets are included
+                # and the tools directory exists in the generated project
+                tools_dir = self.project_root / '.cursor' / 'tools'
+                if (not self.no_cursor_assets) and tools_dir.exists():
+                    self._install_precommit_hook()
             
             # Generate setup commands
             setup_commands = self._generate_setup_commands()
