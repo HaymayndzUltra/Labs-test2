@@ -6,14 +6,27 @@ from typing import Dict, Generator
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 
 from app.config import settings
 from app.database import Base, get_db
-from app.main import app
+from main import app
 
 # Use SQLite for tests
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+
+# Ensure settings has a usable DATABASE_URL for model imports that create the engine
+try:
+    if not getattr(settings, 'DATABASE_URL', None):
+        import os
+        os.environ['DATABASE_URL'] = SQLALCHEMY_DATABASE_URL
+        # Rebuild settings to pick up env
+        from importlib import reload
+        from app import config as app_config
+        reload(app_config)
+        settings = app_config.settings
+except Exception:
+    pass
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
