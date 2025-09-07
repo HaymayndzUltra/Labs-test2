@@ -4,7 +4,7 @@
 
 ### 1.1 Backend Templates
 
-#### ✅ FastAPI (complete)
+#### FastAPI (complete)
 **Current Status**: Fully implemented with all features
 
 **Acceptance Criteria**:
@@ -22,7 +22,7 @@
 - [x] Setup script included
 - [x] Comprehensive test configuration
 
-#### ✅ Django (complete)
+#### Django (complete)
 **Current Status**: All core files and apps created
 
 **Acceptance Criteria**:
@@ -41,7 +41,7 @@
 - [x] User profiles and activity tracking
 - [x] Multiple settings files (dev/prod/test)
 
-#### ✅ NestJS (complete)
+#### NestJS (complete)
 **Current Status**: Fully implemented with all features
 
 **Acceptance Criteria**:
@@ -61,7 +61,7 @@
 - [x] Global interceptors and guards
 - [x] E2E test configuration
 
-#### ✅ Go (complete)
+#### Go (complete)
 **Current Status**: Fully implemented with Echo framework
 
 **Acceptance Criteria**:
@@ -83,10 +83,10 @@
 
 ### 1.2 Frontend Templates
 
-#### ✅ Next.js (complete)
-**Acceptance Criteria**: ✓ All met
+#### Next.js (complete)
+**Acceptance Criteria**: All met
 
-#### ✅ Nuxt (complete)
+#### Nuxt (complete)
 **Current Status**: Fully implemented with Nuxt 3
 
 **Acceptance Criteria**:
@@ -105,7 +105,7 @@
 - [x] Tailwind CSS configured
 - [x] Component library started
 
-#### ✅ Angular (complete)
+#### Angular (complete)
 **Current Status**: Fully implemented with Angular 17
 
 **Acceptance Criteria**:
@@ -124,7 +124,7 @@
 - [x] Lazy loading
 - [x] Signals for state
 
-#### ✅ Expo (complete)
+#### Expo (complete)
 **Current Status**: Fully implemented with React Native and Expo SDK
 
 **Acceptance Criteria**:
@@ -144,10 +144,10 @@
 
 ### 1.3 Database Templates
 
-#### ✅ PostgreSQL (complete)
-**Acceptance Criteria**: ✓ All met
+#### PostgreSQL (complete)
+**Acceptance Criteria**: All met
 
-#### ❌ MongoDB
+#### MongoDB
 **Acceptance Criteria**:
 - [ ] docker-compose.yml with proper config
 - [ ] init-mongo.js with collections/indexes
@@ -155,7 +155,7 @@
 - [ ] Sample schemas (Mongoose/Prisma)
 - [ ] Backup/restore scripts
 
-#### ❌ Firebase
+#### Firebase
 **Acceptance Criteria**:
 - [ ] firebase.json configured
 - [ ] Firestore security rules
@@ -256,6 +256,21 @@
 - [ ] Workflow mappings created
 - [ ] Context preservation setup
 - [ ] Integration report generated
+
+## Phase 6: AI Governor Integration (Opt-In) (Verified 2025-09-08)
+
+- Opt-in via `--include-cursor-assets` (alias `--ai-governor`).
+- Without opt-in:
+  - No `.cursor/` content is written and no pre-commit hook is installed.
+- With opt-in:
+  - `.cursor/tools/validate_rules.py` and `.cursor/tools/check_compliance.py` are generated.
+  - Router artifacts present: `.cursor/ai-governor/router-config.json` and `sample-logs.json`.
+  - `setup_ai_workflows()` uses `AIGovernorIntegration` to copy master rules (if available) and to create workflow mappings (`router_config` and `ai_context`).
+  - Pre-commit hook is installed only if `.cursor/tools` exists (i.e., opt-in is enabled).
+- Code references:
+  - CLI flag: `scripts/generate_client_project.py` (`--include-cursor-assets`, alias `--ai-governor`).
+  - Generation: `project_generator/core/generator.py` → `_prepare_ai_governor_assets()` and `setup_ai_workflows()`.
+  - Integration: `project_generator/integrations/ai_governor.py`.
 
 ## Phase 6: Testing Implementation (2 days)
 
