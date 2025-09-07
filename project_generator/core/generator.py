@@ -492,17 +492,29 @@ class ProjectGenerator:
         )
     
     def _generate_industry_gates(self):
-        """Generate industry gates YAML files at project root"""
+        """Generate only the industry-specific gates overlay matching selected industry"""
         import yaml
-        # Healthcare gates
-        hc = self._generate_healthcare_gates()
-        (self.project_root / 'gates_config_healthcare.yaml').write_text(
-            yaml.dump(hc, default_flow_style=False, sort_keys=True)
-        )
-        # Finance gates
-        fin = self._generate_finance_gates()
-        (self.project_root / 'gates_config_finance.yaml').write_text(
-            yaml.dump(fin, default_flow_style=False, sort_keys=True)
+        industry = (self.args.industry or '').lower()
+        # Map known industries to their overlay content and filenames
+        overlays = {
+            'healthcare': ('gates_config_healthcare.yaml', self._generate_healthcare_gates()),
+            'finance': ('gates_config_finance.yaml', self._generate_finance_gates()),
+            'ecommerce': ('gates_config_ecommerce.yaml', self._generate_ecommerce_gates()),
+        }
+        if industry in overlays:
+            fname, cfg = overlays[industry]
+        else:
+            # Sensible default overlay for other industries (saas, enterprise, etc.)
+            cfg = {
+                'quality_gates': {
+                    'coverage': {'min': 90},
+                    'critical_vulns': 0,
+                    'high_vulns': 0,
+                }
+            }
+            fname = f'gates_config_{industry or "general"}.yaml'
+        (self.project_root / fname).write_text(
+            yaml.dump(cfg, default_flow_style=False, sort_keys=True)
         )
     
     def _generate_documentation(self):
