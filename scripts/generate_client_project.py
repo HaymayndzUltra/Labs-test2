@@ -19,6 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from project_generator.core.generator import ProjectGenerator
 from project_generator.core.validator import ProjectValidator
 from project_generator.core.industry_config import IndustryConfig
+from project_generator.templates.registry import TemplateRegistry
 
 
 def parse_arguments():
@@ -132,6 +133,14 @@ Examples:
     # Generator isolation: avoid emitting .cursor assets when running inside repos with root .cursor
     parser.add_argument('--no-cursor-assets', action='store_true',
                         help='Do not emit .cursor assets (rules, tools) into the generated project')
+    
+    # Performance tuning
+    parser.add_argument('--workers', type=int, default=0,
+                        help='Number of worker threads for template processing (0=auto)')
+    
+    # Discovery / tooling
+    parser.add_argument('--list-templates', action='store_true',
+                        help='List available templates and exit')
     
     # Project categorization
     parser.add_argument('--category', choices=['test', 'example', 'demo', 'archived'], 
@@ -329,6 +338,15 @@ def display_project_summary(args, generator):
 def main():
     """Main entry point"""
     args = parse_arguments()
+    
+    # List templates and exit
+    if getattr(args, 'list_templates', False):
+        reg = TemplateRegistry()
+        entries = reg.list_all()
+        print("\nAvailable templates:\n")
+        for e in entries:
+            print(f"- {e['type']}: {e['name']} (variants: {', '.join(e.get('variants') or ['base'])})")
+        return
     
     # Safe defaults when a root .cursor/ exists in the current repo:
     # - Default output_dir to ../_generated (sibling outside repo) if user did not change from '.'
