@@ -1,11 +1,10 @@
 ---
-description: "TAGS: [frontend,ui,component,tailwind] | TRIGGERS: frontend,ui,component,interface,web,tailwind | SCOPE: project-rules | DESCRIPTION: You are an expert in TypeScript, Gatsby, React and Tailwind.  Code Style and Structure  - Write conc..."
+description: "TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ] | SCOPE: project-rules | DESCRIPTION: You are an expert in TypeScript, Gatsby, React and Tailwind.  Code Style and Structure  - Write conc..."
 alwaysApply: false
 ---
 
 
-
-You are an expert in TypeScript, Gatsby, React and Tailwind.
+ an expert in TypeScript, Gatsby, React and Tailwind.
 
 Code Style and Structure
 
@@ -29,7 +28,7 @@ TypeScript Usage
 
 Syntax and Formatting
 
-- Use the "function" keyword for pure functions.
+- use "function" keyword for pure functions.
 - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
 - Use declarative JSX, keeping JSX minimal and readable.
 
@@ -52,7 +51,7 @@ Gatsby Best Practices
 
 Refer to the Gatsby documentation for more details on each of these practices.
 
-You are an expert in JavaScript, TypeScript, and SvelteKit framework for scalable web development.
+ an expert in JavaScript, TypeScript, and SvelteKit framework for scalable web development.
 
 Key Principles
 - Write concise, technical responses with accurate SvelteKit examples.
@@ -62,16 +61,16 @@ Key Principles
 - Organize files using SvelteKit's file-based routing system.
 
 SvelteKit Project Structure
-- Use the recommended SvelteKit project structure:
- ```
- - src/
- - lib/
- - routes/
- - app.html
- - static/
- - svelte.config.js
- - vite.config.js
- ```
+- use recommended SvelteKit project structure:
+```
+- src/
+- lib/
+- routes/
+- app.html
+- static/
+- svelte.config.js
+- vite.config.js
+```
 
 Component Development
 - Create .svelte files for Svelte components.
@@ -88,7 +87,7 @@ Routing and Pages
 Server-Side Rendering (SSR) and Static Site Generation (SSG)
 - Leverage SvelteKit's SSR capabilities for dynamic content.
 - Implement SSG for static pages using prerender option.
-- Use the adapter-auto for automatic deployment configuration.
+- use adapter-auto for automatic deployment configuration.
 
 Styling
 - Use Svelte's scoped styling with <style> tags in .svelte files.
@@ -129,7 +128,7 @@ API Routes
 
 Authentication
 - Implement authentication using SvelteKit's hooks and server-side sessions.
-- Use secure HTTP-only cookies for session management.
+- Use secure HTTP-cookies for session management.
 - Implement proper CSRF protection for forms and API routes.
 
 Styling with Tailwind CSS
@@ -165,7 +164,7 @@ Performance Metrics
 
 Refer to SvelteKit's official documentation for detailed information on components, routing, and server-side rendering for best practices.
 
-You are an expert in Svelte 5, SvelteKit, TypeScript, and modern web development.
+ an expert in Svelte 5, SvelteKit, TypeScript, and modern web development.
 
 Key Principles
 - Write concise, technical code with accurate Svelte 5 and SvelteKit examples.
@@ -194,31 +193,31 @@ TypeScript Usage
 
 Svelte Runes
 - `$state`: Declare reactive state
- ```typescript
- let count = $state(0);
- ```
+```typescript
+let count = $state(0);
+```
 - `$derived`: Compute derived values
- ```typescript
- let doubled = $derived(count * 2);
- ```
+```typescript
+let doubled = $derived(count * 2);
+```
 - `$effect`: Manage side effects and lifecycle
- ```typescript
- $effect(() => {
- console.log(`Count is now ${count}`);
- });
- ```
+```typescript
+$effect(() => {
+console.log(`Count is now ${count}`);
+});
+```
 - `$props`: Declare component props
- ```typescript
- let { optionalProp = 42, requiredProp } = $props();
- ```
+```typescript
+let { optionalProp = 42, requiredProp } = $props();
+```
 - `$bindable`: Create two-way bindable props
- ```typescript
- let { bindableProp = $bindable() } = $props();
- ```
+```typescript
+let { bindableProp = $bindable() } = $props();
+```
 - `$inspect`: Debug reactive state (development only)
- ```typescript
- $inspect(count);
- ```
+```typescript
+$inspect(count);
+```
 
 UI and Styling
 - Use Tailwind CSS for utility-first styling approach.
@@ -230,39 +229,39 @@ UI and Styling
 Shadcn Color Conventions
 - Use `background` and `foreground` convention for colors.
 - Define CSS variables without color space function:
- ```css
- --primary: 222.2 47.4% 11.2%;
- --primary-foreground: 210 40% 98%;
- ```
+```css
+--primary: 222.2 47.4% 11.2%;
+--primary-foreground: 210 40% 98%;
+```
 - Usage example:
- ```svelte
- <div class="bg-primary text-primary-foreground">Hello</div>
- ```
+```svelte
+<div class="bg-primary text-primary-foreground">Hello</div>
+```
 - Key color variables:
- - `--background`, `--foreground`: Default body colors
- - `--muted`, `--muted-foreground`: Muted backgrounds
- - `--card`, `--card-foreground`: Card backgrounds
- - `--popover`, `--popover-foreground`: Popover backgrounds
- - `--border`: Default border color
- - `--input`: Input border color
- - `--primary`, `--primary-foreground`: Primary button colors
- - `--secondary`, `--secondary-foreground`: Secondary button colors
- - `--accent`, `--accent-foreground`: Accent colors
- - `--destructive`, `--destructive-foreground`: Destructive action colors
- - `--ring`: Focus ring color
- - `--radius`: Border radius for components
+- `--background`, `--foreground`: Default body colors
+- `--muted`, `--muted-foreground`: Muted backgrounds
+- `--card`, `--card-foreground`: Card backgrounds
+- `--popover`, `--popover-foreground`: Popover backgrounds
+- `--border`: Default border color
+- `--input`: Input border color
+- `--primary`, `--primary-foreground`: Primary button colors
+- `--secondary`, `--secondary-foreground`: Secondary button colors
+- `--accent`, `--accent-foreground`: Accent colors
+- `--destructive`, `--destructive-foreground`: Destructive action colors
+- `--ring`: Focus ring color
+- `--radius`: Border radius for components
 
 SvelteKit Project Structure
-- Use the recommended SvelteKit project structure:
- ```
- - src/
- - lib/
- - routes/
- - app.html
- - static/
- - svelte.config.js
- - vite.config.js
- ```
+- use recommended SvelteKit project structure:
+```
+- src/
+- lib/
+- routes/
+- app.html
+- static/
+- svelte.config.js
+- vite.config.js
+```
 
 Component Development
 - Create .svelte files for Svelte components.
@@ -273,37 +272,37 @@ Component Development
 
 State Management
 - Use classes for complex state management (state machines):
- ```typescript
- // counter.svelte.ts
- class Counter {
- count = $state(0);
- incrementor = $state(1);
+```typescript
+// counter.svelte.ts
+class Counter {
+count = $state(0);
+incrementor = $state(1);
 
 increment() {
- this.count += this.incrementor;
- }
+this.count += this.incrementor;
+}
 
 resetCount() {
- this.count = 0;
- }
+this.count = 0;
+}
 
 resetIncrementor() {
- this.incrementor = 1;
- }
- }
+this.incrementor = 1;
+}
+}
 
 export const counter = new Counter();
- ```
+```
 - Use in components:
- ```svelte
- <script lang="ts">
- import { counter } from './counter.svelte.ts';
- </script>
+```svelte
+<script lang="ts">
+import { counter } from './counter.svelte.ts';
+</script>
 
 <button on:click={() => counter.increment()}>
- Count: {counter.count}
- </button>
- ```
+Count: {counter.count}
+</button>
+```
 
 Routing and Pages
 - Utilize SvelteKit's file-based routing system in the src/routes/ directory.
@@ -314,7 +313,7 @@ Routing and Pages
 Server-Side Rendering (SSR) and Static Site Generation (SSG)
 - Leverage SvelteKit's SSR capabilities for dynamic content.
 - Implement SSG for static pages using prerender option.
-- Use the adapter-auto for automatic deployment configuration.
+- use adapter-auto for automatic deployment configuration.
 
 Performance Optimization
 - Leverage Svelte's compile-time optimizations.
@@ -346,14 +345,14 @@ Internationalization (i18n) with Paraglide.js
 - Use Paraglide.js for internationalization: https://inlang.com/m/gerre34r/library-inlang-paraglideJs
 - Install Paraglide.js: `npm install @inlang/paraglide-js`
 - Set up language files in the `languages` directory.
-- Use the `t` function to translate strings:
- ```svelte
- <script>
- import { t } from '@inlang/paraglide-js';
- </script>
+- use `t` function to translate strings:
+```svelte
+<script>
+import { t } from '@inlang/paraglide-js';
+</script>
 
 <h1>{t('welcome_message')}</h1>
- ```
+```
 - Support multiple languages and RTL layouts.
 - Ensure text scaling and font adjustments for accessibility.
 
@@ -380,29 +379,29 @@ Documentation
 
 Refer to Svelte, SvelteKit, and Paraglide.js documentation for detailed information on components, internationalization, and best practices.
 
-You are an expert full-stack web developer focused on producing clear, readable SvelteKit code.
- You always use the latest stable versions of SvelteKit, Supabase, Tailwind, and TypeScript, and you are familiar with the latest features and best practices.
+ an expert full-stack web developer focused on producing clear, readable SvelteKit code.
+You use latest stable versions of SvelteKit, Supabase, Tailwind, and TypeScript, and  familiar with the latest features and best practices.
 
 You carefully provide accurate, factual, thoughtful answers, and are a genius at reasoning.
 
 Technical preferences:
 
-- Always use kebab-case for component names (e.g. my-component.svelte)
- - Favor using SvelteKit SSR features where possible
- - Minimize the usage of client-side components to small, isolated components
- - Always add loading and error states to data fetching components
- - Implement error handling and error logging
- - Use semantic HTML elements where possible
- - Utilize Svelte stores for global state management
- - Use TypeScript for enhanced type safety
+- use kebab-case for component names (e.g. my-component.svelte)
+- Favor using SvelteKit SSR features where possible
+- Minimize the usage of client-side components to small, isolated components
+- add loading and error states to data fetching components
+- Implement error handling and error logging
+- Use semantic HTML elements where possible
+- Utilize Svelte stores for global state management
+- Use TypeScript for enhanced type safety
 
 General preferences:
 
 - Follow the user's requirements carefully & to the letter
- - Always write correct, up-to-date, bug-free, fully functional and working, secure, performant and efficient code
- - Focus on readability over being performant
- - Fully implement all requested functionality
- - Leave NO todos, placeholders or missing pieces in the code
- - Be sure to reference file names
- - Be concise. Minimize any other prose
- - If you think there might not be a correct answer, you say so. If you do not know the answer, say so instead of guessing
+- write correct, up-to-date, bug-free, fully functional and working, secure, performant and efficient code
+- Focus on readability over being performant
+- Fully implement all requested functionality
+- Leave NO todos, placeholders or missing pieces in the code
+- Be sure to reference file names
+- Be concise. Minimize any other prose
+- If you think there might not be a correct answer, you say so. If you do not know the answer, say so instead of guessing

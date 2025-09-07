@@ -1,11 +1,10 @@
 ---
-description: "TAGS: [language,programming,lua] | TRIGGERS: programming,language,syntax,lua | SCOPE: project-rules | DESCRIPTION: You are an expert in Lua programming, with deep knowledge of its unique features and common use case..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Lua programming, with deep knowledge of its unique features and common use case..."
 alwaysApply: false
 ---
 
 
-
-You are an expert in Lua programming, with deep knowledge of its unique features and common use cases in game development and embedded systems.
+ an expert in Lua programming, with deep knowledge of its unique features and common use cases in game development and embedded systems.
 
 Key Principles
 - Write clear, concise Lua code that follows idiomatic patterns
@@ -126,4 +125,4 @@ Code Review Guidelines
 - Validate security measures
 - Confirm documentation completeness
 
-Remember to always refer to the official Lua documentation and relevant framework documentation for specific implementation details and best practices.
+Remember to refer to the official Lua documentation and relevant framework documentation for specific implementation details and best practices.

@@ -1,12 +1,13 @@
 ---
-description: "TAGS: [language,programming,arduino-framework,embedded] | TRIGGERS: arduino,esp32,esp8266,platformio,embedded,microcontroller | SCOPE: project-rules | DESCRIPTION: Professional Arduino, ESP32, and ESP8266 development with PlatformIO framework following modern C++ standards."
+description: "TAGS: [language,programming] | TRIGGERS: [project-rules ] | SCOPE: project-rules | DESCRIPTION: Professional Arduino, ESP32, and ESP8266 development with PlatformIO framework following modern C++ standards."
 alwaysApply: false
 ---
+
 
 # Arduino Framework Development Rule
 
 ## AI Persona
-When this rule is active, you are a **Senior Embedded Systems Engineer** specializing in Arduino, ESP32, and ESP8266 microcontrollers. Your expertise lies in modern C++ development, PlatformIO framework, and embedded systems best practices.
+When this rule is active,  a **Senior Embedded Systems Engineer** specializing in Arduino, ESP32, and ESP8266 microcontrollers. Your expertise lies in modern C++ development, PlatformIO framework, and embedded systems best practices.
 
 ## Core Principle
 Embedded development requires careful resource management, real-time constraints, and robust error handling. Every line of code must be optimized for performance, memory efficiency, and reliability in resource-constrained environments.
@@ -45,9 +46,9 @@ Embedded development requires careful resource management, real-time constraints
 platform = espressif32
 board = esp32dev
 framework = arduino
-lib_deps = 
-    gyverlibs/GyverOLED@^1.0.0
-    gyverlibs/GyverButton@^1.0.0
+lib_deps =
+gyverlibs/GyverOLED@^1.0.0
+gyverlibs/GyverButton@^1.0.0
 
 // main.cpp
 #include <Arduino.h>
@@ -58,23 +59,23 @@ GyverOLED<SSD1306_128x32> display;
 GyverButton button(BUTTON_PIN);
 
 void setup() {
-    Serial.begin(115200);
-    display.init();
-    display.clear();
-    display.home();
-    display.print("System Ready");
+Serial.begin(115200);
+display.init();
+display.clear();
+display.home();
+display.print("System Ready");
 }
 
 void loop() {
-    button.tick();
-    
-    if (button.isClick()) {
-        display.clear();
-        display.home();
-        display.print("Button Clicked!");
-    }
-    
-    delay(10);
+button.tick();
+
+if (button.isClick()) {
+display.clear();
+display.home();
+display.print("Button Clicked!");
+}
+
+delay(10);
 }
 ```
 
@@ -82,12 +83,12 @@ void loop() {
 ```cpp
 // BAD: No error handling, magic numbers, poor structure
 void loop() {
-    if (digitalRead(2) == HIGH) {
-        lcd.print("click");
-        delay(1000);
-        lcd.clear();
-    }
-    delay(100);
+if (digitalRead(2) == HIGH) {
+lcd.print("click");
+delay(1000);
+lcd.clear();
+}
+delay(100);
 }
 
 // BAD: No library management, unclear dependencies

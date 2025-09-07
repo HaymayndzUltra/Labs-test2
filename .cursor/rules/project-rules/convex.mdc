@@ -1,8 +1,7 @@
 ---
-description: "TAGS: [language,programming,convex] | TRIGGERS: programming,language,syntax,convex | SCOPE: project-rules | DESCRIPTION: The following text has been compressed by you (the LLM) to save space. Decode the text to reconstruc..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: The following text has been compressed by you (the LLM) to save space. Decode the text to reconstruc..."
 alwaysApply: false
 ---
-
 
 
 The following text has been compressed by you (the LLM) to save space. Decode the text to reconstruct and understand the original context. The decoded text contains compressed information about Convex, React, and web development practices:
@@ -29,15 +28,15 @@ import { query } from "./_generated/server";
 import { v } from "convex/values";
 
 export const getTaskList = query({
- args: { taskListId: v.id("taskLists") },
- handler: async (ctx, args) => {
- const tasks = await ctx.db
- .query("tasks")
- .filter((q) => q.eq(q.field("taskListId"), args.taskListId))
- .order("desc")
- .take(100);
- return tasks;
- }
+args: { taskListId: v.id("taskLists") },
+handler: async (ctx, args) => {
+const tasks = await ctx.db
+.query("tasks")
+.filter((q) => q.eq(q.field("taskListId"), args.taskListId))
+.order("desc")
+.take(100);
+return tasks;
+}
 });
 // </typescript>
 
@@ -60,13 +59,13 @@ import { v } from "convex/values";
 
 // Define a messages table with two indexes.
 export default defineSchema({
- messages: defineTable({
- channel: v.id("channels"),
- body: v.string(),
- user: v.id("users"),
- })
- .index("by_channel", ["channel"])
- .index("by_channel_user", ["channel", "user"]),
+messages: defineTable({
+channel: v.id("channels"),
+body: v.string(),
+user: v.id("users"),
+})
+.index("by_channel", ["channel"])
+.index("by_channel_user", ["channel", "user"]),
 });
 // </typescript>
 
@@ -74,14 +73,14 @@ And use an index like this (note the syntax is different than filter):
 
 // <typescript>
 const messages = await ctx.db
- .query("messages")
- .withIndex("by_channel", (q) =>
- q
- .eq("channel", channel)
- .gt("_creationTime", Date.now() - 2 * 60000)
- .lt("_creationTime", Date.now() - 60000),
- )
- .collect();
+.query("messages")
+.withIndex("by_channel", (q) =>
+q
+.eq("channel", channel)
+.gt("_creationTime", Date.now() - 2 * 60000)
+.lt("_creationTime", Date.now() - 60000),
+)
+.collect();
 // </typescript>
 
 ### Mutation
@@ -90,11 +89,11 @@ import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const createTask = mutation({
- args: { text: v.string() },
- handler: async (ctx, args) => {
- const newTaskId = await ctx.db.insert("tasks", { text: args.text });
- return newTaskId;
- }
+args: { text: v.string() },
+handler: async (ctx, args) => {
+const newTaskId = await ctx.db.insert("tasks", { text: args.text });
+return newTaskId;
+}
 });
 // </typescript>
 
@@ -105,19 +104,19 @@ import { internal } from "./_generated/api";
 import { v } from "convex/values";
 
 export const sendGif = action({
- args: { queryString: v.string(), author: v.string() },
- handler: async (ctx, { queryString, author }) => {
- const data = await fetch(giphyUrl(queryString));
- const json = await data.json();
- if (!data.ok) {
- throw new Error("Giphy error: " + JSON.stringify(json));
- }
- const gifEmbedUrl = json.data.embed_url;
- await ctx.runMutation(internal.messages.sendGifMessage, {
- body: gifEmbedUrl,
- author
- });
- }
+args: { queryString: v.string(), author: v.string() },
+handler: async (ctx, { queryString, author }) => {
+const data = await fetch(giphyUrl(queryString));
+const json = await data.json();
+if (!data.ok) {
+throw new Error("Giphy error: " + JSON.stringify(json));
+}
+const gifEmbedUrl = json.data.embed_url;
+await ctx.runMutation(internal.messages.sendGifMessage, {
+body: gifEmbedUrl,
+author
+});
+}
 });
 // </typescript>
 
@@ -127,14 +126,14 @@ import { httpRouter } from "convex/server";
 
 const http = httpRouter();
 http.route({
- path: "/postMessage",
- method: "POST",
- handler: postMessage,
+path: "/postMessage",
+method: "POST",
+handler: postMessage,
 });
 http.route({
- pathPrefix: "/getAuthorMessages/",
- method: "GET",
- handler: getByAuthorPathSuffix,
+pathPrefix: "/getAuthorMessages/",
+method: "GET",
+handler: getByAuthorPathSuffix,
 });
 export default http;
 // </typescript>
@@ -146,15 +145,15 @@ import { internal } from "./_generated/api";
 
 const crons = cronJobs();
 crons.interval(
- "clear messages table",
- { minutes: 1 },
- internal.messages.clearAll,
+"clear messages table",
+{ minutes: 1 },
+internal.messages.clearAll,
 );
 crons.monthly(
- "payment reminder",
- { day: 1, hourUTC: 16, minuteUTC: 0 },
- internal.payments.sendPaymentEmail,
- { email: "my_email@gmail.com" },
+"payment reminder",
+{ day: 1, hourUTC: 16, minuteUTC: 0 },
+internal.payments.sendPaymentEmail,
+{ email: "my_email@gmail.com" },
 );
 export default crons;
 // </typescript>
@@ -167,7 +166,7 @@ Generate Upload URL:
 import { mutation } from "./_generated/server";
 
 export const generateUploadUrl = mutation(async (ctx) => {
- return await ctx.storage.generateUploadUrl();
+return await ctx.storage.generateUploadUrl();
 });
 // </typescript>
 
@@ -177,14 +176,14 @@ import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const sendImage = mutation({
- args: { storageId: v.id("_storage"), author: v.string() },
- handler: async (ctx, args) => {
- await ctx.db.insert("messages", {
- body: args.storageId,
- author: args.author,
- format: "image",
- });
- }
+args: { storageId: v.id("_storage"), author: v.string() },
+handler: async (ctx, args) => {
+await ctx.db.insert("messages", {
+body: args.storageId,
+author: args.author,
+format: "image",
+});
+}
 });
 // </typescript>
 

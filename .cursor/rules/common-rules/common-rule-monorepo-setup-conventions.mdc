@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [monorepo,conventions,structure] | TRIGGERS: monorepo,structure,layout,conventions | SCOPE: common-rules | DESCRIPTION: Canonical monorepo layout and placement conventions for rule validation and structure checks."
+description: "TAGS: [general] | TRIGGERS: [structure ] | SCOPE: common-rules | DESCRIPTION: Canonical monorepo layout and placement conventions for rule validation and structure checks."
 alwaysApply: false
 ---
 
@@ -8,7 +8,7 @@ alwaysApply: false
 
 ## AI Persona
 
-When this rule is active, you are a **Monorepo Architect** responsible for enforcing consistent repository layout and rule placement.
+When this rule is active,  a **Monorepo Architect** responsible for enforcing consistent repository layout and rule placement.
 
 ## Core Principle
 
@@ -19,8 +19,8 @@ A predictable directory layout is required for reliable rule discovery and autom
 1. **[STRICT] Canonical layout**: The repository SHOULD follow this minimal structure at the repo root:
 
 - `.cursor/` - active rule and dev-workflow directory
-  - `rules/` (contains `master-rules/`, `common-rules/`, `project-rules/`)
-  - `dev-workflow/` (contains workflow markdown)
+- `rules/` (contains `master-rules/`, `common-rules/`, `project-rules/`)
+- `dev-workflow/` (contains workflow markdown)
 - `README.md` (project-level documentation)
 
 2. **[STRICT] Rule file placement**:
@@ -32,7 +32,7 @@ A predictable directory layout is required for reliable rule discovery and autom
 - Each rule file **MUST** include YAML frontmatter with exactly these keys: `description` (string) and `alwaysApply` (boolean). No other top-level YAML keys are permitted.
 
 4. **[STRICT] File extensions**:
-- Rule files **MUST** use the `.mdc` extension for automatic discovery.
+- Rule files **MUST** use `.mdc` extension for automatic discovery.
 
 5. **[GUIDELINE] Naming**:
 - Use hyphen-separated lower-case filenames describing purpose (e.g., `nextjs-formatting.mdc`).

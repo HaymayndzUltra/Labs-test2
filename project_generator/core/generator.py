@@ -24,6 +24,8 @@ class ProjectGenerator:
         self.validator = validator
         self.config = config
         self.template_engine = TemplateEngine()
+        # When True, do not emit any .cursor assets (rules, tools, ai-governor) into generated projects
+        self.no_cursor_assets = bool(getattr(self.args, 'no_cursor_assets', False))
         self.project_root = None
     
     def generate(self) -> Dict[str, Any]:
@@ -32,10 +34,13 @@ class ProjectGenerator:
             # Create project directory
             self.project_root = Path(self.args.output_dir) / self.args.name
             if self.project_root.exists():
-                return {
-                    'success': False,
-                    'error': f"Directory {self.project_root} already exists"
-                }
+                if getattr(self.args, 'force', False):
+                    shutil.rmtree(self.project_root)
+                else:
+                    return {
+                        'success': False,
+                        'error': f"Directory {self.project_root} already exists (use --force to overwrite)"
+                    }
             
             self.project_root.mkdir(parents=True, exist_ok=True)
             
@@ -61,12 +66,20 @@ class ProjectGenerator:
             # Generate compliance and rules
             self._generate_compliance_rules()
             
+            # Prepare AI Governor assets (tools, router config, sample logs)
+            self._prepare_ai_governor_assets()
+            
+            # Generate industry gates
+            self._generate_industry_gates()
+            
             # Generate documentation
             self._generate_documentation()
             
             # Initialize git repository
             if not self.args.no_git:
                 self._initialize_git()
+                # Install pre-commit hook to run rule/compliance checks
+                self._install_precommit_hook()
             
             # Generate setup commands
             setup_commands = self._generate_setup_commands()
@@ -87,17 +100,28 @@ class ProjectGenerator:
     def _create_base_structure(self):
         """Create the base project structure"""
         directories = [
-            '.cursor/rules',
-            '.cursor/dev-workflow',
+            '.devcontainer',
             '.github/workflows',
             '.vscode',
             'docs',
             'scripts',
             'tests'
         ]
+        if not self.no_cursor_assets:
+            directories.extend(['.cursor/rules', '.cursor/dev-workflow'])
         
         for directory in directories:
             (self.project_root / directory).mkdir(parents=True, exist_ok=True)
+        
+        # If repo has dev-workflow docs, copy them into the project for in-editor triggers
+        try:
+            if not self.no_cursor_assets:
+                repo_root = Path(__file__).resolve().parents[2]
+                source_devwf = repo_root / '.cursor' / 'dev-workflow'
+                if source_devwf.exists():
+                    shutil.copytree(source_devwf, self.project_root / '.cursor' / 'dev-workflow', dirs_exist_ok=True)
+        except Exception:
+            pass
         
         # Create .gitignore
         gitignore_content = self._generate_gitignore()
@@ -112,7 +136,6 @@ class ProjectGenerator:
             'name': self.args.name,
             'industry': self.args.industry,
             'project_type': self.args.project_type,
-            'created_at': datetime.now().isoformat(),
             'stack': {
                 'frontend': self.args.frontend,
                 'backend': self.args.backend,
@@ -124,9 +147,10 @@ class ProjectGenerator:
             'compliance': self.args.compliance.split(',') if self.args.compliance else []
         }
         
-        (self.project_root / '.cursor' / 'project.json').write_text(
-            json.dumps(project_config, indent=2)
-        )
+        if not self.no_cursor_assets:
+            (self.project_root / '.cursor' / 'project.json').write_text(
+                json.dumps(project_config, indent=2)
+            )
     
     def _generate_frontend(self):
         """Generate frontend application"""
@@ -197,6 +221,48 @@ class ProjectGenerator:
         # Create docker-compose for database
         if self.args.database in ['postgres', 'mongodb']:
             self._add_database_to_docker_compose()
+
+    def _process_templates(self, root: Path):
+        """Process text templates by replacing simple placeholders with project values."""
+        try:
+            mapping = {
+                '{{PROJECT_NAME}}': self.args.name,
+                '{{INDUSTRY}}': self.args.industry,
+                '{{PROJECT_TYPE}}': self.args.project_type,
+                '{{FRONTEND}}': self.args.frontend,
+                '{{BACKEND}}': self.args.backend,
+                '{{DATABASE}}': self.args.database,
+                '{{AUTH}}': self.args.auth,
+                '{{DEPLOY}}': self.args.deploy,
+            }
+            text_exts = {
+                '.md', '.mdc', '.txt', '.json', '.yml', '.yaml', '.toml', '.ini', '.env',
+                '.js', '.jsx', '.ts', '.tsx', '.py', '.go', '.html', '.css', '.scss', '.sh'
+            }
+            for path in root.rglob('*'):
+                if path.is_file() and path.suffix.lower() in text_exts:
+                    try:
+                        content = path.read_text()
+                        for key, val in mapping.items():
+                            content = content.replace(key, str(val))
+                        path.write_text(content)
+                    except Exception:
+                        # Skip files we can't read/write safely
+                        pass
+        except Exception:
+            # Non-fatal: template processing is best-effort
+            pass
+
+    def _add_industry_components(self, target_dir: Path, component_type: str):
+        """Add industry-specific components (placeholder no-op)."""
+        # Intentionally minimal for now; templates already include industry variants.
+        return
+
+    def _add_database_to_docker_compose(self):
+        """Ensure database service is present in docker-compose (handled by _generate_docker_compose)."""
+        # No action required: _generate_docker_compose already includes DB services
+        # for postgres/mongodb based on self.args.database.
+        return
     
     def _generate_devex_assets(self):
         """Generate developer experience assets"""
@@ -244,6 +310,8 @@ class ProjectGenerator:
     
     def _generate_compliance_rules(self):
         """Generate compliance and project-specific rules"""
+        if self.no_cursor_assets:
+            return
         rules_dir = self.project_root / '.cursor' / 'rules'
         
         # Client-specific rules
@@ -259,6 +327,169 @@ class ProjectGenerator:
         # Project workflow rules
         workflow_rules = self._generate_workflow_rules()
         (rules_dir / 'project-workflow.mdc').write_text(workflow_rules)
+    
+    def _generate_compliance_rules_content(self, compliance: str) -> str:
+        """Generate Cursor-style .mdc content with YAML frontmatter for a compliance standard."""
+        c = (compliance or '').strip().lower()
+        title_map = {
+            'hipaa': 'HIPAA Compliance Rules',
+            'gdpr': 'GDPR Compliance Rules',
+            'sox': 'SOX Compliance Rules',
+            'pci': 'PCI DSS Compliance Rules',
+        }
+        desc_map = {
+            'hipaa': 'Healthcare PHI protection: encryption, access control, audit logging, session timeout',
+            'gdpr': 'EU data protection: consent, right to erasure, data export, privacy by design',
+            'sox': 'Financial reporting integrity: change control, audit trail, access reviews',
+            'pci': 'Cardholder data security: no PAN storage, tokenization, segmentation, encryption',
+        }
+        title = title_map.get(c, f"{c.upper()} Compliance Rules")
+        # Extended triggers to work with Cursor AI workflows (includes update/refresh/sync and planning/execution verbs)
+        triggers = [
+            'commit', 'ci', 'update all', 'refresh all', 'sync all', 'reload all',
+            'bootstrap', 'setup', 'initialize', 'project start', 'master plan',
+            'framework ecosystem', 'background agents', 'prd', 'requirements',
+            'feature planning', 'product spec', 'task generation', 'technical planning',
+            'implementation plan', 'execute', 'implement', 'process tasks', 'development',
+            'retrospective', 'review', 'improvement', 'post-implementation',
+            'parallel execution', 'coordination', 'multi-agent', 'analyze'
+        ]
+        triggers_str = ','.join(triggers)
+        description_meta = (
+            f"TAGS: [compliance,{c}] | TRIGGERS: {triggers_str} | SCOPE: {self.args.name} | DESCRIPTION: {desc_map.get(c, title)}"
+        )
+
+        # Minimal control checklist per compliance
+        if c == 'hipaa':
+            body_lines = [
+                f"# {title}",
+                "", 
+                "## Required Controls [STRICT]",
+                "- PHI encrypted at rest (AES-256) and in transit (TLS 1.2+)",
+                "- Audit logging for all PHI access and changes",
+                "- Minimum necessary access (RBAC) with reviews",
+                "- 15-minute session timeout and re-authentication",
+                "- No PHI in logs or error messages",
+                "",
+                "## CI Gates",
+                "- Block merge if security scan reports critical vulns",
+                "- Enforce unit tests for PHI-related modules",
+                "- Validate presence of HIPAA rules in .cursor/rules/",
+            ]
+        elif c == 'gdpr':
+            body_lines = [
+                f"# {title}",
+                "",
+                "## Required Controls [STRICT]",
+                "- Consent collection and management",
+                "- Data export (access) and deletion workflows",
+                "- Data minimization and retention policies",
+                "- Privacy by design reviews",
+                "",
+                "## CI Gates",
+                "- Verify privacy endpoints present in API",
+                "- Ensure no PII in logs",
+            ]
+        elif c == 'sox':
+            body_lines = [
+                f"# {title}",
+                "",
+                "## Required Controls [STRICT]",
+                "- Change control with approvals and rollback",
+                "- Audit trail for financial data changes",
+                "- Segregation of duties",
+                "- Quarterly access reviews",
+                "",
+                "## CI Gates",
+                "- Block merge without migrations audit approval",
+                "- Enforce coverage for critical financial modules",
+            ]
+        elif c == 'pci':
+            body_lines = [
+                f"# {title}",
+                "",
+                "## Required Controls [STRICT]",
+                "- No storage of sensitive authentication data",
+                "- Tokenization of cardholder data",
+                "- Network segmentation of CDE",
+                "- Encryption at rest and in transit",
+                "",
+                "## CI Gates",
+                "- Secret scanning must pass",
+                "- Dependency scan must have no critical issues",
+            ]
+        else:
+            body_lines = [f"# {title}", "", "- Define controls for this standard"]
+
+        frontmatter = [
+            "---",
+            "alwaysApply: true",
+            f"description: \"{description_meta}\"",
+            "---",
+            "",
+        ]
+        return "\n".join(frontmatter + body_lines)
+    
+    def _prepare_ai_governor_assets(self):
+        """Prepare AI Governor assets (.cursor/tools and router config)"""
+        if self.no_cursor_assets:
+            return
+        tools_dir = self.project_root / '.cursor' / 'tools'
+        tools_dir.mkdir(parents=True, exist_ok=True)
+
+        # Minimal validate_rules.py
+        validate_rules = (
+            "#!/usr/bin/env python3\n"
+            "import os, sys, glob\n"
+            "rules_dir = os.path.join('.cursor','rules')\n"
+            "mdc_files = glob.glob(os.path.join(rules_dir, '*.mdc'))\n"
+            "if not mdc_files:\n"
+            "    print('[RULES] No .mdc rules found; failing pre-commit.')\n"
+            "    sys.exit(1)\n"
+            "print(f'[RULES] Found {len(mdc_files)} rule files.')\n"
+        )
+        (tools_dir / 'validate_rules.py').write_text(validate_rules)
+
+        # Minimal check_compliance.py
+        check_compliance = (
+            "#!/usr/bin/env python3\n"
+            "import json, os, sys\n"
+            "proj_json = os.path.join('.cursor','project.json')\n"
+            "if not os.path.exists(proj_json):\n"
+            "    print('[COMPLIANCE] project.json missing; skipping.'); sys.exit(0)\n"
+            "cfg = json.load(open(proj_json))\n"
+            "req = set((cfg.get('compliance') or []))\n"
+            "missing = [c for c in req if not os.path.exists(os.path.join('.cursor','rules', f'industry-compliance-{c}.mdc'))]\n"
+            "if missing:\n"
+            "    print('[COMPLIANCE] Missing compliance rules:', ', '.join(missing))\n"
+            "    sys.exit(1)\n"
+            "print('[COMPLIANCE] All required compliance rules present.')\n"
+        )
+        (tools_dir / 'check_compliance.py').write_text(check_compliance)
+
+        # Router config and logs
+        ai_dir = self.project_root / '.cursor' / 'ai-governor'
+        ai_dir.mkdir(parents=True, exist_ok=True)
+        (ai_dir / 'router-config.json').write_text(
+            json.dumps(self._generate_ai_governor_router_config(), indent=2, sort_keys=True)
+        )
+        (ai_dir / 'sample-logs.json').write_text(
+            json.dumps(self._generate_ai_governor_sample_logs(), indent=2, sort_keys=True)
+        )
+    
+    def _generate_industry_gates(self):
+        """Generate industry gates YAML files at project root"""
+        import yaml
+        # Healthcare gates
+        hc = self._generate_healthcare_gates()
+        (self.project_root / 'gates_config_healthcare.yaml').write_text(
+            yaml.dump(hc, default_flow_style=False, sort_keys=True)
+        )
+        # Finance gates
+        fin = self._generate_finance_gates()
+        (self.project_root / 'gates_config_finance.yaml').write_text(
+            yaml.dump(fin, default_flow_style=False, sort_keys=True)
+        )
     
     def _generate_documentation(self):
         """Generate project documentation"""
@@ -281,6 +512,150 @@ class ProjectGenerator:
         if self.args.compliance:
             compliance_docs = self._generate_compliance_documentation()
             (docs_dir / 'COMPLIANCE.md').write_text(compliance_docs)
+
+    def _generate_api_docs_template(self) -> str:
+        """Generate API.md template content based on backend selection"""
+        lines: List[str] = []
+        lines.append("# API Documentation")
+        lines.append("")
+        lines.append("## Overview")
+        lines.append(f"This document describes the API endpoints for the {self.args.name} backend.")
+        lines.append("")
+        if self.args.backend == 'fastapi':
+            lines.append("### FastAPI")
+            lines.append("- Interactive docs available at /docs (Swagger UI)")
+            lines.append("- Alternative docs at /redoc")
+            lines.append("")
+            lines.append("## Authentication")
+            lines.append("- Bearer JWT via Authorization header")
+            lines.append("")
+            lines.append("## Example Endpoints")
+            lines.append("- GET /health")
+            lines.append("- GET /items?skip=0&limit=100")
+            lines.append("- POST /items")
+        elif self.args.backend == 'django':
+            lines.append("### Django REST Framework")
+            lines.append("- API root available at /api/")
+            lines.append("- Browsable API if enabled")
+            lines.append("")
+            lines.append("## Authentication")
+            lines.append("- Session or Token depending on setup")
+            lines.append("")
+            lines.append("## Example Endpoints")
+            lines.append("- GET /api/health/")
+            lines.append("- GET /api/items/?page=1")
+            lines.append("- POST /api/items/")
+        elif self.args.backend == 'nestjs':
+            lines.append("### NestJS")
+            lines.append("- Swagger docs at /api by default if configured")
+            lines.append("")
+            lines.append("## Authentication")
+            lines.append("- JWT / Passport strategies depending on setup")
+        elif self.args.backend == 'go':
+            lines.append("### Go HTTP")
+            lines.append("- Swagger/OpenAPI if configured")
+        else:
+            lines.append("No backend endpoints defined.")
+        lines.append("")
+        lines.append("## Error Handling")
+        lines.append("- Errors follow a standard JSON shape with `message` and optional `code`.")
+        return "\n".join(lines)
+    def _generate_deployment_guide(self) -> str:
+        """Generate DEPLOYMENT.md content (text-only; no external side-effects)."""
+        lines: List[str] = []
+        lines.append("# Deployment Guide")
+        lines.append("")
+        lines.append("## Environments")
+        lines.append("- Development (docker-compose)\n- Staging\n- Production")
+        lines.append("")
+        lines.append("## Prerequisites")
+        lines.append("- Docker and Docker Compose installed")
+        if self.args.frontend != 'none':
+            lines.append("- Node.js 18+ for frontend build")
+        if self.args.backend in ['fastapi', 'django']:
+            lines.append("- Python 3.11+ for backend tasks")
+        if self.args.backend == 'nestjs':
+            lines.append("- Node.js 18+ (NestJS)")
+        if self.args.backend == 'go':
+            lines.append("- Go 1.21+ (Go backend)")
+        lines.append("")
+        lines.append("## Local Development")
+        lines.append("```bash\nmake setup\nmake dev\n```")
+        lines.append("")
+        lines.append("## Build")
+        lines.append("```bash\nmake build\n```")
+        lines.append("")
+        lines.append("## Deployment Targets")
+        target = (self.args.deploy or 'self-hosted').lower()
+        if target == 'aws':
+            lines.append("### AWS (ECS/Fargate) - Outline")
+            lines.append("1. Build and push images to ECR\n2. Provision ECS service and Task Definition\n3. Configure load balancer and target group\n4. Attach IAM roles and secrets\n5. Run database migrations")
+        elif target == 'azure':
+            lines.append("### Azure (AKS/App Service) - Outline")
+            lines.append("1. Build and push images to ACR\n2. Deploy to AKS with manifests or Bicep\n3. Configure Ingress and secrets\n4. Run migrations")
+        elif target == 'gcp':
+            lines.append("### GCP (Cloud Run/GKE) - Outline")
+            lines.append("1. Build and push images to Artifact Registry\n2. Deploy to Cloud Run or GKE\n3. Configure IAM and secrets\n4. Run migrations")
+        elif target == 'vercel':
+            lines.append("### Vercel (Frontend) - Outline")
+            lines.append("1. Connect repository to Vercel\n2. Configure environment variables\n3. Deploy via Git push")
+        else:
+            lines.append("### Self-hosted - Outline")
+            lines.append("1. Provision VM\n2. Install Docker\n3. Use docker-compose to run services\n4. Configure reverse proxy and TLS")
+        lines.append("")
+        lines.append("## Post-Deployment")
+        lines.append("- Health checks\n- Log aggregation\n- Metrics and alerts\n- Backup and restore checks")
+        return "\n".join(lines)
+
+    def _generate_ai_governor_router_config(self) -> Dict[str, Any]:
+        return {
+            'routing': {
+                'industry': self.args.industry,
+                'project_type': self.args.project_type,
+                'rules': [
+                    '1-master-rule-context-discovery',
+                    '3-master-rule-code-quality-checklist'
+                ]
+            }
+        }
+
+    def _generate_ai_governor_sample_logs(self) -> Dict[str, Any]:
+        return {
+            'decisions': [
+                {'timestamp': 'T+0', 'action': 'load_rules', 'rules_loaded': 2},
+                {'timestamp': 'T+1', 'action': 'route', 'target': 'backend'},
+            ]
+        }
+
+    def _generate_healthcare_gates(self) -> Dict[str, Any]:
+        return {
+            'quality_gates': {
+                'coverage': {'min': 90},
+                'critical_vulns': 0,
+                'high_vulns': 0
+            },
+            'compliance': {'hipaa': True}
+        }
+
+    def _generate_finance_gates(self) -> Dict[str, Any]:
+        return {
+            'quality_gates': {
+                'coverage': {'min': 90},
+                'critical_vulns': 0,
+                'high_vulns': 0
+            },
+            'compliance': {'sox': True, 'pci': True}
+        }
+
+    def _generate_ecommerce_gates(self) -> Dict[str, Any]:
+        return {
+            'quality_gates': {
+                'coverage': {'min': 80},
+                'critical_vulns': 0,
+                'high_vulns': 2
+            },
+            'compliance': {'gdpr': True}
+        }
     
     def _initialize_git(self):
         """Initialize git repository"""
@@ -292,59 +667,21 @@ class ProjectGenerator:
             capture_output=True
         )
     
-    def _process_templates(self, directory: Path):
-        """Process template files and replace variables"""
-        template_vars = {
-            'PROJECT_NAME': self.args.name,
-            'INDUSTRY': self.args.industry,
-            'PROJECT_TYPE': self.args.project_type,
-            'FRONTEND': self.args.frontend,
-            'BACKEND': self.args.backend,
-            'DATABASE': self.args.database,
-            'AUTH': self.args.auth,
-            'DEPLOY': self.args.deploy,
-            'FEATURES': self.config.merge_features(self.args.features),
-            'COMPLIANCE': self.args.compliance or ''
-        }
-        
-        for file_path in directory.rglob('*'):
-            if file_path.is_file() and file_path.suffix in ['.ts', '.js', '.py', '.json', '.yaml', '.yml', '.md', '.env']:
-                try:
-                    content = file_path.read_text()
-                    for key, value in template_vars.items():
-                        content = content.replace(f'{{{{{key}}}}}', str(value))
-                    file_path.write_text(content)
-                except Exception:
-                    pass  # Skip files that can't be processed
-    
-    def _add_industry_components(self, directory: Path, component_type: str):
-        """Add industry-specific components"""
-        templates = self.config.get_template_suggestions()
-        
-        if component_type == 'frontend' and 'pages' in templates:
-            pages_dir = directory / 'src' / 'pages'
-            pages_dir.mkdir(parents=True, exist_ok=True)
-            
-            for page in templates['pages']:
-                # Create placeholder page component
-                page_content = self.template_engine.generate_page_template(
-                    page, self.args.frontend, self.args.industry
-                )
-                (pages_dir / f'{page}.tsx').write_text(page_content)
-        
-        elif component_type == 'backend' and 'apis' in templates:
-            api_dir = directory / 'src' / 'api'
-            api_dir.mkdir(parents=True, exist_ok=True)
-            
-            for api in templates['apis']:
-                # Create placeholder API endpoint
-                api_content = self.template_engine.generate_api_template(
-                    api, self.args.backend, self.args.industry
-                )
-                
-                # Determine file extension based on backend
-                ext = {'fastapi': 'py', 'django': 'py', 'nestjs': 'ts', 'go': 'go'}.get(self.args.backend, 'js')
-                (api_dir / f'{api}.{ext}').write_text(api_content)
+    def _install_precommit_hook(self):
+        """Install pre-commit hook"""
+        hook_path = self.project_root / '.git' / 'hooks' / 'pre-commit'
+        hook_path.parent.mkdir(parents=True, exist_ok=True)
+        hook_script = (
+            "#!/usr/bin/env bash\n"
+            "set -euo pipefail\n"
+            "python .cursor/tools/validate_rules.py\n"
+            "python .cursor/tools/check_compliance.py\n"
+        )
+        hook_path.write_text(hook_script)
+        try:
+            os.chmod(hook_path, 0o755)
+        except Exception:
+            pass
     
     def _generate_setup_commands(self) -> List[str]:
         """Generate setup commands for the project"""
@@ -423,25 +760,28 @@ class ProjectGenerator:
                 ]
             })
         
-        structure['children'].extend([
-            {
+        extras: List[Dict[str, Any]] = []
+        if not self.no_cursor_assets:
+            extras.append({
                 'name': '.cursor/',
                 'children': [
                     {'name': 'rules/'},
                     {'name': 'project.json'}
                 ]
-            },
-            {
+            })
+        extras.append({
                 'name': '.github/',
                 'children': [
                     {'name': 'workflows/'}
                 ]
-            },
+            })
+        extras.extend([
             {'name': 'docs/'},
             {'name': 'docker-compose.yml'},
             {'name': 'Makefile'},
             {'name': 'README.md'}
         ])
+        structure['children'].extend(extras)
         
         return structure
     
@@ -537,6 +877,10 @@ htmlcov/
     
     def _generate_readme(self) -> str:
         """Generate README.md content"""
+        features_block = '\n'.join(['- ' + feature for feature in self.config.merge_features(self.args.features)])
+        compliance_list = (self.args.compliance.split(',') if self.args.compliance else ['None'])
+        compliance_block = '\n'.join(['- ' + c.upper() for c in compliance_list])
+        comp_doc_line = '- [Compliance Documentation](docs/COMPLIANCE.md)' if self.args.compliance else ''
         return f"""# {self.args.name}
 
 ## Overview
@@ -550,10 +894,10 @@ htmlcov/
 - **Deployment**: {self.args.deploy}
 
 ## Features
-{chr(10).join([f'- {feature}' for feature in self.config.merge_features(self.args.features)])}
+{features_block}
 
 ## Compliance
-{chr(10).join([f'- {compliance.upper()}' for compliance in (self.args.compliance.split(',') if self.args.compliance else ['None'])])}
+{compliance_block}
 
 ## Quick Start
 
@@ -576,7 +920,7 @@ htmlcov/
 - [Development Guide](docs/DEVELOPMENT.md)
 - [API Documentation](docs/API.md)
 - [Deployment Guide](docs/DEPLOYMENT.md)
-{f'- [Compliance Documentation](docs/COMPLIANCE.md)' if self.args.compliance else ''}
+{comp_doc_line}
 
 ## License
 Proprietary - All rights reserved
@@ -686,7 +1030,7 @@ Proprietary - All rights reserved
 setup:
 	@echo "Setting up {self.args.name}..."
 {'	cd frontend && npm install' if self.args.frontend != 'none' else ''}
-{'	cd backend && python -m venv venv && . venv/bin/activate && pip install -r requirements.txt' if self.args.backend in ['fastapi', 'django'] else ''}
+{'	cd backend && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt' if self.args.backend in ['fastapi', 'django'] else ''}
 {'	cd backend && npm install' if self.args.backend == 'nestjs' else ''}
 {'	cd backend && go mod download' if self.args.backend == 'go' else ''}
 	@echo "Setup complete!"
@@ -788,53 +1132,120 @@ clean:
     
     def _generate_lint_workflow(self) -> str:
         """Generate lint workflow"""
-        return f"""name: Lint
+        frontend_block = ""
+        if self.args.frontend != 'none':
+            frontend_block = (
+                "    - name: Setup Node.js\n"
+                "      uses: actions/setup-node@v3\n"
+                "      with:\n"
+                "        node-version: '18'\n"
+                "        cache: 'npm'\n"
+                "        cache-dependency-path: frontend/package-lock.json\n\n"
+                "    - name: Install frontend dependencies\n"
+                "      run: cd frontend && npm ci\n\n"
+                "    - name: Run frontend lint\n"
+                "      run: cd frontend && npm run lint\n"
+            )
 
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+        backend_block = ""
+        if self.args.backend in ['fastapi', 'django']:
+            backend_block = (
+                "    - name: Setup Python\n"
+                "      uses: actions/setup-python@v4\n"
+                "      with:\n"
+                "        python-version: '3.11'\n\n"
+                "    - name: Install backend dependencies\n"
+                "      run: |\n"
+                "        cd backend\n"
+                "        pip install -r requirements-dev.txt\n\n"
+                "    - name: Run backend lint\n"
+                "      run: |\n"
+                "        cd backend\n"
+                "        black --check .\n"
+                "        flake8 .\n"
+            )
 
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-{"    - name: Setup Node.js\n      uses: actions/setup-node@v3\n      with:\n        node-version: '18'\n        cache: 'npm'\n        cache-dependency-path: frontend/package-lock.json\n    \n    - name: Install frontend dependencies\n      run: cd frontend && npm ci\n    \n    - name: Run frontend lint\n      run: cd frontend && npm run lint" if self.args.frontend != 'none' else ''}
-    
-{"    - name: Setup Python\n      uses: actions/setup-python@v4\n      with:\n        python-version: '3.11'\n    \n    - name: Install backend dependencies\n      run: |\n        cd backend\n        pip install -r requirements-dev.txt\n    \n    - name: Run backend lint\n      run: |\n        cd backend\n        black --check .\n        flake8 ." if self.args.backend in ['fastapi', 'django'] else ''}
-"""
+        return (
+            "name: Lint\n\n"
+            "on:\n"
+            "  push:\n"
+            "    branches: [main, develop]\n"
+            "  pull_request:\n"
+            "    branches: [main, develop]\n\n"
+            "jobs:\n"
+            "  lint:\n"
+            "    runs-on: ubuntu-latest\n\n"
+            "    steps:\n"
+            "    - uses: actions/checkout@v3\n\n"
+            f"{frontend_block}"
+            f"{backend_block}"
+        )
     
     def _generate_test_workflow(self) -> str:
         """Generate test workflow"""
-        return f"""name: Test
+        services_block = ""
+        if self.args.database == 'postgres':
+            services_block = (
+                "    services:\n"
+                "      postgres:\n"
+                "        image: postgres:15\n"
+                "        env:\n"
+                "          POSTGRES_PASSWORD: postgres\n"
+                "        options: >-\n"
+                "          --health-cmd pg_isready\n"
+                "          --health-interval 10s\n"
+                "          --health-timeout 5s\n"
+                "          --health-retries 5\n"
+                "        ports:\n"
+                "          - 5432:5432\n"
+            )
 
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+        frontend_block = ""
+        if self.args.frontend != 'none':
+            frontend_block = (
+                "    - name: Setup Node.js\n"
+                "      uses: actions/setup-node@v3\n"
+                "      with:\n"
+                "        node-version: '18'\n\n"
+                "    - name: Install and test frontend\n"
+                "      run: |\n"
+                "        cd frontend\n"
+                "        npm ci\n"
+                "        npm test -- --coverage\n"
+            )
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    
-    services:
-{"      postgres:\n        image: postgres:15\n        env:\n          POSTGRES_PASSWORD: postgres\n        options: >-\n          --health-cmd pg_isready\n          --health-interval 10s\n          --health-timeout 5s\n          --health-retries 5\n        ports:\n          - 5432:5432" if self.args.database == 'postgres' else ''}
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-{"    - name: Setup Node.js\n      uses: actions/setup-node@v3\n      with:\n        node-version: '18'\n    \n    - name: Install and test frontend\n      run: |\n        cd frontend\n        npm ci\n        npm test -- --coverage" if self.args.frontend != 'none' else ''}
-    
-{"    - name: Setup Python\n      uses: actions/setup-python@v4\n      with:\n        python-version: '3.11'\n    \n    - name: Install and test backend\n      run: |\n        cd backend\n        pip install -r requirements-test.txt\n        pytest --cov=. --cov-report=xml" if self.args.backend in ['fastapi', 'django'] else ''}
-    
-    - name: Upload coverage
-      uses: codecov/codecov-action@v3
-"""
+        backend_block = ""
+        if self.args.backend in ['fastapi', 'django']:
+            backend_block = (
+                "    - name: Setup Python\n"
+                "      uses: actions/setup-python@v4\n"
+                "      with:\n"
+                "        python-version: '3.11'\n\n"
+                "    - name: Install and test backend\n"
+                "      run: |\n"
+                "        cd backend\n"
+                "        pip install -r requirements-test.txt\n"
+                "        pytest --cov=. --cov-report=xml\n"
+            )
+
+        return (
+            "name: Test\n\n"
+            "on:\n"
+            "  push:\n"
+            "    branches: [main, develop]\n"
+            "  pull_request:\n"
+            "    branches: [main, develop]\n\n"
+            "jobs:\n"
+            "  test:\n"
+            "    runs-on: ubuntu-latest\n\n"
+            f"{services_block if services_block else ''}"
+            "    steps:\n"
+            "    - uses: actions/checkout@v3\n\n"
+            f"{frontend_block}"
+            f"{backend_block}"
+            "    - name: Upload coverage\n"
+            "      uses: codecov/codecov-action@v3\n"
+        )
     
     def _generate_security_workflow(self) -> str:
         """Generate security scan workflow"""
@@ -983,1345 +1394,184 @@ jobs:
                         'network_segmentation': True,
                         'encryption_validation': True
                     }
-        
-        # Convert to YAML format
+        # Convert to YAML format (deterministic)
         import yaml
-        return yaml.dump(config, default_flow_style=False)
-    
+        return yaml.dump(config, default_flow_style=False, sort_keys=True)
+        
     def _generate_client_rules(self) -> str:
-        """Generate client-specific rules"""
-        return f"""---
-alwaysApply: true
-description: "TAGS: [project,client,standards] | TRIGGERS: development,coding,implementation | SCOPE: {self.args.name} | DESCRIPTION: Client-specific rules and standards for {self.args.name}"
----
+        """Generate client-specific rules (safe builder)"""
+        uptime = '>99.99%' if self.args.industry in ['healthcare', 'finance'] else '>99.9%'
+        if self.args.backend != 'none':
+            rt_threshold = '200ms' if self.args.industry == 'finance' else '500ms'
+            response_time = f"<{rt_threshold}"
+        else:
+            response_time = 'N/A'
+        coverage = 80 if self.args.industry in ['healthcare', 'finance'] else 70
+        ecommerce_extra = []
+        if self.args.industry == 'ecommerce':
+            ecommerce_extra = [
+                '## E-commerce Enhancements',
+                '- Mobile-first design approach',
+                '- A/B testing infrastructure'
+            ]
+        lines: List[str] = []
+        lines.append("---")
+        lines.append("alwaysApply: true")
+        # Extended triggers consistent with dev-workflow
+        client_triggers = [
+            'development', 'coding', 'implementation', 'update all', 'refresh all', 'sync all', 'reload all',
+            'bootstrap', 'setup', 'initialize', 'project start', 'master plan', 'framework ecosystem',
+            'background agents', 'prd', 'requirements', 'feature planning', 'product spec', 'task generation',
+            'technical planning', 'implementation plan', 'execute', 'implement', 'process tasks',
+            'retrospective', 'review', 'improvement', 'post-implementation', 'parallel execution',
+            'coordination', 'multi-agent', 'analyze'
+        ]
+        lines.append(
+            f"description: \"TAGS: [project,client,standards] | TRIGGERS: {','.join(client_triggers)} | SCOPE: {self.args.name} | DESCRIPTION: Client-specific rules and standards for {self.args.name}\""
+        )
+        lines.append("---")
+        lines.append("")
+        lines.append(f"# Client-Specific Rules: {self.args.name}")
+        lines.append("")
+        lines.append("## Project Context")
+        lines.append(f"- **Industry**: {self.args.industry}")
+        lines.append(f"- **Project Type**: {self.args.project_type}")
+        lines.append(f"- **Technology Stack**: {self.args.frontend}/{self.args.backend}/{self.args.database}")
+        lines.append(f"- **Compliance Requirements**: {self.args.compliance or 'None'}")
+        lines.append("")
+        lines.extend(ecommerce_extra)
+        if ecommerce_extra:
+            lines.append("")
+        lines.append("## Communication Protocols")
+        lines.append("- Daily standup: 9:00 AM")
+        lines.append("- Sprint planning: Bi-weekly")
+        lines.append("- Retrospectives: End of each sprint")
+        lines.append("- Emergency contact: On-call rotation")
+        lines.append("")
+        lines.append("## Success Metrics")
+        lines.append(f"- Uptime: {uptime}")
+        lines.append(f"- Response time: {response_time}")
+        lines.append("- Error rate: <0.1%")
+        lines.append(f"- Test coverage: >{coverage}%")
+        return "\n".join(lines)
 
-# Client-Specific Rules: {self.args.name}
-
-## Project Context
-- **Industry**: {self.args.industry}
-- **Project Type**: {self.args.project_type}
-- **Technology Stack**: {self.args.frontend}/{self.args.backend}/{self.args.database}
-- **Compliance Requirements**: {self.args.compliance or 'None'}
-
-## Coding Standards
-
-### General Principles
-1. **Code Quality**: All code must pass linting and have minimum {80 if self.args.industry in ['healthcare', 'finance'] else 70}% test coverage
-2. **Security First**: Follow OWASP guidelines and industry-specific security requirements
-3. **Documentation**: All public APIs and complex functions must be documented
-4. **Performance**: Optimize for {self.args.industry}-specific performance requirements
-
-### Frontend Standards
-{f'''- Framework: {self.args.frontend}
-- State Management: Use built-in state management solutions
-- Component Structure: Follow atomic design principles
-- Styling: Use CSS modules or styled-components
-- Accessibility: WCAG 2.1 AA compliance required''' if self.args.frontend != 'none' else '- No frontend in this project'}
-
-### Backend Standards
-{f'''- Framework: {self.args.backend}
-- API Design: RESTful principles with OpenAPI documentation
-- Error Handling: Consistent error response format
-- Logging: Structured logging with correlation IDs
-- Database: Follow {self.args.database} best practices''' if self.args.backend != 'none' else '- No backend in this project'}
-
-### Security Requirements
-{'- HIPAA Compliance: PHI encryption, audit logging, access controls' if 'hipaa' in (self.args.compliance or '') else ''}
-{'- GDPR Compliance: Data privacy, consent management, right to deletion' if 'gdpr' in (self.args.compliance or '') else ''}
-{'- SOX Compliance: Change control, audit trails, segregation of duties' if 'sox' in (self.args.compliance or '') else ''}
-{'- PCI Compliance: Cardholder data protection, tokenization' if 'pci' in (self.args.compliance or '') else ''}
-- Authentication: {self.args.auth} integration required
-- Authorization: Role-based access control (RBAC)
-- Data Encryption: At rest and in transit
-
-## Development Workflow
-
-### Branch Strategy
-- `main`: Production-ready code
-- `develop`: Integration branch
-- `feature/*`: Feature development
-- `hotfix/*`: Emergency fixes
-
-### Code Review Requirements
-1. All PRs require at least one approval
-2. Must pass all CI/CD checks
-3. Security scan must show no critical vulnerabilities
-4. Test coverage must not decrease
-
-### Deployment Process
-- Target Environment: {self.args.deploy}
-- Deployment Frequency: {'Daily' if self.args.project_type == 'saas' else 'Weekly'}
-- Rollback Strategy: Blue-green deployments
-
-## Industry-Specific Requirements
-
-{f'''### Healthcare Requirements
-- Patient data must be encrypted with AES-256
-- All access to PHI must be logged
-- Session timeout: 15 minutes
-- Regular security audits required
-- Business Associate Agreement (BAA) required for third-party services''' if self.args.industry == 'healthcare' else ''}
-
-{f'''### Financial Services Requirements
-- Transaction integrity must be maintained
-- Audit trails for all financial operations
-- Real-time fraud detection required
-- Regulatory reporting capabilities
-- Data retention: 7 years minimum''' if self.args.industry == 'finance' else ''}
-
-{f'''### E-commerce Requirements
-- PCI compliance for payment processing
-- Cart abandonment tracking
-- Performance: < 3s page load time
-- Mobile-first design approach
-- A/B testing infrastructure''' if self.args.industry == 'ecommerce' else ''}
-
-## Communication Protocols
-- Daily standup: 9:00 AM
-- Sprint planning: Bi-weekly
-- Retrospectives: End of each sprint
-- Emergency contact: On-call rotation
-
-## Success Metrics
-- Uptime: {'>99.99%' if self.args.industry in ['healthcare', 'finance'] else '>99.9%'}
-- Response time: {f'<{200 if self.args.industry == "finance" else 500}ms' if self.args.backend != 'none' else 'N/A'}
-- Error rate: <0.1%
-- Test coverage: >{80 if self.args.industry in ['healthcare', 'finance'] else 70}%
-"""
-    
-    def _generate_compliance_rules_content(self, compliance: str) -> str:
-        """Generate compliance-specific rules content"""
-        compliance_configs = {
-            'hipaa': {
-                'title': 'HIPAA Compliance Rules',
-                'description': 'Healthcare Insurance Portability and Accountability Act compliance requirements',
-                'content': """## HIPAA Compliance Requirements
-
-### Technical Safeguards
-1. **Access Control**
-   - Unique user identification
-   - Automatic logoff after 15 minutes
-   - Encryption and decryption of PHI
-
-2. **Audit Controls**
-   - Hardware, software, and procedural mechanisms
-   - Record and examine access to PHI
-   - Regular review of audit logs
-
-3. **Integrity Controls**
-   - PHI must not be improperly altered or destroyed
-   - Electronic mechanisms to corroborate PHI integrity
-   - Version control for all PHI modifications
-
-4. **Transmission Security**
-   - Encryption of PHI in transit (TLS 1.2+)
-   - Integrity controls during transmission
-   - Secure messaging for PHI communication
-
-### Administrative Safeguards
-1. **Security Officer Designation**
-2. **Workforce Training**
-3. **Access Authorization Procedures**
-4. **Incident Response Plan**
-
-### Physical Safeguards
-1. **Facility Access Controls**
-2. **Workstation Security**
-3. **Device and Media Controls**"""
-            },
-            
-            'gdpr': {
-                'title': 'GDPR Compliance Rules',
-                'description': 'General Data Protection Regulation compliance requirements',
-                'content': """## GDPR Compliance Requirements
-
-### Data Protection Principles
-1. **Lawfulness, Fairness, and Transparency**
-   - Clear consent mechanisms
-   - Transparent privacy policies
-   - Lawful basis for processing
-
-2. **Purpose Limitation**
-   - Data collected for specific purposes
-   - No further processing incompatible with purposes
-   - Clear documentation of purposes
-
-3. **Data Minimization**
-   - Collect only necessary data
-   - Regular data audits
-   - Automatic data deletion policies
-
-4. **Accuracy**
-   - Keep personal data accurate and up to date
-   - Mechanisms for data correction
-   - Regular data quality checks
-
-### Individual Rights Implementation
-1. **Right to Access**
-   - Export user data functionality
-   - 30-day response requirement
-
-2. **Right to Rectification**
-   - User profile editing capabilities
-   - Admin tools for data correction
-
-3. **Right to Erasure**
-   - Complete data deletion workflows
-   - Backup data handling procedures
-
-4. **Right to Data Portability**
-   - Machine-readable data export
-   - Standard data formats
-
-### Technical Measures
-1. **Privacy by Design**
-2. **Data Protection Impact Assessments**
-3. **Breach Notification (72 hours)**
-4. **Cross-border Transfer Safeguards**"""
-            },
-            
-            'sox': {
-                'title': 'SOX Compliance Rules',
-                'description': 'Sarbanes-Oxley Act compliance requirements',
-                'content': """## SOX Compliance Requirements
-
-### IT General Controls
-1. **Access Controls**
-   - Role-based access control (RBAC)
-   - Segregation of duties
-   - Regular access reviews
-   - Privileged access management
-
-2. **Change Management**
-   - Formal change request process
-   - Change approval workflows
-   - Testing requirements
-   - Rollback procedures
-
-3. **Operations**
-   - Job scheduling and monitoring
-   - Backup and recovery procedures
-   - Incident management
-   - Problem management
-
-### Application Controls
-1. **Input Controls**
-   - Data validation
-   - Error handling
-   - Duplicate checking
-
-2. **Processing Controls**
-   - Calculation accuracy
-   - Data integrity checks
-   - Exception reporting
-
-3. **Output Controls**
-   - Report distribution controls
-   - Sensitive data masking
-   - Audit trails
-
-### Documentation Requirements
-1. **Process Documentation**
-2. **Control Matrices**
-3. **Test Evidence**
-4. **Management Assertions**"""
-            },
-            
-            'pci': {
-                'title': 'PCI DSS Compliance Rules',
-                'description': 'Payment Card Industry Data Security Standard compliance requirements',
-                'content': """## PCI DSS Compliance Requirements
-
-### Build and Maintain Secure Network
-1. **Firewall Configuration**
-   - Network segmentation
-   - DMZ implementation
-   - Regular rule reviews
-
-2. **Default Security Parameters**
-   - Change default passwords
-   - Remove unnecessary services
-   - Secure configurations
-
-### Protect Cardholder Data
-1. **Data Protection**
-   - Encryption at rest (AES-256)
-   - Secure key management
-   - Data retention policies
-
-2. **Transmission Security**
-   - TLS 1.2+ for all transmissions
-   - Never send PAN via email
-   - Secure API endpoints
-
-### Maintain Vulnerability Management
-1. **Anti-virus/Anti-malware**
-2. **Security Patches**
-3. **Secure Development**
-   - OWASP Top 10 compliance
-   - Code reviews
-   - Security testing
-
-### Implement Access Control
-1. **Need-to-Know Basis**
-2. **Unique User IDs**
-3. **Two-Factor Authentication**
-4. **Physical Access Controls**
-
-### Monitor and Test
-1. **Logging and Monitoring**
-   - Centralized logging
-   - Daily log reviews
-   - 90-day retention
-
-2. **Security Testing**
-   - Quarterly vulnerability scans
-   - Annual penetration testing
-   - File integrity monitoring"""
-            }
-        }
-        
-        config = compliance_configs.get(compliance.lower(), {
-            'title': f'{compliance.upper()} Compliance Rules',
-            'description': f'{compliance.upper()} compliance requirements',
-            'content': f'## {compliance.upper()} Compliance Requirements\n\nCustom compliance requirements for {compliance.upper()}.'
-        })
-        
-        return f"""---
-alwaysApply: true
-description: "TAGS: [compliance,security,{compliance.lower()}] | TRIGGERS: {compliance.lower()},compliance,security | SCOPE: {self.args.name} | DESCRIPTION: {config['description']}"
----
-
-# {config['title']}
-
-{config['content']}
-
-## Implementation Checklist
-- [ ] Review all requirements with legal/compliance team
-- [ ] Implement technical controls
-- [ ] Document compliance measures
-- [ ] Schedule regular audits
-- [ ] Train development team
-- [ ] Establish incident response procedures
-
-## Automated Compliance Checks
-1. **Pre-commit Hooks**
-   - Secret scanning
-   - Code security analysis
-   - Dependency vulnerability check
-
-2. **CI/CD Pipeline**
-   - SAST/DAST scanning
-   - Compliance policy validation
-   - Audit log verification
-
-3. **Runtime Monitoring**
-   - Access pattern analysis
-   - Anomaly detection
-   - Compliance drift alerts
-
-## References
-- Official {compliance.upper()} documentation
-- Industry best practices
-- Regulatory guidance
-"""
-    
     def _generate_workflow_rules(self) -> str:
-        """Generate project workflow rules"""
-        return f"""---
-alwaysApply: true
-description: "TAGS: [workflow,process,development] | TRIGGERS: workflow,process,development | SCOPE: {self.args.name} | DESCRIPTION: Development workflow and process rules"
----
+        """Generate process/workflow rules with extended triggers and Cursor frontmatter."""
+        triggers = [
+            'update all', 'refresh all', 'sync all', 'reload all', 'execute', 'implement', 'process tasks',
+            'bootstrap', 'setup', 'initialize', 'project start', 'master plan', 'framework ecosystem',
+            'background agents', 'prd', 'requirements', 'feature planning', 'product spec', 'task generation',
+            'technical planning', 'implementation plan', 'development', 'retrospective', 'review', 'improvement',
+            'post-implementation', 'parallel execution', 'coordination', 'multi-agent', 'analyze'
+        ]
+        frontmatter = [
+            '---',
+            'alwaysApply: false',
+            f"description: \"TAGS: [workflow,process,project] | TRIGGERS: {','.join(triggers)} | SCOPE: {self.args.name} | DESCRIPTION: Project workflow and process rules for {self.args.name}\"",
+            '---',
+            ''
+        ]
+        body = [
+            f"# Project Workflow Rules: {self.args.name}",
+            "",
+            "## Process Gates",
+            "- Run pre-commit compliance checks",
+            "- Enforce lint and test passes in CI",
+            "- Block release if gates_config thresholds fail",
+            "",
+            "## Execution Protocols",
+            "- Use 'update all' to normalize rule formatting",
+            "- Use 'execute' to process tasks per implementation plan",
+            "- Use 'refresh all' to resync generated assets",
+        ]
+        return "\n".join(frontmatter + body)
+
+    def _generate_development_guide_legacy(self) -> str:
+        """Legacy development guide (disabled)"""
+        return ""
 
-# Project Workflow Rules: {self.args.name}
-
-## Development Process
-
-### Task Management
-1. **Task Creation**
-   - All work must have a corresponding ticket
-   - Clear acceptance criteria required
-   - Estimate effort in story points
-
-2. **Task Lifecycle**
-   - `TODO` → `IN PROGRESS` → `REVIEW` → `DONE`
-   - Update status in real-time
-   - Add blockers immediately
-
-### Git Workflow
-1. **Branching**
-   ```bash
-   # Feature branch
-   git checkout -b feature/TICKET-description
-   
-   # Bugfix branch
-   git checkout -b bugfix/TICKET-description
-   
-   # Hotfix branch
-   git checkout -b hotfix/TICKET-description
-   ```
-
-2. **Commit Messages**
-   ```
-   type(scope): subject
-   
-   body
-   
-   footer
-   ```
-   Types: feat, fix, docs, style, refactor, test, chore
-
-3. **Pull Request Template**
-   ```markdown
-   ## Description
-   Brief description of changes
-   
-   ## Type of Change
-   - [ ] Bug fix
-   - [ ] New feature
-   - [ ] Breaking change
-   
-   ## Testing
-   - [ ] Unit tests pass
-   - [ ] Integration tests pass
-   - [ ] Manual testing completed
-   
-   ## Checklist
-   - [ ] Code follows style guidelines
-   - [ ] Self-review completed
-   - [ ] Documentation updated
-   - [ ] No sensitive data exposed
-   ```
-
-### Code Review Process
-1. **Review Criteria**
-   - Functionality correctness
-   - Code quality and style
-   - Performance implications
-   - Security considerations
-   - Test coverage
-
-2. **Review Feedback**
-   - Use constructive language
-   - Suggest specific improvements
-   - Acknowledge good practices
-   - Ask questions for clarity
-
-### Deployment Pipeline
-1. **Development Environment**
-   - Auto-deploy on commit to develop
-   - Run smoke tests
-   - Send deployment notifications
-
-2. **Staging Environment**
-   - Deploy release candidates
-   - Run full test suite
-   - Performance testing
-   - Security scanning
-
-3. **Production Environment**
-   - Require approval from tech lead
-   - Blue-green deployment
-   - Health checks
-   - Rollback plan ready
-
-## Quality Standards
-
-### Testing Requirements
-- Unit Tests: >{80 if self.args.industry in ['healthcare', 'finance'] else 70}% coverage
-- Integration Tests: All API endpoints
-- E2E Tests: Critical user journeys
-- Performance Tests: Load and stress testing
-
-### Documentation Standards
-1. **Code Documentation**
-   - JSDoc/docstrings for public APIs
-   - Inline comments for complex logic
-   - README for each module
-
-2. **Project Documentation**
-   - Architecture decisions (ADRs)
-   - API documentation (OpenAPI)
-   - Deployment guides
-   - Troubleshooting guides
-
-### Performance Standards
-- Page Load: <{2 if self.args.industry == 'ecommerce' else 3}s
-- API Response: <{200 if self.args.industry == 'finance' else 500}ms
-- Error Rate: <0.1%
-- Uptime: >{99.99 if self.args.industry in ['healthcare', 'finance'] else 99.9}%
-
-## Communication
-
-### Daily Standups
-- What I did yesterday
-- What I'm doing today
-- Any blockers
-- Keep it under 2 minutes
-
-### Sprint Ceremonies
-1. **Sprint Planning**
-   - Review backlog
-   - Estimate stories
-   - Commit to sprint goal
-
-2. **Sprint Review**
-   - Demo completed work
-   - Gather stakeholder feedback
-   - Update product backlog
-
-3. **Retrospective**
-   - What went well
-   - What could improve
-   - Action items
-
-### Escalation Path
-1. Technical Issues → Tech Lead
-2. Product Questions → Product Owner
-3. Resource Conflicts → Project Manager
-4. Security Concerns → Security Team
-
-## Monitoring and Alerts
-
-### Application Monitoring
-- Error tracking (Sentry/Rollbar)
-- Performance monitoring (New Relic/DataDog)
-- Uptime monitoring (Pingdom/UptimeRobot)
-- Custom business metrics
-
-### Alert Configuration
-1. **Critical Alerts** (immediate)
-   - Service down
-   - Security breach
-   - Data loss risk
-
-2. **Warning Alerts** (within 1 hour)
-   - Performance degradation
-   - High error rate
-   - Resource exhaustion
-
-3. **Info Alerts** (daily digest)
-   - Deployment notifications
-   - Scheduled job results
-   - Usage statistics
-"""
-    
-    def _add_database_to_docker_compose(self):
-        """Add database configuration to docker-compose"""
-        # This is handled in _generate_docker_compose method
-        pass
-    
-    def _generate_api_docs_template(self) -> str:
-        """Generate API documentation template"""
-        return f"""# API Documentation
-
-## Overview
-API documentation for {self.args.name} {self.args.backend} backend.
-
-## Base URL
-- Development: `http://localhost:8000`
-- Staging: `https://api-staging.{self.args.name}.com`
-- Production: `https://api.{self.args.name}.com`
-
-## Authentication
-{f'''This API uses {self.args.auth} for authentication.
-
-### Headers
-```
-Authorization: Bearer {{token}}
-```
-
-### Getting a Token
-1. Register/login through {self.args.auth}
-2. Receive JWT token
-3. Include token in all API requests''' if self.args.auth != 'none' else 'No authentication required for this API.'}
-
-## Endpoints
-
-### Health Check
-```
-GET /health
-```
-
-**Response:**
-```json
-{{
-  "status": "healthy",
-  "version": "1.0.0",
-  "timestamp": "2024-01-01T00:00:00Z"
-}}
-```
-
-{f'''### Industry-Specific Endpoints
-
-Based on {self.args.industry} requirements, the following endpoints are available:
-
-{self._generate_industry_endpoints()}''' if self.args.backend != 'none' else ''}
-
-## Error Handling
-
-### Error Response Format
-```json
-{{
-  "error": {{
-    "code": "ERROR_CODE",
-    "message": "Human readable error message",
-    "details": {{}}
-  }}
-}}
-```
-
-### Common Error Codes
-- `400` - Bad Request
-- `401` - Unauthorized
-- `403` - Forbidden
-- `404` - Not Found
-- `422` - Validation Error
-- `500` - Internal Server Error
-
-## Rate Limiting
-- 100 requests per minute per IP
-- 1000 requests per hour per authenticated user
-
-## Versioning
-API versioning is handled through URL path: `/api/v1/`
-
-## Webhooks
-{f'Webhooks are available for the following events:' if self.args.project_type in ['saas', 'enterprise'] else 'No webhooks configured.'}
-
-## SDKs
-- JavaScript/TypeScript
-- Python
-- Go
-
-## OpenAPI Specification
-Full OpenAPI 3.0 specification available at `/openapi.json`
-"""
-    
-    def _generate_industry_endpoints(self) -> str:
-        """Generate industry-specific API endpoints"""
-        endpoints = {
-            'healthcare': """#### Patients
-- `GET /api/v1/patients` - List patients
-- `GET /api/v1/patients/{id}` - Get patient details
-- `POST /api/v1/patients` - Create patient
-- `PUT /api/v1/patients/{id}` - Update patient
-- `DELETE /api/v1/patients/{id}` - Delete patient
-
-#### Appointments
-- `GET /api/v1/appointments` - List appointments
-- `POST /api/v1/appointments` - Schedule appointment
-- `PUT /api/v1/appointments/{id}` - Update appointment
-- `DELETE /api/v1/appointments/{id}` - Cancel appointment
-
-#### Medical Records
-- `GET /api/v1/patients/{id}/records` - Get patient records
-- `POST /api/v1/patients/{id}/records` - Add medical record""",
-            
-            'finance': """#### Accounts
-- `GET /api/v1/accounts` - List accounts
-- `GET /api/v1/accounts/{id}` - Get account details
-- `POST /api/v1/accounts` - Create account
-- `PUT /api/v1/accounts/{id}` - Update account
-
-#### Transactions
-- `GET /api/v1/transactions` - List transactions
-- `GET /api/v1/transactions/{id}` - Get transaction details
-- `POST /api/v1/transactions` - Create transaction
-- `PUT /api/v1/transactions/{id}` - Update transaction
-
-#### Reports
-- `GET /api/v1/reports/balance` - Account balance report
-- `GET /api/v1/reports/transactions` - Transaction history""",
-            
-            'ecommerce': """#### Products
-- `GET /api/v1/products` - List products
-- `GET /api/v1/products/{id}` - Get product details
-- `POST /api/v1/products` - Create product (admin)
-- `PUT /api/v1/products/{id}` - Update product (admin)
-
-#### Cart
-- `GET /api/v1/cart` - Get cart contents
-- `POST /api/v1/cart/items` - Add item to cart
-- `PUT /api/v1/cart/items/{id}` - Update cart item
-- `DELETE /api/v1/cart/items/{id}` - Remove from cart
-
-#### Orders
-- `GET /api/v1/orders` - List orders
-- `GET /api/v1/orders/{id}` - Get order details
-- `POST /api/v1/orders` - Create order
-- `PUT /api/v1/orders/{id}/status` - Update order status"""
-        }
-        
-        return endpoints.get(self.args.industry, """#### Resources
-- `GET /api/v1/resources` - List resources
-- `GET /api/v1/resources/{id}` - Get resource details
-- `POST /api/v1/resources` - Create resource
-- `PUT /api/v1/resources/{id}` - Update resource
-- `DELETE /api/v1/resources/{id}` - Delete resource""")
-    
-    def _generate_deployment_guide(self) -> str:
-        """Generate deployment guide"""
-        return f"""# Deployment Guide
-
-## Overview
-This guide covers deploying {self.args.name} to {self.args.deploy}.
-
-## Prerequisites
-- {self.args.deploy} account with appropriate permissions
-- Docker installed locally
-- Environment variables configured
-- SSL certificates ready
-
-## Deployment Targets
-
-### Development
-- **URL**: https://dev.{self.args.name}.com
-- **Branch**: develop
-- **Auto-deploy**: Yes
-
-### Staging
-- **URL**: https://staging.{self.args.name}.com
-- **Branch**: release/*
-- **Auto-deploy**: Yes
-
-### Production
-- **URL**: https://{self.args.name}.com
-- **Branch**: main
-- **Auto-deploy**: No (manual approval required)
-
-## Deployment Steps
-
-### 1. Pre-deployment Checklist
-- [ ] All tests passing
-- [ ] Security scan completed
-- [ ] Database migrations ready
-- [ ] Environment variables updated
-- [ ] Backup current production
-
-### 2. Build Process
-```bash
-# Build frontend
-{'cd frontend && npm run build' if self.args.frontend != 'none' else '# No frontend to build'}
-
-# Build backend
-{'cd backend && python -m build' if self.args.backend in ['fastapi', 'django'] else ''}
-{'cd backend && npm run build' if self.args.backend == 'nestjs' else ''}
-{'cd backend && go build -o app' if self.args.backend == 'go' else ''}
-
-# Build Docker images
-docker build -t {self.args.name}:latest .
-```
-
-### 3. Deploy to {self.args.deploy}
-
-{self._generate_deploy_instructions()}
-
-### 4. Post-deployment Steps
-1. **Verify Deployment**
-   - Check application health endpoint
-   - Run smoke tests
-   - Monitor error rates
-
-2. **Database Migrations**
-   ```bash
-   # Run migrations if needed
-   {'python manage.py migrate' if self.args.backend == 'django' else '# Apply database migrations'}
-   ```
-
-3. **Cache Warming**
-   - Prime application caches
-   - Preload frequently accessed data
-
-4. **Monitoring Setup**
-   - Verify logging is working
-   - Check metrics collection
-   - Set up alerts
-
-## Rollback Procedure
-
-### Automatic Rollback
-Deployment will automatically rollback if:
-- Health checks fail
-- Error rate exceeds threshold
-- Response time degrades
-
-### Manual Rollback
-```bash
-# Revert to previous version
-{self._generate_rollback_commands()}
-```
-
-## Environment Variables
-
-### Required Variables
-```env
-# Application
-APP_ENV=production
-APP_URL=https://{self.args.name}.com
-
-# Database
-DATABASE_URL=postgresql://user:pass@host:5432/db
-
-# Authentication
-{f'{self.args.auth.upper()}_CLIENT_ID=xxx' if self.args.auth != 'none' else '# No auth configured'}
-{f'{self.args.auth.upper()}_CLIENT_SECRET=xxx' if self.args.auth != 'none' else ''}
-
-# Monitoring
-SENTRY_DSN=xxx
-LOG_LEVEL=info
-```
-
-### Security Considerations
-- Never commit secrets to version control
-- Use secret management service
-- Rotate credentials regularly
-- Limit access to production environment
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Deployment Fails**
-   - Check build logs
-   - Verify environment variables
-   - Check resource limits
-
-2. **Application Won't Start**
-   - Check application logs
-   - Verify database connection
-   - Check for port conflicts
-
-3. **Performance Issues**
-   - Check resource utilization
-   - Review database queries
-   - Check for memory leaks
-
-### Debug Commands
-```bash
-# View logs
-docker logs -f {self.args.name}
-
-# Check application status
-curl https://{self.args.name}.com/health
-
-# SSH into container
-docker exec -it {self.args.name} /bin/bash
-```
-
-## Maintenance
-
-### Regular Tasks
-- **Daily**: Check logs and metrics
-- **Weekly**: Review performance trends
-- **Monthly**: Update dependencies
-- **Quarterly**: Security audit
-
-### Backup Strategy
-- Database: Daily automated backups
-- Application data: Hourly snapshots
-- Retention: 30 days
-- Test restore: Monthly
-
-## Contact
-
-### Escalation Path
-1. **On-call Engineer**: Check PagerDuty
-2. **Team Lead**: #{self.args.name}-leads
-3. **Infrastructure Team**: #infrastructure
-4. **Security Team**: security@company.com
-
-### Documentation
-- [Architecture Overview](./ARCHITECTURE.md)
-- [API Documentation](./API.md)
-- [Security Policies](./SECURITY.md)
-"""
-    
-    def _generate_deploy_instructions(self) -> str:
-        """Generate deployment-specific instructions"""
-        instructions = {
-            'aws': """#### AWS Deployment
-
-1. **Configure AWS CLI**
-   ```bash
-   aws configure
-   ```
-
-2. **Deploy with ECS/Fargate**
-   ```bash
-   # Push image to ECR
-   aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_URL
-   docker tag {name}:latest $ECR_URL/{name}:latest
-   docker push $ECR_URL/{name}:latest
-   
-   # Update service
-   aws ecs update-service --cluster {name}-cluster --service {name}-service --force-new-deployment
-   ```
-
-3. **Update Load Balancer**
-   - Update target groups
-   - Configure health checks
-   - Update SSL certificates""",
-   
-            'azure': """#### Azure Deployment
-
-1. **Login to Azure**
-   ```bash
-   az login
-   ```
-
-2. **Deploy to Container Instances**
-   ```bash
-   # Push to ACR
-   az acr login --name {name}registry
-   docker tag {name}:latest {name}registry.azurecr.io/{name}:latest
-   docker push {name}registry.azurecr.io/{name}:latest
-   
-   # Update container
-   az container restart --name {name}-container --resource-group {name}-rg
-   ```
-
-3. **Update Application Gateway**
-   - Update backend pools
-   - Configure probes
-   - Update certificates""",
-   
-            'gcp': """#### GCP Deployment
-
-1. **Authenticate with GCP**
-   ```bash
-   gcloud auth login
-   gcloud config set project {name}-project
-   ```
-
-2. **Deploy to Cloud Run**
-   ```bash
-   # Build and push image
-   gcloud builds submit --tag gcr.io/{name}-project/{name}
-   
-   # Deploy service
-   gcloud run deploy {name} --image gcr.io/{name}-project/{name} --platform managed
-   ```
-
-3. **Update Load Balancer**
-   - Update backend service
-   - Configure health checks
-   - Update SSL policies""",
-   
-            'vercel': """#### Vercel Deployment
-
-1. **Install Vercel CLI**
-   ```bash
-   npm i -g vercel
-   ```
-
-2. **Deploy Project**
-   ```bash
-   # Production deployment
-   vercel --prod
-   
-   # Preview deployment
-   vercel
-   ```
-
-3. **Configure Domain**
-   - Add custom domain
-   - Configure DNS
-   - Enable HTTPS""",
-   
-            'self-hosted': """#### Self-Hosted Deployment
-
-1. **Prepare Server**
-   ```bash
-   # Update system
-   sudo apt update && sudo apt upgrade
-   
-   # Install Docker
-   curl -fsSL https://get.docker.com | sh
-   ```
-
-2. **Deploy Application**
-   ```bash
-   # Copy files to server
-   scp -r . user@server:/opt/{name}
-   
-   # Start application
-   ssh user@server
-   cd /opt/{name}
-   docker-compose up -d
-   ```
-
-3. **Configure Nginx**
-   - Set up reverse proxy
-   - Configure SSL with certbot
-   - Enable HTTP/2"""
-        }
-        
-        return instructions.get(self.args.deploy, '').format(name=self.args.name)
-    
-    def _generate_rollback_commands(self) -> str:
-        """Generate rollback commands based on deployment target"""
-        commands = {
-            'aws': 'aws ecs update-service --cluster {name}-cluster --service {name}-service --task-definition {name}:previous',
-            'azure': 'az container restart --name {name}-container-previous --resource-group {name}-rg',
-            'gcp': 'gcloud run services update-traffic {name} --to-revisions {name}-previous=100',
-            'vercel': 'vercel rollback',
-            'self-hosted': 'docker-compose down && git checkout previous-tag && docker-compose up -d'
-        }
-        
-        return commands.get(self.args.deploy, '# Platform-specific rollback command').format(name=self.args.name)
-    
     def _generate_development_guide(self) -> str:
-        """Generate development guide"""
-        return f"""# Development Guide
+        """Generate development guide (safe builder)"""
+        lines: List[str] = []
+        lines.append("# Development Guide")
+        lines.append("")
+        lines.append("## Getting Started")
+        lines.append("")
+        lines.append("### Prerequisites")
+        if self.args.frontend != 'none' or self.args.backend == 'nestjs':
+            lines.append("- Node.js 18+")
+        if self.args.backend in ['fastapi', 'django']:
+            lines.append("- Python 3.11+")
+        if self.args.backend == 'go':
+            lines.append("- Go 1.21+")
+        lines.append("- Docker and Docker Compose")
+        lines.append("- Git")
+        lines.append("")
+        lines.append("### Initial Setup")
+        lines.append("")
+        lines.append("1. **Clone the repository**")
+        lines.append("   ```bash")
+        lines.append(f"   git clone https://github.com/yourorg/{self.args.name}.git")
+        lines.append(f"   cd {self.args.name}")
+        lines.append("   ```")
+        lines.append("")
+        lines.append("2. **Install dependencies**")
+        lines.append("   ```bash")
+        lines.append("   make setup")
+        lines.append("   ```")
+        lines.append("")
+        lines.append("3. **Configure environment**")
+        lines.append("   ```bash")
+        lines.append("   cp .env.example .env")
+        lines.append("   # Edit .env with your values")
+        lines.append("   ```")
+        lines.append("")
+        lines.append("4. **Start development environment**")
+        lines.append("   ```bash")
+        lines.append("   make dev")
+        lines.append("   ```")
+        lines.append("")
+        lines.append("## Development Workflow")
+        lines.append("")
+        lines.append("1. Pull latest changes: `git pull origin develop`")
+        lines.append("2. Create a feature branch: `git checkout -b feature/TICKET-description`")
+        lines.append("3. Implement changes, add tests, update docs")
+        lines.append("4. Run tests: `make test` and linters: `make lint`")
+        lines.append("5. Commit and push: `git add . && git commit -m \"feat: ...\" && git push`")
+        lines.append("6. Open a Pull Request and request review")
+        lines.append("")
+        lines.append("## Testing")
+        lines.append("")
+        lines.append("### Test Structure")
+        lines.append("```")
+        lines.append("tests/")
+        lines.append("├── unit/")
+        lines.append("├── integration/")
+        lines.append("├── e2e/")
+        lines.append("└── fixtures/")
+        lines.append("```")
+        lines.append("")
+        lines.append("### Running Tests")
+        lines.append("```bash")
+        lines.append("make test")
+        lines.append("```")
+        lines.append("")
+        lines.append("## Security Best Practices")
+        lines.append("- Never commit secrets")
+        lines.append("- Validate all inputs")
+        lines.append("- Use parameterized queries")
+        lines.append("- Implement rate limiting")
+        lines.append("- Keep dependencies updated")
+        lines.append("")
+        lines.append("## Resources")
+        lines.append("### Documentation")
+        if self.args.frontend != 'none':
+            lines.append(f"- {self.args.frontend} Docs: https://docs.{self.args.frontend}.com")
+        if self.args.backend != 'none':
+            lines.append(f"- {self.args.backend} Docs: https://docs.{self.args.backend}.com")
+        lines.append(f"- Project Wiki: https://github.com/yourorg/{self.args.name}/wiki")
+        return "\n".join(lines)
 
-## Getting Started
-
-### Prerequisites
-- {'Node.js 18+' if self.args.frontend != 'none' or self.args.backend == 'nestjs' else ''}
-- {'Python 3.11+' if self.args.backend in ['fastapi', 'django'] else ''}
-- {'Go 1.21+' if self.args.backend == 'go' else ''}
-- Docker and Docker Compose
-- Git
-
-### Initial Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourorg/{self.args.name}.git
-   cd {self.args.name}
-   ```
-
-2. **Install dependencies**
-   ```bash
-   make setup
-   ```
-
-3. **Configure environment**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your values
-   ```
-
-4. **Start development environment**
-   ```bash
-   make dev
-   ```
-
-## Development Workflow
-
-### Daily Development
-
-1. **Start your day**
-   ```bash
-   git pull origin develop
-   make dev
-   ```
-
-2. **Create feature branch**
-   ```bash
-   git checkout -b feature/TICKET-description
-   ```
-
-3. **Make changes**
-   - Write code
-   - Add tests
-   - Update documentation
-
-4. **Run tests**
-   ```bash
-   make test
-   make lint
-   ```
-
-5. **Commit changes**
-   ```bash
-   git add .
-   git commit -m "feat: add new feature"
-   ```
-
-6. **Push and create PR**
-   ```bash
-   git push origin feature/TICKET-description
-   # Create PR on GitHub
-   ```
-
-## Project Structure
-
-```
-{self.args.name}/
-├── frontend/          # {self.args.frontend} application
-├── backend/           # {self.args.backend} API
-├── database/          # Database schemas and migrations
-├── docs/              # Documentation
-├── scripts/           # Utility scripts
-├── tests/             # Integration tests
-├── .cursor/           # AI rules and workflows
-├── .github/           # GitHub Actions workflows
-└── docker-compose.yml # Local development environment
-```
-
-## Coding Standards
-
-### General Guidelines
-- Follow the style guide for your language
-- Write meaningful commit messages
-- Add tests for new features
-- Document complex logic
-
-{f'''### Frontend Standards ({self.args.frontend})
-- Use TypeScript for type safety
-- Follow component-based architecture
-- Implement responsive design
-- Ensure accessibility (WCAG 2.1 AA)
-
-Example component:
-```typescript
-interface Props {{
-  title: string;
-  onClick: () => void;
-}}
-
-export const MyComponent: React.FC<Props> = ({{ title, onClick }}) => {{
-  return (
-    <button onClick={{onClick}} className="btn btn-primary">
-      {{title}}
-    </button>
-  );
-}};
-```''' if self.args.frontend != 'none' else ''}
-
-{f'''### Backend Standards ({self.args.backend})
-{'- Use type hints' if self.args.backend in ['fastapi', 'django'] else '- Use TypeScript' if self.args.backend == 'nestjs' else '- Follow Go conventions'}
-- Implement proper error handling
-- Add OpenAPI documentation
-- Write unit tests for all endpoints
-
-Example endpoint:
-{self._generate_backend_example()}''' if self.args.backend != 'none' else ''}
-
-## Testing
-
-### Test Structure
-```
-tests/
-├── unit/           # Unit tests
-├── integration/    # Integration tests
-├── e2e/            # End-to-end tests
-└── fixtures/       # Test data
-```
-
-### Running Tests
-```bash
-# All tests
-make test
-
-# Unit tests only
-{'cd frontend && npm run test:unit' if self.args.frontend != 'none' else ''}
-{'cd backend && pytest tests/unit' if self.args.backend in ['fastapi', 'django'] else ''}
-
-# Integration tests
-make test-integration
-
-# E2E tests
-make test-e2e
-```
-
-### Writing Tests
-- Aim for {80 if self.args.industry in ['healthcare', 'finance'] else 70}% code coverage
-- Test edge cases
-- Use meaningful test names
-- Keep tests independent
-
-## Debugging
-
-### Local Debugging
-
-{f'''#### Frontend Debugging
-1. Open Chrome DevTools
-2. Set breakpoints in Sources tab
-3. Use React DevTools extension
-4. Check Network tab for API calls''' if self.args.frontend != 'none' else ''}
-
-{f'''#### Backend Debugging
-{'1. Use debugpy for VS Code\n2. Set breakpoints in code\n3. Attach debugger to running process' if self.args.backend in ['fastapi', 'django'] else '1. Use Node.js debugger\n2. Set breakpoints in VS Code\n3. Launch debug configuration' if self.args.backend == 'nestjs' else '1. Use delve debugger\n2. Set breakpoints\n3. Debug with VS Code'}''' if self.args.backend != 'none' else ''}
-
-### Common Issues
-
-1. **Port already in use**
-   ```bash
-   # Find process using port
-   lsof -i :3000
-   # Kill process
-   kill -9 PID
-   ```
-
-2. **Docker issues**
-   ```bash
-   # Reset Docker
-   docker-compose down -v
-   docker system prune -a
-   ```
-
-3. **Dependency issues**
-   ```bash
-   # Clear caches and reinstall
-   {'rm -rf node_modules package-lock.json && npm install' if self.args.frontend != 'none' else ''}
-   {'rm -rf venv && python -m venv venv && pip install -r requirements.txt' if self.args.backend in ['fastapi', 'django'] else ''}
-   ```
-
-## Performance
-
-### Optimization Tips
-{f'''- Use React.memo for expensive components
-- Implement code splitting
-- Optimize images with next/image
-- Use CSS modules for styling''' if self.args.frontend == 'nextjs' else '- Optimize bundle size\n- Implement lazy loading\n- Use performance profiler' if self.args.frontend != 'none' else ''}
-
-{f'''- Use connection pooling
-- Implement caching (Redis)
-- Optimize database queries
-- Use async operations''' if self.args.backend != 'none' else ''}
-
-### Monitoring
-- Use browser DevTools Performance tab
-- Monitor API response times
-- Track error rates
-- Set up alerts for anomalies
-
-## Security
-
-### Best Practices
-- Never commit secrets
-- Validate all inputs
-- Use parameterized queries
-- Implement rate limiting
-- Keep dependencies updated
-
-### Security Checklist
-- [ ] No hardcoded credentials
-- [ ] Input validation implemented
-- [ ] Authentication required for sensitive endpoints
-- [ ] HTTPS enforced
-- [ ] Security headers configured
-- [ ] Dependencies scanned for vulnerabilities
-
-## Resources
-
-### Documentation
-- [{self.args.frontend} Docs](https://docs.{self.args.frontend}.com) {if self.args.frontend != 'none' else ''}
-- [{self.args.backend} Docs](https://docs.{self.args.backend}.com) {if self.args.backend != 'none' else ''}
-- [Project Wiki](https://github.com/yourorg/{self.args.name}/wiki)
-
-### Tools
-- [VS Code]( https://code.visualstudio.com/)
-- [Postman](https://www.postman.com/) for API testing
-- [Docker Desktop](https://www.docker.com/products/docker-desktop)
-
-### Support
-- Team Slack: #{self.args.name}-dev
-- Documentation: /docs
-- Issue Tracker: GitHub Issues
-"""
-    
-    def _generate_backend_example(self) -> str:
-        """Generate backend code example based on framework"""
-        examples = {
-            'fastapi': """```python
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import List
-
-router = APIRouter()
-
-class ItemCreate(BaseModel):
-    name: str
-    description: str
-    price: float
-
-class ItemResponse(BaseModel):
-    id: int
-    name: str
-    description: str
-    price: float
-
-@router.post("/items", response_model=ItemResponse)
-async def create_item(item: ItemCreate) -> ItemResponse:
-    \"\"\"Create a new item\"\"\"
-    # Add business logic here
-    return ItemResponse(id=1, **item.dict())
-```""",
-
-            'django': """```python
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-from .models import Item
-from .serializers import ItemSerializer
-
-class ItemViewSet(viewsets.ModelViewSet):
-    queryset = Item.objects.all()
-    serializer_class = ItemSerializer
-    
-    def create(self, request):
-        \"\"\"Create a new item\"\"\"
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-```""",
-
-            'nestjs': """```typescript
-import { Controller, Post, Body } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { CreateItemDto } from './dto/create-item.dto';
-import { ItemService } from './item.service';
-
-@ApiTags('items')
-@Controller('items')
-export class ItemController {
-  constructor(private readonly itemService: ItemService) {}
-  
-  @Post()
-  @ApiOperation({ summary: 'Create a new item' })
-  async create(@Body() createItemDto: CreateItemDto) {
-    return this.itemService.create(createItemDto);
-  }
-}
-```""",
-
-            'go': """```go
-package handlers
-
-import (
-    "encoding/json"
-    "net/http"
-)
-
-type Item struct {
-    ID          int     `json:"id"`
-    Name        string  `json:"name"`
-    Description string  `json:"description"`
-    Price       float64 `json:"price"`
-}
-
-func CreateItem(w http.ResponseWriter, r *http.Request) {
-    var item Item
-    if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
-        http.Error(w, err.Error(), http.StatusBadRequest)
-        return
-    }
-    
-    // Add business logic here
-    item.ID = 1
-    
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(item)
-}
-```"""
-        }
-        
-        return examples.get(self.args.backend, '')
-    
     def _generate_compliance_documentation(self) -> str:
         """Generate compliance documentation"""
         sections = []

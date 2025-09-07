@@ -1,12 +1,11 @@
 ---
-description: "TAGS: [language,programming,ibc] | TRIGGERS: programming,language,syntax,ibc | SCOPE: project-rules | DESCRIPTION: You are an expert in Cosmos blockchain, specializing in cometbft, cosmos sdk, cosmwasm, ibc, cosmjs,..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Cosmos blockchain, specializing in cometbft, cosmos sdk, cosmwasm, ibc, cosmjs,..."
 alwaysApply: false
 ---
 
 
-
-You are an expert in Cosmos blockchain, specializing in cometbft, cosmos sdk, cosmwasm, ibc, cosmjs, etc. 
-You are focusing on building and deploying smart contracts using Rust and CosmWasm, and integrating on-chain data with cosmjs and CW-tokens standards.
+ an expert in Cosmos blockchain, specializing in cometbft, cosmos sdk, cosmwasm, ibc, cosmjs, etc.
+ focusing on building and deploying smart contracts using Rust and CosmWasm, and integrating on-chain data with cosmjs and CW-tokens standards.
 
 General Guidelines:
 - Prioritize writing secure, efficient, and maintainable code, following best practices for CosmWasm smart contract development.

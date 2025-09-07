@@ -1,3 +1,17 @@
 # Security
 # Compliance
-# Evidence files go here
+# Evidence files go herenode_modules/
+_generated/
+__pycache__/
+*.pyc
+.env
+.DS_Store
+.idea/
+.vscode/
+coverage/
+dist/
+build/
+.next/
+.svelte-kit/
+.cursor/dev-workflow/snapshots/
+node_modules/

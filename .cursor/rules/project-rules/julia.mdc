@@ -1,11 +1,10 @@
 ---
-description: "TAGS: [language,programming,julia] | TRIGGERS: programming,language,syntax,julia | SCOPE: project-rules | DESCRIPTION: You are an expert in Julia language programming, data science, and numerical computing.  Key Princip..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Julia language programming, data science, and numerical computing.  Key Princip..."
 alwaysApply: false
 ---
 
 
-
-You are an expert in Julia language programming, data science, and numerical computing.
+ an expert in Julia language programming, data science, and numerical computing.
 
 Key Principles
 - Write concise, technical responses with accurate Julia examples.
@@ -22,7 +21,7 @@ Julia-Specific Guidelines
 - Add docstrings to all functions and types, reflecting the signature and purpose.
 - Use type annotations in function signatures for clarity and performance.
 - Leverage Julia's multiple dispatch by defining methods for specific type combinations.
-- Use the `@kwdef` macro for structs to enable keyword constructors.
+- use `@kwdef` macro for structs to enable keyword constructors.
 - Implement custom `show` methods for user-defined types.
 - Use modules to organize code and control namespace.
 
@@ -31,37 +30,37 @@ Function Definitions
 - Add a docstring that reflects the function signature and describes its purpose in one sentence.
 - Describe the return value in the docstring.
 - Example:
- ```julia
- """
- process_data(data::Vector{Float64}, threshold::Float64) -> Vector{Float64}
+```julia
+"""
+process_data(data::Vector{Float64}, threshold::Float64) -> Vector{Float64}
 
 Process the input `data` by applying a `threshold` filter and return the filtered result.
- """
- function process_data(data::Vector{Float64}, threshold::Float64)
- # Function implementation
- end
- ```
+"""
+function process_data(data::Vector{Float64}, threshold::Float64)
+# Function implementation
+end
+```
 
 Struct Definitions
-- Always use the `@kwdef` macro to enable keyword constructors.
+- use `@kwdef` macro to enable keyword constructors.
 - Add a docstring above the struct describing each field's type and purpose.
 - Implement a custom `show` method using `dump`.
 - Example:
- ```julia
- """
- Represents a data point with x and y coordinates.
+```julia
+"""
+Represents a data point with x and y coordinates.
 
 Fields:
- - `x::Float64`: The x-coordinate of the data point.
- - `y::Float64`: The y-coordinate of the data point.
- """
- @kwdef struct DataPoint
- x::Float64
- y::Float64
- end
+- `x::Float64`: The x-coordinate of the data point.
+- `y::Float64`: The y-coordinate of the data point.
+"""
+@kwdef struct DataPoint
+x::Float64
+y::Float64
+end
 
 Base.show(io::IO, obj::DataPoint) = dump(io, obj; maxdepth=1)
- ```
+```
 
 Error Handling and Validation
 - Use Julia's exception system for error handling.
@@ -69,16 +68,16 @@ Error Handling and Validation
 - Use guard clauses to handle preconditions and invalid states early.
 - Implement proper error logging and user-friendly error messages.
 - Example:
- ```julia
- struct InvalidInputError <: Exception
- msg::String
- end
+```julia
+struct InvalidInputError <: Exception
+msg::String
+end
 
 function process_positive_number(x::Number)
- x <= 0 && throw(InvalidInputError("Input must be positive"))
- # Process the number
- end
- ```
+x <= 0 && throw(InvalidInputError("Input must be positive"))
+# Process the number
+end
+```
 
 Performance Optimization
 - Use type annotations to avoid type instabilities.
@@ -88,29 +87,29 @@ Performance Optimization
 - Use benchmarking tools (BenchmarkTools.jl) to identify and optimize bottlenecks.
 
 Testing
-- Use the `Test` module for unit testing.
+- use `Test` module for unit testing.
 - Create one top-level `@testset` block per test file.
 - Write test cases of increasing difficulty with comments explaining what is being tested.
 - Use individual `@test` calls for each assertion, not for blocks.
 - Example:
- ```julia
- using Test
+```julia
+using Test
 
 @testset "MyModule tests" begin
- # Test basic functionality
- @test add(2, 3) == 5
+# Test basic functionality
+@test add(2, 3) == 5
 
 # Test edge cases
- @test add(0, 0) == 0
- @test add(-1, 1) == 0
+@test add(0, 0) == 0
+@test add(-1, 1) == 0
 
 # Test type stability
- @test typeof(add(2.0, 3.0)) == Float64
- end
- ```
+@test typeof(add(2.0, 3.0)) == Float64
+end
+```
 
 Dependencies
-- Use the built-in package manager (Pkg) for managing dependencies.
+- use built-in package manager (Pkg) for managing dependencies.
 - Specify version constraints in the Project.toml file.
 - Consider using compatibility bounds (e.g., "Package" = "1.2, 2") to balance stability and updates.
 

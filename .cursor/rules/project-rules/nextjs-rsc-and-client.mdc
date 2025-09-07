@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [fullstack,framework,nextjs,server-components] | TRIGGERS: rsc,use client,server components,nextjs | SCOPE: project-rules | DESCRIPTION: Guidance for balancing React Server Components and client components in Next.js projects."
+description: "TAGS: [fullstack,framework,nextjs] | TRIGGERS: [nextjs ] | SCOPE: project-rules | DESCRIPTION: Guidance for balancing React Server Components and client components in Next.js projects."
 alwaysApply: false
 ---
 
@@ -13,17 +13,16 @@ Prefer React Server Components for data fetching and rendering where possible; r
 ## Protocol
 
 1. **[STRICT]** Default to Server Components for pages and layout-level rendering.
-2. **[STRICT]** Use `use client` only for components that access DOM APIs, attach event listeners, or require browser-only state.
+2. **[STRICT]** Use `use client` for components that access DOM APIs, attach event listeners, or require browser-state.
 3. **[GUIDELINE]** Keep client components small and focused; prefer composition.
 
 ### ✅ Correct Implementation
 ```
 // server component
 export default function Page() {
-  const data = fetchData()
-  return <ClientWidget />
+const data = fetchData()
+return <ClientWidget />
 }
 
 // ClientWidget in a separate file with 'use client'
 ```
-

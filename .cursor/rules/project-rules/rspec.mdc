@@ -1,8 +1,7 @@
 ---
-description: "TAGS: [testing,qa,rspec] | TRIGGERS: test,testing,qa,quality,rspec | SCOPE: project-rules | DESCRIPTION: When generating RSpec tests, follow these best practices to ensure they are comprehensive, readable,..."
+description: "TAGS: [testing,qa] | TRIGGERS: [test,testing,qa,quality ] | SCOPE: project-rules | DESCRIPTION: When generating RSpec tests, follow these best practices to ensure they are comprehensive, readable,..."
 alwaysApply: false
 ---
-
 
 
 When generating RSpec tests, follow these best practices to ensure they are comprehensive, readable, and maintainable:

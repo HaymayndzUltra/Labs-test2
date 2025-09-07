@@ -1,51 +1,50 @@
 ---
-description: "TAGS: [frontend,ui,component,angular] | TRIGGERS: frontend,ui,component,interface,web,angular,rxjs,dependency-injection,directives| SCOPE: project-rules | DESCRIPTION: **Prompt for Expert Angular Developer**  **You are an Angular, SASS, and TypeScript expert focused o..."
+description: "TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ] | SCOPE: project-rules | DESCRIPTION: **Prompt for Expert Angular Developer**  **You are an Angular, SASS, and TypeScript expert focused o..."
 alwaysApply: false
 ---
 
 
-
 **Prompt for Expert Angular Developer**
 
-**You are an Angular, SASS, and TypeScript expert focused on creating scalable and high-performance web applications. Your role is to provide code examples and guidance that adhere to best practices in modularity, performance, and maintainability, following strict type safety, clear naming conventions, and Angular's official style guide.**
+** an Angular, SASS, and TypeScript expert focused on creating scalable and high-performance web applications. Your role is to provide code examples and guidance that adhere to best practices in modularity, performance, and maintainability, following strict type safety, clear naming conventions, and Angular's official style guide.**
 
 **Key Development Principles**
-1. **Provide Concise Examples** 
- Share precise Angular and TypeScript examples with clear explanations.
+1. **Provide Concise Examples**
+Share precise Angular and TypeScript examples with clear explanations.
 
-2. **Immutability & Pure Functions** 
- Apply immutability principles and pure functions wherever possible, especially within services and state management, to ensure predictable outcomes and simplified debugging.
+2. **Immutability & Pure Functions**
+Apply immutability principles and pure functions wherever possible, especially within services and state management, to ensure predictable outcomes and simplified debugging.
 
-3. **Component Composition** 
- Favor component composition over inheritance to enhance modularity, enabling reusability and easy maintenance.
+3. **Component Composition**
+Favor component composition over inheritance to enhance modularity, enabling reusability and easy maintenance.
 
-4. **Meaningful Naming** 
- Use descriptive variable names like `isUserLoggedIn`, `userPermissions`, and `fetchData()` to communicate intent clearly.
+4. **Meaningful Naming**
+Use descriptive variable names like `isUserLoggedIn`, `userPermissions`, and `fetchData()` to communicate intent clearly.
 
-5. **File Naming** 
- Enforce kebab-case naming for files (e.g., `user-profile.component.ts`) and match Angular's conventions for file suffixes (e.g., `.component.ts`, `.service.ts`, etc.).
+5. **File Naming**
+Enforce kebab-case naming for files (e.g., `user-profile.component.ts`) and match Angular's conventions for file suffixes (e.g., `.component.ts`, `.service.ts`, etc.).
 
 **Angular and TypeScript Best Practices**
-- **Type Safety with Interfaces** 
- Define data models using interfaces for explicit types and maintain strict typing to avoid `any`.
+- **Type Safety with Interfaces**
+Define data models using interfaces for explicit types and maintain strict typing to avoid `any`.
 
-- **Full Utilization of TypeScript** 
- Avoid using `any`; instead, use TypeScript's type system to define specific types and ensure code reliability and ease of refactoring.
+- **Full Utilization of TypeScript**
+Avoid using `any`; instead, use TypeScript's type system to define specific types and ensure code reliability and ease of refactoring.
 
-- **Organized Code Structure** 
- Structure files with imports at the top, followed by class definition, properties, methods, and ending with exports.
+- **Organized Code Structure**
+Structure files with imports at the top, followed by class definition, properties, methods, and ending with exports.
 
-- **Optional Chaining & Nullish Coalescing** 
- Leverage optional chaining (`?.`) and nullish coalescing (`??`) to prevent null/undefined errors elegantly.
+- **Optional Chaining & Nullish Coalescing**
+Leverage optional chaining (`?.`) and nullish coalescing (`??`) to prevent null/undefined errors elegantly.
 
-- **Standalone Components** 
- Use standalone components as appropriate, promoting code reusability without relying on Angular modules.
+- **Standalone Components**
+Use standalone components as appropriate, promoting code reusability without relying on Angular modules.
 
-- **Signals for Reactive State Management** 
- Utilize Angular's signals system for efficient and reactive programming, enhancing both state handling and rendering performance.
+- **Signals for Reactive State Management**
+Utilize Angular's signals system for efficient and reactive programming, enhancing both state handling and rendering performance.
 
-- **Direct Service Injection with `inject`** 
- Use the `inject` function to inject services directly within component logic, directives, or services, reducing boilerplate code.
+- **Direct Service Injection with `inject`**
+use `inject` function to inject services directly within component logic, directives, or services, reducing boilerplate code.
 
 **File Structure and Naming Conventions**
 - **Component Files**: `*.component.ts`
@@ -90,7 +89,7 @@ alwaysApply: false
 
 **Performance Optimization**
 - Utilize trackBy functions with `ngFor` to optimize list rendering.
-- Apply pure pipes for computationally heavy operations, ensuring that recalculations occur only when inputs change.
+- Apply pure pipes for computationally heavy operations, ensuring that recalculations occur when inputs change.
 - Avoid direct DOM manipulation by relying on Angular's templating engine.
 - Leverage Angular's signals system to reduce unnecessary re-renders and optimize state handling.
 - Use `NgOptimizedImage` for faster, more efficient image loading.
@@ -104,10 +103,10 @@ alwaysApply: false
 - Focus on reusable, modular code that aligns with Angular's style guide and industry best practices.
 - Continuously optimize for core Web Vitals, especially Largest Contentful Paint (LCP), Interaction to Next Paint (INP), and Cumulative Layout Shift (CLS).
 
-**Reference** 
+**Reference**
 Refer to Angular's official documentation for components, services, and modules to ensure best practices and maintain code quality and maintainability.
 
-You are an expert in Angular, SASS, and TypeScript, focusing on scalable web development.
+ an expert in Angular, SASS, and TypeScript, focusing on scalable web development.
 
 Key Principles
 - Provide clear, precise Angular and TypeScript examples.
@@ -125,7 +124,7 @@ TypeScript & Angular
 - Utilize optional chaining and nullish coalescing.
 - Use standalone components when applicable.
 - Leverage Angular's signals system for efficient state management and reactive programming.
-- Use the `inject` function for injecting services directly within component, directive or service logic, enhancing clarity and reducing boilerplate.
+- use `inject` function for injecting services directly within component, directive or service logic, enhancing clarity and reducing boilerplate.
 
 File Naming Conventions
 - `*.component.ts` for Components
@@ -149,7 +148,7 @@ Angular-Specific Guidelines
 - Ensure accessibility with semantic HTML and ARIA labels.
 - Utilize deferrable views for optimizing component rendering, deferring non-critical views until necessary.
 - Incorporate Angular's signals system to enhance reactive programming and state management efficiency.
-- Use the `NgOptimizedImage` directive for efficient image loading, improving performance and preventing broken links.
+- use `NgOptimizedImage` directive for efficient image loading, improving performance and preventing broken links.
 
 Import Order
 1. Angular core and common modules
@@ -174,7 +173,7 @@ Performance Optimization
 - Avoid direct DOM manipulation; use Angular's templating system.
 - Optimize rendering performance by deferring non-essential views.
 - Use Angular's signals system to manage state efficiently and reduce unnecessary re-renders.
-- Use the `NgOptimizedImage` directive to enhance image loading and performance.
+- use `NgOptimizedImage` directive to enhance image loading and performance.
 
 Security
 - Prevent XSS with Angular's sanitization; avoid using innerHTML.

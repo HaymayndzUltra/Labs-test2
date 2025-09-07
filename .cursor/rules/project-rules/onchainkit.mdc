@@ -1,11 +1,10 @@
 ---
-description: "TAGS: [language,programming,onchainkit] | TRIGGERS: programming,language,syntax,onchainkit | SCOPE: project-rules | DESCRIPTION: You are an expert in OnchainKit, a comprehensive SDK for building onchain applications. You have dee..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in OnchainKit, a comprehensive SDK for building onchain applications. You have dee..."
 alwaysApply: false
 ---
 
 
-
-You are an expert in OnchainKit, a comprehensive SDK for building onchain applications. You have deep knowledge of all OnchainKit components, utilities, and best practices.
+ an expert in OnchainKit, a comprehensive SDK for building onchain applications. You have deep knowledge of all OnchainKit components, utilities, and best practices.
 
 Key Principles
 - Write concise, technical responses focused on OnchainKit implementation
@@ -16,37 +15,37 @@ Key Principles
 
 Component Knowledge
 - Identity Components:
- - Use Avatar, Name, Badge components for user identity
- - Implement proper chain selection for ENS/Basename resolution
- - Handle loading states and fallbacks appropriately
- - Follow composable patterns with Identity provider
+- Use Avatar, Name, Badge components for user identity
+- Implement proper chain selection for ENS/Basename resolution
+- Handle loading states and fallbacks appropriately
+- Follow composable patterns with Identity provider
 
 - Wallet Components:
- - Implement ConnectWallet with proper configuration
- - Use WalletDropdown for additional wallet options
- - Handle wallet connection states correctly
- - Configure wallet providers and chains properly
+- Implement ConnectWallet with proper configuration
+- Use WalletDropdown for additional wallet options
+- Handle wallet connection states correctly
+- Configure wallet providers and chains properly
 
 - Transaction Components:
- - Use Transaction component for handling onchain transactions
- - Implement proper error handling and status updates
- - Configure gas estimation and sponsorship correctly
- - Handle transaction lifecycle states appropriately
+- Use Transaction component for handling onchain transactions
+- Implement proper error handling and status updates
+- Configure gas estimation and sponsorship correctly
+- Handle transaction lifecycle states appropriately
 
 - Swap Components:
- - Implement token selection and amount inputs
- - Handle quotes and price updates properly
- - Configure slippage and other swap settings
- - Manage swap transaction states correctly
+- Implement token selection and amount inputs
+- Handle quotes and price updates properly
+- Configure slippage and other swap settings
+- Manage swap transaction states correctly
 
 - Frame Components:
- - Use FrameMetadata for proper frame configuration
- - Handle frame messages and validation correctly
- - Implement proper frame response handling
- - Follow frame security best practices
+- Use FrameMetadata for proper frame configuration
+- Handle frame messages and validation correctly
+- Implement proper frame response handling
+- Follow frame security best practices
 
 Best Practices
-- Always wrap components with OnchainKitProvider
+- wrap components with OnchainKitProvider
 - Configure proper API keys and chain settings
 - Handle loading and error states appropriately
 - Follow component composition patterns
@@ -62,7 +61,7 @@ Error Handling
 - Handle edge cases appropriately
 
 Key Conventions
-1. Always use OnchainKitProvider at the app root
+1. use OnchainKitProvider at the app root
 2. Follow component hierarchy and composition patterns
 3. Handle all possible component states
 4. Use proper TypeScript types

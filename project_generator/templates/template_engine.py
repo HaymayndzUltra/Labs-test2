@@ -273,7 +273,16 @@ const styles = StyleSheet.create({{
     def _fastapi_api_template(self, api_name: str, industry: str) -> str:
         """Generate FastAPI endpoint template"""
         router_name = api_name.replace('_api', '')
-        
+        # Precompute industry-specific suffix to avoid f-string expressions with backslashes
+        extra_lines: list[str] = []
+        if industry == "healthcare":
+            extra_lines.append("# Add HIPAA-compliant audit logging")
+        if industry == "finance":
+            extra_lines.append("# Add financial transaction validation")
+        if industry == "ecommerce":
+            extra_lines.append("# Add inventory management integration")
+        industry_suffix = "\n".join(extra_lines)
+
         return f"""from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -412,15 +421,31 @@ async def delete_{router_name}(
         raise HTTPException(status_code=400, detail=str(e))
 
 # Industry-specific endpoints for {industry}
-{"# Add HIPAA-compliant audit logging" if industry == "healthcare" else ""}
-{"# Add financial transaction validation" if industry == "finance" else ""}
-{"# Add inventory management integration" if industry == "ecommerce" else ""}
+{industry_suffix}
 """
     
     def _django_api_template(self, api_name: str, industry: str) -> str:
         """Generate Django REST API template"""
         model_name = api_name.replace('_api', '').capitalize()
-        
+        # Precompute industry-specific suffix
+        django_lines: list[str] = []
+        if industry == "healthcare":
+            django_lines.append("""@action(detail=True, methods=['post'])
+    def audit_log(self, request, pk=None):
+        '''Add audit log entry (HIPAA compliance)'''
+        pass""")
+        if industry == "finance":
+            django_lines.append("""@action(detail=True, methods=['post'])
+    def validate_transaction(self, request, pk=None):
+        '''Validate financial transaction'''
+        pass""")
+        if industry == "ecommerce":
+            django_lines.append("""@action(detail=True, methods=['get'])
+    def inventory_status(self, request, pk=None):
+        '''Check inventory status'''
+        pass""")
+        django_suffix = "\n".join(django_lines)
+
         return f"""from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -509,15 +534,34 @@ class {model_name}ViewSet(viewsets.ModelViewSet):
         }})
     
     # Industry-specific methods for {industry}
-    {"@action(detail=True, methods=['post'])\n    def audit_log(self, request, pk=None):\n        '''Add audit log entry (HIPAA compliance)'''\n        pass" if industry == "healthcare" else ""}
-    {"@action(detail=True, methods=['post'])\n    def validate_transaction(self, request, pk=None):\n        '''Validate financial transaction'''\n        pass" if industry == "finance" else ""}
-    {"@action(detail=True, methods=['get'])\n    def inventory_status(self, request, pk=None):\n        '''Check inventory status'''\n        pass" if industry == "ecommerce" else ""}
+    {django_suffix}
 """
     
     def _nestjs_api_template(self, api_name: str, industry: str) -> str:
         """Generate NestJS controller template"""
         entity_name = ''.join(word.capitalize() for word in api_name.replace('_api', '').split('_'))
-        
+        # Precompute industry-specific suffix
+        nest_lines: list[str] = []
+        if industry == "healthcare":
+            nest_lines.append("""@Post(':id/audit')
+  @ApiOperation({ summary: 'Add audit log entry (HIPAA compliance)' })
+  async addAuditLog(@Param('id') id: string, @Body() auditData: any, @CurrentUser() user: User) {
+    // Implementation for HIPAA audit logging
+  }""")
+        if industry == "finance":
+            nest_lines.append("""@Post(':id/validate-transaction')
+  @ApiOperation({ summary: 'Validate financial transaction' })
+  async validateTransaction(@Param('id') id: string, @Body() transactionData: any, @CurrentUser() user: User) {
+    // Implementation for financial validation
+  }""")
+        if industry == "ecommerce":
+            nest_lines.append("""@Get(':id/inventory')
+  @ApiOperation({ summary: 'Check inventory status' })
+  async checkInventory(@Param('id') id: string, @CurrentUser() user: User) {
+    // Implementation for inventory check
+  }""")
+        nest_suffix = "\n".join(nest_lines)
+
         return f"""import {{
   Controller,
   Get,
@@ -657,15 +701,31 @@ export class {entity_name}Controller {{
   }}
 
   // Industry-specific endpoints for {industry}
-  {"@Post(':id/audit')\n  @ApiOperation({ summary: 'Add audit log entry (HIPAA compliance)' })\n  async addAuditLog(@Param('id') id: string, @Body() auditData: any, @CurrentUser() user: User) {\n    // Implementation for HIPAA audit logging\n  }" if industry == "healthcare" else ""}
-  {"@Post(':id/validate-transaction')\n  @ApiOperation({ summary: 'Validate financial transaction' })\n  async validateTransaction(@Param('id') id: string, @Body() transactionData: any, @CurrentUser() user: User) {\n    // Implementation for financial validation\n  }" if industry == "finance" else ""}
-  {"@Get(':id/inventory')\n  @ApiOperation({ summary: 'Check inventory status' })\n  async checkInventory(@Param('id') id: string, @CurrentUser() user: User) {\n    // Implementation for inventory check\n  }" if industry == "ecommerce" else ""}
+  {nest_suffix}
 }}"""
     
     def _go_api_template(self, api_name: str, industry: str) -> str:
         """Generate Go API handler template"""
         entity_name = ''.join(word.capitalize() for word in api_name.replace('_api', '').split('_'))
-        
+        # Precompute industry-specific suffix
+        go_lines: list[str] = []
+        if industry == "healthcare":
+            go_lines.append("""// AddAuditLog handles HIPAA-compliant audit logging
+func (h *{entity_name}Handler) AddAuditLog(w http.ResponseWriter, r *http.Request) {
+    // Implementation for HIPAA audit logging
+}""")
+        if industry == "finance":
+            go_lines.append("""// ValidateTransaction handles financial transaction validation
+func (h *{entity_name}Handler) ValidateTransaction(w http.ResponseWriter, r *http.Request) {
+    // Implementation for financial validation
+}""")
+        if industry == "ecommerce":
+            go_lines.append("""// CheckInventory handles inventory status checks
+func (h *{entity_name}Handler) CheckInventory(w http.ResponseWriter, r *http.Request) {
+    // Implementation for inventory check
+}""")
+        go_suffix = "\n".join(go_lines)
+
         return f"""package handlers
 
 import (
@@ -885,9 +945,7 @@ func (h *{entity_name}Handler) Delete{entity_name}(w http.ResponseWriter, r *htt
 }}
 
 // Industry-specific handlers for {industry}
-{"// AddAuditLog handles HIPAA-compliant audit logging\nfunc (h *{entity_name}Handler) AddAuditLog(w http.ResponseWriter, r *http.Request) {{\n    // Implementation for HIPAA audit logging\n}}" if industry == "healthcare" else ""}
-{"// ValidateTransaction handles financial transaction validation\nfunc (h *{entity_name}Handler) ValidateTransaction(w http.ResponseWriter, r *http.Request) {{\n    // Implementation for financial validation\n}}" if industry == "finance" else ""}
-{"// CheckInventory handles inventory status checks\nfunc (h *{entity_name}Handler) CheckInventory(w http.ResponseWriter, r *http.Request) {{\n    // Implementation for inventory check\n}}" if industry == "ecommerce" else ""}
+{go_suffix}
 
 // Helper functions
 func respondWithError(w http.ResponseWriter, code int, message string) {{
@@ -899,4 +957,5 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{{}}) {{
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(code)
     w.Write(response)
+}}
 }}"""

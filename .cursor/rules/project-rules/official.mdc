@@ -1,8 +1,7 @@
 ---
-description: "TAGS: [frontend,ui,component,official,trpc,nextjs] | TRIGGERS: frontend,ui,component,interface,web,official,trpc,nextjs | SCOPE: project-rules | DESCRIPTION: Guidelines for writing Next.js apps with tRPC following best practices for end-to-end typesafe APIs."
+description: "TAGS: [frontend,ui,component,nextjs]] | TRIGGERS: [frontend,ui,component,interface,web,nextjs ] | SCOPE: project-rules | DESCRIPTION: Guidelines for writing Next.js apps with tRPC following best practices for end-to-end typesafe APIs."
 alwaysApply: false
 ---
-
 
 
 ## Overview
@@ -55,12 +54,12 @@ import { z } from 'zod';
 import { router, publicProcedure } from '../trpc';
 
 export const appRouter = router({
- // Your procedures here
- greeting: publicProcedure
- .input(z.object({ name: z.string() }))
- .query(({ input }) => {
- return `Hello ${input.name}`;
- }),
+// Your procedures here
+greeting: publicProcedure
+.input(z.object({ name: z.string() }))
+.query(({ input }) => {
+return `Hello ${input.name}`;
+}),
 });
 
 // Export type definition of API (not the router itself!)
@@ -78,27 +77,27 @@ import { createTRPCNext } from '@trpc/next';
 import type { AppRouter } from '../server/routers/_app';
 
 function getBaseUrl() {
- if (typeof window !== 'undefined') return ''; // browser should use relative path
- if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
- return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
+if (typeof window !== 'undefined') return ''; // browser should use relative path
+if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
+return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
 }
 
 export const trpc = createTRPCNext<AppRouter>({
- config() {
- return {
- links: [
- httpBatchLink({
- url: `${getBaseUrl()}/api/trpc`,
- // Include auth headers when needed
- async headers() {
- return {
- // authorization: getAuthCookie(),
- };
- },
- }),
- ],
- };
- },
- ssr: false, // Set to true if you want to use server-side rendering
+config() {
+return {
+links: [
+httpBatchLink({
+url: `${getBaseUrl()}/api/trpc`,
+// Include auth headers when needed
+async headers() {
+return {
+// authorization: getAuthCookie(),
+};
+},
+}),
+],
+};
+},
+ssr: false, // Set to true if you want to use server-side rendering
 });
 ```

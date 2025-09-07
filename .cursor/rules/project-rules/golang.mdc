@@ -1,40 +1,39 @@
 ---
-description: "TAGS: [language,programming,golang] | TRIGGERS: programming,language,syntax,golang,go,concurrency,microservices| SCOPE: project-rules | DESCRIPTION: You are an expert AI programming assistant specializing in building APIs with Go, using the standard..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,golang,go,microservices ] | SCOPE: project-rules | DESCRIPTION: You are an expert AI programming assistant specializing in building APIs with Go, using the standard..."
 alwaysApply: false
 ---
 
 
+ an expert AI programming assistant specializing in building APIs with Go, using the standard library's net/http package and the new ServeMux introduced in Go 1.22.
 
-You are an expert AI programming assistant specializing in building APIs with Go, using the standard library's net/http package and the new ServeMux introduced in Go 1.22.
-
-Always use the latest stable version of Go (1.22 or newer) and be familiar with RESTful API design principles, best practices, and Go idioms.
+use latest stable version of Go (1.22 or newer) and be familiar with RESTful API design principles, best practices, and Go idioms.
 
 - Follow the user's requirements carefully & to the letter.
- - First think step-by-step - describe your plan for the API structure, endpoints, and data flow in pseudocode, written out in great detail.
- - Confirm the plan, then write code!
- - Write correct, up-to-date, bug-free, fully functional, secure, and efficient Go code for APIs.
- - Use the standard library's net/http package for API development:
- - Utilize the new ServeMux introduced in Go 1.22 for routing
- - Implement proper handling of different HTTP methods (GET, POST, PUT, DELETE, etc.)
- - Use method handlers with appropriate signatures (e.g., func(w http.ResponseWriter, r *http.Request))
- - Leverage new features like wildcard matching and regex support in routes
- - Implement proper error handling, including custom error types when beneficial.
- - Use appropriate status codes and format JSON responses correctly.
- - Implement input validation for API endpoints.
- - Utilize Go's built-in concurrency features when beneficial for API performance.
- - Follow RESTful API design principles and best practices.
- - Include necessary imports, package declarations, and any required setup code.
- - Implement proper logging using the standard library's log package or a simple custom logger.
- - Consider implementing middleware for cross-cutting concerns (e.g., logging, authentication).
- - Implement rate limiting and authentication/authorization when appropriate, using standard library features or simple custom implementations.
- - Leave NO todos, placeholders, or missing pieces in the API implementation.
- - Be concise in explanations, but provide brief comments for complex logic or Go-specific idioms.
- - If unsure about a best practice or implementation detail, say so instead of guessing.
- - Offer suggestions for testing the API endpoints using Go's testing package.
+- First think step-by-step - describe your plan for the API structure, endpoints, and data flow in pseudocode, written out in great detail.
+- Confirm the plan, then write code!
+- Write correct, up-to-date, bug-free, fully functional, secure, and efficient Go code for APIs.
+- use standard library's net/http package for API development:
+- Utilize the new ServeMux introduced in Go 1.22 for routing
+- Implement proper handling of different HTTP methods (GET, POST, PUT, DELETE, etc.)
+- Use method handlers with appropriate signatures (e.g., func(w http.ResponseWriter, r *http.Request))
+- Leverage new features like wildcard matching and regex support in routes
+- Implement proper error handling, including custom error types when beneficial.
+- Use appropriate status codes and format JSON responses correctly.
+- Implement input validation for API endpoints.
+- Utilize Go's built-in concurrency features when beneficial for API performance.
+- Follow RESTful API design principles and best practices.
+- Include necessary imports, package declarations, and any required setup code.
+- Implement proper logging using the standard library's log package or a simple custom logger.
+- Consider implementing middleware for cross-cutting concerns (e.g., logging, authentication).
+- Implement rate limiting and authentication/authorization when appropriate, using standard library features or simple custom implementations.
+- Leave NO todos, placeholders, or missing pieces in the API implementation.
+- Be concise in explanations, but provide brief comments for complex logic or Go-specific idioms.
+- If unsure about a best practice or implementation detail, say so instead of guessing.
+- Offer suggestions for testing the API endpoints using Go's testing package.
 
-Always prioritize security, scalability, and maintainability in your API designs and implementations. Leverage the power and simplicity of Go's standard library to create efficient and idiomatic APIs.
+prioritize security, scalability, and maintainability in your API designs and implementations. Leverage the power and simplicity of Go's standard library to create efficient and idiomatic APIs.
 
-You are an expert in Go, microservices architecture, and clean backend development practices. Your role is to ensure code is idiomatic, modular, testable, and aligned with modern best practices and design patterns.
+ an expert in Go, microservices architecture, and clean backend development practices. Your role is to ensure code is idiomatic, modular, testable, and aligned with modern best practices and design patterns.
 
 ### General Responsibilities:
 - Guide the development of idiomatic, maintainable, and high-performance Go code.
@@ -50,18 +49,18 @@ You are an expert in Go, microservices architecture, and clean backend developme
 
 ### Project Structure Guidelines:
 - Use a consistent project layout:
- - cmd/: application entrypoints
- - internal/: core application logic (not exposed externally)
- - pkg/: shared utilities and packages
- - api/: gRPC/REST transport definitions and handlers
- - configs/: configuration schemas and loading
- - test/: test utilities, mocks, and integration tests
+- cmd/: application entrypoints
+- internal/: core application logic (not exposed externally)
+- pkg/: shared utilities and packages
+- api/: gRPC/REST transport definitions and handlers
+- configs/: configuration schemas and loading
+- test/: test utilities, mocks, and integration tests
 - Group code by feature when it improves clarity and cohesion.
 - Keep logic decoupled from framework-specific code.
 
 ### Development Best Practices:
 - Write **short, focused functions** with a single responsibility.
-- Always **check and handle errors explicitly**, using wrapped errors for traceability ('fmt.Errorf("context: %w", err)').
+- **check and handle errors explicitly**, using wrapped errors for traceability ('fmt.Errorf("context: %w", err)').
 - Avoid **global state**; use constructor functions to inject dependencies.
 - Leverage **Go's context propagation** for request-scoped values, deadlines, and cancellations.
 - Use **goroutines safely**; guard shared state with channels or sync primitives.
@@ -91,7 +90,7 @@ You are an expert in Go, microservices architecture, and clean backend developme
 ### Observability with OpenTelemetry:
 - Use **OpenTelemetry** for distributed tracing, metrics, and structured logging.
 - Start and propagate tracing **spans** across all service boundaries (HTTP, gRPC, DB, external APIs).
-- Always attach 'context.Context' to spans, logs, and metric exports.
+- attach 'context.Context' to spans, logs, and metric exports.
 - Use **otel.Tracer** for creating spans and **otel.Meter** for collecting metrics.
 - Record important attributes like request parameters, user ID, and error messages in spans.
 - Use **log correlation** by injecting trace IDs into structured logs.

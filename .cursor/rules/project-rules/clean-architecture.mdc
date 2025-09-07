@@ -1,17 +1,16 @@
 ---
-description: "TAGS: [language,programming,clean-architecture] | TRIGGERS: programming,language,syntax,clean-architecture,cleanarchitecture | SCOPE: project-rules | DESCRIPTION: You are an expert Flutter developer specializing in Clean Architecture with Feature-first organizati..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert Flutter developer specializing in Clean Architecture with Feature-first organizati..."
 alwaysApply: false
 ---
 
 
-
-You are an expert Flutter developer specializing in Clean Architecture with Feature-first organization and flutter_bloc for state management.
+ an expert Flutter developer specializing in Clean Architecture with Feature-first organization and flutter_bloc for state management.
 
 ## Core Principles
 
 ### Clean Architecture
 - Strictly adhere to the Clean Architecture layers: Presentation, Domain, and Data
-- Follow the dependency rule: dependencies always point inward
+- Follow the dependency rule: dependencies point inward
 - Domain layer contains entities, repositories (interfaces), and use cases
 - Data layer implements repositories and contains data sources and models
 - Presentation layer contains UI components, blocs, and view models
@@ -99,54 +98,54 @@ lib/
 ```
 // Define base failure class
 abstract class Failure extends Equatable {
- final String message;
+final String message;
 
 const Failure(this.message);
 
 @override
- List<Object> get props => [message];
+List<Object> get props => [message];
 }
 
 // Specific failure types
 class ServerFailure extends Failure {
- const ServerFailure([String message = 'Server error occurred']) : super(message);
+const ServerFailure([String message = 'Server error occurred']) : super(message);
 }
 
 class CacheFailure extends Failure {
- const CacheFailure([String message = 'Cache error occurred']) : super(message);
+const CacheFailure([String message = 'Cache error occurred']) : super(message);
 }
 
 class NetworkFailure extends Failure {
- const NetworkFailure([String message = 'Network error occurred']) : super(message);
+const NetworkFailure([String message = 'Network error occurred']) : super(message);
 }
 
 class ValidationFailure extends Failure {
- const ValidationFailure([String message = 'Validation failed']) : super(message);
+const ValidationFailure([String message = 'Validation failed']) : super(message);
 }
 
 // Extension to handle Either<Failure, T> consistently
 extension EitherExtensions<L, R> on Either<L, R> {
- R getRight() => (this as Right<L, R>).value;
- L getLeft() => (this as Left<L, R>).value;
+R getRight() => (this as Right<L, R>).value;
+L getLeft() => (this as Left<L, R>).value;
 
 // For use in UI to map to different widgets based on success/failure
- Widget when({
- required Widget Function(L failure) failure,
- required Widget Function(R data) success,
- }) {
- return fold(
- (l) => failure(l),
- (r) => success(r),
- );
- }
+Widget when({
+required Widget Function(L failure) failure,
+required Widget Function(R data) success,
+}) {
+return fold(
+(l) => failure(l),
+(r) => success(r),
+);
+}
 
 // Simplify chaining operations that can fail
- Either<L, T> flatMap<T>(Either<L, T> Function(R r) f) {
- return fold(
- (l) => Left(l),
- (r) => f(r),
- );
- }
+Either<L, T> flatMap<T>(Either<L, T> Function(R r) f) {
+return fold(
+(l) => Left(l),
+(r) => f(r),
+);
+}
 }
 ```
 
@@ -189,59 +188,59 @@ extension EitherExtensions<L, R> on Either<L, R> {
 ### Use Case Implementation
 ```
 abstract class UseCase<Type, Params> {
- Future<Either<Failure, Type>> call(Params params);
+Future<Either<Failure, Type>> call(Params params);
 }
 
 class GetUser implements UseCase<User, String> {
- final UserRepository repository;
+final UserRepository repository;
 
 GetUser(this.repository);
 
 @override
- Future<Either<Failure, User>> call(String userId) async {
- return await repository.getUser(userId);
- }
+Future<Either<Failure, User>> call(String userId) async {
+return await repository.getUser(userId);
+}
 }
 ```
 
 ### Repository Implementation
 ```
 abstract class UserRepository {
- Future<Either<Failure, User>> getUser(String id);
- Future<Either<Failure, List<User>>> getUsers();
- Future<Either<Failure, Unit>> saveUser(User user);
+Future<Either<Failure, User>> getUser(String id);
+Future<Either<Failure, List<User>>> getUsers();
+Future<Either<Failure, Unit>> saveUser(User user);
 }
 
 class UserRepositoryImpl implements UserRepository {
- final UserRemoteDataSource remoteDataSource;
- final UserLocalDataSource localDataSource;
- final NetworkInfo networkInfo;
+final UserRemoteDataSource remoteDataSource;
+final UserLocalDataSource localDataSource;
+final NetworkInfo networkInfo;
 
 UserRepositoryImpl({
- required this.remoteDataSource,
- required this.localDataSource,
- required this.networkInfo,
- });
+required this.remoteDataSource,
+required this.localDataSource,
+required this.networkInfo,
+});
 
 @override
- Future<Either<Failure, User>> getUser(String id) async {
- if (await networkInfo.isConnected) {
- try {
- final remoteUser = await remoteDataSource.getUser(id);
- await localDataSource.cacheUser(remoteUser);
- return Right(remoteUser.toDomain());
- } on ServerException {
- return Left(ServerFailure());
- }
- } else {
- try {
- final localUser = await localDataSource.getLastUser();
- return Right(localUser.toDomain());
- } on CacheException {
- return Left(CacheFailure());
- }
- }
- }
+Future<Either<Failure, User>> getUser(String id) async {
+if (await networkInfo.isConnected) {
+try {
+final remoteUser = await remoteDataSource.getUser(id);
+await localDataSource.cacheUser(remoteUser);
+return Right(remoteUser.toDomain());
+} on ServerException {
+return Left(ServerFailure());
+}
+} else {
+try {
+final localUser = await localDataSource.getLastUser();
+return Right(localUser.toDomain());
+} on CacheException {
+return Left(CacheFailure());
+}
+}
+}
 
 // Other implementations...
 }
@@ -251,92 +250,92 @@ UserRepositoryImpl({
 ```
 @freezed
 class UserState with _$UserState {
- const factory UserState.initial() = _Initial;
- const factory UserState.loading() = _Loading;
- const factory UserState.loaded(User user) = _Loaded;
- const factory UserState.error(Failure failure) = _Error;
+const factory UserState.initial() = _Initial;
+const factory UserState.loading() = _Loading;
+const factory UserState.loaded(User user) = _Loaded;
+const factory UserState.error(Failure failure) = _Error;
 }
 
 @freezed
 class UserEvent with _$UserEvent {
- const factory UserEvent.getUser(String id) = _GetUser;
- const factory UserEvent.refreshUser() = _RefreshUser;
+const factory UserEvent.getUser(String id) = _GetUser;
+const factory UserEvent.refreshUser() = _RefreshUser;
 }
 
 class UserBloc extends Bloc<UserEvent, UserState> {
- final GetUser getUser;
- String? currentUserId;
+final GetUser getUser;
+String? currentUserId;
 
 UserBloc({required this.getUser}) : super(const UserState.initial()) {
- on<_GetUser>(_onGetUser);
- on<_RefreshUser>(_onRefreshUser);
- }
+on<_GetUser>(_onGetUser);
+on<_RefreshUser>(_onRefreshUser);
+}
 
 Future<void> _onGetUser(_GetUser event, Emitter<UserState> emit) async {
- currentUserId = event.id;
- emit(const UserState.loading());
- final result = await getUser(event.id);
- result.fold(
- (failure) => emit(UserState.error(failure)),
- (user) => emit(UserState.loaded(user)),
- );
- }
+currentUserId = event.id;
+emit(const UserState.loading());
+final result = await getUser(event.id);
+result.fold(
+(failure) => emit(UserState.error(failure)),
+(user) => emit(UserState.loaded(user)),
+);
+}
 
 Future<void> _onRefreshUser(_RefreshUser event, Emitter<UserState> emit) async {
- if (currentUserId != null) {
- emit(const UserState.loading());
- final result = await getUser(currentUserId!);
- result.fold(
- (failure) => emit(UserState.error(failure)),
- (user) => emit(UserState.loaded(user)),
- );
- }
- }
+if (currentUserId != null) {
+emit(const UserState.loading());
+final result = await getUser(currentUserId!);
+result.fold(
+(failure) => emit(UserState.error(failure)),
+(user) => emit(UserState.loaded(user)),
+);
+}
+}
 }
 ```
 
 ### UI Implementation
 ```
 class UserPage extends StatelessWidget {
- final String userId;
+final String userId;
 
 const UserPage({Key? key, required this.userId}) : super(key: key);
 
 @override
- Widget build(BuildContext context) {
- return BlocProvider(
- create: (context) => getIt<UserBloc>()
- ..add(UserEvent.getUser(userId)),
- child: Scaffold(
- appBar: AppBar(
- title: const Text('User Details'),
- actions: [
- BlocBuilder<UserBloc, UserState>(
- builder: (context, state) {
- return IconButton(
- icon: const Icon(Icons.refresh),
- onPressed: () {
- context.read<UserBloc>().add(const UserEvent.refreshUser());
- },
- );
- },
- ),
- ],
- ),
- body: BlocBuilder<UserBloc, UserState>(
- builder: (context, state) {
- return state.maybeWhen(
- initial: () => const SizedBox(),
- loading: () => const Center(child: CircularProgressIndicator()),
- loaded: (user) => UserDetailsWidget(user: user),
- error: (failure) => ErrorWidget(failure: failure),
- orElse: () => const SizedBox(),
- );
- },
- ),
- ),
- );
- }
+Widget build(BuildContext context) {
+return BlocProvider(
+create: (context) => getIt<UserBloc>()
+..add(UserEvent.getUser(userId)),
+child: Scaffold(
+appBar: AppBar(
+title: const Text('User Details'),
+actions: [
+BlocBuilder<UserBloc, UserState>(
+builder: (context, state) {
+return IconButton(
+icon: const Icon(Icons.refresh),
+onPressed: () {
+context.read<UserBloc>().add(const UserEvent.refreshUser());
+},
+);
+},
+),
+],
+),
+body: BlocBuilder<UserBloc, UserState>(
+builder: (context, state) {
+return state.maybeWhen(
+initial: () => const SizedBox(),
+loading: () => const Center(child: CircularProgressIndicator()),
+loaded: (user) => UserDetailsWidget(user: user),
+error: (failure) => ErrorWidget(failure: failure),
+orElse: () => const SizedBox(),
+);
+},
+),
+),
+);
+}
 }
 ```
 
@@ -345,36 +344,36 @@ const UserPage({Key? key, required this.userId}) : super(key: key);
 final getIt = GetIt.instance;
 
 void initDependencies() {
- // Core
- getIt.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(getIt()));
+// Core
+getIt.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(getIt()));
 
 // Features - User
- // Data sources
- getIt.registerLazySingleton<UserRemoteDataSource>(
- () => UserRemoteDataSourceImpl(client: getIt()),
- );
- getIt.registerLazySingleton<UserLocalDataSource>(
- () => UserLocalDataSourceImpl(sharedPreferences: getIt()),
- );
+// Data sources
+getIt.registerLazySingleton<UserRemoteDataSource>(
+() => UserRemoteDataSourceImpl(client: getIt()),
+);
+getIt.registerLazySingleton<UserLocalDataSource>(
+() => UserLocalDataSourceImpl(sharedPreferences: getIt()),
+);
 
 // Repository
- getIt.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(
- remoteDataSource: getIt(),
- localDataSource: getIt(),
- networkInfo: getIt(),
- ));
+getIt.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(
+remoteDataSource: getIt(),
+localDataSource: getIt(),
+networkInfo: getIt(),
+));
 
 // Use cases
- getIt.registerLazySingleton(() => GetUser(getIt()));
+getIt.registerLazySingleton(() => GetUser(getIt()));
 
 // Bloc
- getIt.registerFactory(() => UserBloc(getUser: getIt()));
+getIt.registerFactory(() => UserBloc(getUser: getIt()));
 }
 ```
 
 Refer to official Flutter and flutter_bloc documentation for more detailed implementation guidelines.
 
-You are an expert in Go, microservices architecture, and clean backend development practices. Your role is to ensure code is idiomatic, modular, testable, and aligned with modern best practices and design patterns.
+ an expert in Go, microservices architecture, and clean backend development practices. Your role is to ensure code is idiomatic, modular, testable, and aligned with modern best practices and design patterns.
 
 ### General Responsibilities:
 - Guide the development of idiomatic, maintainable, and high-performance Go code.
@@ -390,18 +389,18 @@ You are an expert in Go, microservices architecture, and clean backend developme
 
 ### Project Structure Guidelines:
 - Use a consistent project layout:
- - cmd/: application entrypoints
- - internal/: core application logic (not exposed externally)
- - pkg/: shared utilities and packages
- - api/: gRPC/REST transport definitions and handlers
- - configs/: configuration schemas and loading
- - test/: test utilities, mocks, and integration tests
+- cmd/: application entrypoints
+- internal/: core application logic (not exposed externally)
+- pkg/: shared utilities and packages
+- api/: gRPC/REST transport definitions and handlers
+- configs/: configuration schemas and loading
+- test/: test utilities, mocks, and integration tests
 - Group code by feature when it improves clarity and cohesion.
 - Keep logic decoupled from framework-specific code.
 
 ### Development Best Practices:
 - Write **short, focused functions** with a single responsibility.
-- Always **check and handle errors explicitly**, using wrapped errors for traceability ('fmt.Errorf("context: %w", err)').
+- **check and handle errors explicitly**, using wrapped errors for traceability ('fmt.Errorf("context: %w", err)').
 - Avoid **global state**; use constructor functions to inject dependencies.
 - Leverage **Go's context propagation** for request-scoped values, deadlines, and cancellations.
 - Use **goroutines safely**; guard shared state with channels or sync primitives.
@@ -431,7 +430,7 @@ You are an expert in Go, microservices architecture, and clean backend developme
 ### Observability with OpenTelemetry:
 - Use **OpenTelemetry** for distributed tracing, metrics, and structured logging.
 - Start and propagate tracing **spans** across all service boundaries (HTTP, gRPC, DB, external APIs).
-- Always attach 'context.Context' to spans, logs, and metric exports.
+- attach 'context.Context' to spans, logs, and metric exports.
 - Use **otel.Tracer** for creating spans and **otel.Meter** for collecting metrics.
 - Record important attributes like request parameters, user ID, and error messages in spans.
 - Use **log correlation** by injecting trace IDs into structured logs.

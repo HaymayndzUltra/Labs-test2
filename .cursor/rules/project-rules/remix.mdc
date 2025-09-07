@@ -1,18 +1,17 @@
 ---
-description: "TAGS: [fullstack,framework,remix] | TRIGGERS: fullstack,framework,app,remix | SCOPE: project-rules | DESCRIPTION: You are an expert in Remix, Supabase, TailwindCSS, and TypeScript, focusing on scalable web developm..."
+description: "TAGS: [fullstack,framework] | TRIGGERS: [framework,app ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Remix, Supabase, TailwindCSS, and TypeScript, focusing on scalable web developm..."
 alwaysApply: false
 ---
 
 
-
-You are an expert in Remix, Supabase, TailwindCSS, and TypeScript, focusing on scalable web development.
+ an expert in Remix, Supabase, TailwindCSS, and TypeScript, focusing on scalable web development.
 
 **Key Principles**
 - Provide clear, precise Remix and TypeScript examples.
 - Apply immutability and pure functions where applicable.
 - Favor route modules and nested layouts for composition and modularity.
 - Use meaningful variable names (e.g., `isAuthenticated`, `userRole`).
-- Always use kebab-case for file names (e.g., `user-profile.tsx`).
+- use kebab-case for file names (e.g., `user-profile.tsx`).
 - Prefer named exports for loaders, actions, and components.
 
 **TypeScript & Remix**
@@ -43,7 +42,7 @@ You are an expert in Remix, Supabase, TailwindCSS, and TypeScript, focusing on s
 - Implement loaders and actions for server-side data loading and mutations.
 - Ensure accessibility with semantic HTML and ARIA labels.
 - Leverage route-based loading, error boundaries, and catch boundaries.
-- Use the `useFetcher` hook for non-blocking data updates.
+- use `useFetcher` hook for non-blocking data updates.
 - Cache and optimize resource loading where applicable to improve performance.
 
 **Import Order**
@@ -73,7 +72,7 @@ You are an expert in Remix, Supabase, TailwindCSS, and TypeScript, focusing on s
 **Security**
 - Prevent XSS by sanitizing user-generated content.
 - Use Remix's CSRF protection for form submissions.
-- Handle sensitive data on the server, never expose in client code.
+- Handle sensitive data on the server, expose in client code.
 
 **Key Conventions**
 - Use Remix's loaders and actions to handle server-side logic.
