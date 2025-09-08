@@ -21,6 +21,12 @@ jobs:
           pip install nox
       - name: Run generator session (default)
         run: nox -s generator
+      - name: Upload artifacts (optional)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: ./.nox/**/log*
       # Extended suites can be enabled manually
       # - name: Run FastAPI template tests
       #   run: nox -s fastapi

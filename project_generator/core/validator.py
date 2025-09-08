@@ -302,9 +302,12 @@ class ProjectValidator:
         errors = []
         warnings = []
         
-        # Always required
+        # Always required (skip hard-block on dry-run)
         if which('docker') is None:
-            errors.append("Docker is required for development environment (install from https://docker.com)")
+            if getattr(args, 'dry_run', False):
+                warnings.append("Docker not found; proceeding due to --dry-run")
+            else:
+                errors.append("Docker is required for development environment (install from https://docker.com)")
         
         # Frontend dependencies
         if args.frontend != 'none' or args.backend == 'nestjs':
