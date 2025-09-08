@@ -74,6 +74,15 @@ These tests are optional during generator CI; they require local tooling.
 - FastAPI template requires `python-multipart`, `python-jose[cryptography]`, `passlib[bcrypt]`.
 - For CI in generated projects, prefer running backend/frontend tests separately.
 
+## Quick setup script
+
+Run pinned installs and tests per template:
+
+```bash
+scripts/setup_template_tests.sh fastapi|django|next|angular
+```
+
+
 ## Adding New Files
 
 - Keep file names consistent and avoid framework-specific hidden assumptions.
