@@ -1,0 +1,33 @@
+name: CI (nox)
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install nox
+        run: |
+          python -m pip install --upgrade pip
+          pip install nox
+      - name: Run generator session (default)
+        run: nox -s generator
+      # Extended suites can be enabled manually
+      # - name: Run FastAPI template tests
+      #   run: nox -s fastapi
+      # - name: Run Django template tests
+      #   run: nox -s django
+      # - name: Run Next.js template tests
+      #   run: nox -s next
+      # - name: Run Angular template tests
+      #   run: nox -s angular
+
