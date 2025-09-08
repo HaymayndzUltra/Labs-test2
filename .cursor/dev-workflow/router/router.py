@@ -4,49 +4,119 @@ import json
 import uuid
 import datetime
 from pathlib import Path
+from collections import OrderedDict
 
-ROOT = Path('/workspace')
+# Dynamic ROOT detection: prefer env, else walk up until .cursor found, else cwd
+def _detect_root() -> Path:
+    env_root = os.environ.get('CURSOR_WORKSPACE_ROOT') or os.environ.get('WORKSPACE_ROOT')
+    if env_root:
+        p = Path(env_root)
+        if (p / '.cursor').exists():
+            return p
+    # Walk up from cwd to find a directory containing .cursor
+    cur = Path.cwd()
+    for _ in range(10):
+        if (cur / '.cursor').exists():
+            return cur
+        if cur.parent == cur:
+            break
+        cur = cur.parent
+    # Fallback to original default
+    return Path('/workspace') if Path('/workspace/.cursor').exists() else Path.cwd()
+
+ROOT = _detect_root()
+
+# Caching controls
+CACHE_DISABLED = os.environ.get('ROUTER_CACHE', '').lower() in ('off', '0', 'false')
+LRU_MAX_SIZE = int(os.environ.get('ROUTER_LRU_SIZE', '512') or '512')
+
+# Precedence cache
+_PREC_CACHE: list[str] | None = None
+_PREC_MTIME: float | None = None
+
+# Policies cache
+_POLICY_CACHE: list[dict] | None = None
+_POLICY_MTIME: float | None = None
+
+# LRU cache for decisions (keyed by epoch:normalized_context)
+_LRU: OrderedDict[str, dict] = OrderedDict()
+_CACHE_EPOCH = 0  # bumped when precedence/policies change
 RULES_DIR = ROOT / '.cursor' / 'rules'
 PRECEDENCE_FILE = RULES_DIR / 'master-rules' / '9-governance-precedence.mdc'
 POLICY_DIR = ROOT / '.cursor' / 'dev-workflow' / 'policy-dsl'
 ROUTING_LOG_SCHEMA = ROOT / '.cursor' / 'dev-workflow' / 'schemas' / 'routing_log.json'
 
 def load_precedence():
-    # naive parse: read precedence section from the file
+    global _PREC_CACHE, _PREC_MTIME, _CACHE_EPOCH
     if not PRECEDENCE_FILE.exists():
-        return []
+        _PREC_CACHE = []
+        _PREC_MTIME = None
+        return _PREC_CACHE
+    mtime = PRECEDENCE_FILE.stat().st_mtime
+    if not CACHE_DISABLED and _PREC_CACHE is not None and _PREC_MTIME and abs(mtime - _PREC_MTIME) < 1.0:
+        return _PREC_CACHE
     text = PRECEDENCE_FILE.read_text(encoding='utf-8')
-    # find the Priority Order list
     start = text.find('Priority Order')
     if start == -1:
-        return []
-    block = text[start: start + 1000]
-    lines = [l.strip() for l in block.splitlines() if l.strip().startswith('-')]
-    order = [l.lstrip('-').strip().split(' ')[0] for l in lines]
+        order = []
+    else:
+        block = text[start: start + 1000]
+        lines = [l.strip() for l in block.splitlines() if l.strip().startswith('-')]
+        order = [l.lstrip('-').strip().split(' ')[0] for l in lines]
+    _PREC_CACHE = order
+    # bump epoch if changed
+    if _PREC_MTIME is None or abs(mtime - _PREC_MTIME) >= 1.0:
+        _CACHE_EPOCH += 1
+    _PREC_MTIME = mtime
     return order
 
 def list_policies():
+    global _POLICY_CACHE, _POLICY_MTIME, _CACHE_EPOCH
+    if not POLICY_DIR.exists():
+        _POLICY_CACHE = []
+        _POLICY_MTIME = None
+        return _POLICY_CACHE
+    # compute dir mtime as max of files' mtimes
+    mt = 0.0
+    files = list(POLICY_DIR.glob('*.json'))
+    for f in files:
+        try:
+            mt = max(mt, f.stat().st_mtime)
+        except Exception:
+            continue
+    if not CACHE_DISABLED and _POLICY_CACHE is not None and _POLICY_MTIME and abs(mt - _POLICY_MTIME) < 1.0:
+        return _POLICY_CACHE
     out = []
-    if POLICY_DIR.exists():
-        for f in POLICY_DIR.glob('*.json'):
-            try:
-                out.append(json.loads(f.read_text(encoding='utf-8')))
-            except Exception:
-                continue
+    for f in files:
+        try:
+            out.append(json.loads(f.read_text(encoding='utf-8')))
+        except Exception:
+            continue
+    _POLICY_CACHE = out
+    if _POLICY_MTIME is None or abs(mt - _POLICY_MTIME) >= 1.0:
+        _CACHE_EPOCH += 1
+    _POLICY_MTIME = mt
     return out
+
+def _normalize_context(context_map) -> str:
+    try:
+        if isinstance(context_map, str):
+            return context_map.strip().lower().replace('-', ' ')
+        if isinstance(context_map, dict):
+            tokens = []
+            for v in context_map.values():
+                if isinstance(v, (list, tuple, set)):
+                    tokens.extend([str(x).strip().lower().replace('-', ' ') for x in v])
+                else:
+                    tokens.append(str(v).strip().lower().replace('-', ' '))
+            return " ".join(tokens)
+        return str(context_map).lower().replace('-', ' ')
+    except Exception:
+        return str(context_map).lower().replace('-', ' ')
 
 def evaluate_policies(policies, context_map):
     # Normalize context values to a single lower-cased string for robust substring matching
-    try:
-        tokens = []
-        for v in context_map.values():
-            if isinstance(v, (list, tuple, set)):
-                tokens.extend([str(x).strip().lower() for x in v])
-            else:
-                tokens.append(str(v).strip().lower())
-        normalized_context = " ".join(tokens)
-    except Exception:
-        normalized_context = str(context_map).lower()
+    normalized_context = _normalize_context(context_map)
     matches = []
     for policy in policies:
         conditions = policy.get('conditions') or []
@@ -60,7 +130,20 @@ def evaluate_policies(policies, context_map):
 def route_decision(context):
     precedence = load_precedence()
     policies = list_policies()
-    matched = evaluate_policies(policies, context)
+    # LRU lookup
+    normalized = _normalize_context(context)
+    cache_key = f"{_CACHE_EPOCH}:{normalized}"
+    cached = None
+    if not CACHE_DISABLED:
+        cached = _LRU.get(cache_key)
+        if cached is not None:
+            # move to end (most recently used)
+            _LRU.move_to_end(cache_key)
+            matched = cached.get('matched')
+        else:
+            matched = evaluate_policies(policies, context)
+    else:
+        matched = evaluate_policies(policies, context)
     # Tie-break using precedence_tag against precedence file when priorities tie
     if matched:
         # group by priority
@@ -103,6 +186,14 @@ def route_decision(context):
         'approver': None,
         'snapshot_id': context.get('snapshot_id')
     }
+    # populate LRU
+    if not CACHE_DISABLED:
+        if cached is None:
+            _LRU[cache_key] = {'matched': matched, 'decision': decision}
+            if len(_LRU) > LRU_MAX_SIZE:
+                _LRU.popitem(last=False)
+        else:
+            _LRU[cache_key]['decision'] = decision
     # persist to routing_logs dir
     outdir = ROOT / '.cursor' / 'dev-workflow' / 'routing_logs'
     outdir.mkdir(parents=True, exist_ok=True)

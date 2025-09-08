@@ -1,0 +1,7 @@
+compliance:
+  hipaa: true
+quality_gates:
+  coverage:
+    min: 90
+  critical_vulns: 0
+  high_vulns: 0

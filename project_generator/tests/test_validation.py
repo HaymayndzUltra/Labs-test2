@@ -25,10 +25,26 @@ class TestComprehensiveValidation:
             features=None
         )
     
-    def test_valid_fullstack_configuration(self):
-        """Test valid fullstack configuration passes"""
+    @patch('project_generator.core.validator.subprocess.run')
+    @patch('project_generator.core.validator.which')
+    def test_valid_fullstack_configuration(self, mock_which, mock_run):
+        """Test valid fullstack configuration passes (mock system deps)"""
+        # Simulate required CLIs present
+        mock_which.side_effect = lambda cmd: f"/usr/bin/{cmd}"
+
+        # Simulate modern Node and Python versions
+        def _run_side_effect(args, **kwargs):
+            cmd = args[0] if isinstance(args, (list, tuple)) else args
+            if isinstance(cmd, (list, tuple)) and cmd and 'node' in cmd[0]:
+                return Mock(returncode=0, stdout='v18.19.0')
+            if isinstance(cmd, (list, tuple)) and cmd and 'python' in cmd[0]:
+                return Mock(returncode=0, stdout='Python 3.11.0')
+            return Mock(returncode=0, stdout='')
+
+        mock_run.side_effect = _run_side_effect
+
         result = self.validator.validate_comprehensive(self.base_args)
-        assert result['valid'] == True
+        assert result['valid'] is True
         assert len(result['errors']) == 0
     
     def test_fullstack_requires_frontend_and_backend(self):
@@ -222,8 +238,24 @@ class TestComprehensiveValidation:
         result = self.validator.validate_comprehensive(args)
         assert any('Python 3.9.0 detected; Python 3.11+ recommended' in warning for warning in result['warnings'])
     
-    def test_multiple_features_validation(self):
-        """Test validation with multiple features"""
+    @patch('project_generator.core.validator.subprocess.run')
+    @patch('project_generator.core.validator.which')
+    def test_multiple_features_validation(self, mock_which, mock_run):
+        """Test validation with multiple features: should pass with at most warnings."""
+        # Simulate required CLIs present
+        mock_which.side_effect = lambda cmd: f"/usr/bin/{cmd}"
+
+        # Simulate modern Node and Python versions
+        def _run_side_effect(args, **kwargs):
+            cmd = args[0] if isinstance(args, (list, tuple)) else args
+            if isinstance(cmd, (list, tuple)) and cmd and 'node' in cmd[0]:
+                return Mock(returncode=0, stdout='v18.19.0')
+            if isinstance(cmd, (list, tuple)) and cmd and 'python' in cmd[0]:
+                return Mock(returncode=0, stdout='Python 3.11.0')
+            return Mock(returncode=0, stdout='')
+
+        mock_run.side_effect = _run_side_effect
+
         args = Mock(
             project_type='fullstack',
             frontend='nextjs',
@@ -237,7 +269,9 @@ class TestComprehensiveValidation:
         )
         
         result = self.validator.validate_comprehensive(args)
-        assert result['valid'] == True  # All features should be compatible with this setup
+        # Postgres makes 'realtime' emit a warning (recommended firebase/mongodb), but not an error
+        assert result['valid'] is True
+        assert all('requires' not in e for e in result['errors'])
     
     def test_incompatible_feature_combination(self):
         """Test incompatible feature combination"""

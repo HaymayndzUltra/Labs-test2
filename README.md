@@ -78,6 +78,19 @@ chmod +x scripts/generate_client_project.py
 | `--compliance` | hipaa, gdpr, sox, pci | Compliance requirements (comma-separated) |
 | `--features` | Custom features | Additional features (comma-separated) |
 
+### Troubleshooting
+
+- Running inside a repo with a root `.cursor/`:
+  - By default, the generator will not emit `.cursor` assets and will place output in `../_generated`. Use `--include-cursor-assets` to force include.
+- Docker not installed:
+  - The generator requires Docker for the default dev environment. For a dry structure preview, run with `--dry-run` (still validates configuration).
+- Template tests (optional):
+  - Backend FastAPI: see `template-packs/backend/fastapi/base/requirements.txt` and run `pytest` under that template.
+  - Django: run `python manage.py test` in a generated project.
+  - Next.js: run `npm ci && npm test` in `frontend` (jest + next-jest configured).
+  - Angular: run `npm ci && npm run test` in `frontend`.
+
+
 ### Industry Examples
 
 #### Healthcare Application

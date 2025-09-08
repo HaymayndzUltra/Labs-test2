@@ -1,3 +1,4 @@
+from .registry import TemplateRegistry
 """
 Templates module for project generator
 """

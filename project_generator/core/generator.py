@@ -10,10 +10,13 @@ import subprocess
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import re
 
 from .validator import ProjectValidator
 from .industry_config import IndustryConfig
 from ..templates.template_engine import TemplateEngine
+from ..templates.registry import TemplateRegistry
 
 
 class ProjectGenerator:
@@ -24,9 +27,16 @@ class ProjectGenerator:
         self.validator = validator
         self.config = config
         self.template_engine = TemplateEngine()
+        self.template_registry = TemplateRegistry()
         # When True, do not emit any .cursor assets (rules, tools, ai-governor) into generated projects
         self.no_cursor_assets = bool(getattr(self.args, 'no_cursor_assets', False))
         self.project_root = None
+        # Determine workers
+        auto_workers = max(2, (os.cpu_count() or 2) * 2)
+        self.workers = getattr(self.args, 'workers', 0) or auto_workers
+        # Precompile placeholder regexes
+        self._placeholder_map = None
+        self._placeholder_regex = None
     
     def generate(self) -> Dict[str, Any]:
         """Generate the complete project"""
@@ -160,21 +170,16 @@ class ProjectGenerator:
         frontend_dir = self.project_root / 'frontend'
         frontend_dir.mkdir(exist_ok=True)
         
-        # Copy template files
-        template_path = Path(__file__).parent.parent.parent / 'template-packs' / 'frontend' / self.args.frontend
-        
-        if template_path.exists():
-            # Use the appropriate template variant
-            variant = 'enterprise' if self.args.industry in ['healthcare', 'finance', 'enterprise'] else 'base'
-            variant_path = template_path / variant
-            
-            if variant_path.exists():
-                shutil.copytree(variant_path, frontend_dir, dirs_exist_ok=True)
-            else:
-                # Fallback to base template
-                base_path = template_path / 'base'
-                if base_path.exists():
-                    shutil.copytree(base_path, frontend_dir, dirs_exist_ok=True)
+        # Copy template files using manifest/registry if available
+        template_root = Path(__file__).parent.parent.parent / 'template-packs' / 'frontend' / self.args.frontend
+        variant = 'enterprise' if self.args.industry in ['healthcare', 'finance', 'enterprise'] else 'base'
+        variant_path = template_root / variant
+        if variant_path.exists():
+            shutil.copytree(variant_path, frontend_dir, dirs_exist_ok=True)
+        else:
+            base_path = template_root / 'base'
+            if base_path.exists():
+                shutil.copytree(base_path, frontend_dir, dirs_exist_ok=True)
         
         # Process templates with project-specific values
         self._process_templates(frontend_dir)
@@ -237,35 +242,39 @@ class ProjectGenerator:
             self._add_database_to_docker_compose()
 
     def _process_templates(self, root: Path):
-        """Process text templates by replacing simple placeholders with project values."""
-        try:
-            mapping = {
-                '{{PROJECT_NAME}}': self.args.name,
-                '{{INDUSTRY}}': self.args.industry,
-                '{{PROJECT_TYPE}}': self.args.project_type,
-                '{{FRONTEND}}': self.args.frontend,
-                '{{BACKEND}}': self.args.backend,
-                '{{DATABASE}}': self.args.database,
-                '{{AUTH}}': self.args.auth,
-                '{{DEPLOY}}': self.args.deploy,
-            }
-            text_exts = {
-                '.md', '.mdc', '.txt', '.json', '.yml', '.yaml', '.toml', '.ini', '.env',
-                '.js', '.jsx', '.ts', '.tsx', '.py', '.go', '.html', '.css', '.scss', '.sh'
-            }
-            for path in root.rglob('*'):
-                if path.is_file() and path.suffix.lower() in text_exts:
-                    try:
-                        content = path.read_text()
-                        for key, val in mapping.items():
-                            content = content.replace(key, str(val))
-                        path.write_text(content)
-                    except Exception:
-                        # Skip files we can't read/write safely
-                        pass
-        except Exception:
-            # Non-fatal: template processing is best-effort
-            pass
+        """Process text templates by replacing simple placeholders with project values using a thread pool."""
+        mapping = {
+            '{{PROJECT_NAME}}': self.args.name,
+            '{{INDUSTRY}}': self.args.industry,
+            '{{PROJECT_TYPE}}': self.args.project_type,
+            '{{FRONTEND}}': self.args.frontend,
+            '{{BACKEND}}': self.args.backend,
+            '{{DATABASE}}': self.args.database,
+            '{{AUTH}}': self.args.auth,
+            '{{DEPLOY}}': self.args.deploy,
+        }
+        # cache compiled regex
+        if self._placeholder_map is None:
+            self._placeholder_map = mapping
+            pattern = re.compile('|'.join(map(re.escape, mapping.keys())))
+            self._placeholder_regex = pattern
+        text_exts = {
+            '.md', '.mdc', '.txt', '.json', '.yml', '.yaml', '.toml', '.ini', '.env',
+            '.js', '.jsx', '.ts', '.tsx', '.py', '.go', '.html', '.css', '.scss', '.sh'
+        }
+        files: list[Path] = [p for p in root.rglob('*') if p.is_file() and p.suffix.lower() in text_exts]
+
+        def _process_one(p: Path):
+            try:
+                content = p.read_text()
+                content = self._placeholder_regex.sub(lambda m: str(self._placeholder_map[m.group(0)]), content)
+                p.write_text(content)
+                return True
+            except Exception:
+                return False
+
+        with ThreadPoolExecutor(max_workers=self.workers) as ex:
+            list(as_completed(ex.submit(_process_one, f) for f in files))
 
     def _add_industry_components(self, target_dir: Path, component_type: str):
         """Add industry-specific components (placeholder no-op)."""
