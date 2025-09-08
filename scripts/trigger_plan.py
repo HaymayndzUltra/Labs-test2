@@ -1,143 +1,191 @@
 #!/usr/bin/env python3
-"""
-Trigger Plan Generator
-
-Given a project selection, print a compact set of chatbox triggers (in order)
-combining Cursor rule triggers (Apply instructions from …) and concrete commands.
-
-Usage examples:
-  python scripts/trigger_plan.py --name acme-app --industry healthcare \
-    --project-type fullstack --frontend nextjs --backend fastapi --database postgres \
-    --auth auth0 --deploy aws --compliance hipaa --workers 8
-
-  python scripts/trigger_plan.py --name api-svc --industry saas \
-    --project-type api --backend django --database postgres --workers 8
-
-Notes:
-  - Output is safe to copy/paste into chat as sequential triggers/commands.
-  - Uses manifest/registry-aware generator (no hardcoded paths in commands).
-"""
-
-from __future__ import annotations
 
 import argparse
-from typing import List
+import json
+from pathlib import Path
+from typing import Dict, Any, List, Optional
 
 
-RULE_TRIGGERS = [
-    "Apply instructions from .cursor/rules/master-rules/1-master-rule-context-discovery.mdc",
-    "Apply instructions from .cursor/rules/master-rules/2-master-rule-ai-collaboration-guidelines.mdc",
-    "Apply instructions from .cursor/rules/master-rules/F8-security-and-compliance-overlay.mdc",
-]
-
-WORKFLOW_FILES = {
-    'bootstrap': ".cursor/dev-workflow/0-bootstrap-your-project.md",
-    'prd': ".cursor/dev-workflow/1-create-prd.md",
-    'prd_client': ".cursor/dev-workflow/1-create-client-specific-prd.md",
-    'plan': ".cursor/dev-workflow/2-generate-tasks.md",
-    'execute': ".cursor/dev-workflow/3-process-tasks.md",
-    'retro': ".cursor/dev-workflow/4-implementation-retrospective.md",
-    'bg': ".cursor/dev-workflow/5-background-agent-coordination.md",
-    'portfolio': ".cursor/dev-workflow/6-client-portfolio-manager.md",
-    'update_all': ".cursor/dev-workflow/6-update-all.md",
-    'pr_desc': ".cursor/dev-workflow/pr-description.md",
-    'pr_evidence': ".cursor/dev-workflow/pr-evidence.md",
-}
+def load_policies(repo_root: Path) -> List[Dict[str, Any]]:
+    policy_path = repo_root / ".cursor" / "dev-workflow" / "policy-dsl" / "project-selection.json"
+    if not policy_path.exists():
+        return []
+    try:
+        return json.loads(policy_path.read_text(encoding="utf-8"))
+    except Exception:
+        return []
 
 
-def build_commands(args: argparse.Namespace) -> List[str]:
-    cmd = []
-    # Phase 1 - Rules init
-    for t in RULE_TRIGGERS:
-        cmd.append(t)
-    cmd += [
-        "export ROUTER_CACHE=on",
-        "export ROUTER_LRU_SIZE=512",
-    ]
-    # Phase 2 - Bootstrap
-    cmd.append(f"Apply instructions from {WORKFLOW_FILES['bootstrap']}")
-    cmd += [
-        "python scripts/doctor.py",
-        "./scripts/generate_client_project.py --list-templates | cat",
-    ]
-    # Phase 3 - PRD
-    cmd.append(f"Apply instructions from {WORKFLOW_FILES['prd']}")
-    # Phase 4 - Planning
-    cmd.append(f"Apply instructions from {WORKFLOW_FILES['plan']}")
-    cmd.append("nox -s generator")
-    # Phase 5 - Execution
-    cmd.append(f"Apply instructions from {WORKFLOW_FILES['execute']}")
-    cmd.append("./scripts/generate_client_project.py --list-templates | cat")
+def match_policy(policies: List[Dict[str, Any]], industry: str, project_type: str) -> Optional[Dict[str, Any]]:
+    best = None
+    best_priority = -1
+    for p in policies:
+        conds = set(c.strip().lower() for c in p.get("conditions", []))
+        if not conds:
+            continue
+        required = {f"industry:{industry}", f"project_type:{project_type}"}
+        if required.issubset(conds):
+            prio = int(p.get("priority", 0))
+            if prio > best_priority:
+                best_priority = prio
+                best = p
+    return best
 
-    # Dry-run first
-    base = (
-        f"./scripts/generate_client_project.py --name {args.name} --industry {args.industry} "
-        f"--project-type {args.project_type} --frontend {args.frontend} --backend {args.backend} "
-        f"--database {args.database} --auth {args.auth} --deploy {args.deploy}"
-    )
-    if args.compliance:
-        base += f" --compliance {args.compliance}"
-    workers = f" --workers {args.workers}" if args.workers else ""
-    cmd.append(base + workers + " --dry-run --yes")
-    # Actual generate
-    cmd.append(base + workers + " --yes")
 
-    # Template tests (limit to relevant stacks)
-    if args.backend == 'fastapi':
-        cmd.append("scripts/setup_template_tests.sh fastapi")
-    if args.backend == 'django':
-        cmd.append("scripts/setup_template_tests.sh django")
-    if args.frontend == 'nextjs':
-        cmd.append("scripts/setup_template_tests.sh next")
-    if args.frontend == 'angular':
-        cmd.append("scripts/setup_template_tests.sh angular")
+def choose_stack(args: argparse.Namespace, repo_root: Path) -> Dict[str, str]:
+    industry = (args.industry or "").lower().strip() or "healthcare"
+    project_type = (args.project_type or "").lower().strip() or "fullstack"
 
-    # Phase 6 - QA/Review/PR
-    cmd.append(f"Apply instructions from {WORKFLOW_FILES['retro']}")
-    cmd.append(f"Apply instructions from {WORKFLOW_FILES['bg']}")
-    cmd.append(f"Apply instructions from {WORKFLOW_FILES['pr_desc']}")
-    cmd.append(f"Apply instructions from {WORKFLOW_FILES['pr_evidence']}")
-    cmd += ["nox -s generator"]
-    # Optional per-language sessions
-    if args.backend == 'fastapi':
-        cmd.append("nox -s fastapi")
-    if args.backend == 'django':
-        cmd.append("nox -s django")
-    if args.frontend == 'nextjs':
-        cmd.append("nox -s next")
-    if args.frontend == 'angular':
-        cmd.append("nox -s angular")
+    defaults = {
+        ("healthcare", "fullstack"): dict(frontend="nextjs", backend="fastapi", database="postgres", auth="auth0", compliance="hipaa"),
+        ("finance", "api"): dict(backend="go", database="postgres", auth="cognito", compliance="sox,pci"),
+        ("ecommerce", "fullstack"): dict(frontend="nextjs", backend="django", database="postgres", auth="firebase", compliance="pci,gdpr"),
+        ("saas", "api"): dict(backend="django", database="postgres", auth="auth0"),
+        ("enterprise", "web"): dict(frontend="nextjs", database="none", auth="cognito"),
+    }
 
-    # Phase 7 - Portfolio/Scale (optional)
-    cmd.append(f"Apply instructions from {WORKFLOW_FILES['portfolio']}")
-    cmd.append(f"Apply instructions from {WORKFLOW_FILES['update_all']}")
+    policies = load_policies(repo_root)
+    picked: Dict[str, str] = {}
+    policy = match_policy(policies, industry, project_type)
+    if policy and isinstance(policy.get("recommend"), dict):
+        picked.update({k: str(v) for k, v in policy["recommend"].items()})
+    picked.update(defaults.get((industry, project_type), {}))
 
-    return cmd
+    for key in ["frontend", "backend", "database", "auth", "deploy", "compliance"]:
+        val = getattr(args, key, None)
+        if val:
+            picked[key] = str(val)
+
+    if not picked.get("deploy"):
+        picked["deploy"] = "aws"
+
+    return {
+        "industry": industry,
+        "project_type": project_type,
+        "frontend": picked.get("frontend", "nextjs" if project_type != "api" else "none"),
+        "backend": picked.get("backend", "django" if project_type != "web" else "none"),
+        "database": picked.get("database", "postgres"),
+        "auth": picked.get("auth", "auth0"),
+        "deploy": picked.get("deploy", "aws"),
+        "compliance": picked.get("compliance", ""),
+    }
+
+
+def build_commands(name: str, ctx: Dict[str, str], output_dir: Path, workers: int, include_cursor_assets: bool, force: bool, dry_run: bool) -> Dict[str, List[str]]:
+    cursor_flag = "--include-cursor-assets" if include_cursor_assets else "--no-cursor-assets"
+    force_flag = " --force" if force else ""
+    dry_flag = " --dry-run" if dry_run else ""
+
+    base_cmd = (
+        f"python scripts/generate_client_project.py"
+        f" --name {name}"
+        f" --industry {ctx['industry']}"
+        f" --project-type {ctx['project_type']}"
+        f" --frontend {ctx['frontend']}"
+        f" --backend {ctx['backend']}"
+        f" --database {ctx['database']}"
+        f" --auth {ctx['auth']}"
+        f"{' --compliance ' + ctx['compliance'] if ctx['compliance'] else ''}"
+        f" --deploy {ctx['deploy']}"
+        f" --output-dir {str(output_dir)}"
+        f" --workers {workers}"
+        f" {cursor_flag} --yes"
+        f"{dry_flag}{force_flag}"
+    ).strip()
+
+    cmds = {
+        "rules": [
+            "Apply instructions from .cursor/rules/master-rules/1-master-rule-context-discovery.mdc",
+            "Apply instructions from .cursor/rules/master-rules/2-master-rule-ai-collaboration-guidelines.mdc",
+            "Apply instructions from .cursor/rules/master-rules/F8-security-and-compliance-overlay.mdc",
+        ],
+        "bootstrap": [
+            "python scripts/doctor.py",
+            "./scripts/generate_client_project.py --list-templates | cat",
+        ],
+        "generate": [
+            base_cmd,
+        ],
+        "tests": [],
+    }
+
+    if ctx.get("backend") == "fastapi":
+        cmds["tests"].append("scripts/setup_template_tests.sh fastapi")
+    if ctx.get("backend") == "django":
+        cmds["tests"].append("scripts/setup_template_tests.sh django")
+    if ctx.get("frontend") == "nextjs":
+        cmds["tests"].append("scripts/setup_template_tests.sh next")
+    if ctx.get("frontend") == "angular":
+        cmds["tests"].append("scripts/setup_template_tests.sh angular")
+
+    return cmds
+
+
+def print_plan(name: str, ctx: Dict[str, str], cmds: Dict[str, List[str]], print_triggers: bool) -> None:
+    print("=== Project Trigger Plan ===")
+    print(f"name: {name}")
+    print("context:")
+    for k in ["industry", "project_type", "frontend", "backend", "database", "auth", "deploy", "compliance"]:
+        print(f"  {k}: {ctx.get(k) or 'none'}")
+    print()
+
+    if print_triggers:
+        print("# Triggers to apply (in order):")
+        for t in cmds["rules"]:
+            print(f"- {t}")
+        print()
+
+    print("# Commands:")
+    for section in ["bootstrap", "generate", "tests"]:
+        for c in cmds[section]:
+            print(c)
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Generate chat triggers for a selected project")
-    p.add_argument('--name', required=True)
-    p.add_argument('--industry', required=True)
-    p.add_argument('--project-type', required=True, choices=['web', 'mobile', 'api', 'fullstack', 'microservices'])
-    p.add_argument('--frontend', default='none', choices=['nextjs', 'nuxt', 'angular', 'expo', 'none'])
-    p.add_argument('--backend', default='none', choices=['fastapi', 'django', 'nestjs', 'go', 'none'])
-    p.add_argument('--database', default='none', choices=['postgres', 'mongodb', 'firebase', 'none'])
-    p.add_argument('--auth', default='none', choices=['auth0', 'firebase', 'cognito', 'custom', 'none'])
-    p.add_argument('--deploy', default='aws', choices=['aws', 'azure', 'gcp', 'vercel', 'self-hosted'])
-    p.add_argument('--compliance')
-    p.add_argument('--workers', type=int, default=8)
-    return p.parse_args()
+    parser = argparse.ArgumentParser(description="Emit a guided trigger/command plan for project generation.")
+    parser.add_argument("--name", required=True)
+    parser.add_argument("--industry", default=None)
+    parser.add_argument("--project-type", dest="project_type", default=None)
+    parser.add_argument("--frontend", default=None)
+    parser.add_argument("--backend", default=None)
+    parser.add_argument("--database", default=None)
+    parser.add_argument("--auth", default=None)
+    parser.add_argument("--deploy", default=None)
+    parser.add_argument("--compliance", default=None)
+    parser.add_argument("--workers", type=int, default=8)
+    parser.add_argument("--output-dir", dest="output_dir", default="../_generated")
+    parser.add_argument("--include-cursor-assets", dest="include_cursor_assets", action="store_true")
+    parser.add_argument("--no-cursor-assets", dest="include_cursor_assets", action="store_false")
+    parser.set_defaults(include_cursor_assets=False)
+    parser.add_argument("--force", action="store_true")
+    parser.add_argument("--dry-run", dest="dry_run", action="store_true")
+    parser.add_argument("--print-triggers", dest="print_triggers", action="store_true")
+    return parser.parse_args()
 
 
-def main():
+def main() -> None:
     args = parse_args()
-    steps = build_commands(args)
-    print("\n# CHAT TRIGGERS (copy/paste in order)\n")
-    for s in steps:
-        print(s)
+    repo_root = Path(__file__).resolve().parents[1]
+    output_dir = Path(args.output_dir)
+    if not output_dir.is_absolute():
+        output_dir = (repo_root / output_dir).resolve()
+    try:
+        output_dir.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        pass
+
+    ctx = choose_stack(args, repo_root)
+    cmds = build_commands(
+        name=args.name,
+        ctx=ctx,
+        output_dir=output_dir,
+        workers=args.workers,
+        include_cursor_assets=bool(args.include_cursor_assets),
+        force=bool(args.force),
+        dry_run=bool(args.dry_run),
+    )
+    print_plan(args.name, ctx, cmds, print_triggers=bool(args.print_triggers))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-

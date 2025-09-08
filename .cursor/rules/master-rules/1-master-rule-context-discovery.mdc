@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [global,workflow,context,documentation] | TRIGGERS: [rule,readme,documentation,setup ] | SCOPE: global | DESCRIPTION: Defines the robust, BIOS-like protocol for discovering relevant rules and README.md documentation. It governs the initial context loading and its dynamic re-evaluation during a task."
+description: "TAGS: [global,workflow,context,documentation] | TRIGGERS: [rule,readme,documentation,setup ] | SCOPE: global | DESCRIPTION: Defines the robust, BIOS-like protocol for discovering relevant rules and README.md documentation , apply directive at .cursor/rules/master-rules/10-VOID-ARCHITECT.mdc . It governs the initial context loading and its dynamic re-evaluation during a task."
 alwaysApply: true
 ---
 

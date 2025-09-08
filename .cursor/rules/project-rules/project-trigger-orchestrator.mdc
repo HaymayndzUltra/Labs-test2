@@ -1,6 +1,6 @@
 ---
 alwaysApply: true
-description: "TAGS: [orchestration,project,bootstrap] | TRIGGERS: bootstrap,analyze,plan,execute,review,portfolio | SCOPE: global | DESCRIPTION: Project-aware trigger plan that asks minimal questions and emits concrete commands."
+description: "TAGS: [orchestration,project,bootstrap] | TRIGGERS: bootstrap,analyze,plan,execute,review,portfolio | SCOPE: project-rules | DESCRIPTION: Project-aware trigger plan that asks minimal questions and emits concrete commands."
 ---
 
 # Project Trigger Orchestrator
