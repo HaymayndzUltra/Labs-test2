@@ -16,6 +16,7 @@ import re
 from .validator import ProjectValidator
 from .industry_config import IndustryConfig
 from ..templates.template_engine import TemplateEngine
+from ..templates.registry import TemplateRegistry
 
 
 class ProjectGenerator:
@@ -26,6 +27,7 @@ class ProjectGenerator:
         self.validator = validator
         self.config = config
         self.template_engine = TemplateEngine()
+        self.template_registry = TemplateRegistry()
         # When True, do not emit any .cursor assets (rules, tools, ai-governor) into generated projects
         self.no_cursor_assets = bool(getattr(self.args, 'no_cursor_assets', False))
         self.project_root = None
@@ -168,21 +170,16 @@ class ProjectGenerator:
         frontend_dir = self.project_root / 'frontend'
         frontend_dir.mkdir(exist_ok=True)
         
-        # Copy template files
-        template_path = Path(__file__).parent.parent.parent / 'template-packs' / 'frontend' / self.args.frontend
-        
-        if template_path.exists():
-            # Use the appropriate template variant
-            variant = 'enterprise' if self.args.industry in ['healthcare', 'finance', 'enterprise'] else 'base'
-            variant_path = template_path / variant
-            
-            if variant_path.exists():
-                shutil.copytree(variant_path, frontend_dir, dirs_exist_ok=True)
-            else:
-                # Fallback to base template
-                base_path = template_path / 'base'
-                if base_path.exists():
-                    shutil.copytree(base_path, frontend_dir, dirs_exist_ok=True)
+        # Copy template files using manifest/registry if available
+        template_root = Path(__file__).parent.parent.parent / 'template-packs' / 'frontend' / self.args.frontend
+        variant = 'enterprise' if self.args.industry in ['healthcare', 'finance', 'enterprise'] else 'base'
+        variant_path = template_root / variant
+        if variant_path.exists():
+            shutil.copytree(variant_path, frontend_dir, dirs_exist_ok=True)
+        else:
+            base_path = template_root / 'base'
+            if base_path.exists():
+                shutil.copytree(base_path, frontend_dir, dirs_exist_ok=True)
         
         # Process templates with project-specific values
         self._process_templates(frontend_dir)
