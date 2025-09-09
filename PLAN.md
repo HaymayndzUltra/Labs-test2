@@ -1,3 +1,12 @@
+# Plan (Autonomous Phases)
+
+- BR → Detect stacks (Next.js, FastAPI, Postgres, Auth0, HIPAA), load packs; emit lanes and conflicts.
+- AP → Freeze plan; GO: LA + LB (+ LC if HIPAA).
+- LA → Backend: scaffold, contracts, error envelope, authz, audit; stop on migration/security waivers.
+- LB → Frontend: shell, auth flows/guards, a11y/perf acceptance.
+- LC → Compliance: session timeout 15m, PHI encryption, audit trails.
+- QA → Tests ≥80%, lints, SCA/SAST, SBOM; block criticals.
+- PR → PR description and evidence bundle.
 # Technical Execution Plan: AI-Governed Development Framework Implementation
 
 Based on PRD: `docs/planning/prd.md`

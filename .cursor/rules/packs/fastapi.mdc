@@ -1,0 +1,17 @@
+---
+description: "TAGS: [backend,fastapi,openapi] | TRIGGERS: fastapi,openapi,pydantic | SCOPE: project-rules | DESCRIPTION: Error envelope, OpenAPI, dependency overrides, correlation IDs, limits."
+alwaysApply: false
+---
+
+# Pack: FastAPI
+
+## API Contracts
+- Single error envelope (code,message,details,correlationId).
+- OpenAPI must describe all endpoints; tags and examples required.
+
+## Middleware
+- Correlation IDs; structured logging; size limits; content-type validation.
+
+## Testing
+- Use dependency_overrides; fixture data builders; contract tests for critical endpoints.
+

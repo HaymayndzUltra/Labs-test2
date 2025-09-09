@@ -1,0 +1,19 @@
+---
+description: "TAGS: [workflow,router] | TRIGGERS: BR,AP,LA,LB,LC,QA,PR | SCOPE: global | DESCRIPTION: Autonomous phase orchestration with clear stop/continue conditions and artifacts."
+alwaysApply: true
+---
+
+# Kernel Rule: Phase Router (Autonomous)
+
+## Phases & Artifacts
+- BR (Brief/Discovery): detect stacks; load packs; emit `PLAN.md` with lanes and conflicts.
+- AP (Approve/Freeze): freeze plan; emit go-signal.
+- LA (Backend): scaffold/contracts/authz/audit; stop if migrations/security waiver needed.
+- LB (Frontend): shell/auth flows/guards/a11y-perf; stop if brand/compliance inputs missing.
+- LC (Compliance): HIPAA hooks; stop if PHI data map absent.
+- QA (Gates): tests ≥80%, lints, SCA/SAST, SBOM; block on criticals.
+- PR (Evidence): PR description + evidence bundle.
+
+## Transitions
+- Auto-continue if no stop condition; otherwise emit a single clarification and pause.
+

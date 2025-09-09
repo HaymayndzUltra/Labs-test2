@@ -1,0 +1,16 @@
+---
+description: "TAGS: [frontend,nextjs,react,a11y,performance] | TRIGGERS: nextjs,app-router,rsc,a11y,wcag | SCOPE: project-rules | DESCRIPTION: Next.js App Router defaults, RSC/client balance, a11y AA, perf budgets, error boundaries, auth guard."
+alwaysApply: false
+---
+
+# Pack: Next.js
+
+## Defaults
+- App Router; colocate route handlers; prefer RSC for data-heavy reads; mark client components explicitly.
+- Global error boundary and not-found handlers.
+- Middleware for auth guard on protected routes.
+
+## Accessibility & Performance
+- WCAG 2.1 AA; visible focus; keyboard paths; ARIA for custom widgets.
+- Targets: LCP ≤ 2.5 s, INP < 200 ms; avoid lazy-loading hero; prefetch likely actions.
+

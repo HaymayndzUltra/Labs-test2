@@ -1,0 +1,17 @@
+---
+description: "TAGS: [workflow,context] | TRIGGERS: bootstrap,readme | SCOPE: global | DESCRIPTION: Lightweight discovery: load .mdc rules and nearest READMEs; announce loaded rules."
+alwaysApply: true
+---
+
+# Kernel Rule: Context Bootstrap
+
+## Discovery
+1. Search `.cursor/rules/**` for `.mdc` files only; ignore `.md` for rule loading.
+2. Identify concerned files; from each directory ascend to root and load nearest `README.md` files.
+3. Deduplicate rule files and READMEs.
+
+## Application
+- First visible action: announce loaded rules succinctly.
+- Prefer targeted loading (relevant packs) rather than exhaustive.
+- Re-read a README only if content likely changed.
+

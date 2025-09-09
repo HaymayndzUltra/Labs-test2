@@ -1,0 +1,26 @@
+---
+description: "TAGS: [global,governance] | TRIGGERS: conflict | SCOPE: global | DESCRIPTION: Minimal precedence and conflict resolution; defers to existing governance if present."
+alwaysApply: true
+---
+
+# Kernel Rule: Minimal Governance Precedence
+
+## Principle
+Use a deterministic precedence. If a canonical governance rule (e.g., `master-rules/9-governance-precedence.mdc`) exists, apply it. Otherwise, apply this kernel order.
+
+## Precedence (highest → lowest)
+1. Security Overlay (kernel/01 or F8 if present)
+2. Audit/Validation (Auditor/Validator protocols)
+3. Phase Router (kernel/03)
+4. Framework/Domain Packs (packs/*)
+5. Other project/common rules
+
+## Conflict Resolution
+- If actions conflict, the higher priority wins.
+- If actions are mergeable and non-conflicting, compose them.
+- If equal priority and conflicting, pause, emit a single clarification request, and record a `routing_log` entry.
+
+## Auditability
+For each override event record:
+`rules_considered`, `winning_rule`, `override_reason`, `approver` (if human), `snapshot_id`.
+
