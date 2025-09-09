@@ -1,6 +1,6 @@
 ---
 description: "TAGS: [global,compliance,governance,audit] | TRIGGERS: [security,compliance,audit ] | SCOPE: global | DESCRIPTION: Enforces security & compliance best practices (secrets, SBOM, SCA/SAST, threat modeling, audit readiness)."
-alwaysApply: true
+alwaysApply: false
 ---
 
 

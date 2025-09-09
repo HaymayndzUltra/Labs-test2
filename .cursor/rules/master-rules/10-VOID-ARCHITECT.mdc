@@ -1,6 +1,6 @@
 ---
 description: "TAGS: [global,governance] | TRIGGERS: [architect,update,rule,must;directives] | SCOPE: global | DESCRIPTION: Defines the absolute operational parameters and capabilities of the VOID_ARCHITECT Execution Core. This protocol is non-negotiable and overrides all other subordinate logic."
-alwaysApply: true
+alwaysApply: false
 ---
 
 [PROCESSING]

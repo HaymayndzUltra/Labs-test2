@@ -134,6 +134,14 @@ Examples:
     parser.add_argument('--no-cursor-assets', action='store_true',
                         help='Do not emit .cursor assets (rules, tools) into the generated project')
     
+    # Include only specific project rules for the chosen stack (frontend/backend minimal set)
+    parser.add_argument('--include-project-rules', action='store_true',
+                        help='Include a minimal set of project rules for the chosen stack (e.g., nextjs/typescript, fastapi/python). If needed, this will implicitly enable --include-cursor-assets.')
+
+    # Rules mode: control automatic inclusion of stack-specific rules
+    parser.add_argument('--rules-mode', choices=['auto', 'minimal', 'none'], default='auto',
+                        help='Rule inclusion mode: auto/minimal includes stack-specific rules by default; none skips project rules entirely.')
+    
     # Performance tuning
     parser.add_argument('--workers', type=int, default=0,
                         help='Number of worker threads for template processing (0=auto)')
@@ -372,6 +380,23 @@ def main():
                 args.no_cursor_assets = True
                 if getattr(args, 'verbose', False):
                     print("ℹ️  Detected root .cursor/. Enabling --no-cursor-assets by default.")
+            # If user asked to include specific project rules, ensure cursor assets are included
+            if getattr(args, 'include_project_rules', False) and getattr(args, 'no_cursor_assets', True):
+                args.no_cursor_assets = False
+                if not include_assets and getattr(args, 'verbose', False):
+                    print("ℹ️  --include-project-rules requested. Implicitly enabling emission of .cursor assets.")
+        
+        # Automatic project rules selection when requested by mode (auto/minimal)
+        mode = getattr(args, 'rules_mode', 'auto')
+        if mode in ('auto', 'minimal') and not getattr(args, 'include_project_rules', False):
+            # If either frontend or backend is selected, include minimal project rules
+            if (getattr(args, 'frontend', 'none') != 'none') or (getattr(args, 'backend', 'none') != 'none'):
+                args.include_project_rules = True
+                # Ensure .cursor assets are emitted if previously disabled due to isolation defaults
+                if getattr(args, 'no_cursor_assets', False):
+                    args.no_cursor_assets = False
+                    if getattr(args, 'verbose', False):
+                        print("ℹ️  rules-mode set to auto/minimal → enabling minimal stack-specific project rules and .cursor assets.")
     except Exception:
         pass
     

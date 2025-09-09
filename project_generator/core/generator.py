@@ -350,6 +350,71 @@ class ProjectGenerator:
         # Project workflow rules
         workflow_rules = self._generate_workflow_rules()
         (rules_dir / 'project-workflow.mdc').write_text(workflow_rules)
+
+        # Optionally include a minimal set of technology-specific project rules
+        self._include_selected_project_rules(rules_dir)
+
+    def _include_selected_project_rules(self, rules_dir: Path):
+        """Copy a minimal set of project rules (.mdc) for the chosen stack into the generated project.
+
+        This runs only when the user passes --include-project-rules and .cursor assets are enabled.
+        It selects a small, opinionated subset to avoid ceremony: all files are copied as-is (generally alwaysApply: false).
+        """
+        try:
+            if not getattr(self.args, 'include_project_rules', False):
+                return
+            # Locate source rules in the root repo
+            repo_root = Path(__file__).resolve().parents[2]
+            source_dir = repo_root / '.cursor' / 'rules' / 'project-rules'
+            if not source_dir.exists():
+                return
+
+            # Frontend minimal sets
+            fe = (getattr(self.args, 'frontend', 'none') or 'none').lower()
+            fe_map = {
+                'nextjs': ['nextjs.mdc', 'nextjs-formatting.mdc', 'nextjs-rsc-and-client.mdc', 'typescript.mdc'],
+                'angular': ['angular.mdc', 'typescript.mdc'],
+                'expo': ['expo.mdc', 'react-native.mdc', 'typescript.mdc'],
+                'nuxt': ['vue.mdc', 'typescript.mdc'],
+            }
+
+            # Backend minimal sets
+            be = (getattr(self.args, 'backend', 'none') or 'none').lower()
+            be_map = {
+                'fastapi': ['fastapi.mdc', 'python.mdc', 'rest-api.mdc', 'open-api.mdc'],
+                'django': ['django.mdc', 'python.mdc', 'rest-api.mdc', 'open-api.mdc'],
+                'nestjs': ['nodejs.mdc', 'typescript.mdc', 'rest-api.mdc', 'open-api.mdc'],
+                'go': ['golang.mdc', 'nethttp.mdc', 'rest-api.mdc', 'open-api.mdc'],
+            }
+
+            # Database add-ons
+            db = (getattr(self.args, 'database', 'none') or 'none').lower()
+            db_addons = []
+            if db == 'mongodb':
+                db_addons.append('mongodb.mdc')
+            elif db == 'firebase':
+                db_addons.append('firebase.mdc')
+
+            selected: list[str] = []
+            selected += fe_map.get(fe, [])
+            selected += be_map.get(be, [])
+            selected += db_addons
+
+            # Deduplicate while preserving order
+            seen = set()
+            filtered: list[str] = []
+            for f in selected:
+                if f and f not in seen:
+                    seen.add(f)
+                    filtered.append(f)
+
+            for fname in filtered:
+                src = source_dir / fname
+                if src.exists() and src.is_file():
+                    shutil.copy(src, rules_dir / fname)
+        except Exception:
+            # Non-fatal: rule inclusion should never break generation
+            return
     
     def _generate_compliance_rules_content(self, compliance: str) -> str:
         """Generate Cursor-style .mdc content with YAML frontmatter for a compliance standard."""

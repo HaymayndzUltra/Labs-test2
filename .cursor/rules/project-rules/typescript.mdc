@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: Expert TypeScript development with modern practices, type safety, and performance optimization."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: Expert TypeScript development with modern practices, type safety, and performance optimization. | GLOBS: src/features/**/*.ts, !src/features/experimental/**, src/lib/utils/*.ts"
 alwaysApply: false
 ---
 
