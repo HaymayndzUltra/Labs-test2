@@ -1,7 +1,7 @@
 # Security
 # Compliance
 # Evidence files go herenode_modules/
-_generated/
+
 __pycache__/
 *.pyc
 .env
@@ -15,9 +15,4 @@ build/
 .svelte-kit/
 .cursor/dev-workflow/snapshots/
 node_modules/
-template-packs/**/node_modules/
-template-packs/**/package-lock.json
-template-packs/**/pnpm-lock.yaml
-template-packs/**/yarn.lock
-template-packs/**/.next/
-template-packs/**/dist/
+

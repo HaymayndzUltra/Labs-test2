@@ -1,0 +1,20 @@
+compliance_gates:
+  pci:
+    cardholder_data_check: true
+    encryption_validation: true
+    network_segmentation: true
+  sox:
+    audit_trail_validation: true
+    change_control: true
+    segregation_of_duties: true
+quality_gates:
+  lint:
+    required: true
+    threshold: 0
+  security_scan:
+    critical_threshold: 0
+    high_threshold: 0
+    required: true
+  test_coverage:
+    required: true
+    threshold: 80
