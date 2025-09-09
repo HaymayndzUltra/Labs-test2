@@ -63,18 +63,22 @@ def write_rules_manifest(manifest_path: Path, names: List[str]) -> None:
     manifest_path.write_text(json.dumps(ordered, indent=2), encoding="utf-8")
 
 
-def build_fe_manifest(frontend: str, compliance: List[str]) -> List[str]:
+def build_fe_manifest(frontend: str, industry: str) -> List[str]:
     rules = list(FRONTEND_RULES.get(frontend, []))
     # Domain rules (always helpful)
     rules += [
         "best-practices.mdc",
         "web-development.mdc",
+        "performance.mdc",
+        "observability.mdc",
         "nextjs-a11y.mdc" if frontend == "nextjs" else None,
     ]
+    if industry == "ecommerce":
+        rules.append("webshop.mdc")
     return [r for r in rules if r]
 
 
-def build_be_manifest(backend: str, database: str, compliance: List[str]) -> List[str]:
+def build_be_manifest(backend: str, database: str, industry: str) -> List[str]:
     rules = list(BACKEND_RULES.get(backend, []))
     rules += DB_ADDONS.get(database, [])
     # Domain rules common to backends
@@ -83,6 +87,8 @@ def build_be_manifest(backend: str, database: str, compliance: List[str]) -> Lis
         "performance.mdc",
         "observability.mdc",
     ]
+    if industry == "ecommerce":
+        rules.append("webshop.mdc")
     return rules
 
 
@@ -134,7 +140,7 @@ def main() -> None:
         if fe_dir.exists() and args.force:
             import shutil
             shutil.rmtree(fe_dir)
-        manifest = build_fe_manifest(spec.frontend, comp_list)
+        manifest = build_fe_manifest(spec.frontend, spec.industry)
         fe_manifest_path = output_root / fe_name / ".cursor" / "rules_manifest.json"
         write_rules_manifest(fe_manifest_path, manifest)
         cmd = (
@@ -153,7 +159,7 @@ def main() -> None:
             f" --minimal-cursor"
             f" --rules-manifest {str(fe_manifest_path)}"
             f" {'--features ' + ','.join(spec.features) if spec.features else ''}"
-            f" {'--compliance ' + ','.join(comp_list) if comp_list else ''}"
+            # FE: do not pass compliance to avoid backend-required checks
             f" --yes"
             f" {'--force' if args.force else ''}"
         ).strip()
@@ -168,7 +174,7 @@ def main() -> None:
         if be_dir.exists() and args.force:
             import shutil
             shutil.rmtree(be_dir)
-        manifest = build_be_manifest(spec.backend, spec.database, comp_list)
+        manifest = build_be_manifest(spec.backend, spec.database, spec.industry)
         be_manifest_path = output_root / be_name / ".cursor" / "rules_manifest.json"
         write_rules_manifest(be_manifest_path, manifest)
         cmd = (
