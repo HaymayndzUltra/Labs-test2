@@ -38,9 +38,9 @@ description: "TAGS: [orchestration,project,bootstrap] | TRIGGERS: bootstrap,anal
 ## Emit in-order triggers and commands
 
 1) Rules init
-- Apply instructions from .cursor/rules/master-rules/1-master-rule-context-discovery.mdc
-- Apply instructions from .cursor/rules/master-rules/2-master-rule-ai-collaboration-guidelines.mdc
-- Apply instructions from .cursor/rules/master-rules/F8-security-and-compliance-overlay.mdc
+- Apply kernel governance: .cursor/rules/kernel/00-governance.mdc
+- Apply context bootstrap: .cursor/rules/kernel/02-context-bootstrap.mdc
+- Apply security overlay: .cursor/rules/kernel/01-security-overlay.mdc
 - Run:
   - export ROUTER_CACHE=on
   - export ROUTER_LRU_SIZE=512
