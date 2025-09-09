@@ -142,6 +142,14 @@ Examples:
     parser.add_argument('--rules-mode', choices=['auto', 'minimal', 'none'], default='auto',
                         help='Rule inclusion mode: auto/minimal includes stack-specific rules by default; none skips project rules entirely.')
     
+    # Explicit rules manifest: json array of filenames to copy from root .cursor/rules/project-rules into generated project
+    parser.add_argument('--rules-manifest', dest='rules_manifest',
+                        help='Path to JSON file listing project rule filenames to include (overrides --include-project-rules and --rules-mode).')
+    
+    # Minimal cursor assets: only write .cursor/project.json and .cursor/rules specified by manifest; skip dev-workflow/tools
+    parser.add_argument('--minimal-cursor', dest='minimal_cursor', action='store_true',
+                        help='Emit only minimal .cursor assets (project.json and selected rules). Skips dev-workflow and tools.')
+    
     # Performance tuning
     parser.add_argument('--workers', type=int, default=0,
                         help='Number of worker threads for template processing (0=auto)')
