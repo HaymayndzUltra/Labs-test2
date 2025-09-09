@@ -385,8 +385,13 @@ class ProjectGenerator:
             if not isinstance(names, list):
                 return
             repo_root = Path(__file__).resolve().parents[2]
-            source_dir = repo_root / '.cursor' / 'rules' / 'project-rules'
-            if not source_dir.exists():
+            # Prefer workspace domain rules if present, else fallback to repo root
+            candidate_dirs = [
+                Path('/workspace/.cursor/rules/project-rules'),
+                repo_root / '.cursor' / 'rules' / 'project-rules'
+            ]
+            source_dir = next((p for p in candidate_dirs if p.exists()), None)
+            if not source_dir or not source_dir.exists():
                 # Fallback: create minimal embedded rules if known
                 rules_dir.mkdir(parents=True, exist_ok=True)
                 for fname in names:
@@ -632,8 +637,12 @@ class ProjectGenerator:
                 return
             # Locate source rules in the root repo
             repo_root = Path(__file__).resolve().parents[2]
-            source_dir = repo_root / '.cursor' / 'rules' / 'project-rules'
-            if not source_dir.exists():
+            candidate_dirs = [
+                Path('/workspace/.cursor/rules/project-rules'),
+                repo_root / '.cursor' / 'rules' / 'project-rules'
+            ]
+            source_dir = next((p for p in candidate_dirs if p.exists()), None)
+            if not source_dir or not source_dir.exists():
                 return
 
             # Frontend minimal sets
