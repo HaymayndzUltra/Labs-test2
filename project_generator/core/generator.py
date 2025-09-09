@@ -424,6 +424,11 @@ class ProjectGenerator:
             'react-native.mdc': self._rule_min_react_native(),
             'mongodb.mdc': self._rule_min_mongodb(),
             'firebase.mdc': self._rule_min_firebase(),
+            'best-practices.mdc': self._rule_min_best_practices(),
+            'web-development.mdc': self._rule_min_web_development(),
+            'performance.mdc': self._rule_min_performance(),
+            'observability.mdc': self._rule_min_observability(),
+            'webshop.mdc': self._rule_min_webshop(),
         }
         content = mapping.get(fname)
         if content:
@@ -569,6 +574,51 @@ class ProjectGenerator:
             '---\nalwaysApply: false\n'
             'description: "TAGS: [database,firebase] | TRIGGERS: rules,security | SCOPE: project-rules | DESCRIPTION: Minimal Firebase rules."\n---\n\n'
             '# Firebase Minimal\n\n- Security rules first; limit public reads; version configs.\n'
+        )
+
+    def _rule_min_best_practices(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [best-practices] | TRIGGERS: review,refactor | SCOPE: project-rules | DESCRIPTION: Minimal engineering best practices."\n'
+            '---\n\n'
+            '# Best Practices\n\n- Small PRs; meaningful names; tests first for critical paths.\n'
+        )
+
+    def _rule_min_web_development(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [web] | TRIGGERS: build,ci | SCOPE: project-rules | DESCRIPTION: Minimal web development rules."\n'
+            '---\n\n'
+            '# Web Development\n\n- Avoid blocking main thread; lazy-load heavy assets; a11y AA.\n'
+        )
+
+    def _rule_min_performance(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [performance] | TRIGGERS: profile,optimize | SCOPE: project-rules | DESCRIPTION: Minimal performance rules."\n'
+            '---\n\n'
+            '# Performance\n\n- Measure p95; cache wisely; batch I/O; paginate large queries.\n'
+        )
+
+    def _rule_min_observability(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [observability] | TRIGGERS: log,trace,metric | SCOPE: project-rules | DESCRIPTION: Minimal observability rules."\n'
+            '---\n\n'
+            '# Observability\n\n- Structured logs with correlation IDs; basic traces and key metrics.\n'
+        )
+
+    def _rule_min_webshop(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [ecommerce,webshop] | TRIGGERS: cart,checkout | SCOPE: project-rules | DESCRIPTION: Minimal ecommerce/webshop rules."\n'
+            '---\n\n'
+            '# Webshop\n\n- Guard cart/checkout flows; currency/locale aware; idempotent payments.\n'
         )
 
     def _include_selected_project_rules(self, rules_dir: Path):

@@ -65,20 +65,24 @@ def write_rules_manifest(manifest_path: Path, names: List[str]) -> None:
 
 def build_fe_manifest(frontend: str, compliance: List[str]) -> List[str]:
     rules = list(FRONTEND_RULES.get(frontend, []))
-    for c in compliance or []:
-        fname = COMPLIANCE_RULES.get(c)
-        if fname:
-            rules.append(fname)
-    return rules
+    # Domain rules (always helpful)
+    rules += [
+        "best-practices.mdc",
+        "web-development.mdc",
+        "nextjs-a11y.mdc" if frontend == "nextjs" else None,
+    ]
+    return [r for r in rules if r]
 
 
 def build_be_manifest(backend: str, database: str, compliance: List[str]) -> List[str]:
     rules = list(BACKEND_RULES.get(backend, []))
     rules += DB_ADDONS.get(database, [])
-    for c in compliance or []:
-        fname = COMPLIANCE_RULES.get(c)
-        if fname:
-            rules.append(fname)
+    # Domain rules common to backends
+    rules += [
+        "best-practices.mdc",
+        "performance.mdc",
+        "observability.mdc",
+    ]
     return rules
 
 
@@ -113,12 +117,24 @@ def main() -> None:
     fe_name = f"{spec.name}-frontend" if spec.frontend != "none" else None
     be_name = f"{spec.name}-backend" if spec.backend != "none" else None
 
+    # Determine compliance fallback if not provided
+    comp_list = list(spec.compliance)
+    if not comp_list:
+        if spec.industry == "ecommerce":
+            comp_list = ["pci", "gdpr"]
+        elif spec.industry == "finance":
+            comp_list = ["sox", "pci"]
+        elif spec.industry == "healthcare":
+            comp_list = ["hipaa"]
+        else:
+            comp_list = ["gdpr"]
+
     if fe_name:
         fe_dir = output_root / fe_name
         if fe_dir.exists() and args.force:
             import shutil
             shutil.rmtree(fe_dir)
-        manifest = build_fe_manifest(spec.frontend, spec.compliance)
+        manifest = build_fe_manifest(spec.frontend, comp_list)
         fe_manifest_path = output_root / fe_name / ".cursor" / "rules_manifest.json"
         write_rules_manifest(fe_manifest_path, manifest)
         cmd = (
@@ -136,6 +152,8 @@ def main() -> None:
             f" --include-cursor-assets"
             f" --minimal-cursor"
             f" --rules-manifest {str(fe_manifest_path)}"
+            f" {'--features ' + ','.join(spec.features) if spec.features else ''}"
+            f" {'--compliance ' + ','.join(comp_list) if comp_list else ''}"
             f" --yes"
             f" {'--force' if args.force else ''}"
         ).strip()
@@ -150,7 +168,7 @@ def main() -> None:
         if be_dir.exists() and args.force:
             import shutil
             shutil.rmtree(be_dir)
-        manifest = build_be_manifest(spec.backend, spec.database, spec.compliance)
+        manifest = build_be_manifest(spec.backend, spec.database, comp_list)
         be_manifest_path = output_root / be_name / ".cursor" / "rules_manifest.json"
         write_rules_manifest(be_manifest_path, manifest)
         cmd = (
@@ -168,6 +186,8 @@ def main() -> None:
             f" --include-cursor-assets"
             f" --minimal-cursor"
             f" --rules-manifest {str(be_manifest_path)}"
+            f" {'--features ' + ','.join(spec.features) if spec.features else ''}"
+            f" {'--compliance ' + ','.join(comp_list) if comp_list else ''}"
             f" --yes"
             f" {'--force' if args.force else ''}"
         ).strip()
