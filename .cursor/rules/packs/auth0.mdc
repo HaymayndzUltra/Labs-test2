@@ -1,0 +1,12 @@
+---
+description: "TAGS: [auth,oidc,auth0] | TRIGGERS: auth0,oidc | SCOPE: project-rules | DESCRIPTION: OIDC flows, RBAC claims, token lifetimes, refresh rules, step-up hooks."
+alwaysApply: false
+---
+
+# Pack: Auth0
+
+## Auth
+- Enforce OIDC flows; verify issuer/audience; rotate keys via JWKS.
+- Propagate RBAC claims to backend; least privilege checks at route/service level.
+- Token lifetimes; refresh token rotation; step-up auth for sensitive actions.
+

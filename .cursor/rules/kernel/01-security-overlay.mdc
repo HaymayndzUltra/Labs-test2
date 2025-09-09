@@ -1,0 +1,24 @@
+---
+description: "TAGS: [global,security,compliance] | TRIGGERS: security,compliance | SCOPE: global | DESCRIPTION: Enforce secrets policy, SCA/SAST, SBOM, input validation, authz, audit; HIPAA hooks if enabled."
+alwaysApply: true
+---
+
+# Kernel Rule: Security & Compliance Overlay
+
+## Protocol
+1. [STRICT] No plaintext secrets or credentials in code/config. Use secret managers or env-injection.
+2. [STRICT] Block merges on critical SCA/SAST findings until remediated or explicitly waived with evidence.
+3. [STRICT] Generate SBOM on release and store alongside build artifacts.
+4. [STRICT] Validate and sanitize all external inputs; set content-type and body size limits.
+5. [STRICT] Enforce authenticated routes by default; apply least privilege RBAC/ABAC; log security-relevant events without secrets.
+6. [STRICT] TLS in transit; encrypt sensitive data at rest with platform-native KMS where applicable.
+
+## HIPAA Hooks (activate when `hipaa` pack is loaded)
+- Idle session timeout: 15 minutes
+- PHI encryption (AES-256 at rest), TLS 1.2+ in transit
+- Audit access to PHI (who/what/when), immutable logs with retention policy
+- No PHI in logs; masking in UI and telemetry
+
+## Communication
+- `[SECURITY CHECK] secrets, deps, authz, privacy, audit enforced.`
+

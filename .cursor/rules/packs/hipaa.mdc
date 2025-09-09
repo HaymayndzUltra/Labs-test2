@@ -1,0 +1,12 @@
+---
+description: "TAGS: [compliance,hipaa,phi] | TRIGGERS: hipaa,phi | SCOPE: project-rules | DESCRIPTION: HIPAA technical safeguards: encryption, audit, access control, transmission security."
+alwaysApply: false
+---
+
+# Pack: HIPAA
+
+## Technical Safeguards
+- Unique user IDs; idle auto-logoff at 15 minutes; PHI encryption at rest (AES-256) and TLS 1.2+ in transit.
+- Audit access to PHI with identity, action, objects; retention policy.
+- Integrity controls (hash/sign) for PHI modifications; versioning where needed.
+

@@ -1,0 +1,16 @@
+---
+description: "TAGS: [audit,logging] | TRIGGERS: audit,telemetry | SCOPE: global | DESCRIPTION: Structured logs with correlation IDs, redaction of PHI/PII, sampling and retention."
+alwaysApply: false
+---
+
+# Kernel Rule: Observability & Audit
+
+## Logging Requirements
+- Structured (JSON) logs; include correlation/request IDs.
+- Redact PHI/PII; never log secrets or tokens.
+- Record security events (authn/authz changes, data access) with minimal necessary context.
+
+## Telemetry
+- Define key SLIs (latency, error rate) and SLOs; emit metrics.
+- Sampling policies for high-volume logs.
+

@@ -1,0 +1,14 @@
+---
+description: "TAGS: [database,postgres] | TRIGGERS: postgres,migrations | SCOPE: project-rules | DESCRIPTION: Safe migrations, locks/timeouts, replicas policy, pool sizing."
+alwaysApply: false
+---
+
+# Pack: Postgres
+
+## Migrations
+- Order, lock timeout, statement timeout; apply up/down; seed idempotently.
+- Migration lock to prevent concurrent runners.
+
+## Runtime
+- Read-only replicas for GET-heavy endpoints; pool limits per worker; retry/backoff on transient errors.
+
