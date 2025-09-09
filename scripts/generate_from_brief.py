@@ -18,6 +18,8 @@ import os
 import subprocess
 from pathlib import Path
 from typing import Dict, List
+import sys
+import shlex
 
 from project_generator.core.brief_parser import BriefParser
 
@@ -104,6 +106,9 @@ def main() -> None:
 
     spec = BriefParser(args.brief).parse()
 
+    # Use the same Python interpreter that launched this script
+    python_bin = shlex.quote(os.environ.get("PYTHON", sys.executable or "python3"))
+
     # FE project (if any)
     fe_name = f"{spec.name}-frontend" if spec.frontend != "none" else None
     be_name = f"{spec.name}-backend" if spec.backend != "none" else None
@@ -117,7 +122,7 @@ def main() -> None:
         fe_manifest_path = output_root / fe_name / ".cursor" / "rules_manifest.json"
         write_rules_manifest(fe_manifest_path, manifest)
         cmd = (
-            f"python scripts/generate_client_project.py"
+            f"{python_bin} scripts/generate_client_project.py"
             f" --name {fe_name}"
             f" --industry {spec.industry}"
             f" --project-type web"
@@ -149,7 +154,7 @@ def main() -> None:
         be_manifest_path = output_root / be_name / ".cursor" / "rules_manifest.json"
         write_rules_manifest(be_manifest_path, manifest)
         cmd = (
-            f"python scripts/generate_client_project.py"
+            f"{python_bin} scripts/generate_client_project.py"
             f" --name {be_name}"
             f" --industry {spec.industry}"
             f" --project-type api"
