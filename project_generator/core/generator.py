@@ -30,6 +30,10 @@ class ProjectGenerator:
         self.template_registry = TemplateRegistry()
         # When True, do not emit any .cursor assets (rules, tools, ai-governor) into generated projects
         self.no_cursor_assets = bool(getattr(self.args, 'no_cursor_assets', False))
+        # Minimal cursor mode: only project.json and selected rules (via rules manifest)
+        self.minimal_cursor = bool(getattr(self.args, 'minimal_cursor', False))
+        # Optional rules manifest file listing .mdc names to include from root project-rules
+        self.rules_manifest_path: Optional[str] = getattr(self.args, 'rules_manifest', None)
         self.project_root = None
         # Determine workers
         auto_workers = max(2, (os.cpu_count() or 2) * 2)
@@ -120,15 +124,17 @@ class ProjectGenerator:
             'scripts',
             'tests'
         ]
-        if not self.no_cursor_assets:
+        if not self.no_cursor_assets and not self.minimal_cursor:
             directories.extend(['.cursor/rules', '.cursor/dev-workflow'])
+        elif not self.no_cursor_assets and self.minimal_cursor:
+            directories.extend(['.cursor/rules'])
         
         for directory in directories:
             (self.project_root / directory).mkdir(parents=True, exist_ok=True)
         
         # If repo has dev-workflow docs, copy them into the project for in-editor triggers
         try:
-            if not self.no_cursor_assets:
+            if (not self.no_cursor_assets) and (not self.minimal_cursor):
                 repo_root = Path(__file__).resolve().parents[2]
                 source_devwf = repo_root / '.cursor' / 'dev-workflow'
                 if source_devwf.exists():
@@ -337,9 +343,13 @@ class ProjectGenerator:
             return
         rules_dir = self.project_root / '.cursor' / 'rules'
         
-        # Client-specific rules
-        client_rules = self._generate_client_rules()
-        (rules_dir / 'client-specific-rules.mdc').write_text(client_rules)
+        # Minimal-cursor: only include manifest-specified project rules and explicit compliance rules; skip client-specific.
+        if self.minimal_cursor:
+            self._include_rules_from_manifest(rules_dir)
+        else:
+            # Client-specific rules
+            client_rules = self._generate_client_rules()
+            (rules_dir / 'client-specific-rules.mdc').write_text(client_rules)
         
         # Industry compliance rules
         if self.args.compliance:
@@ -351,8 +361,42 @@ class ProjectGenerator:
         workflow_rules = self._generate_workflow_rules()
         (rules_dir / 'project-workflow.mdc').write_text(workflow_rules)
 
-        # Optionally include a minimal set of technology-specific project rules
-        self._include_selected_project_rules(rules_dir)
+        # Optionally include a minimal set of technology-specific project rules (legacy path)
+        if not self.minimal_cursor:
+            self._include_selected_project_rules(rules_dir)
+
+    def _include_rules_from_manifest(self, rules_dir: Path) -> None:
+        """Copy only rules listed in the JSON manifest from root .cursor/rules/project-rules.
+
+        Manifest format: ["nextjs.mdc", "typescript.mdc", ...]
+        """
+        try:
+            if not self.rules_manifest_path:
+                return
+            import json as _json
+            manifest_path = Path(self.rules_manifest_path)
+            if not manifest_path.exists():
+                return
+            names = []
+            try:
+                names = _json.loads(manifest_path.read_text(encoding='utf-8'))
+            except Exception:
+                return
+            if not isinstance(names, list):
+                return
+            repo_root = Path(__file__).resolve().parents[2]
+            source_dir = repo_root / '.cursor' / 'rules' / 'project-rules'
+            if not source_dir.exists():
+                return
+            rules_dir.mkdir(parents=True, exist_ok=True)
+            for fname in names:
+                if not isinstance(fname, str) or not fname.endswith('.mdc'):
+                    continue
+                src = source_dir / fname
+                if src.exists() and src.is_file():
+                    shutil.copy(src, rules_dir / fname)
+        except Exception:
+            return
 
     def _include_selected_project_rules(self, rules_dir: Path):
         """Copy a minimal set of project rules (.mdc) for the chosen stack into the generated project.
