@@ -1,258 +1,169 @@
+FRAMEWORK: FULLSTACK – REACT (Frontend) + DJANGO (Backend)
+VERSION: 1.0 (Role-Based, End-to-End Automation Spec)
+SCOPE: Single repo or monorepo na may frontend (React) at backend (Django)
+GOAL: From idea → prod → learning loop, lahat orchestrated by roles, triggers, at safety gates
 
-- Phase 1: Template Completion (Templates - 2-3 days)
-1.1 Backend Templates
-1.2 Frontend Templates
+Paano gumagalaw end-to-end (conceptual flow)
 
-✅ FastAPI (complete)
-✅ Django (complete):
-   - Complete apps structure with models, views, urls
-   - Security settings and management commands
-   - JWT authentication and testing
-   - Docker support and setup scripts
-   
-✅ NestJS (complete):
-   - TypeScript implementation with TypeORM
-   - Controllers, services, DTOs, guards
-   - JWT auth, RBAC, rate limiting
-   - Swagger docs and E2E tests
-   
-✅ Go (complete):
-   - Echo framework with clean architecture
-   - JWT authentication and RBAC
-   - GORM with migrations
-   - Rate limiting and validation
+Framework detection
+• I-scan ang repo; kapag may React at/o Django signatures, auto-activate ang tamang RoleBundle.
+• Detection signals (high level, no code):
+– React: may package manager file at dependencies para sa React; may src/pages o src/components.
+– Django: may manage file o config na pahiwatig ng Django; may app/ at migrations/ folders.
+• Resulta: ma-load ang roles, triggers, guardrails, KPIs; naka-isolate ang permissions per framework.
 
-1.2 Frontend Templates
-✅ Next.js (complete)
-✅ Nuxt (complete):
-   - Nuxt 3 with pages, components, layouts
-   - Pinia store and TypeScript
-   - JWT authentication and API composables
-   - Tailwind CSS and component library
-   
-✅ Angular (complete):
-   - Angular 17 with standalone components
-   - Services, guards, and routing
-   - Tailwind CSS and HTTP interceptors
-   - Signals and lazy loading
-   
-✅ Expo (complete):
-   - React Native with Expo SDK
-   - React Navigation and Zustand
-   - JWT authentication and secure storage
-   - EAS build configuration
+Command → Trigger → Routing
+• Kapag may command (e.g., “ADD FEATURE”), papasok sa central router.
+• Router ang magdi-dispatch kung aling framework at aling roles ang gagalaw; puwedeng sabay kung cross-framework ang feature.
+• Namespacing para iwas-banggaan: “frontend:…”, “backend:…”, “fullstack:…”.
+• Precedence: project overrides → framework rules → core defaults.
 
-1.3 Database Templates
-✅ PostgreSQL (complete)
-✅ MongoDB (complete):
-   - docker-compose.yml with health checks
-   - init-mongo.js with collections/indexes
-   - README.md with connection strings
-   - Sample schemas and backup scripts
-   
-✅ Firebase (complete):
-   - firebase.json configured
-   - Firestore security rules
-   - Firestore indexes defined
-   - Cloud Functions with TypeScript
-   - Storage rules and README
+Role execution with boundaries
+• Bawat role may malinaw na capabilities at mahigpit na boundaries (files/tools/network).
+• Expected outputs ay predictable (component/page, models/migrations, endpoints, tests, docs) para smooth ang handoffs.
+• Lahat ng takbo may telemetry (logs/metrics) para madaling audit at learning.
 
-Phase 2: Generator Enhancement (1-2 days)
-2.1 Interactive Mode
+Safety gates at quality checks
+• Pre: risk assessment, permission checks, dependency/security scan.
+• During: progress monitoring, anomaly detection, budget enforcement (perf/a11y/latency).
+• Post: validation vs. requirements, contract tests, release policy checks; human approval kung high-risk (destructive migrations, prod promo).
 
-def run_interactive_mode():
-    """Interactive wizard for project configuration"""
-    print("🎯 Client Project Generator - Interactive Mode")
-    
-    # Step 1: Project basics
-    name = input("Project name: ")
-    industry = select_from_list("Industry", INDUSTRIES)
-    
-    # Step 2: Technology stack
-    if confirm("Use recommended stack for {}?".format(industry)):
-        stack = get_recommended_stack(industry)
-    else:
-        stack = custom_stack_selection()
-    
-    # Step 3: Features
-    features = multi_select("Features", get_industry_features(industry))
-    
-    # Step 4: Compliance
-    compliance = auto_select_compliance(industry)
-    
-    return build_args(name, industry, stack, features, compliance)
+Audit + Learning
+• QA/Audit role ang magva-validate ng outputs at processes, then magla-log ng evidence (coverage, a11y/perf/security scores).
+• Learning engine ang magre-refine ng triggers, guardrails, at handoffs base sa patterns at incidents.
 
-2.2 Validation Enhancement
+Handoffs sa full-stack
+• Contract-first: backend maglalabas ng API contracts; frontend susunod (forms/hooks/UI).
+• Versioned handoffs at clear source-of-truth para maiwasan drift.
+• Rollout: staging → canary → full; may auto-rollback kung may SLO breach.
 
-def validate_comprehensive(args):
-    """Enhanced validation with dependency checks"""
-    - Check technology compatibility
-    - Validate feature requirements
-    - Ensure compliance prerequisites
-    - Check system dependencies (node, python, docker)
+====================================================
+ANONG DAPAT NAKA-DEFINE SA FRAMEWORK NA ITO (walang code, puro konsepto)
 
-Phase 3: Missing Compliance Rules (1 day)
-3.1 SOX Compliance
+A) Role catalog (lahat ng role-based actors)
 
-# industry-compliance-sox.mdc
-- Financial controls
-- Audit trails
-- Change management
-- Access segregation
-- Data retention (7 years)
+Frontend (React)
+• FE Planner/Architect – i-frame ang requirements, routing/state boundaries, risks.
+• UI/Component – reusable components, design patterns, prop/slot contracts.
+• State & Forms – data hooks, form schemas, validation, optimistic updates.
+• Routing/SEO – routes, guards, metadata, sitemap/robots, OG guidance.
+• Accessibility (A11y) – semantics, focus management, keyboard flows.
+• Performance – code-splitting, memoization, image pipeline, budgets.
+• FE Testing – unit/interaction, snapshot/visual, a11y tests.
+• FE Docs – usage guidelines, stories, change notes.
 
-3.2 PCI DSS Compliance
+Backend (Django)
+• BE Architect – app boundaries, settings matrix (dev/stage/prod), risk controls.
+• ORM/Model – entity modeling, constraints, relations, indexes.
+• Migration Safety – plan/apply changes; block destructive without approval.
+• API/Contracts – REST/GraphQL schema, pagination/filtering/versioning.
+• Auth & Security – sessions/JWT/OAuth, RBAC/ABAC policies, privacy gates.
+• Jobs/Queues – background tasks, retries, DLQ, schedules.
+• Caching – keys, TTLs, invalidation hooks, cache hierarchies.
+• BE Testing – unit/integration/contract tests, fixtures/seeds.
+• BE Docs – API docs, runbooks, ADRs.
 
-# industry-compliance-pci.mdc
-- Card data encryption
-- Network segmentation
-- Vulnerability scanning
-- Access control
-- Security testing
+Cross-cutting
+• DevOps/SRE – CI/CD pipelines, infra configs, deploy strategies, rollback.
+• QA/Audit – end-to-end validation vs. acceptance criteria; evidence capture.
+• Security/Privacy – SAST/DAST, dep audit, secret scanning, data classification.
+• Observability/Analytics – logs/metrics/traces; dashboards; product analytics.
+• Release Manager – versioning, changelogs, approvals, comms.
 
-Phase 4: Enhanced CI/CD (1 day)
-4.1 Industry-Specific Gates
+B) Capabilities (verbs per domain; examples, not code)
+• Planning/Design: requirements.parse, backlog.create, design.arch.
+• Data/Contracts: model.define, migration.prepare, migration.apply (gated), api.contract.publish.
+• Backend runtime: api.endpoint.create, auth.configure, cache.define, job.enqueue.
+• Frontend UI: component.create, route.add, form.generate, state.connect.
+• Quality: test.unit, test.integration, test.e2e, a11y.audit, perf.analyze, security.scan.
+• Ops: ci.setup, build.package, deploy.staging, deploy.canary, deploy.promote, rollback.execute, observe.dashboard.
+• Docs: doc.update, runbook.write, adr.record, changelog.generate.
 
-# gates_config_healthcare.yaml
-quality_gates:
-  test_coverage:
-    threshold: 90  # Higher for healthcare
-  security_scan:
-    critical_threshold: 0
-    high_threshold: 0
-  
-compliance_gates:
-  hipaa:
-    phi_encryption: required
-    audit_logging: required
-    session_timeout: 15
+C) Permissions & boundaries (least-privilege mindset)
+• File scope: FE roles sumulat lang sa bahagi ng UI; BE roles sa backend apps/migrations; walang cross-writes.
+• Tools scope: FE roles may JS/TS toolchain; BE roles may Python toolchain; DevOps may build/deploy tools.
+• Network scope: default block; whitelist lang kung kailangan (e.g., registry).
+• Secrets scope: read-only via broker; walang raw secrets sa logs o artifacts.
 
-4.2 Multi-Cloud Deployment
-# AWS deployment
-- ECS/Fargate configs
-- RDS setup
-- S3 buckets
-- CloudFront
+D) Triggers/commands (standard, maikli, predictable)
+• fullstack:init project – scaffold at baseline checks.
+• backend:define domain <Entity> – models + safe migrations + contracts + tests.
+• backend:add endpoint <Method> <Path> – handlers + validators + tests + docs.
+• frontend:add page <Route> – page + data hook + a11y tests + perf budget check.
+• frontend:add component <Name> – reusable component + unit tests + docs.
+• fullstack:add feature <Name> – orchestrated FE+BE flow (contract-first).
+• quality:run gates – lint/type/tests/security/a11y/perf/coverage.
+• release:deploy staging – build, migrate (safe), smoke tests, preview.
+• release:promote prod – canary + SLO watch + promote/rollback.
+• docs:update – API docs, changelog, runbooks, ADRs.
 
-# Azure deployment
-- AKS configs
-- Cosmos DB
-- Blob storage
-- CDN
+E) Quality gates (minimum checks per layer)
+• Frontend: lint/typecheck, a11y score ≥ 95, Lighthouse ≥ 90, bundle budgets ok.
+• Backend: style/lint, test coverage ≥ 85–90, migration safety pass, p95 latency budget met.
+• Security: secret scan blocker, dep audit (no criticals), SAST rules.
+• Documentation: updated ADRs/API docs/runbooks bago deploy.
+• Release policy: canary mandatory for risky releases; auto-rollback on SLO breach.
 
-# GCP deployment
-- Cloud Run
-- Cloud SQL
-- Cloud Storage
-- Cloud CDN
+F) KPIs (targets na babantayan)
+• Global: role activation < 2s; successful task assignment > 95%; error-budget burn < 1%/day.
+• FE: a11y ≥ 95; Lighthouse ≥ 90; CLS/LCP/FID budgets met.
+• BE: p95 latency ≤ 200ms (typical target); error rate ≤ 0.5%; coverage ≥ 85–90.
+• Security: 0 critical vulns; secrets exposure = 0; policy exceptions with approval only.
 
-Phase 5: AI Governor Integration (1 day)
-5.1 Pre-commit Hooks
+G) Runbooks/approvals (human-in-the-loop moments)
+• Destructive migrations, schema drops, privacy-sensitive changes, prod promotion.
+• Rollback steps, paging/alerts, escalation tree documented.
+• Approval windows at critical gates; evidence attached (tests, budgets, scans).
 
-#!/bin/bash
-# .git/hooks/pre-commit
-python3 .cursor/tools/validate_rules.py
-python3 .cursor/tools/check_compliance.py
+====================================================
+PAANO ITO NAGCO-COMPOSE SA FULL-STACK
 
-5.2 Workflow Automation
-def setup_ai_workflows(project_path):
-    """Configure AI Governor workflows"""
-    - Copy master rules
-    - Generate router_config.json
-    - Create workflow mappings
-    - Setup context preservation
+• FE at BE roles ay hiwalay ang ownership pero pinagdudugtong ng central Coordinator.
+• May cross-framework triggers para sa features na may UI + API + DB.
+• Handoffs ay contract-first: backend mag-publish ng API contract; frontend gagawa ng forms/hooks at UI; QA/Audit magva-validate; DevOps magde-deploy sa staging at maglalakad ng canary/prod.
 
-Phase 6: Testing Implementation (2 days)
-6.1 Unit Tests
+====================================================
+NAMING AT CONVENTIONS (para hindi magulo)
 
-# tests/test_generator.py
-def test_project_generation():
-    """Test basic project generation"""
-    
-def test_template_selection():
-    """Test template selection logic"""
-    
-def test_compliance_validation():
-    """Test compliance rule application"""
+• Capabilities: verb.noun (madaling i-scan at i-enforce).
+• Triggers: maikling imperative phrases na may namespace (“frontend:add component”, “backend:define domain”, “release:promote prod”).
+• Artifacts: consistent na pangalan sa outputs, tests, docs, changelogs.
+• Precedence: project overrides > framework rules > core defaults.
 
-6.2 Integration Tests
+====================================================
+LIFECYCLE NG ISANG PAGBABAGO (plain words)
 
-# tests/test_integration.py
-def test_full_stack_generation():
-    """Test complete project generation"""
-    
-def test_cicd_generation():
-    """Test CI/CD pipeline generation"""
+Initiate/Plan – Planner/Architect linawin requirements, risk, sequencing, targets.
 
-6.3 E2E Tests
+Implement – FE/BE roles gumawa ng components/models/endpoints/tests ayon sa contracts.
 
-# tests/e2e/test_generated_project.sh
-- Generate project
-- Run setup
-- Start services
-- Run health checks
-- Execute sample requests
+Quality & Safety – lint/type/tests/security/a11y/perf; budgets at gates enforced.
 
-Phase 7: Documentation (1 day)
-7.1 Generator Documentation
+Deploy – staging (seeded + smoke tests) → canary → promote/rollback; SLOs watched.
 
-# README.md
-- Installation guide
-- Usage examples
-- Template customization
-- Troubleshooting
+Observe & Learn – dashboards/alerts; incidents → auto-rollback → rule/guardrail refinements.
 
-# CONTRIBUTING.md
-- Development setup
-- Template guidelines
-- Testing requirements
-- PR process
+====================================================
+COMMON PITFALLS AT MGA I-WAS
 
-# docs/TEMPLATES.md
-- Template structure
-- Customization guide
-- Adding new templates
+• Role overlap – linawin capabilities at router priority; isang owner lang per write path.
+• Hidden coupling – gawin ang handoffs sa Project/Workflow layer, hindi sa loob ng role; versioned contracts.
+• Wide write access – mas mabuti ang mas maliliit na roles na may masikip na scope.
+• Inconsistent triggers – standard, opinionated golden-path set; dokumentado.
+• Mabagal na CI – path-based checks, selective testing, caching; heavy checks per framework lang.
 
-7.2 Template Documentation
+====================================================
+CI/CD INTEGRATION (folder-aware, high level)
 
-# Each template folder README.md
-- Technology overview
-- Prerequisites
-- Structure explanation
-- Customization points
-- Common issues
+• Path filters: kung FE lang ang nabago, FE checks lang ang tatakbo; ganun din sa BE.
+• Required checks per layer:
+– FE: lint/type, unit/interaction, a11y/perf budgets.
+– BE: lint/style, unit/integration/contract, migration safety, latency budgets.
+– Security: secrets scan, dep audit, SAST.
+• Release: staging → canary (SLO watch) → promote/rollback; artifacts signed; changelogs updated.
 
-Phase 8: Polish & Optimization (1 day)
-8.1 Performance
-Parallel template copying
-Lazy loading of templates
-Progress indicators
-Better error messages
-8.2 UX Improvements
+====================================================
+SUCCESS METRICS (summary)
 
-# Enhanced output
-with Progress() as progress:
-    task = progress.add_task("Generating project...", total=100)
-    # Update progress during generation
-Phase 9: Advanced Features (Optional - 2 days)
-9.1 Plugin System
-
-9.2 Template Marketplace
-Template versioning
-Community templates
-Template validation
-Auto-updates
-📅 Total Timeline: 12-15 days
-🎯 Priority Order:
-Critical: Complete missing templates (Django, NestJS, MongoDB)
-Important: Interactive mode, SOX/PCI compliance
-Nice-to-have: Plugin system, marketplace
-🚀 Immediate Next Steps:
-✅ Create Django backend template - DONE
-✅ Create NestJS backend template - DONE
-✅ Create Go backend template - DONE
-✅ Create frontend templates (Nuxt, Angular, Expo) - DONE
-✅ Create database templates (MongoDB, Firebase) - DONE
-Implement interactive mode
-Add SOX/PCI compliance rules
-Write basic unit tests
+• Coordination efficiency > 95%; Safety compliance 100%; Learning effectiveness > 90%.
+• User satisfaction ≥ 4.5/5; End-to-end trigger latency: snappy (role activation < 2s).
