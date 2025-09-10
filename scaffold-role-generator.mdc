@@ -1,0 +1,527 @@
+---
+description: "TAGS: [scaffold,role-generation,automation,fullstack,framework-detection] | TRIGGERS: ANALYZE_SCAFFOLD,GENERATE_ROLES,CREATE_ROLES,SCAFFOLD_SETUP,ROLE_ARCHITECT | SCOPE: project-rules | DESCRIPTION: Analyzes scaffold trees and generates comprehensive role-based AI systems capable of handling all tasks within that scaffold structure."
+alwaysApply: false
+---
+
+# Scaffold-to-Role Generator: Automated Role-Based AI System Creator
+
+## [STRICT] Core Purpose
+Mag-analyze ng complete scaffold tree at mag-generate ng specialized role-based AI system na kaya gumawa ng lahat ng tasks sa scaffold na yun. Ginagamit nito yung framework detection, role assignment, at automation patterns para sa seamless full-stack development.
+
+## [STRICT] Primary Capabilities
+
+### 1. Scaffold Tree Analysis Engine
+- **Framework Detection**: Auto-detect React, Django, Next.js, FastAPI, atbp base sa file signatures
+- **Structure Mapping**: I-map ang directory structure sa appropriate roles
+- **Dependency Analysis**: I-analyze ang package.json, requirements.txt, etc.
+- **Technology Stack Inference**: Determine ang complete tech stack at tools needed
+- **Pattern Recognition**: Identify common patterns at best practices sa scaffold
+
+### 2. Role Generation System
+- **Dynamic Role Creation**: Generate specific roles based sa detected structure
+- **Capability Assignment**: Assign specific capabilities per role
+- **Permission Boundaries**: Set appropriate file/tool/network permissions
+- **Trigger Definition**: Create specific triggers para sa bawat role
+- **Handoff Protocols**: Define kung paano mag-communicate ang roles
+
+### 3. Framework-Specific Role Templates
+- **Frontend Roles** (React/Vue/Angular/Next.js)
+- **Backend Roles** (Django/FastAPI/Express/Spring)
+- **Database Roles** (PostgreSQL/MongoDB/Redis)
+- **DevOps Roles** (Docker/K8s/CI-CD)
+- **Quality Assurance Roles** (Testing/Security/Performance)
+
+## [STRICT] Main Triggers
+
+### ANALYZE_SCAFFOLD
+**Purpose**: Complete analysis ng scaffold structure
+**Input**: Scaffold tree (file/folder structure)
+**Output**: Detailed analysis report with role recommendations
+
+**Process**:
+1. **Scan Structure**: Recursive scan ng directory tree
+2. **Detect Frameworks**: Identify technologies based sa file signatures
+3. **Map Roles**: Assign appropriate roles based sa structure
+4. **Analyze Dependencies**: Check package managers at dependencies
+5. **Generate Report**: Create comprehensive analysis report
+
+**Example**:
+```
+ANALYZE_SCAFFOLD /path/to/scaffold
+```
+
+### GENERATE_ROLES
+**Purpose**: Generate complete role-based AI system
+**Input**: Analysis report from ANALYZE_SCAFFOLD
+**Output**: Set ng specialized role rules
+
+**Process**:
+1. **Role Template Selection**: Choose appropriate templates
+2. **Capability Mapping**: Map scaffold structure to capabilities
+3. **Trigger Generation**: Create specific triggers per role
+4. **Permission Setting**: Set security boundaries
+5. **Integration Points**: Define role handoffs
+6. **Quality Gates**: Implement safety checks
+
+### CREATE_ROLES
+**Purpose**: Instantiate ang generated roles sa system
+**Input**: Generated role specifications
+**Output**: Active role-based AI system
+
+**Process**:
+1. **Role Activation**: Activate ang generated roles
+2. **Context Loading**: Load scaffold-specific context
+3. **Permission Enforcement**: Apply security boundaries
+4. **Trigger Registration**: Register ang role triggers
+5. **Monitoring Setup**: Setup KPI monitoring
+
+### SCAFFOLD_SETUP
+**Purpose**: Complete setup ng role-based system para sa scaffold
+**Input**: Scaffold path
+**Output**: Fully configured role-based AI system
+
+**Process**:
+1. **Auto-analyze**: Run ANALYZE_SCAFFOLD
+2. **Auto-generate**: Run GENERATE_ROLES
+3. **Auto-create**: Run CREATE_ROLES
+4. **Validation**: Validate setup
+5. **Ready State**: System ready for work
+
+### ROLE_ARCHITECT
+**Purpose**: Design custom role architecture para sa specific scaffold
+**Input**: Scaffold + custom requirements
+**Output**: Tailored role architecture
+
+## [STRICT] Framework Detection Patterns
+
+### Frontend Signatures
+```yaml
+React:
+  files: ["package.json", "src/", "public/"]
+  dependencies: ["react", "react-dom"]
+  patterns: ["jsx", "tsx", "components/"]
+
+Next.js:
+  files: ["next.config.js", "pages/", "app/"]
+  dependencies: ["next"]
+  patterns: ["_app", "_document", "api/"]
+
+Vue:
+  files: ["vue.config.js", "src/"]
+  dependencies: ["vue"]
+  patterns: [".vue", "components/"]
+
+Angular:
+  files: ["angular.json", "src/app/"]
+  dependencies: ["@angular/core"]
+  patterns: ["component.ts", "module.ts"]
+```
+
+### Backend Signatures
+```yaml
+Django:
+  files: ["manage.py", "settings.py", "urls.py"]
+  directories: ["migrations/", "models/", "views/"]
+  patterns: ["models.py", "admin.py", "apps.py"]
+
+FastAPI:
+  files: ["main.py", "requirements.txt"]
+  dependencies: ["fastapi", "uvicorn"]
+  patterns: ["routers/", "schemas/", "crud/"]
+
+Express:
+  files: ["app.js", "server.js", "package.json"]
+  dependencies: ["express"]
+  patterns: ["routes/", "middleware/", "controllers/"]
+```
+
+## [STRICT] Generated Role Templates
+
+### Frontend Roles (React Example)
+```yaml
+FE_Component_Developer:
+  capabilities:
+    - component.create
+    - component.update
+    - props.define
+    - state.manage
+    - styling.apply
+  
+  triggers:
+    - "CREATE_COMPONENT <name>"
+    - "UPDATE_COMPONENT <name>"
+    - "ADD_PROPS <component> <props>"
+    - "STYLE_COMPONENT <component>"
+  
+  file_scope:
+    - "src/components/**"
+    - "src/styles/**"
+    - "public/assets/**"
+  
+  quality_gates:
+    - TypeScript compilation
+    - Component testing
+    - A11y compliance
+    - Performance budgets
+
+FE_Page_Developer:
+  capabilities:
+    - page.create
+    - routing.setup
+    - data.fetch
+    - seo.optimize
+  
+  triggers:
+    - "CREATE_PAGE <route>"
+    - "ADD_ROUTE <path>"
+    - "SETUP_DATA <page>"
+    - "OPTIMIZE_SEO <page>"
+
+FE_State_Manager:
+  capabilities:
+    - state.design
+    - store.setup
+    - actions.create
+    - reducers.implement
+  
+  triggers:
+    - "SETUP_STATE <domain>"
+    - "CREATE_STORE <name>"
+    - "ADD_ACTION <action>"
+```
+
+### Backend Roles (Django Example)
+```yaml
+BE_Model_Developer:
+  capabilities:
+    - model.create
+    - migration.generate
+    - relationship.define
+    - validation.add
+  
+  triggers:
+    - "CREATE_MODEL <name>"
+    - "ADD_FIELD <model> <field>"
+    - "CREATE_MIGRATION <name>"
+    - "DEFINE_RELATIONSHIP <models>"
+  
+  file_scope:
+    - "*/models.py"
+    - "*/migrations/**"
+    - "*/admin.py"
+
+BE_API_Developer:
+  capabilities:
+    - endpoint.create
+    - serializer.define
+    - view.implement
+    - permission.set
+  
+  triggers:
+    - "CREATE_ENDPOINT <method> <path>"
+    - "ADD_SERIALIZER <model>"
+    - "IMPLEMENT_VIEW <view>"
+    - "SET_PERMISSION <endpoint>"
+
+BE_Database_Manager:
+  capabilities:
+    - migration.apply
+    - data.seed
+    - backup.create
+    - performance.optimize
+  
+  triggers:
+    - "APPLY_MIGRATIONS"
+    - "SEED_DATA <model>"
+    - "BACKUP_DATABASE"
+    - "OPTIMIZE_QUERIES"
+```
+
+### Cross-Cutting Roles
+```yaml
+DevOps_Engineer:
+  capabilities:
+    - docker.setup
+    - ci.configure
+    - deploy.staging
+    - deploy.production
+  
+  triggers:
+    - "SETUP_DOCKER"
+    - "CONFIGURE_CI"
+    - "DEPLOY_STAGING"
+    - "DEPLOY_PROD"
+
+QA_Tester:
+  capabilities:
+    - test.unit
+    - test.integration
+    - test.e2e
+    - coverage.report
+  
+  triggers:
+    - "RUN_TESTS <type>"
+    - "CREATE_TEST <component>"
+    - "CHECK_COVERAGE"
+    - "GENERATE_REPORT"
+
+Security_Auditor:
+  capabilities:
+    - security.scan
+    - vulnerability.check
+    - permission.audit
+    - compliance.verify
+  
+  triggers:
+    - "SECURITY_SCAN"
+    - "CHECK_VULNERABILITIES"
+    - "AUDIT_PERMISSIONS"
+    - "VERIFY_COMPLIANCE"
+```
+
+## [STRICT] Role Orchestration System
+
+### Central Coordinator
+```yaml
+Workflow_Coordinator:
+  responsibilities:
+    - Route commands to appropriate roles
+    - Manage role handoffs
+    - Enforce quality gates
+    - Monitor KPIs
+    - Handle conflicts
+  
+  triggers:
+    - "FULLSTACK_FEATURE <name>"
+    - "COORDINATE_DEPLOYMENT"
+    - "MANAGE_HANDOFF <from> <to>"
+    - "RESOLVE_CONFLICT <roles>"
+```
+
+### Handoff Protocols
+```yaml
+Backend_to_Frontend:
+  trigger: "API_CONTRACT_READY"
+  process:
+    1. Backend publishes API contract
+    2. Frontend generates types/interfaces
+    3. Frontend creates data hooks
+    4. Integration testing
+    5. Validation checkpoint
+
+Frontend_to_QA:
+  trigger: "COMPONENT_READY"
+  process:
+    1. Frontend completes component
+    2. QA generates tests
+    3. QA runs test suite
+    4. Performance validation
+    5. A11y compliance check
+```
+
+## [STRICT] Quality Gates & KPIs
+
+### Framework-Specific Gates
+```yaml
+React_Quality_Gates:
+  - TypeScript compilation: PASS
+  - ESLint: 0 errors
+  - A11y score: >= 95
+  - Bundle size: within budget
+  - Component tests: >= 90% coverage
+
+Django_Quality_Gates:
+  - Flake8/Black: PASS
+  - Migration safety: PASS
+  - API tests: >= 85% coverage
+  - Security scan: 0 critical
+  - Performance: p95 <= 200ms
+```
+
+### Global KPIs
+```yaml
+Performance_Targets:
+  - Role activation: < 2s
+  - Task completion: > 95%
+  - Error rate: < 1%
+  - Handoff success: > 98%
+  - Quality compliance: 100%
+```
+
+## [STRICT] Safety & Security Boundaries
+
+### File Permissions
+```yaml
+Role_Boundaries:
+  Frontend_Roles:
+    allowed: ["src/", "public/", "styles/", "components/"]
+    blocked: ["backend/", "database/", "migrations/"]
+  
+  Backend_Roles:
+    allowed: ["backend/", "api/", "models/", "migrations/"]
+    blocked: ["frontend/", "public/", "node_modules/"]
+  
+  DevOps_Roles:
+    allowed: ["docker/", "ci/", "deploy/", "configs/"]
+    special_permissions: ["production_deploy"]
+```
+
+### Network & Tool Access
+```yaml
+Network_Access:
+  Frontend_Roles:
+    - npm/yarn registries
+    - CDN endpoints
+    - Development servers
+  
+  Backend_Roles:
+    - PyPI/package registries
+    - Database connections
+    - External APIs (with approval)
+  
+  DevOps_Roles:
+    - Container registries
+    - Cloud providers
+    - CI/CD systems
+```
+
+## [STRICT] Usage Examples
+
+### Example 1: React + Django Scaffold
+```bash
+# Input scaffold structure:
+my-fullstack-app/
+├── frontend/
+│   ├── package.json (react, typescript)
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── hooks/
+├── backend/
+│   ├── manage.py
+│   ├── requirements.txt (django, djangorestframework)
+│   ├── apps/
+│   └── migrations/
+└── docker-compose.yml
+
+# Command:
+SCAFFOLD_SETUP my-fullstack-app/
+
+# Generated Roles:
+- FE_React_Component_Developer
+- FE_React_Page_Developer  
+- FE_React_State_Manager
+- BE_Django_Model_Developer
+- BE_Django_API_Developer
+- DevOps_Docker_Manager
+- QA_Integration_Tester
+- Security_Compliance_Auditor
+```
+
+### Example 2: Next.js + FastAPI
+```bash
+# Input scaffold:
+my-app/
+├── frontend/ (Next.js)
+├── backend/ (FastAPI)
+└── shared/
+
+# Command:
+ANALYZE_SCAFFOLD my-app/
+GENERATE_ROLES --framework=nextjs,fastapi
+CREATE_ROLES --activate
+
+# Result: Specialized Next.js + FastAPI role system
+```
+
+## [STRICT] Error Handling & Recovery
+
+### Common Issues
+```yaml
+Framework_Detection_Failure:
+  cause: "Ambiguous or incomplete scaffold"
+  solution: "Manual framework specification"
+  fallback: "Generic role templates"
+
+Role_Conflict:
+  cause: "Multiple roles claiming same capability"
+  solution: "Priority-based resolution"
+  escalation: "Human intervention"
+
+Permission_Violation:
+  cause: "Role accessing restricted files"
+  solution: "Block action, log incident"
+  recovery: "Re-evaluate role boundaries"
+```
+
+### Recovery Mechanisms
+```yaml
+Auto_Recovery:
+  - Rollback failed operations
+  - Restore previous working state
+  - Re-initialize affected roles
+  - Validate system integrity
+
+Manual_Recovery:
+  - Human intervention triggers
+  - Override mechanisms
+  - Emergency role deactivation
+  - System reset procedures
+```
+
+## [STRICT] Continuous Learning & Improvement
+
+### Pattern Learning
+- Track successful role combinations
+- Learn from failed handoffs
+- Optimize trigger efficiency
+- Improve quality gates
+- Enhance framework detection
+
+### Feedback Integration
+- Monitor role performance
+- Collect user feedback
+- Analyze error patterns
+- Update role templates
+- Refine automation rules
+
+## [STRICT] Implementation Notes
+
+### Prerequisites
+- Scaffold directory access
+- Framework detection tools
+- Role template library
+- Permission management system
+- Quality gate infrastructure
+
+### Dependencies
+- File system analysis tools
+- Package manager parsers
+- Framework-specific validators
+- Security boundary enforcers
+- KPI monitoring systems
+
+### Performance Considerations
+- Lazy role loading
+- Caching of analysis results
+- Efficient file scanning
+- Optimized trigger routing
+- Resource usage monitoring
+
+---
+
+## [STRICT] Quick Start Guide
+
+### Para sa Immediate Use:
+1. **Analyze**: `ANALYZE_SCAFFOLD /path/to/your/scaffold`
+2. **Generate**: `GENERATE_ROLES` (automatic sa analysis results)
+3. **Activate**: `CREATE_ROLES --activate`
+4. **Start Working**: Use generated role triggers
+
+### Para sa Custom Setup:
+1. **Architecture**: `ROLE_ARCHITECT --requirements="custom specs"`
+2. **Generate**: `GENERATE_ROLES --custom`
+3. **Test**: `VALIDATE_ROLES --dry-run`
+4. **Deploy**: `CREATE_ROLES --activate --production`
+
+Ito ang comprehensive rule na mag-co-convert ng any scaffold tree into intelligent role-based AI system! 🚀

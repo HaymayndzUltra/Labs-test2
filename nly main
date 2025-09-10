@@ -1,0 +1,16 @@
+.cursor/rules/master-rules/11-automation-analysis.mdc
+.cursor/rules/project-rules/fe-be-plan.mdc
+PLAN.md
+PLAN.tasks.json
+PLAN2.MD
+ai-direct-communication.mdc
+contracts_repo_flow.png
+docs/briefs/project1/brief.md
+docs/briefs/project1/shema.json
+project_generator/core/brief_parser.py
+project_generator/core/generator.py
+scaffold-role-generator.mdc
+scripts/generate_client_project.py
+scripts/generate_from_brief.py
+scripts/plan_from_brief.py
+tasks-ai-governor-enhancement.md
