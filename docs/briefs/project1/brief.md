@@ -1,3 +1,16 @@
+---
+name: commerce-analytics
+industry: ecommerce
+project_type: fullstack
+frontend: nextjs
+backend: fastapi
+database: postgres
+auth: auth0
+deploy: aws
+compliance:
+features: export,csv,rbac,audit-logs,charts
+---
+
 A cross‑platform e‑commerce analytics dashboard that consolidates marketplace performance (e.g., Shopee, Tokopedia, Amazon, Lazada) into a single source of truth. It surfaces funnel KPIs (views → cart → checkout → re‑order), revenue and gross profit trends, platform distribution, category performance, customer insights, and feedback—designed for merchandisers, growth, and operations to make faster, data‑driven decisions.
 Background & Rationale
 Fragmented data across marketplaces and ad channels leads to slow and inconsistent reporting.
@@ -83,3 +96,61 @@ Performance: p95 load <3s; >99.9% uptime; export success ≥99%.
 Adoption: WAU ≥80% of target cohort; session depth ≥3 widgets/session; stakeholder NPS ≥8/10.
 Business impact: +2–5% MoM checkout conversion; +3% re‑order rate; revenue forecast variance ≤5%.
 Governance: 100% KPIs documented; audited metric changes; RBAC reviews quarterly.
+
+## Schema
+
+### Tables
+- customers
+  - id: uuid pk
+  - email: varchar(255) unique not null
+  - country: varchar(64)
+  - created_at: timestamp not null default now()
+
+- orders
+  - id: uuid pk
+  - customer_id: uuid fk -> customers.id
+  - platform: varchar(32) check in ('Shopee','Tokopedia','Amazon','Lazada')
+  - order_date: date not null
+  - total_amount: numeric(12,2) not null
+
+- order_items
+  - id: uuid pk
+  - order_id: uuid fk -> orders.id on delete cascade
+  - sku: varchar(64)
+  - qty: int not null
+  - price: numeric(12,2) not null
+
+- events
+  - id: uuid pk
+  - event_date: date not null
+  - sku: varchar(64)
+  - platform: varchar(32)
+  - event_type: varchar(32) in ('viewed','added_to_cart','checked_out','reordered')
+
+### Relationships
+- orders.customer_id -> customers.id (many-to-one)
+- order_items.order_id -> orders.id (many-to-one)
+
+### Indexes
+- idx_orders_date ON orders(order_date)
+- idx_orders_platform ON orders(platform)
+- idx_order_items_order ON order_items(order_id)
+- idx_events_date_type ON events(event_date, event_type)
+- idx_customers_email_unique ON customers(email) UNIQUE
+
+### Aggregates (views or materialized views)
+- revenue_daily(order_date, total_revenue)
+  - source: orders; group_by: order_date; metric: sum(total_amount)
+- platform_distribution(order_date, platform, revenue)
+  - source: orders; group_by: [order_date, platform]; metric: sum(total_amount)
+- funnel_events_agg(day, viewed, added_to_cart, checked_out, reordered)
+  - source: events; group_by: day; metrics: counts per event_type
+
+### Seeds (sample volumes)
+- customers: ~200 rows (random countries)
+- orders: ~5,000 rows (last 90 days; mixed platforms)
+- order_items: ~12,000 rows
+- events: ~20,000 rows (viewed/added_to_cart/checked_out/reordered)
+
+### UI Schema
+- Executive Analytics Dashboard JSON: `docs/briefs/project1/shema.json`

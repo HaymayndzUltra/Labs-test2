@@ -18,6 +18,8 @@ import os
 import subprocess
 from pathlib import Path
 from typing import Dict, List
+import sys
+import shlex
 
 from project_generator.core.brief_parser import BriefParser
 
@@ -63,20 +65,22 @@ def write_rules_manifest(manifest_path: Path, names: List[str]) -> None:
 
 def build_fe_manifest(frontend: str, compliance: List[str]) -> List[str]:
     rules = list(FRONTEND_RULES.get(frontend, []))
-    for c in compliance or []:
-        fname = COMPLIANCE_RULES.get(c)
-        if fname:
-            rules.append(fname)
-    return rules
+    # Domain rules (focused)
+    rules += [
+        "accessibility.mdc",
+        "nextjs-a11y.mdc" if frontend == "nextjs" else None,
+    ]
+    return [r for r in rules if r]
 
 
 def build_be_manifest(backend: str, database: str, compliance: List[str]) -> List[str]:
     rules = list(BACKEND_RULES.get(backend, []))
     rules += DB_ADDONS.get(database, [])
-    for c in compliance or []:
-        fname = COMPLIANCE_RULES.get(c)
-        if fname:
-            rules.append(fname)
+    # Domain rules common to backends (focused)
+    rules += [
+        "performance.mdc",
+        "observability.mdc",
+    ]
     return rules
 
 
@@ -104,20 +108,36 @@ def main() -> None:
 
     spec = BriefParser(args.brief).parse()
 
+    # Use the same Python interpreter that launched this script
+    python_bin = shlex.quote(os.environ.get("PYTHON", sys.executable or "python3"))
+
     # FE project (if any)
     fe_name = f"{spec.name}-frontend" if spec.frontend != "none" else None
     be_name = f"{spec.name}-backend" if spec.backend != "none" else None
+
+    # Determine compliance fallback if not provided
+    comp_list = list(spec.compliance)
+    if not comp_list:
+        if spec.industry == "ecommerce":
+            comp_list = ["pci", "gdpr"]
+        elif spec.industry == "finance":
+            comp_list = ["sox", "pci"]
+        elif spec.industry == "healthcare":
+            comp_list = ["hipaa"]
+        else:
+            comp_list = ["gdpr"]
 
     if fe_name:
         fe_dir = output_root / fe_name
         if fe_dir.exists() and args.force:
             import shutil
             shutil.rmtree(fe_dir)
-        manifest = build_fe_manifest(spec.frontend, spec.compliance)
-        fe_manifest_path = output_root / fe_name / ".cursor" / "rules_manifest.json"
+        manifest = build_fe_manifest(spec.frontend, comp_list)
+        # Write manifest OUTSIDE the target project directory to avoid being deleted by generator --force
+        fe_manifest_path = output_root / "_rules_manifests" / f"{fe_name}.json"
         write_rules_manifest(fe_manifest_path, manifest)
         cmd = (
-            f"python scripts/generate_client_project.py"
+            f"{python_bin} scripts/generate_client_project.py"
             f" --name {fe_name}"
             f" --industry {spec.industry}"
             f" --project-type web"
@@ -128,8 +148,11 @@ def main() -> None:
             f" --deploy {spec.deploy}"
             f" --output-dir {str(output_root)}"
             f" --workers {args.workers}"
+            f" --include-cursor-assets"
             f" --minimal-cursor"
             f" --rules-manifest {str(fe_manifest_path)}"
+            f" {'--features ' + ','.join(spec.features) if spec.features else ''}"
+           
             f" --yes"
             f" {'--force' if args.force else ''}"
         ).strip()
@@ -144,11 +167,12 @@ def main() -> None:
         if be_dir.exists() and args.force:
             import shutil
             shutil.rmtree(be_dir)
-        manifest = build_be_manifest(spec.backend, spec.database, spec.compliance)
-        be_manifest_path = output_root / be_name / ".cursor" / "rules_manifest.json"
+        manifest = build_be_manifest(spec.backend, spec.database, comp_list)
+        # Write manifest OUTSIDE the target project directory to avoid being deleted by generator --force
+        be_manifest_path = output_root / "_rules_manifests" / f"{be_name}.json"
         write_rules_manifest(be_manifest_path, manifest)
         cmd = (
-            f"python scripts/generate_client_project.py"
+            f"{python_bin} scripts/generate_client_project.py"
             f" --name {be_name}"
             f" --industry {spec.industry}"
             f" --project-type api"
@@ -159,8 +183,11 @@ def main() -> None:
             f" --deploy {spec.deploy}"
             f" --output-dir {str(output_root)}"
             f" --workers {args.workers}"
+            f" --include-cursor-assets"
             f" --minimal-cursor"
             f" --rules-manifest {str(be_manifest_path)}"
+            f" {'--features ' + ','.join(spec.features) if spec.features else ''}"
+            f" {'--compliance ' + ','.join(comp_list) if comp_list else ''}"
             f" --yes"
             f" {'--force' if args.force else ''}"
         ).strip()
