@@ -30,6 +30,10 @@ class ProjectGenerator:
         self.template_registry = TemplateRegistry()
         # When True, do not emit any .cursor assets (rules, tools, ai-governor) into generated projects
         self.no_cursor_assets = bool(getattr(self.args, 'no_cursor_assets', False))
+        # Minimal cursor mode: only project.json and selected rules (via rules manifest)
+        self.minimal_cursor = bool(getattr(self.args, 'minimal_cursor', False))
+        # Optional rules manifest file listing .mdc names to include from root project-rules
+        self.rules_manifest_path: Optional[str] = getattr(self.args, 'rules_manifest', None)
         self.project_root = None
         # Determine workers
         auto_workers = max(2, (os.cpu_count() or 2) * 2)
@@ -120,15 +124,17 @@ class ProjectGenerator:
             'scripts',
             'tests'
         ]
-        if not self.no_cursor_assets:
+        if not self.no_cursor_assets and not self.minimal_cursor:
             directories.extend(['.cursor/rules', '.cursor/dev-workflow'])
+        elif not self.no_cursor_assets and self.minimal_cursor:
+            directories.extend(['.cursor/rules'])
         
         for directory in directories:
             (self.project_root / directory).mkdir(parents=True, exist_ok=True)
         
         # If repo has dev-workflow docs, copy them into the project for in-editor triggers
         try:
-            if not self.no_cursor_assets:
+            if (not self.no_cursor_assets) and (not self.minimal_cursor):
                 repo_root = Path(__file__).resolve().parents[2]
                 source_devwf = repo_root / '.cursor' / 'dev-workflow'
                 if source_devwf.exists():
@@ -337,9 +343,13 @@ class ProjectGenerator:
             return
         rules_dir = self.project_root / '.cursor' / 'rules'
         
-        # Client-specific rules
-        client_rules = self._generate_client_rules()
-        (rules_dir / 'client-specific-rules.mdc').write_text(client_rules)
+        # Minimal-cursor: only include manifest-specified project rules and explicit compliance rules; skip client-specific.
+        if self.minimal_cursor:
+            self._include_rules_from_manifest(rules_dir)
+        else:
+            # Client-specific rules
+            client_rules = self._generate_client_rules()
+            (rules_dir / 'client-specific-rules.mdc').write_text(client_rules)
         
         # Industry compliance rules
         if self.args.compliance:
@@ -351,8 +361,265 @@ class ProjectGenerator:
         workflow_rules = self._generate_workflow_rules()
         (rules_dir / 'project-workflow.mdc').write_text(workflow_rules)
 
-        # Optionally include a minimal set of technology-specific project rules
-        self._include_selected_project_rules(rules_dir)
+        # Optionally include a minimal set of technology-specific project rules (legacy path)
+        if not self.minimal_cursor:
+            self._include_selected_project_rules(rules_dir)
+
+    def _include_rules_from_manifest(self, rules_dir: Path) -> None:
+        """Copy only rules listed in the JSON manifest from root .cursor/rules/project-rules.
+
+        Manifest format: ["nextjs.mdc", "typescript.mdc", ...]
+        """
+        try:
+            if not self.rules_manifest_path:
+                return
+            import json as _json
+            manifest_path = Path(self.rules_manifest_path)
+            if not manifest_path.exists():
+                return
+            names = []
+            try:
+                names = _json.loads(manifest_path.read_text(encoding='utf-8'))
+            except Exception:
+                return
+            if not isinstance(names, list):
+                return
+            repo_root = Path(__file__).resolve().parents[2]
+            source_dir = repo_root / '.cursor' / 'rules' / 'project-rules'
+            if not source_dir.exists():
+                # Fallback: create minimal embedded rules if known
+                rules_dir.mkdir(parents=True, exist_ok=True)
+                for fname in names:
+                    self._write_fallback_rule_if_known(rules_dir, fname)
+                return
+            rules_dir.mkdir(parents=True, exist_ok=True)
+            for fname in names:
+                if not isinstance(fname, str) or not fname.endswith('.mdc'):
+                    continue
+                src = source_dir / fname
+                if src.exists() and src.is_file():
+                    shutil.copy(src, rules_dir / fname)
+                else:
+                    # Fallback to embedded minimal content when file missing
+                    self._write_fallback_rule_if_known(rules_dir, fname)
+        except Exception:
+            return
+
+    def _write_fallback_rule_if_known(self, rules_dir: Path, fname: str) -> None:
+        """Write a minimal embedded rule if we recognize the filename."""
+        mapping: dict[str, str] = {
+            'nextjs.mdc': self._rule_min_nextjs(),
+            'nextjs-formatting.mdc': self._rule_min_nextjs_formatting(),
+            'nextjs-rsc-and-client.mdc': self._rule_min_nextjs_rsc(),
+            'typescript.mdc': self._rule_min_typescript(),
+            'fastapi.mdc': self._rule_min_fastapi(),
+            'python.mdc': self._rule_min_python(),
+            'rest-api.mdc': self._rule_min_rest_api(),
+            'open-api.mdc': self._rule_min_open_api(),
+            'golang.mdc': self._rule_min_golang(),
+            'nethttp.mdc': self._rule_min_nethttp(),
+            'angular.mdc': self._rule_min_angular(),
+            'vue.mdc': self._rule_min_vue(),
+            'expo.mdc': self._rule_min_expo(),
+            'react-native.mdc': self._rule_min_react_native(),
+            'mongodb.mdc': self._rule_min_mongodb(),
+            'firebase.mdc': self._rule_min_firebase(),
+            'best-practices.mdc': self._rule_min_best_practices(),
+            'web-development.mdc': self._rule_min_web_development(),
+            'performance.mdc': self._rule_min_performance(),
+            'observability.mdc': self._rule_min_observability(),
+            'webshop.mdc': self._rule_min_webshop(),
+        }
+        content = mapping.get(fname)
+        if content:
+            try:
+                (rules_dir / fname).write_text(content, encoding='utf-8')
+            except Exception:
+                pass
+
+    # ---- Embedded minimal rule generators (compact, non-ceremonial) ----
+    def _rule_min_nextjs(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [frontend,nextjs] | TRIGGERS: component,page,route,build | SCOPE: project-rules | DESCRIPTION: Minimal Next.js guidance for build-ready components."\n'
+            '---\n\n'
+            '# Next.js Minimal Rules\n\n'
+            '- Use App Router; colocate server actions.\n'
+            '- Prefer streaming/SSR for data-heavy pages; cache fetches.\n'
+            '- Environment via process.env only on server; never expose secrets.\n'
+        )
+
+    def _rule_min_nextjs_formatting(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [frontend,nextjs,format] | TRIGGERS: lint,format | SCOPE: project-rules | DESCRIPTION: Formatting conventions for Next.js."\n'
+            '---\n\n'
+            '# Next.js Formatting\n\n'
+            '- Use Prettier + ESLint; no unused vars; import order standardized.\n'
+        )
+
+    def _rule_min_nextjs_rsc(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [frontend,nextjs,rsc] | TRIGGERS: server,client | SCOPE: project-rules | DESCRIPTION: RSC vs Client component guidelines."\n'
+            '---\n\n'
+            '# RSC and Client Components\n\n'
+            '- Default to RSC; use Client only for stateful/interactive UI.\n'
+        )
+
+    def _rule_min_typescript(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [typescript] | TRIGGERS: build,typecheck | SCOPE: project-rules | DESCRIPTION: Minimal TS guidance."\n'
+            '---\n\n'
+            '# TypeScript Minimal\n\n'
+            '- Strict true; no implicit any; clear function and public API types.\n'
+        )
+
+    def _rule_min_fastapi(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [backend,fastapi] | TRIGGERS: endpoint,router,build | SCOPE: project-rules | DESCRIPTION: Minimal FastAPI rules."\n'
+            '---\n\n'
+            '# FastAPI Minimal\n\n'
+            '- Pydantic v2; typed request/response models; dependency injection for DB.\n'
+        )
+
+    def _rule_min_python(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [python] | TRIGGERS: lint,test | SCOPE: project-rules | DESCRIPTION: Minimal Python guidelines."\n'
+            '---\n\n'
+            '# Python Minimal\n\n'
+            '- Use black + flake8; avoid global state; prefer dataclasses for simple data.\n'
+        )
+
+    def _rule_min_rest_api(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [api,rest] | TRIGGERS: endpoint,contract | SCOPE: project-rules | DESCRIPTION: Minimal REST API practices."\n'
+            '---\n\n'
+            '# REST API Minimal\n\n'
+            '- Consistent error shape; status codes; idempotent PUT; validation on input.\n'
+        )
+
+    def _rule_min_open_api(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [openapi] | TRIGGERS: schema,contract | SCOPE: project-rules | DESCRIPTION: Minimal OpenAPI usage."\n'
+            '---\n\n'
+            '# OpenAPI Minimal\n\n'
+            '- Keep spec near code; generate clients only for stable endpoints.\n'
+        )
+
+    def _rule_min_golang(self) -> str:
+        return (
+            '---\nalwaysApply: false\n'
+            'description: "TAGS: [golang] | TRIGGERS: build,test | SCOPE: project-rules | DESCRIPTION: Minimal Go rules."\n---\n\n'
+            '# Go Minimal\n\n- Modules tidy; context everywhere; errors wrapped with %w.\n'
+        )
+
+    def _rule_min_nethttp(self) -> str:
+        return (
+            '---\nalwaysApply: false\n'
+            'description: "TAGS: [nethttp] | TRIGGERS: handler,router | SCOPE: project-rules | DESCRIPTION: Minimal net/http rules."\n---\n\n'
+            '# net/http Minimal\n\n- Context cancel checks; timeouts; structured logging.\n'
+        )
+
+    def _rule_min_angular(self) -> str:
+        return (
+            '---\nalwaysApply: false\n'
+            'description: "TAGS: [frontend,angular] | TRIGGERS: component,service | SCOPE: project-rules | DESCRIPTION: Minimal Angular rules."\n---\n\n'
+            '# Angular Minimal\n\n- Standalone components; OnPush; typed forms.\n'
+        )
+
+    def _rule_min_vue(self) -> str:
+        return (
+            '---\nalwaysApply: false\n'
+            'description: "TAGS: [frontend,vue] | TRIGGERS: component,store | SCOPE: project-rules | DESCRIPTION: Minimal Vue rules."\n---\n\n'
+            '# Vue Minimal\n\n- SFC script setup; Pinia; lazy routes.\n'
+        )
+
+    def _rule_min_expo(self) -> str:
+        return (
+            '---\nalwaysApply: false\n'
+            'description: "TAGS: [frontend,expo] | TRIGGERS: screen,navigation | SCOPE: project-rules | DESCRIPTION: Minimal Expo rules."\n---\n\n'
+            '# Expo Minimal\n\n- Expo Router; platform-safe APIs; offline-ready assets.\n'
+        )
+
+    def _rule_min_react_native(self) -> str:
+        return (
+            '---\nalwaysApply: false\n'
+            'description: "TAGS: [frontend,react-native] | TRIGGERS: component,screen | SCOPE: project-rules | DESCRIPTION: Minimal React Native rules."\n---\n\n'
+            '# React Native Minimal\n\n- Use SafeAreaView; avoid heavy re-renders; memoize lists.\n'
+        )
+
+    def _rule_min_mongodb(self) -> str:
+        return (
+            '---\nalwaysApply: false\n'
+            'description: "TAGS: [database,mongodb] | TRIGGERS: schema,index | SCOPE: project-rules | DESCRIPTION: Minimal MongoDB rules."\n---\n\n'
+            '# MongoDB Minimal\n\n- Define indexes early; validate schemas; limit unbounded queries.\n'
+        )
+
+    def _rule_min_firebase(self) -> str:
+        return (
+            '---\nalwaysApply: false\n'
+            'description: "TAGS: [database,firebase] | TRIGGERS: rules,security | SCOPE: project-rules | DESCRIPTION: Minimal Firebase rules."\n---\n\n'
+            '# Firebase Minimal\n\n- Security rules first; limit public reads; version configs.\n'
+        )
+
+    def _rule_min_best_practices(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [best-practices] | TRIGGERS: review,refactor | SCOPE: project-rules | DESCRIPTION: Minimal engineering best practices."\n'
+            '---\n\n'
+            '# Best Practices\n\n- Small PRs; meaningful names; tests first for critical paths.\n'
+        )
+
+    def _rule_min_web_development(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [web] | TRIGGERS: build,ci | SCOPE: project-rules | DESCRIPTION: Minimal web development rules."\n'
+            '---\n\n'
+            '# Web Development\n\n- Avoid blocking main thread; lazy-load heavy assets; a11y AA.\n'
+        )
+
+    def _rule_min_performance(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [performance] | TRIGGERS: profile,optimize | SCOPE: project-rules | DESCRIPTION: Minimal performance rules."\n'
+            '---\n\n'
+            '# Performance\n\n- Measure p95; cache wisely; batch I/O; paginate large queries.\n'
+        )
+
+    def _rule_min_observability(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [observability] | TRIGGERS: log,trace,metric | SCOPE: project-rules | DESCRIPTION: Minimal observability rules."\n'
+            '---\n\n'
+            '# Observability\n\n- Structured logs with correlation IDs; basic traces and key metrics.\n'
+        )
+
+    def _rule_min_webshop(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [ecommerce,webshop] | TRIGGERS: cart,checkout | SCOPE: project-rules | DESCRIPTION: Minimal ecommerce/webshop rules."\n'
+            '---\n\n'
+            '# Webshop\n\n- Guard cart/checkout flows; currency/locale aware; idempotent payments.\n'
+        )
 
     def _include_selected_project_rules(self, rules_dir: Path):
         """Copy a minimal set of project rules (.mdc) for the chosen stack into the generated project.

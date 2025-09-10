@@ -1,0 +1,673 @@
+{
+    "schemaVersion": "1",
+    "engine": {
+      "tokenResolution": "eager",
+      "grid": { "supportsPerBreakpointRowSpan": true }
+    },
+    "meta": {
+      "name": "Executive Analytics Dashboard",
+      "description": "Final merged schema: v1.1 base + layout/visual fixes (donuts, full-width sections, full-height alerts) with responsiveness, a11y, loading states, i18n, and data source bindings.",
+      "sourceImage": "dashboard-dark-neon",
+      "createdWith": "SCHEMA"
+    },
+    "tokens": {
+      "colors": {
+        "background": "#0b1117",
+        "surface": "#0f1720",
+        "surfaceElevated": "#111b26",
+        "textPrimary": "#e6f1ff",
+        "textSecondary": "#b7c3d0",
+        "muted": "#7a8796",
+        "accentPrimary": "#00e5ff",
+        "accentSecondary": "#22d3ee",
+        "success": "#34d399",
+        "warning": "#f59e0b",
+        "danger": "#ef4444",
+        "gridLines": "#1f2a37",
+        "cardBorder": "#143341",
+        "focusRing": "rgba(0,229,255,0.65)"
+      },
+      "typography": {
+        "family": "Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif",
+        "sizes": { "xs": 12, "sm": 14, "md": 16, "lg": 18, "xl": 22, "xxl": 28, "kpi": 32 },
+        "weights": { "regular": 400, "medium": 500, "semibold": 600, "bold": 700 },
+        "lineHeights": { "tight": 1.1, "normal": 1.4, "loose": 1.6 }
+      },
+      "spacing": { "xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 24, "xxl": 32 },
+      "radii": { "sm": 8, "md": 12, "lg": 16, "pill": 9999 },
+      "borders": { "card": { "width": 1, "color": "#143341" } },
+      "shadows": { "cardGlow": { "x": 0, "y": 0, "blur": 24, "spread": 0, "color": "rgba(0,229,255,0.18)" } },
+      "skeleton": { "base": "#11202b", "highlight": "#163140" }
+    },
+    "i18n": {
+      "locale": "en-US",
+      "dateFormat": "yyyy-MM-dd",
+      "numberFormat": "compactShort",
+      "currency": "USD",
+      "rtl": { "supported": true, "enabled": false },
+      "allowLanguageSwitch": true
+    },
+    "accessibility": {
+      "highContrast": true,
+      "ariaLandmarks": { "main": "Dashboard content", "complementary": "Alerts panel" },
+      "keyboard": { "focusVisible": true, "skipLinks": [{ "label": "Skip to alerts", "target": "#c-alerts-panel" }] },
+      "motion": { "respectPrefersReducedMotion": true }
+    },
+    "styles": {
+      "card": {
+        "background": "{colors.surfaceElevated}",
+        "border": "{borders.card}",
+        "radius": "{radii.lg}",
+        "shadow": "{shadows.cardGlow}",
+        "title": { "size": "{typography.sizes.lg}", "weight": "{typography.weights.semibold}", "color": "{colors.textPrimary}" },
+        "contentPadding": "{spacing.lg}",
+        "contentGap": "{spacing.lg}",
+        "headerActions": { "icon": "more", "ariaLabel": "Open card menu" },
+        "errorBoundary": {
+          "visible": false,
+          "component": "error.surface",
+          "title": "Unable to load",
+          "action": { "label": "Retry", "onClick": "retrySection(cardId)" }
+        }
+      },
+      "button": {
+        "radius": "{radii.md}",
+        "paddingX": 14,
+        "paddingY": 8,
+        "states": {
+          "hover": { "shadow": "{shadows.cardGlow}" },
+          "active": { "translateY": 1 },
+          "disabled": { "opacity": 0.5 },
+          "focus": { "outline": "2px solid {colors.focusRing}" }
+        }
+      },
+      "toolbar": {
+        "segmented": {
+          "states": {
+            "hover": { "background": "rgba(34,211,238,0.08)" },
+            "selected": { "background": "rgba(0,229,255,0.18)", "border": "1px solid {colors.accentPrimary}" },
+            "focus": { "outline": "2px solid {colors.focusRing}" }
+          }
+        }
+      },
+      "chart": {
+        "gridLineColor": "{colors.gridLines}",
+        "axisLabelColor": "{colors.textSecondary}",
+        "seriesPalette": ["{colors.accentPrimary}", "{colors.accentSecondary}", "{colors.success}", "{colors.warning}"],
+        "tooltip": { "background": "{colors.surface}", "text": "{colors.textPrimary}", "borderColor": "{colors.cardBorder}" },
+        "legend": { "focusable": true, "toggleKeys": ["Enter", "Space"] },
+        "animations": { "reduceWithPrefers": true }
+      },
+      "list": { "itemRadius": "{radii.md}", "itemHover": { "background": "rgba(34, 211, 238, 0.06)" } }
+    },
+    "layout": {
+      "type": "grid",
+      "columns": 3,
+      "gutter": 16,
+      "rowGap": 16,
+      "padding": 16,
+      "breakpoints": {
+        "xl": { "columns": 3 },
+        "lg": { "columns": 2, "reflow": [["c-alerts-panel", "col", 2], ["c-alerts-panel", "rowSpan", 2]] },
+        "md": {
+          "columns": 1,
+          "order": [
+            "c-global-map",
+            "c-revenue-breakdown",
+            "c-forecasting",
+            "c-supply-chain",
+            "c-health-tracking",
+            "c-financial-health",
+            "c-customer-churn",
+            "c-supplier-performance",
+            "c-exec-summary",
+            "c-alerts-panel"
+          ]
+        },
+        "sm": { "columns": 1 }
+      }
+    },
+    "components": [
+      {
+        "id": "c-global-map",
+        "type": "card",
+        "title": "Global Performance Overview",
+        "layout": { "col": 1, "row": 1, "colSpan": 2, "rowSpan": 1 },
+        "props": { "padding": "lg", "headerActions": [{ "id": "act-map-menu", "icon": "more" }] },
+        "children": [
+          {
+            "id": "w-map-world",
+            "type": "map.world",
+            "props": {
+              "projection": "equirectangular",
+              "showLegend": true,
+              "showTooltips": true,
+              "zoomControls": true,
+              "state": {
+                "loading": false,
+                "emptyMessage": "No map data",
+                "errorMessage": null,
+                "skeleton": { "base": "{skeleton.base}", "highlight": "{skeleton.highlight}" }
+              }
+            },
+            "dataBindings": { "points": "data.globalPerformance.points", "series": "data.globalPerformance.series" },
+            "interactions": { "onHover": "showTooltip(point)", "onClick": "selectRegion(point.regionId)" },
+            "accessibility": { "role": "figure", "label": "World map with performance markers", "description": "Geographic performance hotspots." },
+            "dataTestId": "map-world"
+          }
+        ]
+      },
+  
+      {
+        "id": "c-revenue-breakdown",
+        "type": "card",
+        "title": "Revenue Breakdown",
+        "layout": { "col": 1, "row": 2, "colSpan": 2, "rowSpan": 1 },
+        "props": { "padding": "lg", "headerActions": [{ "id": "act-rev-menu", "icon": "more" }] },
+        "children": [
+          {
+            "id": "w-filters-revenue",
+            "type": "toolbar",
+            "props": {
+              "items": [
+                { "key": "regions", "label": "Regions", "type": "segmented", "optionsBinding": "data.filters.regions" },
+                { "key": "productLines", "label": "Product Lines", "type": "segmented", "optionsBinding": "data.filters.productLines" },
+                { "key": "channel", "label": "Channel", "type": "segmented", "optionsBinding": "data.filters.channels" }
+              ],
+              "actions": [
+                { "id": "btn-apply", "label": "Submit Changes", "kind": "primary", "loading": false },
+                { "id": "btn-share", "label": "Share Report", "kind": "secondary" }
+              ]
+            },
+            "interactions": {
+              "onChange": "applyRevenueFilters(filters)",
+              "onClick:btn-apply": "applyRevenueFilters(filters)",
+              "onClick:btn-share": "shareReport('revenue')"
+            },
+            "accessibility": { "role": "toolbar", "label": "Revenue filters", "segmentedRole": "radiogroup" }
+          },
+          {
+            "id": "grp-revenue-charts",
+            "type": "container.grid",
+            "props": { "columns": 3, "gap": 16 },
+            "children": [
+              {
+                "id": "w-donut-region",
+                "type": "chart.donut",
+                "props": {
+                  "legend": "right",
+                  "innerRadius": 60,
+                  "showLabels": true,
+                  "state": { "loading": false, "emptyMessage": "No region data", "errorMessage": null, "skeleton": { "base": "{skeleton.base}", "highlight": "{skeleton.highlight}" } }
+                },
+                "dataBindings": { "series": "data.revenue.byRegion" },
+                "interactions": { "onHover": "showTooltip(slice)", "onLegendToggle": "toggleSeries(key)" },
+                "accessibility": { "role": "figure", "label": "Donut chart by region", "description": "Share of revenue by region." },
+                "dataTestId": "donut-region"
+              },
+              {
+                "id": "w-donut-channel",
+                "type": "chart.donut",
+                "props": {
+                  "legend": "right",
+                  "innerRadius": 60,
+                  "showLabels": true,
+                  "state": { "loading": false, "emptyMessage": "No channel data", "errorMessage": null, "skeleton": { "base": "{skeleton.base}", "highlight": "{skeleton.highlight}" } }
+                },
+                "dataBindings": { "series": "data.revenue.byChannel" },
+                "interactions": { "onHover": "showTooltip(slice)", "onLegendToggle": "toggleSeries(key)" },
+                "accessibility": { "role": "figure", "label": "Donut chart by channel", "description": "Share of revenue by channel." },
+                "dataTestId": "donut-channel"
+              },
+              {
+                "id": "w-bar-company",
+                "type": "chart.bar",
+                "props": { "xField": "company", "yField": "value", "stacked": false, "state": { "loading": false, "emptyMessage": "No company data", "errorMessage": null, "skeleton": { "base": "{skeleton.base}", "highlight": "{skeleton.highlight}" } } },
+                "dataBindings": { "series": "data.revenue.byCompany" },
+                "interactions": { "onHover": "showTooltip(bar)" },
+                "accessibility": { "role": "figure", "label": "Company revenue", "description": "Bar chart of revenue by company." }
+              }
+            ]
+          }
+        ]
+      },
+  
+      {
+        "id": "c-forecasting",
+        "type": "card",
+        "title": "Predictive Analytics & Forecasting",
+        "layout": { "col": 1, "row": 3, "colSpan": 2, "rowSpan": 1 },
+        "props": { "padding": "lg", "headerActions": [{ "id": "act-forecast-menu", "icon": "more" }] },
+        "children": [
+          {
+            "id": "grp-forecast",
+            "type": "container.grid",
+            "props": { "columns": 3, "gap": 16 },
+            "children": [
+              {
+                "id": "w-line-forecast",
+                "type": "chart.line",
+                "layout": { "colSpan": 2 },
+                "props": {
+                  "xField": "date",
+                  "yFields": ["actual", "forecast"],
+                  "showTrendline": true,
+                  "legend": "top",
+                  "sampling": "lttb",
+                  "maxPoints": 2000,
+                  "state": { "loading": false, "emptyMessage": "No forecast data", "errorMessage": null, "skeleton": { "base": "{skeleton.base}", "highlight": "{skeleton.highlight}" } }
+                },
+                "dataBindings": { "series": "data.forecast.series" },
+                "interactions": { "onHover": "showTooltip(point)", "onBrush": "setDateWindow(range)", "onLegendToggle": "toggleSeries(key)" },
+                "accessibility": { "role": "figure", "label": "Forecast vs actual", "description": "Line chart comparing forecast and actuals with trendline." },
+                "dataTestId": "forecast-line"
+              },
+              {
+                "id": "w-kpi-confidence",
+                "type": "gauge.radial",
+                "layout": { "colSpan": 1 },
+                "props": { "min": 0, "max": 100, "format": "percent", "size": "lg" },
+                "dataBindings": { "value": "data.forecast.confidencePct" },
+                "accessibility": { "role": "meter", "label": "AI confidence", "description": "Model confidence level in percent." }
+              }
+            ]
+          }
+        ]
+      },
+  
+      {
+        "id": "c-supply-chain",
+        "type": "card",
+        "title": "Real-Time Supply Chain Tracking",
+        "layout": { "col": 1, "row": 4, "colSpan": 1, "rowSpan": 1 },
+        "props": { "padding": "lg", "headerActions": [{ "id": "act-supply-menu", "icon": "more" }] },
+        "children": [
+          {
+            "id": "w-graph-network",
+            "type": "graph.network",
+            "props": {
+              "directed": false,
+              "physics": true,
+              "autoDisableOnLowEnd": true,
+              "adaptiveQuality": true,
+              "showTooltips": true,
+              "state": { "loading": false, "emptyMessage": "No network data", "errorMessage": null, "skeleton": { "base": "{skeleton.base}", "highlight": "{skeleton.highlight}" } }
+            },
+            "dataBindings": { "nodes": "data.supplyChain.nodes", "edges": "data.supplyChain.edges" },
+            "interactions": { "onClick": "selectNode(nodeId)", "onHover": "showTooltip(node)" },
+            "accessibility": { "role": "figure", "label": "Supply chain network", "description": "Interactive graph of supply nodes and links." },
+            "dataTestId": "network-graph"
+          }
+        ]
+      },
+  
+      {
+        "id": "c-health-tracking",
+        "type": "card",
+        "title": "Real-Time Health Tracking",
+        "layout": { "col": 2, "row": 4, "colSpan": 1, "rowSpan": 1 },
+        "props": { "padding": "lg", "headerActions": [{ "id": "act-health-menu", "icon": "more" }] },
+        "children": [
+          {
+            "id": "grp-health",
+            "type": "container.grid",
+            "props": { "columns": 2, "gap": 16 },
+            "children": [
+              {
+                "id": "w-line-health",
+                "type": "chart.line",
+                "props": { "xField": "date", "yFields": ["healthIndex"], "state": { "loading": false, "emptyMessage": "No health data", "errorMessage": null, "skeleton": { "base": "{skeleton.base}", "highlight": "{skeleton.highlight}" } } },
+                "dataBindings": { "series": "data.health.indexSeries" },
+                "accessibility": { "role": "figure", "label": "Operational health over time", "description": "Health index trend." }
+              },
+              {
+                "id": "w-kpis-health",
+                "type": "kpi.group",
+                "props": {
+                  "items": [
+                    { "label": "Shipments Delayed", "format": "integer" },
+                    { "label": "Incident Rate", "format": "decimal" },
+                    { "label": "Response Index", "format": "decimal" }
+                  ],
+                  "size": "{typography.sizes.kpi}"
+                },
+                "dataBindings": {
+                  "items[0].value": "data.health.shipmentsDelayed",
+                  "items[1].value": "data.health.incidentRate",
+                  "items[2].value": "data.health.responseIndex"
+                },
+                "accessibility": { "role": "status", "label": "Health KPIs" },
+                "dataTestId": "kpi-cards"
+              }
+            ]
+          }
+        ]
+      },
+  
+      {
+        "id": "c-financial-health",
+        "type": "card",
+        "title": "Financial Health Indicators",
+        "layout": { "col": 1, "row": 5, "colSpan": 1, "rowSpan": 1 },
+        "props": { "padding": "lg", "headerActions": [{ "id": "act-finance-menu", "icon": "more" }] },
+        "children": [
+          {
+            "id": "w-scatter-risk",
+            "type": "chart.scatter",
+            "props": { "xField": "exposure", "yField": "score", "groupField": "cluster", "state": { "loading": false, "emptyMessage": "No risk data", "errorMessage": null, "skeleton": { "base": "{skeleton.base}", "highlight": "{skeleton.highlight}" } } },
+            "dataBindings": { "series": "data.finance.scatter" },
+            "accessibility": { "role": "figure", "label": "Financial risk scatter", "description": "Exposure vs score by cluster." }
+          },
+          {
+            "id": "w-kpi-churn",
+            "type": "kpi.value",
+            "props": { "label": "Churn Rate", "format": "percent", "size": "{typography.sizes.kpi}" },
+            "dataBindings": { "value": "data.finance.churnRatePct" },
+            "accessibility": { "role": "status", "label": "Churn rate KPI" }
+          },
+          {
+            "id": "w-bar-finance",
+            "type": "chart.bar",
+            "props": { "xField": "category", "yField": "value", "stacked": false, "state": { "loading": false, "emptyMessage": "No financial categories", "errorMessage": null, "skeleton": { "base": "{skeleton.base}", "highlight": "{skeleton.highlight}" } } },
+            "dataBindings": { "series": "data.finance.categories" },
+            "accessibility": { "role": "figure", "label": "Financial categories", "description": "Bar chart of financial indicators by category." }
+          }
+        ]
+      },
+  
+      {
+        "id": "c-customer-churn",
+        "type": "card",
+        "title": "Customer Segmentation & Churn Analysis",
+        "layout": { "col": 2, "row": 5, "colSpan": 1, "rowSpan": 1 },
+        "props": { "padding": "lg", "headerActions": [{ "id": "act-customer-menu", "icon": "more" }] },
+        "children": [
+          {
+            "id": "grp-customer",
+            "type": "container.grid",
+            "props": { "columns": 2, "gap": 16 },
+            "children": [
+              {
+                "id": "w-line-retention",
+                "type": "chart.line",
+                "props": { "xField": "date", "yFields": ["retention", "acquisition", "state"], "state": { "loading": false, "emptyMessage": "No customer trends", "errorMessage": null, "skeleton": { "base": "{skeleton.base}", "highlight": "{skeleton.highlight}" } } },
+                "dataBindings": { "series": "data.customer.retentionSeries" },
+                "accessibility": { "role": "figure", "label": "Retention and acquisition", "description": "Trends over time." }
+              },
+              {
+                "id": "w-kpi-radials",
+                "type": "gauge.radial.group",
+                "props": {
+                  "format": "percent",
+                  "items": [
+                    { "label": "Cost Ratio", "min": 0, "max": 1 },
+                    { "label": "Goal Efficiency", "min": 0, "max": 1 }
+                  ]
+                },
+                "dataBindings": {
+                  "items[0].value": "data.customer.costRatio",
+                  "items[1].value": "data.customer.goalEfficiency"
+                },
+                "accessibility": { "role": "group", "label": "Customer analysis KPIs" }
+              }
+            ]
+          }
+        ]
+      },
+  
+      {
+        "id": "c-supplier-performance",
+        "type": "card",
+        "title": "Supplier Performance Indicators",
+        "layout": { "col": 1, "row": 6, "colSpan": 1, "rowSpan": 1 },
+        "props": { "padding": "lg", "headerActions": [{ "id": "act-supplier-menu", "icon": "more" }] },
+        "children": [
+          {
+            "id": "grp-supplier",
+            "type": "container.grid",
+            "props": { "columns": 2, "gap": 16 },
+            "children": [
+              {
+                "id": "w-line-supplier-kpi",
+                "type": "chart.line",
+                "props": { "xField": "date", "yFields": ["kpi"], "state": { "loading": false, "emptyMessage": "No supplier KPI data", "errorMessage": null, "skeleton": { "base": "{skeleton.base}", "highlight": "{skeleton.highlight}" } } },
+                "dataBindings": { "series": "data.suppliers.performanceTrend" },
+                "accessibility": { "role": "figure", "label": "Supplier KPI trend" }
+              },
+              {
+                "id": "w-bar-cashflow",
+                "type": "chart.bar",
+                "props": { "xField": "month", "yField": "cashFlow", "stacked": false, "state": { "loading": false, "emptyMessage": "No cash flow data", "errorMessage": null, "skeleton": { "base": "{skeleton.base}", "highlight": "{skeleton.highlight}" } } },
+                "dataBindings": { "series": "data.suppliers.cashFlow" },
+                "accessibility": { "role": "figure", "label": "Supplier cash flow" }
+              }
+            ]
+          }
+        ]
+      },
+  
+      {
+        "id": "c-exec-summary",
+        "type": "card",
+        "title": "Executive Summary",
+        "layout": { "col": 2, "row": 6, "colSpan": 1, "rowSpan": 1 },
+        "props": { "padding": "lg", "headerActions": [{ "id": "act-exec-menu", "icon": "more" }] },
+        "children": [
+          {
+            "id": "w-profile",
+            "type": "profile.compact",
+            "props": { "avatarShape": "circle" },
+            "dataBindings": { "name": "data.executive.name", "title": "data.executive.title", "avatarUrl": "data.executive.avatarUrl" },
+            "accessibility": { "role": "group", "label": "Executive profile" }
+          },
+          {
+            "id": "w-summary-text",
+            "type": "text.rich",
+            "props": { "maxLines": 4, "clamp": true },
+            "dataBindings": { "content": "data.executive.summary" },
+            "accessibility": { "role": "article", "label": "Quarterly performance summary" }
+          },
+          {
+            "id": "w-actions-exec",
+            "type": "button.group",
+            "props": {
+              "buttons": [
+                { "id": "btn-raw-data", "label": "Get Raw Data", "kind": "secondary" },
+                { "id": "btn-recommend", "label": "Recommendation", "kind": "primary" },
+                { "id": "btn-share-exec", "label": "Share Report", "kind": "secondary" }
+              ]
+            },
+            "interactions": {
+              "onClick:btn-raw-data": "downloadRawData()",
+              "onClick:btn-recommend": "openRecommendation()",
+              "onClick:btn-share-exec": "shareReport('executive')"
+            },
+            "accessibility": { "role": "group", "label": "Executive actions" }
+          }
+        ]
+      },
+  
+      {
+        "id": "c-alerts-panel",
+        "type": "card",
+        "title": "Alerts Panel",
+        "layout": { "col": 3, "row": 1, "colSpan": 1, "rowSpan": 6 },
+        "props": { "padding": "lg", "scrollable": true, "headerActions": [{ "id": "act-alerts-menu", "icon": "more" }] },
+        "children": [
+          {
+            "id": "w-alerts-list",
+            "type": "list.vertical",
+            "props": {
+              "itemLayout": "icon-title-subtitle",
+              "showDividers": true,
+              "density": "compact",
+              "virtualized": true,
+              "overscan": 8
+            },
+            "dataBindings": { "items": "data.alerts.items" },
+            "interactions": { "onItemClick": "openAlertDetail(item.id)" },
+            "accessibility": { "role": "list", "label": "Operational alerts", "live": "polite", "relevant": "additions text", "announceThrottleMs": 1500, "batchUpdates": true }
+          }
+        ]
+      }
+    ],
+    "interactions": {
+      "global": {
+        "shareReport": "shareReport(section)",
+        "downloadRawData": "downloadRawData()",
+        "onError": "showCardError(cardId, error)",
+        "retrySection": "retrySection(cardId)"
+      }
+    },
+    "data": {
+      "sources": [
+        {
+          "id": "src-global",
+          "endpoint": "/api/v1/global",
+          "method": "GET",
+          "auth": { "type": "none" },
+          "headers": {},
+          "map": {
+            "globalPerformance.points": "$.points",
+            "globalPerformance.series": "$.series"
+          }
+        },
+        {
+          "id": "src-revenue",
+          "endpoint": "/api/v1/revenue",
+          "method": "GET",
+          "auth": { "type": "none" },
+          "headers": {},
+          "map": {
+            "revenue.byRegion": "$.byRegion",
+            "revenue.byChannel": "$.byChannel",
+            "revenue.byCompany": "$.byCompany",
+            "revenue.byRegionPct": "$.byRegionPct",
+            "revenue.byChannelPct": "$.byChannelPct"
+          }
+        },
+        {
+          "id": "src-forecast",
+          "endpoint": "/api/v1/forecast",
+          "method": "GET",
+          "auth": { "type": "none" },
+          "headers": {},
+          "map": { "forecast.series": "$.series", "forecast.confidencePct": "$.confidencePct" }
+        },
+        {
+          "id": "src-supply",
+          "endpoint": "/api/v1/supply-chain",
+          "method": "GET",
+          "auth": { "type": "none" },
+          "headers": {},
+          "map": { "supplyChain.nodes": "$.nodes", "supplyChain.edges": "$.edges" }
+        },
+        {
+          "id": "src-health",
+          "endpoint": "/api/v1/health",
+          "method": "GET",
+          "auth": { "type": "none" },
+          "headers": {},
+          "map": {
+            "health.indexSeries": "$.indexSeries",
+            "health.shipmentsDelayed": "$.shipmentsDelayed",
+            "health.incidentRate": "$.incidentRate",
+            "health.responseIndex": "$.responseIndex"
+          }
+        },
+        {
+          "id": "src-finance",
+          "endpoint": "/api/v1/finance",
+          "method": "GET",
+          "auth": { "type": "none" },
+          "headers": {},
+          "map": {
+            "finance.scatter": "$.scatter",
+            "finance.churnRatePct": "$.churnRatePct",
+            "finance.categories": "$.categories"
+          }
+        },
+        {
+          "id": "src-customer",
+          "endpoint": "/api/v1/customer",
+          "method": "GET",
+          "auth": { "type": "none" },
+          "headers": {},
+          "map": {
+            "customer.retentionSeries": "$.retentionSeries",
+            "customer.costRatio": "$.costRatio",
+            "customer.goalEfficiency": "$.goalEfficiency"
+          }
+        },
+        {
+          "id": "src-suppliers",
+          "endpoint": "/api/v1/suppliers",
+          "method": "GET",
+          "auth": { "type": "none" },
+          "headers": {},
+          "map": { "suppliers.performanceTrend": "$.performanceTrend", "suppliers.cashFlow": "$.cashFlow" }
+        },
+        {
+          "id": "src-exec",
+          "endpoint": "/api/v1/executive",
+          "method": "GET",
+          "auth": { "type": "none" },
+          "headers": {},
+          "map": {
+            "executive.name": "$.name",
+            "executive.title": "$.title",
+            "executive.avatarUrl": "$.avatarUrl",
+            "executive.summary": "$.summary"
+          }
+        },
+        {
+          "id": "src-alerts",
+          "endpoint": "/api/v1/alerts",
+          "method": "GET",
+          "auth": { "type": "none" },
+          "headers": {},
+          "params": { "since": "{ISO8601}" },
+          "polling": { "enabled": true, "intervalMs": 15000 },
+          "map": { "alerts.items": "$.items" }
+        }
+      ],
+      "bindings": {
+        "globalPerformance.points": [],
+        "globalPerformance.series": [],
+        "revenue.byRegion": [],
+        "revenue.byChannel": [],
+        "revenue.byCompany": [],
+        "revenue.byRegionPct": null,
+        "revenue.byChannelPct": null,
+        "forecast.series": [],
+        "forecast.confidencePct": null,
+        "supplyChain.nodes": [],
+        "supplyChain.edges": [],
+        "health.indexSeries": [],
+        "health.shipmentsDelayed": null,
+        "health.incidentRate": null,
+        "health.responseIndex": null,
+        "finance.scatter": [],
+        "finance.churnRatePct": null,
+        "finance.categories": [],
+        "customer.retentionSeries": [],
+        "customer.costRatio": null,
+        "customer.goalEfficiency": null,
+        "suppliers.performanceTrend": [],
+        "suppliers.cashFlow": [],
+        "executive.name": null,
+        "executive.title": null,
+        "executive.avatarUrl": null,
+        "executive.summary": null,
+        "alerts.items": []
+      },
+      "examples": {
+        "alerts.items": [
+          { "id": "a1", "icon": "bell", "title": "Inventory Shortage", "subtitle": "Region: APAC · Severity: High", "severity": "high", "region": "APAC", "timestamp": "2024-10-01T09:30:00Z" },
+          { "id": "a2", "icon": "truck", "title": "Shipment Delay", "subtitle": "Lane: EU → NA · ETA +12h", "severity": "medium", "lane": "EU-NA", "timestamp": "2024-10-01T08:10:00Z" }
+        ]
+      }
+    },
+    "responsiveness": { "collapse": { "alerts": { "breakpoint": "md", "collapsible": true, "defaultOpen": false } } },
+    "theming": { "mode": "dark", "brand": { "primary": "{colors.accentPrimary}", "secondary": "{colors.accentSecondary}" } }
+  }
