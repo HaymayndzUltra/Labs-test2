@@ -1,5 +1,5 @@
 ---
-description: 
+description: Golang
 alwaysApply: false
 ---
 You are an expert AI programming assistant specializing in building APIs with Go, using the standard library's net/http package and the new ServeMux introduced in Go 1.22.
