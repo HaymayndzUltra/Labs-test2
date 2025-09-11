@@ -45,3 +45,64 @@ alwaysApply: false
 python3 scripts/plan_from_brief.py --brief docs/briefs/project1/brief.md --out PLAN.md
 ```
 
+## Trigger → Command Map (copy-friendly)
+
+Variables:
+- Replace `<project-name>` with your generated name (or auto-derive via brief)
+- FE dir: `../_generated/<project-name>-frontend/frontend`
+- BE dir: `../_generated/<project-name>-backend/backend`
+
+PLAN
+```
+python3 scripts/plan_from_brief.py --brief docs/briefs/project1/brief.md --out PLAN.md
+```
+
+GENERATE (optional)
+```
+python3 scripts/generate_from_brief.py --brief docs/briefs/project1/brief.md --output-root ../_generated --force --yes
+```
+
+RUN_BE
+```
+cd ../_generated/<project-name>-backend && python3 -m venv venv && . venv/bin/activate && \
+pip3 install -r backend/requirements.txt || true && pip3 install "uvicorn[standard]" "pydantic[email]" email-validator || true && \
+cd backend && ../../venv/bin/python3 -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+RUN_FE (real API)
+```
+cd ../_generated/<project-name>-frontend/frontend && \
+echo 'NEXT_PUBLIC_API_BASE=http://localhost:8000' > .env.local && \
+npx --yes openapi-typescript http://localhost:8000/api/openapi.json -o src/lib/api/types.ts && \
+npm ci && npm run dev
+```
+
+RUN_FE_MOCK (Prism)
+```
+cd ../_generated/<project-name>-frontend/frontend && \
+npx --yes @stoplight/prism-cli mock http://localhost:8000/api/openapi.json -p 4012 & \
+echo 'NEXT_PUBLIC_API_BASE=http://localhost:4012' > .env.local && \
+npx --yes openapi-typescript http://localhost:8000/api/openapi.json -o src/lib/api/types.ts && \
+npm ci && npm run dev
+```
+
+QA
+```
+cd ../_generated/<project-name>-backend && venv/bin/pytest -q backend
+cd ../_generated/<project-name>-frontend/frontend && npm test --silent
+for i in {1..10}; do curl -fsS http://localhost:8000/health >/dev/null || exit 1; done && echo "API OK"
+```
+
+PR (STOP; no deploy)
+```
+git checkout -b feature/plan-execution && \
+git add PLAN.md PLAN.tasks.json .cursor/rules/project-rules/fe-be-plan.mdc scripts/plan_from_brief.py && \
+git commit -m "chore(plan): add PLAN trigger and FE/BE plan artifacts" && \
+git push -u origin feature/plan-execution
+```
+
+Notes (guardrails):
+- Ports: FE 3000/BE 8000 by default; adjust via .env/local
+- Deps fallback: RUN_BE installs uvicorn + email-validator if missing
+- Mock path: Prism is optional to unblock FE when BE is WIP
+
