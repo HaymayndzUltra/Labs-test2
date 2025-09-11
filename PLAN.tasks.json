@@ -88,7 +88,10 @@
         "BE-MDL"
       ],
       "labels": [],
-      "acceptance": [],
+      "acceptance": [
+        "returns categories with revenue ranks",
+        "OpenAPI updated"
+      ],
       "dod": [],
       "state": "pending"
     },
@@ -101,7 +104,10 @@
         "BE-MDL"
       ],
       "labels": [],
-      "acceptance": [],
+      "acceptance": [
+        "returns platform distribution",
+        "OpenAPI updated"
+      ],
       "dod": [],
       "state": "pending"
     },
@@ -114,7 +120,10 @@
         "BE-MDL"
       ],
       "labels": [],
-      "acceptance": [],
+      "acceptance": [
+        "returns customer insights summary",
+        "OpenAPI updated"
+      ],
       "dod": [],
       "state": "pending"
     },
@@ -127,7 +136,10 @@
         "BE-MDL"
       ],
       "labels": [],
-      "acceptance": [],
+      "acceptance": [
+        "returns feedback score/time series",
+        "OpenAPI updated"
+      ],
       "dod": [],
       "state": "pending"
     },
@@ -145,7 +157,10 @@
         "BE-API-FDB"
       ],
       "labels": [],
-      "acceptance": [],
+      "acceptance": [
+        "streams CSV without timeouts",
+        "respects RBAC scopes"
+      ],
       "dod": [],
       "state": "pending"
     },
@@ -284,7 +299,10 @@
         "FE-TYPES"
       ],
       "labels": [],
-      "acceptance": [],
+      "acceptance": [
+        "renders",
+        "no console errors"
+      ],
       "dod": [],
       "state": "pending"
     },
@@ -298,7 +316,10 @@
         "FE-TYPES"
       ],
       "labels": [],
-      "acceptance": [],
+      "acceptance": [
+        "renders",
+        "no console errors"
+      ],
       "dod": [],
       "state": "pending"
     },
@@ -312,7 +333,10 @@
         "FE-TYPES"
       ],
       "labels": [],
-      "acceptance": [],
+      "acceptance": [
+        "renders",
+        "no console errors"
+      ],
       "dod": [],
       "state": "pending"
     },
@@ -326,7 +350,10 @@
         "FE-TYPES"
       ],
       "labels": [],
-      "acceptance": [],
+      "acceptance": [
+        "renders",
+        "no console errors"
+      ],
       "dod": [],
       "state": "pending"
     },
@@ -360,7 +387,10 @@
         "a11y",
         "performance"
       ],
-      "acceptance": [],
+      "acceptance": [
+        "WCAG AA checks pass (axe)",
+        "LCP < 2.5s on seed data"
+      ],
       "dod": [],
       "state": "pending"
     },
@@ -380,5 +410,124 @@
       "dod": [],
       "state": "pending"
     }
-  ]
+  ],
+  "resource_caps": {
+    "backend": 3,
+    "frontend": 3
+  },
+  "ports": {
+    "frontend": 3000,
+    "backend": 8000,
+    "auto_bump": true,
+    "health_wait_ms": 20000
+  },
+  
+  "blocking_vs_independent": {
+    "independent": ["BE-AUTH", "BE-OBS", "FE-DSN", "FE-TYPES", "FE-MOCKS", "FE-A11Y-PERF"],
+    "chains": {
+      "backend": [
+        ["BE-SCH", "BE-SEED", "BE-MDL", "BE-API-KPI"],
+        ["BE-SCH", "BE-SEED", "BE-MDL", "BE-API-REV"],
+        ["BE-SCH", "BE-SEED", "BE-MDL", "BE-API-CAT"],
+        ["BE-SCH", "BE-SEED", "BE-MDL", "BE-API-PLT"],
+        ["BE-SCH", "BE-SEED", "BE-MDL", "BE-API-CUS"],
+        ["BE-SCH", "BE-SEED", "BE-MDL", "BE-API-FDB"],
+        ["BE-API-KPI", "BE-API-REV", "BE-API-CAT", "BE-API-PLT", "BE-API-CUS", "BE-API-FDB", "BE-EXP"],
+        ["BE-API-KPI", "BE-API-REV", "BE-TST"]
+      ],
+      "frontend": [
+        ["FE-DSN", "FE-TYPES", "FE-KPI"],
+        ["FE-DSN", "FE-TYPES", "FE-REV"],
+        ["FE-DSN", "FE-TYPES", "FE-PLT"],
+        ["FE-DSN", "FE-TYPES", "FE-CAT"],
+        ["FE-DSN", "FE-TYPES", "FE-CUS"],
+        ["FE-DSN", "FE-TYPES", "FE-FDB"],
+        ["FE-KPI", "FE-REV", "FE-PLT", "FE-CAT", "FE-CUS", "FE-FDB", "FE-EXP"],
+        ["FE-KPI", "FE-REV", "FE-TST"]
+      ]
+    }
+  },
+  
+  "topological_order": {
+    "backend": ["BE-SCH", "BE-AUTH", "BE-OBS", "BE-SEED", "BE-MDL", "BE-API-KPI", "BE-API-REV", "BE-API-CAT", "BE-API-PLT", "BE-API-CUS", "BE-API-FDB", "BE-EXP", "BE-TST"],
+    "frontend": ["FE-DSN", "FE-TYPES", "FE-MOCKS", "FE-A11Y-PERF", "FE-KPI", "FE-REV", "FE-PLT", "FE-CAT", "FE-CUS", "FE-FDB", "FE-EXP", "FE-TST"]
+  },
+  
+  "conflicts": [
+    {"conflict": "ports", "risk": "services fail to boot", "mitigation": "auto-bump ports; health-wait; env configurable"},
+    {"conflict": "migrations_vs_seeds", "risk": "data drift and flakiness", "mitigation": "freeze schema before seeds; rerun seeds after migration"},
+    {"conflict": "secrets", "risk": "secret leakage in VCS", "mitigation": "env injection only; secret scan; CI block on findings"},
+    {"conflict": "openapi_drift", "risk": "type/runtime mismatch", "mitigation": "contract tests; regen types on GEN/BE:UP; PR gate"},
+    {"conflict": "backend_down", "risk": "FE blocked", "mitigation": "FE:MOCK prism/MSW; banner; resequence"},
+    {"conflict": "phi_in_nonprod", "risk": "compliance breach", "mitigation": "synthetic data only; audit seeds"},
+    {"conflict": "logging_sensitive", "risk": "data leakage", "mitigation": "redaction allow/deny lists; audit-only PHI events"},
+    {"conflict": "csv_heavy", "risk": "timeouts/memory", "mitigation": "streamed CSV; pagination; p95 < 1500ms"}
+  ],
+  
+  "compliance": {
+    "hipaa": {
+      "encryption_in_transit": "TLS 1.2+",
+      "encryption_at_rest": "AES-256",
+      "session_timeout_minutes": 15,
+      "audit_logging": true,
+      "no_phi_in_non_prod": true
+    },
+    "auth0": {
+      "oidc": true,
+      "rbac_roles": ["admin", "analyst", "viewer"],
+      "minimum_necessary": true,
+      "quarterly_review": true
+    }
+  },
+  
+  "logging_policy": {
+    "structured": true,
+    "correlation_id_header": "X-Request-ID",
+    "propagate_correlation_id": true,
+    "redact_fields": ["email", "authorization", "cookie", "token", "password"],
+    "include_fields": ["operation", "duration_ms", "status_code", "user_role"]
+  },
+  
+  "performance_kpis": {
+    "backend_p95_ms": {
+      "/api/v1/kpis": 500,
+      "/api/v1/revenue": 500,
+      "/api/v1/categories": 500,
+      "/api/v1/platforms": 500,
+      "/api/v1/customers/insights": 500,
+      "/api/v1/feedback": 500,
+      "/api/v1/export/csv": 1500
+    },
+    "frontend": {
+      "lcp_ms": 2500,
+      "interactive_ms": 3000
+    },
+    "data": {
+      "aggregates_p95_ms": 400
+    }
+  },
+  
+  "environment_policy": {
+    "python_package_manager": "uv",
+    "idempotent_state_file": ".orchestrator/state.json"
+  },
+  
+  "mock_ladder": {
+    "order": ["real", "prism", "stubs"],
+    "banner_when_mocked": true
+  },
+  
+  "triggers": {
+    "next": ["GEN", "BE:UP", "FE:E2E", "BE:DATA", "QA", "SMOKE", "PR"],
+    "fe_e2e": ["TYPES", "DEV"],
+    "be_up": ["ENV", "RUN"],
+    "status": ["STATUS", "STOP"]
+  },
+  
+  "phase_acceptance": {
+    "PLAN": [
+      "lanes/deps/conflicts/acceptance present",
+      "no side-effects"
+    ]
+  }
 }

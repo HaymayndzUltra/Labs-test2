@@ -35,15 +35,67 @@ Industry: ecommerce | Type: fullstack | Frontend: nextjs | Backend: fastapi
 - [FE-A11Y-PERF] WCAG AA + code-split/memoize (blocked_by: -)
 - [FE-TST] Component + E2E smoke (blocked_by: FE-KPI, FE-REV)
 
-## Conflicts & Guardrails
+### Concurrency Caps
 
-- Ports: FE 3000, BE 8000 (configurable)
-- Migrations vs seed/tests: lock sequencing
-- Secrets: no plaintext; env-injection only
+- Backend lane: max 3 concurrent tasks
+- Frontend lane: max 3 concurrent tasks
+
+### Blocking vs Independent
+
+- Independent (can start immediately): BE-AUTH, BE-OBS; FE-DSN, FE-TYPES, FE-MOCKS, FE-A11Y-PERF
+- Blocking chains:
+  - Backend: BE-SCH → BE-SEED → BE-MDL → [BE-API-KPI, BE-API-REV, BE-API-CAT, BE-API-PLT, BE-API-CUS, BE-API-FDB] → BE-EXP; BE-TST depends on BE-API-KPI and BE-API-REV
+  - Frontend: [FE-KPI, FE-REV, FE-PLT, FE-CAT, FE-CUS, FE-FDB] depend on FE-DSN and FE-TYPES → FE-EXP; FE-TST depends on FE-KPI and FE-REV
+
+### Topological Order (by lane)
+
+- Backend: BE-SCH, BE-AUTH, BE-OBS → BE-SEED → BE-MDL → BE-API-* (parallel) → BE-EXP → BE-TST
+- Frontend: FE-DSN, FE-TYPES, FE-MOCKS, FE-A11Y-PERF → FE-KPI/FE-REV/FE-PLT/FE-CAT/FE-CUS/FE-FDB (parallel) → FE-EXP → FE-TST
+
+## Conflicts & Mitigations
+
+| Conflict | Risk | Mitigation / Resequencing |
+|---|---|---|
+| Ports clash (FE 3000, BE 8000) | Services fail to boot | Orchestrator auto-bumps ports and health-waits; expose via env |
+| Migrations vs seeds/tests | Flaky pipelines, data drift | Freeze schema before seeds; gate seeds after BE-SCH; re-run seeds post-migration |
+| Secrets handling | Secret leakage in VCS | Only env-injection via .env.local; pre-commit secret scan; CI blocks on findings |
+| OpenAPI drift (BE↔FE) | Type/runtime mismatches | Contract tests; regenerate on GEN/BE:UP; block PR if spec/handlers diverge |
+| BE unavailable | FE blocked | Invoke FE:MOCK path (Prism/MSW) and proceed; banner “Mock Data”; resequence FE tasks |
+| PHI/PII in non-prod | Compliance breach | Synthetic data only; “no PHI in non-prod” policy; audit seeds |
+| Logging sensitive fields | Data leakage | Structured logs with redaction; denylist/allowlist; audit events for PHI access only |
+| CSV exports heavy | Timeouts/memory | Streamed CSV, pagination/windowing; budget p95 < 1500ms with seeds |
+| Rate limits on sources | Failed ingestions | Backoff + caching; schema versioning and drift alerts |
+
+## Compliance Posture (HIPAA/Auth0/RBAC)
+
+- Encryption: TLS 1.2+ in transit; AES-256 at rest (DB/volumes)
+- Access: Auth0 OIDC; RBAC roles: admin, analyst, viewer; minimum necessary access
+- Sessions: 15-minute inactivity timeout; re-auth required
+- Audit: Log all PHI access/change events; correlation IDs; no PHI content in logs
+- Non-prod: No PHI in non-prod; only synthetic or masked data
+- Reviews: Quarterly RBAC review; audit log review cadence
+
+## Logging Policy
+
+- Use structured logging with correlation/request IDs across FE/BE
+- Redact known sensitive fields (email, token, auth headers, CSV payloads)
+- Include operation name, duration, status, user role (not user identifiers)
+- Retention as per org policy; export logs contain no PHI; sampling allowed in non-prod
+
+## Performance KPIs
+
+- Backend: p95 < 500ms for main endpoints (/kpis, /revenue, /categories, /platforms, /customers/insights, /feedback) on seed data
+- Frontend: dashboard first meaningful paint < 2.5s; interactive < 3s; no console errors
+- Data: aggregate queries p95 < 400ms (seed); exports p95 < 1500ms streamed
 
 ## Next Triggers
 
-- RUN_BE and RUN_FE in parallel (≤3 concurrent per lane)
-- CSAN if blocked
-- QA for completed scope
-- PR: artifacts + acceptance (STOP, no deploy)
+- GEN (if skeleton missing) → BE:UP (env then run) → FE:E2E (types then dev)
+- If BE unhealthy: FE:MOCK; document resequencing in PLAN
+- BE:DATA (migrate + seed) when schema stable
+- QA (tests + security gates) → Smoke/Perf (budgets) → PR (STOP, no deploy)
+
+## Acceptance
+
+- Kumpleto ang lanes, dependencies, conflicts table, mitigations, compliance, logging policy, performance KPIs, at next triggers
+- Walang side-effects (planning artifacts only)

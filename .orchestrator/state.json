@@ -1,0 +1,9 @@
+{
+  "project": "commerce-analytics",
+  "services": {
+    "frontend": { "status": "down", "port": 3000 },
+    "backend": { "status": "down", "port": 8000 },
+    "mock": { "status": "down", "port": 4010 }
+  },
+  "last_updated": null
+}

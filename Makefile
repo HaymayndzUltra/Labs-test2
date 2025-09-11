@@ -1,6 +1,6 @@
 # Project Makefile
 
-.PHONY: help install test build deploy clean
+.PHONY: help install test build deploy clean gen status stop
 
 help: ## Show this help message
 	@echo "Available commands:"
@@ -20,3 +20,12 @@ deploy: ## Deploy to production
 
 clean: ## Clean build artifacts
 	@echo "Cleaning build artifacts..."
+
+gen: ## Run GEN scaffolding (no-op if already scaffolded)
+	@python3 scripts/orchestrator.py GEN | cat
+
+status: ## Show orchestrator STATUS
+	@python3 scripts/orchestrator.py STATUS | cat
+
+stop: ## STOP services and clean orchestrator state
+	@python3 scripts/orchestrator.py STOP | cat

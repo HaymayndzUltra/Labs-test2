@@ -1,0 +1,25 @@
+{
+  "project": "commerce-analytics",
+  "precedence": ["masters", "project", "rules_lib"],
+  "masters": [
+    "consolidated-master-rules.md",
+    "master-rules/**"
+  ],
+  "project_rules": [
+    "project-rules/**",
+    "common-rules/**",
+    "healthtech-demo/**"
+  ],
+  "rules_lib": [
+    "RULES_LIB/**",
+    "_generated/**"
+  ],
+  "policy": {
+    "rules_lib_is_additive_only": true,
+    "no_overwrites": true
+  },
+  "notes": {
+    "hipaa": "Apply HIPAA controls per always-applied workspace rules",
+    "auth": "Auth0 RBAC as per project standards"
+  }
+}
