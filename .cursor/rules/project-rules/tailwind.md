@@ -1,6 +1,6 @@
 ---
 description: Frontend Tailwind Standards
-globs: ["frontend/**/*.ts", "frontend/**/*.tsx", "frontend/**/*.js", "frontend/**/*.jsx", "frontend/**/*.css"]
+globs: frontend/**/*.ts,frontend/**/*.tsx,frontend/**/*.js,frontend/**/*.jsx,frontend/**/*.css
 alwaysApply: false
 ---
 You are an expert in TypeScript, Gatsby, React and Tailwind.
