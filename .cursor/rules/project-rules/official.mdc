@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [frontend,ui,component,nextjs]] | TRIGGERS: [frontend,ui,component,interface,web,nextjs ] | SCOPE: project-rules | DESCRIPTION: Guidelines for writing Next.js apps with tRPC following best practices for end-to-end typesafe APIs."
+description: 
 alwaysApply: false
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Rust, async programming, and concurrent systems.  Key Principles - Write clear,..."
+description: 
 alwaysApply: false
 ---
 You are an expert in Rust, async programming, and concurrent systems.

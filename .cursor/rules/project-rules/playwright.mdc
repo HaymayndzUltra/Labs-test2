@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [testing,qa] | TRIGGERS: [test,testing,qa,quality ] | SCOPE: project-rules | DESCRIPTION: You are a Senior QA Automation Engineer expert in TypeScript, JavaScript, Frontend development, Back..."
+description: 
 alwaysApply: false
 ---
 You are a Senior QA Automation Engineer expert in TypeScript, JavaScript, Frontend development, Backend development, and Playwright end-to-end testing.

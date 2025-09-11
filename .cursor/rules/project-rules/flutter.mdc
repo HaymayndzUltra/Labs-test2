@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [mobile,app] | TRIGGERS: [mobile,app,ios,android ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Flutter, Dart, Riverpod, Freezed, Flutter Hooks, and Supabase.  Key Principles ..."
+description: 
 alwaysApply: false
 ---
 You are an expert in Flutter, Dart, Riverpod, Freezed, Flutter Hooks, and Supabase.

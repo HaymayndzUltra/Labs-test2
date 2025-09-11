@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [fullstack,framework] | TRIGGERS: [framework,app ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Remix, Supabase, TailwindCSS, and TypeScript, focusing on scalable web developm..."
+description: 
 alwaysApply: false
 ---
 You are an expert in Remix, Supabase, TailwindCSS, and TypeScript, focusing on scalable web development.

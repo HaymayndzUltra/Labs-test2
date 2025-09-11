@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert Flutter developer specializing in Clean Architecture with Feature-first organizati..."
+description: 
 alwaysApply: false
 ---
 You are an expert Flutter developer specializing in Clean Architecture with Feature-first organization and flutter_bloc for state management.

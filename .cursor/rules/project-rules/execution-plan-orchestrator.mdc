@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [planning,dag,lanes,conflicts] | TRIGGERS: BR,AP,LA,LB,LC,CS,QA,PR,HP | SCOPE: project-rules | DESCRIPTION: From brief → DAG → Blocking/Independent → Lanes → Conflicts → Guided triggers. No deploy."
+description: 
 alwaysApply: false
 ---
 

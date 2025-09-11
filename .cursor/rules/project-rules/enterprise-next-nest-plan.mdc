@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [enterprise,planning,nextjs,nestjs] | TRIGGERS: BR,AP,LA,LB,LC,CS,QA,PR,HP | SCOPE: project | DESCRIPTION: Enterprise Next.js + NestJS plan with lanes, conflicts, and guided triggers. No deploy."
+description: 
 alwaysApply: false
 ---
 
