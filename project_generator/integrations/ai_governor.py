@@ -8,7 +8,7 @@ import json
 import yaml
 import shutil
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Union
 import subprocess
 
 
@@ -117,23 +117,80 @@ class AIGovernorIntegration:
         }
     
     def _evaluate_condition(self, condition: str, config: Dict) -> bool:
-        """Evaluate a policy condition"""
-        # Simple condition evaluation (can be extended)
+        """Evaluate a policy condition without using eval.
+
+        Supported grammar (boolean expressions):
+          - equality/inequality: field == 'value', field != 'value'
+          - membership: 'hipaa' in compliance, 'pci' not in compliance
+          - conjunction/disjunction: and/or
+          - parentheses for grouping
+
+        Fields: industry, project_type, auth, frontend, backend, deploy, compliance (list)
+        """
+        import ast
+
+        # Build context
+        ctx: Dict[str, Union[str, List[str]]] = {
+            'industry': config.get('industry'),
+            'project_type': config.get('project_type'),
+            'auth': config.get('stack', {}).get('auth'),
+            'frontend': config.get('stack', {}).get('frontend'),
+            'backend': config.get('stack', {}).get('backend'),
+            'deploy': config.get('stack', {}).get('deploy'),
+            'compliance': config.get('compliance', []) or [],
+        }
+
+        def _eval(node: ast.AST) -> bool:
+            if isinstance(node, ast.BoolOp):
+                if isinstance(node.op, ast.And):
+                    return all(_eval(v) for v in node.values)
+                if isinstance(node.op, ast.Or):
+                    return any(_eval(v) for v in node.values)
+                return False
+            if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+                return not _eval(node.operand)
+            if isinstance(node, ast.Compare):
+                left = _eval(node.left)
+                # Only support single comparator for simplicity
+                if len(node.ops) != 1 or len(node.comparators) != 1:
+                    return False
+                op = node.ops[0]
+                right = _eval(node.comparators[0])
+                if isinstance(op, ast.Eq):
+                    return left == right
+                if isinstance(op, ast.NotEq):
+                    return left != right
+                if isinstance(op, ast.In):
+                    try:
+                        return left in right
+                    except TypeError:
+                        return False
+                if isinstance(op, ast.NotIn):
+                    try:
+                        return left not in right
+                    except TypeError:
+                        return False
+                return False
+            if isinstance(node, ast.Name):
+                return ctx.get(node.id)
+            if isinstance(node, ast.Constant):
+                return node.value
+            if isinstance(node, ast.Str):  # py<3.8 compatibility if any
+                return node.s
+            if isinstance(node, ast.List):
+                return [_eval(elt) for elt in node.elts]
+            if isinstance(node, ast.Tuple):
+                return tuple(_eval(elt) for elt in node.elts)
+            return False
+
         try:
-            # Create evaluation context
-            context = {
-                'industry': config.get('industry'),
-                'project_type': config.get('project_type'),
-                'compliance': config.get('compliance', []),
-                'auth': config.get('stack', {}).get('auth'),
-                'frontend': config.get('stack', {}).get('frontend'),
-                'backend': config.get('stack', {}).get('backend'),
-                'deploy': config.get('stack', {}).get('deploy')
-            }
-            
-            # Safely evaluate condition
-            return eval(condition, {"__builtins__": {}}, context)
-        except:
+            tree = ast.parse(condition, mode='eval')
+        except Exception:
+            return False
+
+        try:
+            return bool(_eval(tree.body))
+        except Exception:
             return False
     
     def copy_master_rules(self, target_project: Path) -> List[str]:
