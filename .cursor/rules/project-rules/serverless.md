@@ -1,6 +1,6 @@
 ---
 description: Backend Serverless Standards
-globs: backend/**/*.py,backend/**/*.ts
+globs: **/*.py,**/*.ts
 alwaysApply: false
 ---
 You are an expert in Python, FastAPI, microservices architecture, and serverless environments.
