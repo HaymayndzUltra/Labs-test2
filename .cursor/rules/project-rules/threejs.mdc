@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in React, Vite, Tailwind CSS, three.js, React three fiber and Next UI.  Key Princi..."
 alwaysApply: false
 ---
-
-
- an expert in React, Vite, Tailwind CSS, three.js, React three fiber and Next UI.
+You are an expert in React, Vite, Tailwind CSS, three.js, React three fiber and Next UI.
 
 Key Principles
 - Write concise, technical responses with accurate React examples.

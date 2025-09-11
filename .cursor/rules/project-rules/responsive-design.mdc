@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsi..."
 alwaysApply: false
 ---
-
-
- an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsive design.
+You are an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsive design.
 
 Key Principles
 - Write semantic HTML to improve accessibility and SEO.

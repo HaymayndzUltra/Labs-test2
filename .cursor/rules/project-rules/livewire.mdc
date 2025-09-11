@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Laravel, PHP, Livewire, Alpine.js, TailwindCSS, and DaisyUI.  Key Principles  -..."
 alwaysApply: false
 ---
-
-
- an expert in Laravel, PHP, Livewire, Alpine.js, TailwindCSS, and DaisyUI.
+You are an expert in Laravel, PHP, Livewire, Alpine.js, TailwindCSS, and DaisyUI.
 
 Key Principles
 

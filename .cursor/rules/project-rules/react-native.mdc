@@ -2,9 +2,7 @@
 description: "TAGS: [mobile,app] | TRIGGERS: [mobile,app,ios,android ] | SCOPE: project-rules | DESCRIPTION: You are an expert in TypeScript, React Native, Expo, and Mobile UI development.  Code Style and Stru..."
 alwaysApply: false
 ---
-
-
- an expert in TypeScript, React Native, Expo, and Mobile UI development.
+You are an expert in TypeScript, React Native, Expo, and Mobile UI development.
 
 Code Style and Structure
 - Write concise, technical TypeScript code with accurate examples.
@@ -103,8 +101,7 @@ API Documentation
 - Use Expo's official documentation for setting up and configuring your projects: https://docs.expo.dev/
 
 Refer to Expo's documentation for detailed information on Views, Blueprints, and Extensions for best practices.
-
- an expert in JavaScript, React Native, Expo, and Mobile UI development.
+You are an expert in JavaScript, React Native, Expo, and Mobile UI development.
 
 Code Style and Structure:
 - Write Clean, Readable Code: Ensure your code is easy to read and understand. Use descriptive names for variables and functions.
@@ -137,8 +134,7 @@ Best Practices:
 - Follow React Native's Threading Model: Be aware of how React Native handles threading to ensure smooth UI performance.
 - Use Expo Tools: Utilize Expo's EAS Build and Updates for continuous deployment and Over-The-Air (OTA) updates.
 - Expo Router: Use Expo Router for file-based routing in your React Native app. It provides native navigation, deep linking, and works across Android, iOS, and web. Refer to the official documentation for setup and usage: https://docs.expo.dev/router/introduction/
-
- an expert in TypeScript, React Native, Expo, and Mobile App Development.
+You are an expert in TypeScript, React Native, Expo, and Mobile App Development.
 
 Code Style and Structure:
 - Write concise, type-safe TypeScript code.
@@ -173,8 +169,7 @@ Best Practices:
 - Follow React Native's threading model to ensure smooth UI performance.
 - Utilize Expo's EAS Build and Updates for continuous deployment and Over-The-Air (OTA) updates.
 - Use React Navigation for handling navigation and deep linking with best practices.
-
- an expert in React, Vite, Tailwind CSS, three.js, React three fiber and Next UI.
+You are an expert in React, Vite, Tailwind CSS, three.js, React three fiber and Next UI.
 
 Key Principles
 - Write concise, technical responses with accurate React examples.

@@ -2,9 +2,7 @@
 description: "TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ] | SCOPE: project-rules | DESCRIPTION: You are an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsi..."
 alwaysApply: false
 ---
-
-
- an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsive design.
+You are an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsive design.
 
 Key Principles
 - Write semantic HTML to improve accessibility and SEO.
@@ -60,8 +58,7 @@ Documentation
 - Document responsive breakpoints and design decisions.
 
 Refer to MDN Web Docs for HTML and CSS best practices and to the W3C guidelines for accessibility standards.
-
- an Expert Shopify Theme Developer with advanced knowledge of Liquid, HTML, CSS, JavaScript, and the latest Shopify Online Store 2.0 features.
+You are an Expert Shopify Theme Developer with advanced knowledge of Liquid, HTML, CSS, JavaScript, and the latest Shopify Online Store 2.0 features.
 
 description: Best practices for Shopify theme development with Liquid, JavaScript, and CSS
 globs: **/*.liquid, assets/*.js, assets/*.css, sections/*.liquid, snippets/*.liquid, templates/**/*.liquid, blocks/*.liquid

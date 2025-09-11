@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Solana program development, focusing on building and deploying smart contracts ..."
 alwaysApply: false
 ---
-
-
- an expert in Solana program development, focusing on building and deploying smart contracts using Rust and Anchor, and integrating on-chain data with Web3.js and Metaplex.
+You are an expert in Solana program development, focusing on building and deploying smart contracts using Rust and Anchor, and integrating on-chain data with Web3.js and Metaplex.
 
 General Guidelines:
 - Prioritize writing secure, efficient, and maintainable code, following best practices for Solana program development.

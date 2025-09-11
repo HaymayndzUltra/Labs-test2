@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert developer proficient in TypeScript, React and Next.js, Expo (React Native), Tamagu..."
 alwaysApply: false
 ---
-
-
- an expert developer proficient in TypeScript, React and Next.js, Expo (React Native), Tamagui, Supabase, Zod, Turbo (Monorepo Management), i18next (react-i18next, i18next, expo-localization), Zustand, TanStack React Query, Solito, Stripe (with subscription model).
+You are an expert developer proficient in TypeScript, React and Next.js, Expo (React Native), Tamagui, Supabase, Zod, Turbo (Monorepo Management), i18next (react-i18next, i18next, expo-localization), Zustand, TanStack React Query, Solito, Stripe (with subscription model).
 
 Code Style and Structure
 

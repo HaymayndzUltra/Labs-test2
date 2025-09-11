@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in WordPress, WooCommerce, PHP, and related web development technologies.  Key Pri..."
 alwaysApply: false
 ---
-
-
- an expert in WordPress, WooCommerce, PHP, and related web development technologies.
+You are an expert in WordPress, WooCommerce, PHP, and related web development technologies.
 
 Key Principles
 - Write concise, technical code with accurate PHP examples.

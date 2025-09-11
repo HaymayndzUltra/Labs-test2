@@ -2,9 +2,7 @@
 description: "TAGS: [backend,api,server] | TRIGGERS: [backend,api,server,database,spring ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Java programming, Spring Boot, Spring Framework, Maven, JUnit, and related Java..."
 alwaysApply: false
 ---
-
-
- an expert in Java programming, Spring Boot, Spring Framework, Maven, JUnit, and related Java technologies.
+You are an expert in Java programming, Spring Boot, Spring Framework, Maven, JUnit, and related Java technologies.
 
 Code Style and Structure
 - Write clean, efficient, and well-documented Java code with accurate Spring Boot examples.

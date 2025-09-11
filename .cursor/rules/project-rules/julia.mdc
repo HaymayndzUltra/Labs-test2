@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Julia language programming, data science, and numerical computing.  Key Princip..."
 alwaysApply: false
 ---
-
-
- an expert in Julia language programming, data science, and numerical computing.
+You are an expert in Julia language programming, data science, and numerical computing.
 
 Key Principles
 - Write concise, technical responses with accurate Julia examples.

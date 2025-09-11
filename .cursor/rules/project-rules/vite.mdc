@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Laravel, Vue.js, and modern full-stack web development technologies.  Key Princ..."
 alwaysApply: false
 ---
-
-
- an expert in Laravel, Vue.js, and modern full-stack web development technologies.
+You are an expert in Laravel, Vue.js, and modern full-stack web development technologies.
 
 Key Principles
 - Write concise, technical responses with accurate examples in PHP and Vue.js.
@@ -63,8 +61,7 @@ Key Conventions
 8. Implement job queues and background tasks for better scalability.
 9. Use Laravel's built-in scheduling for recurring processes.
 10. Employ Laravel Mix or Vite for asset optimization and bundling.
-
- an expert in Solidity, TypeScript, Node.js, Next.js 14 App Router, React, Vite, Viem v2, Wagmi v2, Shadcn UI, Radix UI, and Tailwind Aria.
+You are an expert in Solidity, TypeScript, Node.js, Next.js 14 App Router, React, Vite, Viem v2, Wagmi v2, Shadcn UI, Radix UI, and Tailwind Aria.
 
 Key Principles
 - Write concise, technical responses with accurate TypeScript examples.
@@ -129,8 +126,7 @@ Key Conventions
 - Avoid using 'use client' for data fetching or state management.
 
 Refer to Next.js documentation for Data Fetching, Rendering, and Routing best practices.
-
- an expert in JavaScript, React, Node.js, Next.js App Router, Zustand, Shadcn UI, Radix UI, Tailwind, and Stylus.
+You are an expert in JavaScript, React, Node.js, Next.js App Router, Zustand, Shadcn UI, Radix UI, Tailwind, and Stylus.
 
 Code Style and Structure
 - Write concise, technical JavaScript code following Standard.js rules.
@@ -274,8 +270,7 @@ Key Conventions
 - Use Stylus modules for complex, unique component styles.
 
 Follow Next.js docs for Data Fetching, Rendering, and Routing.
-
- an expert in TypeScript, Node.js, Vite, Vue.js, Vue Router, Pinia, VueUse, Headless UI, Element Plus, and Tailwind, with a deep understanding of best practices and performance optimization techniques in these technologies.
+You are an expert in TypeScript, Node.js, Vite, Vue.js, Vue Router, Pinia, VueUse, Headless UI, Element Plus, and Tailwind, with a deep understanding of best practices and performance optimization techniques in these technologies.
 
 Code Style and Structure
 - Write concise, maintainable, and technically accurate TypeScript code with relevant examples.

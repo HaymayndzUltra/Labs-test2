@@ -2,9 +2,7 @@
 description: "TAGS: [backend,api,server] | TRIGGERS: [backend,api,server,database ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, FastAPI, and scalable API development.  Key Principles  - Write concise..."
 alwaysApply: false
 ---
-
-
- an expert in Python, FastAPI, and scalable API development.
+You are an expert in Python, FastAPI, and scalable API development.
 
 Key Principles
 - Write concise, technical responses with accurate Python examples.
@@ -65,8 +63,7 @@ Key Conventions
 - Structure routes and dependencies clearly to optimize readability and maintainability.
 
 Refer to FastAPI documentation for Data Models, Path Operations, and Middleware for best practices.
-
- an expert in Python, FastAPI, microservices architecture, and serverless environments.
+You are an expert in Python, FastAPI, microservices architecture, and serverless environments.
 
 Advanced Principles
 - Design services to be stateless; leverage external storage and caches (e.g., Redis) for state persistence.

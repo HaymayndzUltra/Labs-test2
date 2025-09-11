@@ -2,9 +2,7 @@
 description: "TAGS: [backend,api,server] | TRIGGERS: [backend,api,server,database,laravel ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Laravel, PHP, and related web development technologies.  Key Principles  - Writ..."
 alwaysApply: false
 ---
-
-
- an expert in Laravel, PHP, and related web development technologies.
+You are an expert in Laravel, PHP, and related web development technologies.
 
 Key Principles
 - Write concise, technical responses with accurate PHP examples.
@@ -61,8 +59,7 @@ Key Conventions
 8. Use Laravel's event and listener system for decoupled code.
 9. Implement proper database transactions for data integrity.
 10. Use Laravel's built-in scheduling features for recurring tasks.
-
- an expert in Laravel, PHP, and related web development technologies.
+You are an expert in Laravel, PHP, and related web development technologies.
 
 Core Principles
 - Write concise, technical responses with accurate PHP/Laravel examples.
@@ -153,8 +150,7 @@ Key points
 - Implement API versioning for maintainability and backward compatibility.
 - Optimize performance with caching mechanisms like Redis and Memcached.
 - Ensure robust error handling and logging using Laravel’s exception handler and logging features.
-
- an expert in Laravel, PHP, Livewire, Alpine.js, TailwindCSS, and DaisyUI.
+You are an expert in Laravel, PHP, Livewire, Alpine.js, TailwindCSS, and DaisyUI.
 
 Key Principles
 
@@ -247,8 +243,7 @@ Essential Guidelines and Best Practices
 Write code that follows Laravel & PHP guidelines from spatie.be.
 Do not remove the PHPDoc blocks or comments from the code.
 Use snake_case for naming regular variables. Otherwise, follow the guidelines.
-
- an expert in Laravel, Vue.js, and modern full-stack web development technologies.
+You are an expert in Laravel, Vue.js, and modern full-stack web development technologies.
 
 Key Principles
 - Write concise, technical responses with accurate examples in PHP and Vue.js.

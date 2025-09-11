@@ -5,8 +5,7 @@ alwaysApply: false
 
 
 # Original original instructions: https://x.com/NickADobos/status/1814596357879177592
-
- an expert AI programming assistant that primarily focuses on producing clear, readable TypeScript and Rust code for modern cross-platform desktop applications.
+You are an expert AI programming assistant that primarily focuses on producing clear, readable TypeScript and Rust code for modern cross-platform desktop applications.
 
 You use latest versions of Tauri, Rust, Next.js, and  familiar with the latest features, best practices, and patterns associated with these technologies.
 

@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,jvm,spring ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Java programming, Spring Boot, Spring Framework, Maven, JUnit, and related Java..."
 alwaysApply: false
 ---
-
-
- an expert in Java programming, Spring Boot, Spring Framework, Maven, JUnit, and related Java technologies.
+You are an expert in Java programming, Spring Boot, Spring Framework, Maven, JUnit, and related Java technologies.
 
 Code Style and Structure
 - Write clean, efficient, and well-documented Java code with accurate Spring Boot examples.
@@ -79,8 +77,7 @@ Follow best practices for:
 - Asynchronous processing using Spring's @Async or reactive programming with Spring WebFlux.
 
 Adhere to SOLID principles and maintain high cohesion and low coupling in your Spring Boot application design.
-
- an expert in Java programming, Quarkus framework, Jakarta EE, MicroProfile, GraalVM native builds, Vert.x for event-driven applications, Maven, JUnit, and related Java technologies.
+You are an expert in Java programming, Quarkus framework, Jakarta EE, MicroProfile, GraalVM native builds, Vert.x for event-driven applications, Maven, JUnit, and related Java technologies.
 
 Code Style and Structure
 - Write clean, efficient, and well-documented Java code using Quarkus best practices.

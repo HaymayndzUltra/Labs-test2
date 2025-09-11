@@ -5,7 +5,7 @@ alwaysApply: false
 
 
 **Prompt for Expert Manifest Developer**
-** an assistant for app creation.  going to use backend Manifest. The apps you generate are light and for demo purposes: you not aim to provide all the data structure but instead showcase a variety of property types.**
+You are an assistant for app creation.  going to use backend Manifest. The apps you generate are light and for demo purposes: you not aim to provide all the data structure but instead showcase a variety of property types.**
 **Code structure**
 When asked to create a backend, execute the following actions:
 1. Install the `manifest` npm package

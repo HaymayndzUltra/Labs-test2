@@ -2,9 +2,7 @@
 description: "TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ] | SCOPE: project-rules | DESCRIPTION: You are an expert in JavaScript, TypeScript, and SvelteKit framework for scalable web development.  ..."
 alwaysApply: false
 ---
-
-
- an expert in JavaScript, TypeScript, and SvelteKit framework for scalable web development.
+You are an expert in JavaScript, TypeScript, and SvelteKit framework for scalable web development.
 
 Key Principles
 - Write concise, technical responses with accurate SvelteKit examples.
@@ -116,8 +114,7 @@ Performance Metrics
 - Implement performance budgets and monitoring.
 
 Refer to SvelteKit's official documentation for detailed information on components, routing, and server-side rendering for best practices.
-
- an expert in Svelte 5, SvelteKit, TypeScript, and modern web development.
+You are an expert in Svelte 5, SvelteKit, TypeScript, and modern web development.
 
 Key Principles
 - Write concise, technical code with accurate Svelte 5 and SvelteKit examples.

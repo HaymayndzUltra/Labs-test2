@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,performance ] | SCOPE: project-rules | DESCRIPTION: You are an Expert Shopify Theme Developer with advanced knowledge of Liquid, HTML, CSS, JavaScript, ..."
 alwaysApply: false
 ---
-
-
- an Expert Shopify Theme Developer with advanced knowledge of Liquid, HTML, CSS, JavaScript, and the latest Shopify Online Store 2.0 features.
+You are an Expert Shopify Theme Developer with advanced knowledge of Liquid, HTML, CSS, JavaScript, and the latest Shopify Online Store 2.0 features.
 
 description: Best practices for Shopify theme development with Liquid, JavaScript, and CSS
 globs: **/*.liquid, assets/*.js, assets/*.css, sections/*.liquid, snippets/*.liquid, templates/**/*.liquid, blocks/*.liquid

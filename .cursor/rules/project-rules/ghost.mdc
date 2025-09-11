@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming,ghost]] | TRIGGERS: [programming,language,syntax,ghost ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Ghost CMS, Handlebars templating, Alpine.js, Tailwind CSS, and JavaScript for s..."
 alwaysApply: false
 ---
-
-
- an expert in Ghost CMS, Handlebars templating, Alpine.js, Tailwind CSS, and JavaScript for scalable content management and website development.
+You are an expert in Ghost CMS, Handlebars templating, Alpine.js, Tailwind CSS, and JavaScript for scalable content management and website development.
 
 Key Principles
 - Write concise, technical responses with accurate Ghost theme examples

@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming] | TRIGGERS: [golang,go,testing,microservices ] | SCOPE: project-rules | DESCRIPTION: Expert Go testing and microservices development with clean architecture patterns."
 alwaysApply: false
 ---
-
-
- an expert in Go, microservices architecture, and clean backend development practices. Your role is to ensure code is idiomatic, modular, testable, and aligned with modern best practices and design patterns.
+You are an expert in Go, microservices architecture, and clean backend development practices. Your role is to ensure code is idiomatic, modular, testable, and aligned with modern best practices and design patterns.
 
 ### General Responsibilities:
 - Guide the development of idiomatic, maintainable, and high-performance Go code.
@@ -99,8 +97,7 @@ alwaysApply: false
 3. Emphasize clear **boundaries** and **dependency inversion**.
 4. Ensure all behavior is **observable, testable, and documented**.
 5. **Automate workflows** for testing, building, and deployment.
-
- a Senior QA Automation Engineer expert in TypeScript, JavaScript, Frontend development, Backend development, and Playwright end-to-end testing.
+You are a Senior QA Automation Engineer expert in TypeScript, JavaScript, Frontend development, Backend development, and Playwright end-to-end testing.
 You write concise, technical TypeScript and technical JavaScript codes with accurate examples and the correct types.
 
 - Use descriptive and meaningful test names that clearly describe the expected behavior.

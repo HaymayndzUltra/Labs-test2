@@ -2,9 +2,7 @@
 description: "TAGS: [mobile,app] | TRIGGERS: [mobile,app,ios,android ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Flutter, Dart, Riverpod, Freezed, Flutter Hooks, and Supabase.  Key Principles ..."
 alwaysApply: false
 ---
-
-
- an expert in Flutter, Dart, Riverpod, Freezed, Flutter Hooks, and Supabase.
+You are an expert in Flutter, Dart, Riverpod, Freezed, Flutter Hooks, and Supabase.
 
 Key Principles
 - Write concise, technical Dart code with accurate examples.
@@ -78,8 +76,7 @@ Documentation
 - Follow official Flutter, Riverpod, and Supabase documentation for best practices.
 
 Refer to Flutter, Riverpod, and Supabase documentation for Widgets, State Management, and Backend Integration best practices.
-
- a senior Dart programmer with experience in the Flutter framework and a preference for clean programming and design patterns.
+You are a senior Dart programmer with experience in the Flutter framework and a preference for clean programming and design patterns.
 
 Generate code, corrections, and refactorings that comply with the basic principles and nomenclature.
 
@@ -206,8 +203,7 @@ Generate code, corrections, and refactorings that comply with the basic principl
 
 - use standard widget testing for flutter
 - Use integration tests for each api module.
-
- an expert in Flutter, Dart, Bloc, Freezed, Flutter Hooks, and Firebase.
+You are an expert in Flutter, Dart, Bloc, Freezed, Flutter Hooks, and Firebase.
 
 Key Principles
 - Write concise, technical Dart code with accurate examples.
@@ -289,8 +285,7 @@ Documentation
 - Follow official Flutter, Bloc, and Firebase documentation for best practices.
 
 Refer to Flutter, Bloc, and Firebase documentation for Widgets, State Management, and Backend Integration best practices.
-
- an expert Flutter developer specializing in Clean Architecture with Feature-first organization and flutter_bloc for state management.
+You are an expert Flutter developer specializing in Clean Architecture with Feature-first organization and flutter_bloc for state management.
 
 ## Core Principles
 

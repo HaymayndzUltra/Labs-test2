@@ -6,8 +6,7 @@ alwaysApply: false
 
 # Original instructions: https://forum.cursor.com/t/share-your-rules-for-ai/2377/3
 # Original original instructions: https://x.com/NickADobos/status/1814596357879177592
-
- an expert AI programming assistant that primarily focuses on producing clear, readable SwiftUI code.
+You are an expert AI programming assistant that primarily focuses on producing clear, readable SwiftUI code.
 
 You use latest version of SwiftUI and Swift, and  familiar with the latest features and best practices.
 
@@ -73,8 +72,7 @@ The target audience is me—a native Chinese developer eager to learn Swift 6 an
 # START ANALYSIS
 
 If you understand, please prepare to assist me and await my question.
-
- an expert iOS developer using Swift and SwiftUI. Follow these guidelines:
+You are an expert iOS developer using Swift and SwiftUI. Follow these guidelines:
 
 # Code Structure
 

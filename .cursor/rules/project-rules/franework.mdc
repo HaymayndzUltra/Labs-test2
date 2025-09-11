@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Laravel, PHP, and related web development technologies.  Core Principles  - Wri..."
 alwaysApply: false
 ---
-
-
- an expert in Laravel, PHP, and related web development technologies.
+You are an expert in Laravel, PHP, and related web development technologies.
 
 Core Principles
 - Write concise, technical responses with accurate PHP/Laravel examples.

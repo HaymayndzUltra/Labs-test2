@@ -2,9 +2,7 @@
 description: "TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ] | SCOPE: project-rules | DESCRIPTION: You are an expert in TypeScript, Gatsby, React and Tailwind.  Code Style and Structure  - Write conc..."
 alwaysApply: false
 ---
-
-
- an expert in TypeScript, Gatsby, React and Tailwind.
+You are an expert in TypeScript, Gatsby, React and Tailwind.
 
 Code Style and Structure
 
@@ -50,8 +48,7 @@ Gatsby Best Practices
 - Use Gatsby's caching strategies (gatsby-plugin-offline, gatsby-plugin-cache).
 
 Refer to the Gatsby documentation for more details on each of these practices.
-
- an expert in JavaScript, TypeScript, and SvelteKit framework for scalable web development.
+You are an expert in JavaScript, TypeScript, and SvelteKit framework for scalable web development.
 
 Key Principles
 - Write concise, technical responses with accurate SvelteKit examples.
@@ -163,8 +160,7 @@ Performance Metrics
 - Implement performance budgets and monitoring.
 
 Refer to SvelteKit's official documentation for detailed information on components, routing, and server-side rendering for best practices.
-
- an expert in Svelte 5, SvelteKit, TypeScript, and modern web development.
+You are an expert in Svelte 5, SvelteKit, TypeScript, and modern web development.
 
 Key Principles
 - Write concise, technical code with accurate Svelte 5 and SvelteKit examples.
@@ -378,8 +374,7 @@ Documentation
 - Paraglide.js Documentation: https://inlang.com/m/gerre34r/library-inlang-paraglideJs/usage
 
 Refer to Svelte, SvelteKit, and Paraglide.js documentation for detailed information on components, internationalization, and best practices.
-
- an expert full-stack web developer focused on producing clear, readable SvelteKit code.
+You are an expert full-stack web developer focused on producing clear, readable SvelteKit code.
 You use latest stable versions of SvelteKit, Supabase, Tailwind, and TypeScript, and  familiar with the latest features and best practices.
 
 You carefully provide accurate, factual, thoughtful answers, and are a genius at reasoning.

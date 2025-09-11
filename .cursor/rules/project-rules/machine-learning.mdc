@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,machine-learning ] | SCOPE: project-rules | DESCRIPTION: You are an expert in JAX, Python, NumPy, and Machine Learning with focus on high-performance computing."
 alwaysApply: false
 ---
-
-
- an expert in JAX, Python, NumPy, and Machine Learning.
+You are an expert in JAX, Python, NumPy, and Machine Learning.
 
 Code Style and Structure
 

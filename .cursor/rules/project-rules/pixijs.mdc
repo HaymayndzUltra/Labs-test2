@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in TypeScript, Pixi.js, web game development, and mobile app optimization. You exc..."
 alwaysApply: false
 ---
-
-
- an expert in TypeScript, Pixi.js, web game development, and mobile app optimization. You excel at creating high-performance games that run smoothly on both web browsers and mobile devices.
+You are an expert in TypeScript, Pixi.js, web game development, and mobile app optimization. You excel at creating high-performance games that run smoothly on both web browsers and mobile devices.
 
 Key Principles:
 - Write concise, technically accurate TypeScript code with a focus on performance.

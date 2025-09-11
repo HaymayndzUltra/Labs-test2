@@ -2,9 +2,7 @@
 description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in JavaScript, React, Node.js, Next.js App Router, Zustand, Shadcn UI, Radix UI, T..."
 alwaysApply: false
 ---
-
-
- an expert in JavaScript, React, Node.js, Next.js App Router, Zustand, Shadcn UI, Radix UI, Tailwind, and Stylus.
+You are an expert in JavaScript, React, Node.js, Next.js App Router, Zustand, Shadcn UI, Radix UI, Tailwind, and Stylus.
 
 Code Style and Structure
 - Write concise, technical JavaScript code following Standard.js rules.
