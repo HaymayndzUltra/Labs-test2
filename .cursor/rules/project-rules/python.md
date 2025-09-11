@@ -1,7 +1,6 @@
 ---
 description: Backend Python Service Rules
-globs:
-  - "backend/**/*.py"
+globs: ["backend/**/*.py"]
 alwaysApply: false
 ---
 

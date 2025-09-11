@@ -1,8 +1,6 @@
 ---
 description: Frontend React Standards
-globs:
-  - "frontend/**/*.ts"
-  - "frontend/**/*.tsx"
+globs: ["frontend/**/*.ts", "frontend/**/*.tsx"]
 alwaysApply: false
 ---
 

@@ -1,8 +1,6 @@
 ---
 description: Frontend JavaScript Standards
-globs:
-  - "frontend/**/*.js"
-  - "frontend/**/*.jsx"
+globs: ["frontend/**/*.js", "frontend/**/*.jsx"]
 alwaysApply: false
 ---
 You are an expert in JavaScript, React, Node.js, Next.js App Router, Zustand, Shadcn UI, Radix UI, Tailwind, and Stylus.
