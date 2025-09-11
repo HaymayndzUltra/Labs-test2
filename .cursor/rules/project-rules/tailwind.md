@@ -1,5 +1,7 @@
 ---
-description: Tailwind
+description: Frontend Tailwind Standards
+globs:
+  - "frontend/**/*.{ts,tsx,js,jsx,css}"
 alwaysApply: false
 ---
 You are an expert in TypeScript, Gatsby, React and Tailwind.
