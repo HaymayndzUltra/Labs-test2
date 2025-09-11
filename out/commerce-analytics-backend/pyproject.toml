@@ -1,0 +1,9 @@
+[project]
+name = "commerce-analytics-backend"
+version = "0.0.1"
+dependencies = []
+requires-python = ">=3.10"
+
+[tool.uv]
+dev-dependencies = []
+
