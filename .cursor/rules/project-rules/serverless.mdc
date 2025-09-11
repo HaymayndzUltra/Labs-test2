@@ -1,10 +1,11 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, FastAPI, microservices architecture, and serverless environments.  Adva..."
+description: Backend Serverless Standards
+globs: **/*.py,**/*.ts
 alwaysApply: false
 ---
 
 
- an expert in Python, FastAPI, microservices architecture, and serverless environments.
+ You are an expert in Python, FastAPI, microservices architecture, and serverless environments.
 
 Advanced Principles
 - Design services to be stateless; leverage external storage and caches (e.g., Redis) for state persistence.

@@ -1,5 +1,6 @@
 ---
-description: "TAGS: [frontend,ui,framework,nextjs]] | TRIGGERS: [frontend,ui,framework,nextjs ] | SCOPE: project-rules | DESCRIPTION: Expert Next.js development with App Router, SSR/SSG, and performance optimization."
+description: Backend Serverless Standards
+globs: ** / *. py, ** / *. ts
 alwaysApply: false
 ---
 
