@@ -51,9 +51,9 @@ def _detect_unverifiable_tokens(proposal_text: str, whitelist: List[str]) -> Lis
     tokens = set(t.lower() for t in re.findall(r"[A-Za-z][A-Za-z0-9+.-]{2,}", proposal_text))
     generic = {"the", "and", "for", "with", "project", "value", "client", "approach", "deliverables", "acceptance", "criteria", "success", "plan", "phase", "review"}
     extraneous = [t for t in tokens if t not in set(whitelist) and t not in generic]
-    # Focus on likely-claims: tech words and proper nouns-like tokens
-    risky_set = set(["blockchain", "kafka", "hadoop", "terraform"])  # explicit examples
-    risky = list(set([t for t in extraneous if t in risky_set or len(t) >= 6]))
+    # Only flag explicitly disallowed off-topic technologies (conservative)
+    risky_set = {"blockchain", "kafka", "hadoop", "terraform"}
+    risky = [t for t in extraneous if t in risky_set]
     return risky
 
 

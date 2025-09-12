@@ -1,4 +1,5 @@
 import time
+import hashlib
 from pathlib import Path
 from typing import Dict, Any
 
@@ -15,6 +16,7 @@ from .redflags import scan_red_flags
 
 def run_inbox_watcher(inbox_dir: Path, config_dir: Path, poll_seconds: float = 2.0) -> None:
     seen: set[str] = set()
+    fp_seen: set[str] = set()
     inbox_dir.mkdir(parents=True, exist_ok=True)
     while True:
         for p in sorted(inbox_dir.glob("*.txt")):
@@ -23,6 +25,11 @@ def run_inbox_watcher(inbox_dir: Path, config_dir: Path, poll_seconds: float = 2
             try:
                 job_text = p.read_text(encoding="utf-8")
             except Exception:
+                continue
+            # Content fingerprint dedupe
+            fp = hashlib.sha256(job_text.encode("utf-8")).hexdigest()[:12]
+            if fp in fp_seen:
+                seen.add(p.name)
                 continue
             session_dir = _new_session_dir(job_text)
             (session_dir / "proposal_history").mkdir(exist_ok=True)
@@ -61,5 +68,6 @@ def run_inbox_watcher(inbox_dir: Path, config_dir: Path, poll_seconds: float = 2
             _write_json(session_dir / "redflags.json", red)
 
             seen.add(p.name)
+            fp_seen.add(fp)
         time.sleep(poll_seconds)
 

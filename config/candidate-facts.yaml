@@ -1,0 +1,5 @@
+proof_general: "Delivered proposals that consistently pass structure and CTA validation"
+proof_shopify:
+  - "Optimized Shopify theme to 90+ mobile PageSpeed while keeping installed apps"
+proof_webapp:
+  - "Improved Core Web Vitals on a Next.js dashboard without regressions"
