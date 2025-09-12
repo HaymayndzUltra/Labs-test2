@@ -1,83 +1,31 @@
-We are looking for an experienced Backend Developer to join our team building an AI-powered healthcare platform (orthopedic workers’ compensation, medical-legal workflow automation, insurer/EHR integrations). You’ll work with Node.js, PostgreSQL, AWS, and RESTful APIs to deliver highly secure, scalable, and HIPAA-compliant features.
+Summary
+Experience Level: Mid to Senior
+Industry: [EdTech, SaaS, AI, etc.]
 
-Project Highlights:
-
-Node.js/Express backend (REST APIs)
-
-PostgreSQL (AWS RDS)
-
-AWS S3 (file storage), EC2
-
-Role-based access control (multi-user, multi-clinic)
-
-Workflow automation for reports, billing (CMS-1500), RFA, QME
-
-EHR integration (FHIR/HL7 APIs)
-
-Secure audit logs and compliance (HIPAA)
-
-AI voice transcription (OpenAI Whisper, handled by separate team)
-
-Modern Agile workflow, CI/CD, code reviews
-
+About Us
+We are building an innovative platform that blends modern web technologies with the power of AI to deliver high-quality, interactive experiences. Whether it's intelligent tutoring, personalized recommendations, or data-driven automation, our mission is to make smart software accessible and impactful.
+We are looking for a talented and driven Full Stack Developer to join our team and lead the development of robust, scalable, and intelligent web applications.
 Responsibilities
-
-Design and develop scalable REST APIs (Node.js + Express)
-
-Implement workflow logic: intake, report automation, RFA, billing, QME, audit trails
-
-Build and optimize PostgreSQL schemas/queries
-
-Integrate with EHR (FHIR/HL7 APIs), insurer APIs, and 3rd-party services (SendGrid, Firebase)
-
-Ensure HIPAA-compliant security: role-based auth, data encryption, logging
-
-Collaborate with frontend, AI, DevOps, and QA teams in sprints
-
-Write clean, well-tested, well-documented code
-
-Debug, optimize, and scale backend services on AWS
-
-Must-Have Skills
-
-Node.js + Express.js (3+ years)
-
-PostgreSQL (schema design, query optimization)
-
-REST API development, security best practices
-
-Experience with AWS stack (EC2, S3, RDS, IAM)
-
-Auth (JWT, OAuth), RBAC, and secure API design
-
-Writing audit logs and compliance-ready code
-
-Git, Jira (or equivalent Agile tools)
-
-English communication (written, spoken)
-
-Nice-to-Have
-
-Experience in healthcare (EHR, FHIR/HL7, HIPAA) or fintech (high-compliance apps)
-
-Billing/reporting automation (CMS-1500, QME, insurer workflow)
-
-Voice or AI-based integrations (OpenAI Whisper, NLP, etc.)
-
-DevOps/CI/CD knowledge (GitHub Actions, Jenkins)
-
-Previous work on insurance or clinical platforms
-
-Screening Questions
-
-Briefly describe your experience building RESTful APIs in Node.js for multi-user platforms.
-
-Have you worked with PostgreSQL on AWS (RDS)? Share an example.
-
-Describe your experience with any healthcare or HIPAA-compliant applications.
-
-How do you approach secure audit logging and access control in backend services?
-
-Have you integrated external APIs (e.g., EHR, payment, notifications)? Which ones?
-
-Are you comfortable collaborating with frontend and AI teams using Agile (Jira, Slack)?
+Design, build, and maintain web applications using React.js (frontend) and Express.js (backend).
+Develop RESTful APIs and manage integrations with third-party services.
+Design and optimize relational databases using PostgreSQL.
+Integrate AI models (e.g. OpenAI, Hugging Face, LangChain) into core product features.
+Collaborate closely with product designers, data scientists, and other developers to translate business requirements into technical solutions.
+Ensure high performance, security, and scalability across the stack.
+Write clean, testable, and maintainable code following modern development practices (Git, CI/CD, Docker, etc.).
+Participate in code reviews and contribute to improving development workflows and architecture.
+Requirements
+3+ years of professional experience as a Full Stack Developer.
+Proficiency with React.js, including Hooks, functional components, and state management tools.
+Solid experience with Node.js and Express.js for building backend services.
+Strong knowledge of PostgreSQL, including schema design, indexing, and performance optimization.
+Hands-on experience integrating or working with AI/ML APIs or models (e.g. OpenAI GPT, vector databases, embeddings).
+Good understanding of software architecture and DevOps practices (Docker, GitHub Actions, etc.).
+Familiarity with RESTful API design, authentication (JWT/OAuth), and basic security principles.
+Strong problem-solving skills and ability to work in a fast-paced, collaborative environment.
+Bonus Skills
+Experience with LangChain, Pinecone, Qdrant, or other vector databases.
+Experience with TypeScript.
+Familiarity with serverless architecture (AWS Lambda, Vercel, etc.).
+Understanding of prompt engineering and LLM lifecycle.
+UI/UX sensitivity and experience working with design systems (e.g. TailwindCSS, Material UI).
