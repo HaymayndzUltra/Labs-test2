@@ -115,6 +115,10 @@ def cmd_start(args: argparse.Namespace) -> None:
         candidate_facts=candidate_facts,
     )
     _write_json(session_dir / "validation_report.json", report)
+    # If auto-fixes modified the text, persist corrected proposal
+    corrected = report.get("proposal_text")
+    if isinstance(corrected, str) and corrected != proposal:
+        (session_dir / "proposal.md").write_text(corrected, encoding="utf-8")
 
     # Red flags
     red = scan_red_flags(extracted, gaps)
@@ -192,6 +196,9 @@ def cmd_add(args: argparse.Namespace) -> None:
         candidate_facts=candidate_facts,
     )
     _write_json(session_dir / "validation_report.json", report)
+    corrected = report.get("proposal_text")
+    if isinstance(corrected, str) and corrected != proposal:
+        (session_dir / "proposal.md").write_text(corrected, encoding="utf-8")
 
     red = scan_red_flags(extracted, gaps)
     _write_json(session_dir / "redflags.json", red)

@@ -53,6 +53,9 @@ def run_inbox_watcher(inbox_dir: Path, config_dir: Path, poll_seconds: float = 2
 
             report = validate_proposal(proposal, job_text, extracted, candidate_facts)
             _write_json(session_dir / "validation_report.json", report)
+            corrected = report.get("proposal_text")
+            if isinstance(corrected, str) and corrected != proposal:
+                (session_dir / "proposal.md").write_text(corrected, encoding="utf-8")
 
             red = scan_red_flags(extracted, gaps)
             _write_json(session_dir / "redflags.json", red)
