@@ -1,0 +1,44 @@
+Summary
+We’re looking for an experienced Python Backend Engineer to design and develop high-performance server-side systems for our growing platform. The ideal candidate has strong expertise in building scalable APIs, database optimization, and cloud-ready microservices, with experience integrating data processing and machine learning pipelines.
+
+Responsibilities:
+
+Design and develop robust RESTful & GraphQL APIs using FastAPI/Django/Flask
+
+Architect scalable backend systems (microservices, event-driven, distributed systems)
+
+Optimize and manage relational databases (PostgreSQL/MySQL/SQLite)
+
+Implement authentication, authorization, and third-party API integrations
+
+Build data pipelines and integrate ML-ready systems with Pandas/PyTorch
+
+Containerize and deploy applications with Docker/Kubernetes
+
+Ensure high availability, reliability, and maintainability through clean architecture and testing
+
+Collaborate with frontend/mobile engineers to deliver seamless user experiences
+
+Requirements:
+
+5+ years of backend development with Python
+
+Strong knowledge of FastAPI, Django, Flask, asyncio
+
+Experience with Pandas, NumPy, PyTorch for analytics & ML integration
+
+Solid database expertise: schema design, query optimization, migrations
+
+Experience with Kafka, RabbitMQ, or Redis for event-driven/messaging systems
+
+Cloud deployment on AWS/GCP/Azure with CI/CD pipelines
+
+Bonus: Knowledge of Golang, Rust, or Node.js
+
+What We Offer:
+
+Long-term collaboration on challenging, impactful projects
+
+Flexible workload (~35+ hours/week)
+
+Opportunity to build backend systems that power modern, intelligent applications

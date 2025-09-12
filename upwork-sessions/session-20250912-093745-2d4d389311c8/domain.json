@@ -1,0 +1,8 @@
+{
+  "domain": "backend",
+  "priority_questions": [
+    "Environment targets (dev/stage/prod) and deployment process?",
+    "Data model ownership and migration risks?",
+    "Security requirements (authn/z, PII/PHI)?"
+  ]
+}

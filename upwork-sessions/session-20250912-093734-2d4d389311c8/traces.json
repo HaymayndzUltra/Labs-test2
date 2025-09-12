@@ -1,0 +1,29 @@
+{
+  "specifics": [
+    "Node",
+    "Python",
+    "Django"
+  ],
+  "domain": "backend",
+  "used_facts": [
+    "Delivered proposals that consistently pass structure and CTA validation"
+  ],
+  "claims": [
+    {
+      "category": "deliverables",
+      "value": "+ years of backend development with Python"
+    },
+    {
+      "category": "skills",
+      "value": "Node"
+    },
+    {
+      "category": "skills",
+      "value": "Python"
+    },
+    {
+      "category": "skills",
+      "value": "Django"
+    }
+  ]
+}

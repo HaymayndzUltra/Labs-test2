@@ -1,0 +1,167 @@
+{
+  "skills": [
+    {
+      "value": "Node",
+      "confidence": 0.9,
+      "evidence": [
+        [
+          1417,
+          1421
+        ]
+      ]
+    },
+    {
+      "value": "Python",
+      "confidence": 0.9,
+      "evidence": [
+        [
+          41,
+          47
+        ],
+        [
+          1041,
+          1047
+        ]
+      ]
+    },
+    {
+      "value": "Django",
+      "confidence": 0.9,
+      "evidence": [
+        [
+          431,
+          437
+        ],
+        [
+          1078,
+          1084
+        ]
+      ]
+    },
+    {
+      "value": "Flask",
+      "confidence": 0.9,
+      "evidence": [
+        [
+          438,
+          443
+        ],
+        [
+          1086,
+          1091
+        ]
+      ]
+    },
+    {
+      "value": "FastAPI",
+      "confidence": 0.9,
+      "evidence": [
+        [
+          423,
+          430
+        ],
+        [
+          1069,
+          1076
+        ]
+      ]
+    },
+    {
+      "value": "Golang",
+      "confidence": 0.9,
+      "evidence": [
+        [
+          1400,
+          1406
+        ]
+      ]
+    },
+    {
+      "value": "MySQL",
+      "confidence": 0.9,
+      "evidence": [
+        [
+          585,
+          590
+        ]
+      ]
+    },
+    {
+      "value": "Redis",
+      "confidence": 0.9,
+      "evidence": [
+        [
+          1282,
+          1287
+        ]
+      ]
+    },
+    {
+      "value": "AWS",
+      "confidence": 0.7,
+      "evidence": [
+        [
+          1344,
+          1347
+        ]
+      ]
+    },
+    {
+      "value": "GCP",
+      "confidence": 0.7,
+      "evidence": [
+        [
+          1348,
+          1351
+        ]
+      ]
+    },
+    {
+      "value": "Azure",
+      "confidence": 0.9,
+      "evidence": [
+        [
+          1352,
+          1357
+        ]
+      ]
+    },
+    {
+      "value": "Docker",
+      "confidence": 0.9,
+      "evidence": [
+        [
+          790,
+          796
+        ]
+      ]
+    },
+    {
+      "value": "Kubernetes",
+      "confidence": 0.9,
+      "evidence": [
+        [
+          797,
+          807
+        ]
+      ]
+    }
+  ],
+  "deliverables": [
+    {
+      "value": "+ years of backend development with Python",
+      "confidence": 0.6,
+      "evidence": [
+        [
+          1004,
+          1047
+        ]
+      ]
+    }
+  ],
+  "inferred_client_proficiency": {
+    "value": "technical",
+    "confidence": 0.6,
+    "evidence": []
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "risks": [
+    {
+      "id": "missing_kpis",
+      "risk": "No measurable success criteria",
+      "mitigation": "Propose concrete KPIs and confirm with client before implementation"
+    },
+    {
+      "id": "unclear_timeline",
+      "risk": "No explicit timeline or milestones",
+      "mitigation": "Define a phased plan with milestone dates for review/approval"
+    },
+    {
+      "id": "constraints_unknown",
+      "risk": "Non-functional requirements may be missed",
+      "mitigation": "Run a short checklist for accessibility, SEO, security, and compliance"
+    }
+  ]
+}

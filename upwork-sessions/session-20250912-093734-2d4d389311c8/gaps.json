@@ -1,0 +1,51 @@
+{
+  "open_gaps": [
+    {
+      "id": "budget",
+      "question": "What is the approved budget (and hourly vs fixed)?",
+      "priority": "high",
+      "depends_on": []
+    },
+    {
+      "id": "timeline",
+      "question": "What is the target timeline (including key milestones)?",
+      "priority": "high",
+      "depends_on": []
+    },
+    {
+      "id": "kpis",
+      "question": "What measurable KPIs define success (e.g., Core Web Vitals, conversion)?",
+      "priority": "high",
+      "depends_on": []
+    },
+    {
+      "id": "domain-q1",
+      "question": "Environment targets (dev/stage/prod) and deployment process?",
+      "priority": "high",
+      "depends_on": []
+    },
+    {
+      "id": "nonfunctional",
+      "question": "Any non-functional requirements (accessibility, SEO, security, compliance)?",
+      "priority": "medium",
+      "depends_on": []
+    },
+    {
+      "id": "domain-q2",
+      "question": "Data model ownership and migration risks?",
+      "priority": "medium",
+      "depends_on": [
+        "domain-q1"
+      ]
+    },
+    {
+      "id": "domain-q3",
+      "question": "Security requirements (authn/z, PII/PHI)?",
+      "priority": "medium",
+      "depends_on": [
+        "domain-q2"
+      ]
+    }
+  ],
+  "closed_gaps": []
+}
