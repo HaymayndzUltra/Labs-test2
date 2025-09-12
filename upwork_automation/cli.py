@@ -23,6 +23,7 @@ from .redflags import scan_red_flags
 from .traces import build_traces
 from .brief_builder import build_project_brief
 from .watcher import run_inbox_watcher
+from .helpers import ensure_dirs as _helpers_ensure_dirs, new_session_dir as _helpers_new_session_dir, write_json as _helpers_write_json, append_md as _helpers_append_md
 
 
 SESSIONS_DIR = Path("/workspace/upwork-sessions")
@@ -31,7 +32,7 @@ CONFIG_DIR = Path("/workspace/config")
 
 
 def _ensure_dirs() -> None:
-    SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
+    _helpers_ensure_dirs()
     INBOX_DIR.mkdir(parents=True, exist_ok=True)
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -49,23 +50,15 @@ def _fingerprint(text: str) -> str:
 
 
 def _new_session_dir(job_text: str) -> Path:
-    ts = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
-    fp = _fingerprint(job_text)
-    session_name = f"session-{ts}-{fp}"
-    sd = SESSIONS_DIR / session_name
-    sd.mkdir(parents=True, exist_ok=True)
-    return sd
+    return _helpers_new_session_dir(job_text)
 
 
 def _write_json(path: Path, data: Dict[str, Any]) -> None:
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _helpers_write_json(path, data)
 
 
 def _append_md(path: Path, content: str) -> None:
-    with path.open("a", encoding="utf-8") as f:
-        f.write(content)
-        if not content.endswith("\n"):
-            f.write("\n")
+    _helpers_append_md(path, content)
 
 
 def cmd_start(args: argparse.Namespace) -> None:

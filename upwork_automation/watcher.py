@@ -3,7 +3,7 @@ import hashlib
 from pathlib import Path
 from typing import Dict, Any
 
-from .cli import _new_session_dir, _write_json, _append_md
+from .helpers import new_session_dir as _new_session_dir, write_json as _write_json, append_md as _append_md
 from .extractor import extract_job_post
 from .domain_router import route_domain
 from .gaps import initialize_gaps, update_gaps_from_extracted

@@ -1,0 +1,9 @@
+{
+  "risks": [
+    {
+      "id": "constraints_unknown",
+      "risk": "Non-functional requirements may be missed",
+      "mitigation": "Run a short checklist for accessibility, SEO, security, and compliance"
+    }
+  ]
+}

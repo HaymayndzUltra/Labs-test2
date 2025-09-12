@@ -1,0 +1,8 @@
+{
+  "domain": "shopify",
+  "priority_questions": [
+    "Do we have collaborator access and a staging theme?",
+    "Target PageSpeed/ CWV scores (mobile/desktop)?",
+    "Apps or integrations that must remain untouched?"
+  ]
+}

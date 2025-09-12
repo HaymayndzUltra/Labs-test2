@@ -1,0 +1,39 @@
+{
+  "open_gaps": [
+    {
+      "id": "budget",
+      "question": "What is the approved budget (and hourly vs fixed)?",
+      "priority": "high",
+      "depends_on": []
+    },
+    {
+      "id": "domain-q1",
+      "question": "Do we have collaborator access and a staging theme?",
+      "priority": "high",
+      "depends_on": []
+    },
+    {
+      "id": "nonfunctional",
+      "question": "Any non-functional requirements (accessibility, SEO, security, compliance)?",
+      "priority": "medium",
+      "depends_on": []
+    },
+    {
+      "id": "domain-q2",
+      "question": "Target PageSpeed/ CWV scores (mobile/desktop)?",
+      "priority": "medium",
+      "depends_on": [
+        "domain-q1"
+      ]
+    },
+    {
+      "id": "domain-q3",
+      "question": "Apps or integrations that must remain untouched?",
+      "priority": "medium",
+      "depends_on": [
+        "domain-q2"
+      ]
+    }
+  ],
+  "closed_gaps": []
+}
