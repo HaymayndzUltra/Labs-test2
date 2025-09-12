@@ -1,71 +1,83 @@
-We are developing a secure multi-role web portal with role-based access, questionnaires, document management, and messaging. The system will include three roles:
+We are looking for an experienced Backend Developer to join our team building an AI-powered healthcare platform (orthopedic workers’ compensation, medical-legal workflow automation, insurer/EHR integrations). You’ll work with Node.js, PostgreSQL, AWS, and RESTful APIs to deliver highly secure, scalable, and HIPAA-compliant features.
 
-User Portal – Registration, questionnaires, document uploads, and messaging.
+Project Highlights:
 
-Reviewer Portal – Manage assigned users, review submissions, and communicate with users.
+Node.js/Express backend (REST APIs)
 
-Admin Portal – Oversee the platform, manage accounts, and monitor activity.
+PostgreSQL (AWS RDS)
 
-The portal must be secure, scalable, and user-friendly, with proper testing and deployment.
+AWS S3 (file storage), EC2
 
-Core Features
-Authentication & Security
-Registration & login with OTP (SMS/email verification)
-Password reset via email link
-Role-based access (User, Reviewer, Admin)
-Secure Payment System
-Secure database & encryption best practices
+Role-based access control (multi-user, multi-clinic)
 
-User Portal
-Multi-section questionnaires with conditional logic
-Dynamic forms for entering additional details
-Document upload system (PDF, JPG, PNG, etc.)
-Messaging system with assigned reviewer (not real-time chat)
+Workflow automation for reports, billing (CMS-1500), RFA, QME
 
-Reviewer Portal
-Dashboard to manage users
-Review questionnaires, dynamic form inputs, and uploaded documents
-Messaging system with users
-Ability to request additional documents
+EHR integration (FHIR/HL7 APIs)
 
-Admin Portal
-Manage user and reviewer accounts
-Assign users to reviewers
-Oversee submissions and system activity
+Secure audit logs and compliance (HIPAA)
 
-System & Hosting
-Cloud hosting setup (AWS, Azure, GCP, or recommended solution)
-CI/CD deployment pipeline (GitHub/GitLab)
-Email system setup for OTP & password reset
-Scalable architecture for future expansion
+AI voice transcription (OpenAI Whisper, handled by separate team)
 
-Testing & Documentation
-Unit & integration testing
-Security testing
-Technical documentation for handover
+Modern Agile workflow, CI/CD, code reviews
 
-Preferred Skills
-Frontend: React / Next.js / Vue
-Backend: Node.js / Django / Laravel
-Database: PostgreSQL / MySQL / MongoDB
-Authentication & OTP integration: Twilio, Firebase, or equivalent
-Hosting: AWS / GCP / Azure / Vercel
-Development Environments: Experience using Cursor, Replit, or similar AI-powered coding tools
-Experience with multi-role secure web applications
-Strong communication & documentation skills
+Responsibilities
 
-Deliverables
-Fully functional Web Portal (User, Reviewer, Admin)
-OTP-enabled login/registration & email password reset system
-Questionnaires with conditional logic & dynamic forms
-Document upload & messaging features
-Hosting setup & deployment
-Payement system
-Testing & bug fixes
-Technical documentation
+Design and develop scalable REST APIs (Node.js + Express)
 
-Project Type
-One-time project, with potential for ongoing support & maintenance.
+Implement workflow logic: intake, report automation, RFA, billing, QME, audit trails
 
-Timeline
-Estimated delivery: 3–8 weeks (including testing and QA)
+Build and optimize PostgreSQL schemas/queries
+
+Integrate with EHR (FHIR/HL7 APIs), insurer APIs, and 3rd-party services (SendGrid, Firebase)
+
+Ensure HIPAA-compliant security: role-based auth, data encryption, logging
+
+Collaborate with frontend, AI, DevOps, and QA teams in sprints
+
+Write clean, well-tested, well-documented code
+
+Debug, optimize, and scale backend services on AWS
+
+Must-Have Skills
+
+Node.js + Express.js (3+ years)
+
+PostgreSQL (schema design, query optimization)
+
+REST API development, security best practices
+
+Experience with AWS stack (EC2, S3, RDS, IAM)
+
+Auth (JWT, OAuth), RBAC, and secure API design
+
+Writing audit logs and compliance-ready code
+
+Git, Jira (or equivalent Agile tools)
+
+English communication (written, spoken)
+
+Nice-to-Have
+
+Experience in healthcare (EHR, FHIR/HL7, HIPAA) or fintech (high-compliance apps)
+
+Billing/reporting automation (CMS-1500, QME, insurer workflow)
+
+Voice or AI-based integrations (OpenAI Whisper, NLP, etc.)
+
+DevOps/CI/CD knowledge (GitHub Actions, Jenkins)
+
+Previous work on insurance or clinical platforms
+
+Screening Questions
+
+Briefly describe your experience building RESTful APIs in Node.js for multi-user platforms.
+
+Have you worked with PostgreSQL on AWS (RDS)? Share an example.
+
+Describe your experience with any healthcare or HIPAA-compliant applications.
+
+How do you approach secure audit logging and access control in backend services?
+
+Have you integrated external APIs (e.g., EHR, payment, notifications)? Which ones?
+
+Are you comfortable collaborating with frontend and AI teams using Agile (Jira, Slack)?
