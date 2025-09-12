@@ -16,3 +16,34 @@ build/
 .cursor/dev-workflow/snapshots/
 node_modules/
 
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+.nox/
+.tox/
+venv/
+.venv/
+.env
+.env.*
+.DS_Store
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log
+pnpm-lock.yaml
+# Editor/OS
+.idea/
+.vscode/
+Thumbs.db
+# Cursor rules and snapshots
+.cursor/dev-workflow/snapshots/
+.cursor/dev-workflow/routing_logs/
+.cursor/dev-workflow/waivers/
+.snapshots/
+# Build artifacts
+dist/
+build/
+.cache/
