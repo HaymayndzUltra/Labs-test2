@@ -57,14 +57,25 @@ def _compose_sections_dict(
         lead_specs = list(reversed(lead_specs))
 
     intro = []
+    lead_str = ", ".join(lead_specs[:2])
     if tone == "technical":
-        intro.append(
-            f"Introduction: I specialize in {', '.join(lead_specs[:2])} and related delivery patterns, focused on fast, accurate execution."
-        )
+        if lead_str:
+            intro.append(
+                f"Introduction: I specialize in {lead_str} and related delivery patterns, focused on fast, accurate execution."
+            )
+        else:
+            intro.append(
+                "Introduction: I specialize in performance-focused delivery patterns, with fast, accurate execution."
+            )
     else:
-        intro.append(
-            f"Introduction: I help teams ship {', '.join(lead_specs[:2])} work quickly and correctly, with clear communication."
-        )
+        if lead_str:
+            intro.append(
+                f"Introduction: I help teams ship {lead_str} work quickly and correctly, with clear communication."
+            )
+        else:
+            intro.append(
+                "Introduction: I help teams ship work quickly and correctly, with clear communication."
+            )
 
     understanding = []
     if extracted.get("deliverables"):

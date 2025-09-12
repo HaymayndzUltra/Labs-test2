@@ -97,11 +97,30 @@ def validate_proposal(
 ) -> Dict[str, Any]:
     report: Dict[str, Any] = {"pass": True, "failures": [], "autofixes": []}
 
-    # Ensure CTA exists exactly
+    # Ensure CTA exists exactly and is the last section
     if CTA_LINE not in proposal_text:
         report["failures"].append("cta_missing")
         proposal_text = proposal_text.rstrip() + "\n\nCall to Action: " + CTA_LINE
         report["autofixes"].append("cta_inserted")
+    else:
+        # Move any trailing text after CTA into previous sections by trimming
+        parts = proposal_text.split("\n\n")
+        cta_idx = None
+        for i, p in enumerate(parts):
+            if p.startswith("Call to Action:"):
+                cta_idx = i
+                break
+        if cta_idx is not None and cta_idx != len(parts) - 1:
+            proposal_text = "\n\n".join(parts[: cta_idx + 1])
+            report["autofixes"].append("cta_moved_to_end")
+        # Normalize CTA section content to exact line
+        parts = proposal_text.split("\n\n")
+        for i, p in enumerate(parts):
+            if p.startswith("Call to Action:"):
+                parts[i] = "Call to Action: " + CTA_LINE
+                proposal_text = "\n\n".join(parts)
+                report["autofixes"].append("cta_normalized_exact")
+                break
 
     # Length guardrails (pre)
     wc = _word_count(proposal_text)
@@ -110,8 +129,17 @@ def validate_proposal(
         filler = (
             " I will keep reviews tight and ensure each deliverable has explicit acceptance criteria to streamline approvals."
         )
-        while _word_count(proposal_text) < 140:
-            proposal_text += filler
+        # Insert filler before CTA section to keep CTA last
+        parts = proposal_text.split("\n\n")
+        cta_idx = None
+        for i, p in enumerate(parts):
+            if p.startswith("Call to Action:"):
+                cta_idx = i
+                break
+        insert_idx = (cta_idx - 1) if cta_idx and cta_idx > 0 else 0
+        while _word_count("\n\n".join(parts)) < 140:
+            parts[insert_idx] = parts[insert_idx].rstrip() + filler
+        proposal_text = "\n\n".join(parts)
         report["autofixes"].append("padded_short_draft")
     elif wc > 220:
         report["failures"].append("too_long")
@@ -154,8 +182,16 @@ def validate_proposal(
         filler = (
             " I will keep reviews tight and ensure each deliverable has explicit acceptance criteria to streamline approvals."
         )
-        while _word_count(proposal_text) < 140:
-            proposal_text += filler
+        parts = proposal_text.split("\n\n")
+        cta_idx = None
+        for i, p in enumerate(parts):
+            if p.startswith("Call to Action:"):
+                cta_idx = i
+                break
+        insert_idx = (cta_idx - 1) if cta_idx and cta_idx > 0 else 0
+        while _word_count("\n\n".join(parts)) < 140:
+            parts[insert_idx] = parts[insert_idx].rstrip() + filler
+        proposal_text = "\n\n".join(parts)
         report["autofixes"].append("padded_short_draft_post_sanitize")
     elif wc2 > 220:
         parts = proposal_text.split("\n\n")

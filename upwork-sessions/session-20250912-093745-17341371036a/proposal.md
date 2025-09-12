@@ -1,4 +1,4 @@
-Introduction: I help teams ship  work quickly and correctly, with clear communication.
+Introduction: I help teams ship work quickly and correctly, with clear communication.
 
 Understanding of Project: You want a focused, reliable solution aligned to your goals and constraints.
 
