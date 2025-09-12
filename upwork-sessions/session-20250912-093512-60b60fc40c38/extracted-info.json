@@ -1,0 +1,55 @@
+{
+  "timeline": {
+    "value": {
+      "quantity": 2,
+      "unit": "weeks"
+    },
+    "confidence": 0.52,
+    "evidence": [
+      [
+        227,
+        234
+      ]
+    ],
+    "assumption": false
+  },
+  "skills": [
+    {
+      "value": "Shopify",
+      "confidence": 0.9,
+      "evidence": [
+        [
+          37,
+          44
+        ]
+      ]
+    },
+    {
+      "value": "Liquid",
+      "confidence": 0.9,
+      "evidence": [
+        [
+          80,
+          86
+        ]
+      ]
+    }
+  ],
+  "kpis": [
+    {
+      "value": "PageSpeed",
+      "confidence": 0.8,
+      "evidence": [
+        [
+          20,
+          29
+        ]
+      ]
+    }
+  ],
+  "inferred_client_proficiency": {
+    "value": "technical",
+    "confidence": 0.6,
+    "evidence": []
+  }
+}

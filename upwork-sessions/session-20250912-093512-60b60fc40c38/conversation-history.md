@@ -1,0 +1,4 @@
+# Job Post
+
+Need help improving PageSpeed on our Shopify theme. Keep current apps. Focus on Liquid, performance optimizations, lazy loading images, and reducing layout shift. Mobile scores are most important. Budget around $1200, timeline 2 weeks.
+

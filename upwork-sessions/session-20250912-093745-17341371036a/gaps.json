@@ -1,0 +1,51 @@
+{
+  "open_gaps": [
+    {
+      "id": "budget",
+      "question": "What is the approved budget (and hourly vs fixed)?",
+      "priority": "high",
+      "depends_on": []
+    },
+    {
+      "id": "timeline",
+      "question": "What is the target timeline (including key milestones)?",
+      "priority": "high",
+      "depends_on": []
+    },
+    {
+      "id": "kpis",
+      "question": "What measurable KPIs define success (e.g., Core Web Vitals, conversion)?",
+      "priority": "high",
+      "depends_on": []
+    },
+    {
+      "id": "domain-q1",
+      "question": "What are the success criteria and timeline constraints?",
+      "priority": "high",
+      "depends_on": []
+    },
+    {
+      "id": "nonfunctional",
+      "question": "Any non-functional requirements (accessibility, SEO, security, compliance)?",
+      "priority": "medium",
+      "depends_on": []
+    },
+    {
+      "id": "domain-q2",
+      "question": "Who approves deliverables and how will feedback be provided?",
+      "priority": "medium",
+      "depends_on": [
+        "domain-q1"
+      ]
+    },
+    {
+      "id": "domain-q3",
+      "question": "Any compliance or accessibility requirements?",
+      "priority": "medium",
+      "depends_on": [
+        "domain-q2"
+      ]
+    }
+  ],
+  "closed_gaps": []
+}

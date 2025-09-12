@@ -1,0 +1,25 @@
+{
+  "specifics": [
+    "Shopify",
+    "Liquid",
+    "PageSpeed"
+  ],
+  "domain": "shopify",
+  "used_facts": [
+    "Optimized Shopify theme to 90+ mobile PageSpeed while keeping installed apps"
+  ],
+  "claims": [
+    {
+      "category": "kpis",
+      "value": "PageSpeed"
+    },
+    {
+      "category": "skills",
+      "value": "Shopify"
+    },
+    {
+      "category": "skills",
+      "value": "Liquid"
+    }
+  ]
+}

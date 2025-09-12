@@ -1,0 +1,12 @@
+{
+  "pass": false,
+  "failures": [
+    "too_short",
+    "insufficient_post_specific_references"
+  ],
+  "autofixes": [
+    "cta_normalized_exact",
+    "padded_short_draft"
+  ],
+  "proposal_text": "Introduction: I help teams ship work quickly and correctly, with clear communication.\n\nUnderstanding of Project: You want a focused, reliable solution aligned to your goals and constraints.\n\nSolution Approach: Rapid discovery → scope confirmation → implementation in small, reviewable increments. First, I’ll confirm blockers and access: What are the success criteria and timeline constraints?; Who approves deliverables and how will feedback be provided?; Any compliance or accessibility requirements?.\n\nValue Proposition: Delivered proposals that consistently pass structure and CTA validation I will keep reviews tight and ensure each deliverable has explicit acceptance criteria to streamline approvals. I will keep reviews tight and ensure each deliverable has explicit acceptance criteria to streamline approvals.\n\nCall to Action: To keep things efficient, I’ll structure everything into clear phases with goals, deliverables, and acceptance criteria. If you could share any specific requirements or reference materials upfront, I’ll integrate them right away—so we finalize scope faster without needing long back-and-forth calls"
+}
