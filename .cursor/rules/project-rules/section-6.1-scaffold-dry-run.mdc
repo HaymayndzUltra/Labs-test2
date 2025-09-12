@@ -1,0 +1,15 @@
+---
+description: Section 6.1 – Scaffold Dry-Run
+alwaysApply: false
+---
+
+## Section 6.1: Scaffold Dry-Run
+
+**[STRICT]**
+
+- Propose scaffolds/templates (no write)
+- Show diff plan, dependencies, scripts
+
+Acceptance Criteria:
+- [ ] Dry-run diff approved
+- [ ] No side-effects

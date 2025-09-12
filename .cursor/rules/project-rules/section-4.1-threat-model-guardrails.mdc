@@ -1,0 +1,17 @@
+---
+description: Section 4.1 – Threat Model & Guardrails
+alwaysApply: false
+---
+
+## Section 4.1: Threat Model & Guardrails
+
+**[STRICT]**
+
+- Classify data (PHI/PII/none), define handling rules
+- Model threats and mitigations (authz, injection, leakage)
+- Enforce guardrails (no secrets, no prod deploys from agent)
+
+Acceptance Criteria:
+- [ ] Data classification matrix
+- [ ] Threat model with mitigations
+- [ ] Guardrails enabled and documented

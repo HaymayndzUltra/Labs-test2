@@ -1,0 +1,17 @@
+---
+description: Section 3.1 – Solution Architecture Blueprint
+alwaysApply: false
+---
+
+## Section 3.1: Solution Architecture Blueprint
+
+**[STRICT]**
+
+- Select reference architecture (monolith/microservices)
+- Define data flow, trust boundaries, and contracts (API/Events)
+- Choose state management and caching strategies
+
+Acceptance Criteria:
+- [ ] Architecture diagram & rationale
+- [ ] Data flow & boundaries documented
+- [ ] Contracts listed

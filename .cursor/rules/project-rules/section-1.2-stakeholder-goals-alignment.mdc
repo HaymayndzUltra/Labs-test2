@@ -1,0 +1,19 @@
+---
+description: Section 1.2 – Stakeholder & Goals Alignment
+alwaysApply: false
+---
+
+## Section 1.2: Stakeholder & Goals Alignment
+
+**[STRICT]**
+
+- Capture business goals, KPIs/SLAs
+- Define user roles and access boundaries (minimum‑necessary)
+- Confirm “done” definition per stakeholder
+- Log decisions and open questions
+
+Acceptance Criteria:
+- [ ] Goals/KPIs confirmed
+- [ ] Roles & access mapped
+- [ ] “Done” criteria agreed
+- [ ] Decision log created

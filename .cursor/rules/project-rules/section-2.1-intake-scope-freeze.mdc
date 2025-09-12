@@ -1,0 +1,17 @@
+---
+description: Section 2.1 – Intake & Scope Freeze
+alwaysApply: false
+---
+
+## Section 2.1: Intake & Scope Freeze
+
+**[STRICT]**
+
+- Structure the brief (in/out of scope, assumptions)
+- Decompose features to epics/stories
+- Tag compliance domains (HIPAA/PCI/etc.)
+
+Acceptance Criteria:
+- [ ] Scope (in/out) frozen
+- [ ] Features decomposed
+- [ ] Compliance domains tagged

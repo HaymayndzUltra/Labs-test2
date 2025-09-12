@@ -1,0 +1,22 @@
+---
+description: Section 1.1 – Pre-Scaffolding Discovery
+alwaysApply: false
+---
+
+## Section 1.1: Pre-Scaffolding Discovery
+
+**[STRICT]**
+
+You MUST analyze before any generation.
+
+- Analyze existing codebase structure (architecture, patterns, conventions)
+- Identify technology stack and versions in use
+- Map project patterns (naming, module layout, testing, build)
+- Detect constraints (security, compliance, budget, timelines)
+- Surface risks, assumptions, unknowns; assign owners
+
+Acceptance Criteria:
+- [ ] Tech stack identified and documented
+- [ ] Patterns/conventions mapped
+- [ ] Constraints/risks listed with owners
+- [ ] Discovery report generated

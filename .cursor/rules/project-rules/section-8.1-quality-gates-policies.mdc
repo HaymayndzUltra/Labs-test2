@@ -1,0 +1,17 @@
+---
+description: Section 8.1 – Quality Gates & Policies
+alwaysApply: false
+---
+
+## Section 8.1: Quality Gates & Policies
+
+**[STRICT]**
+
+- Define lint/tests/coverage thresholds
+- Configure SAST/DAST and dep scans
+- Apply governance precedence in CI
+
+Acceptance Criteria:
+- [ ] CI pipeline defined
+- [ ] Gates enforced
+- [ ] Precedence honored
