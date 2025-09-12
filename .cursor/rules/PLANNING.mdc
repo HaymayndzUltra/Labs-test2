@@ -1,0 +1,88 @@
+# Master Rule: PLANNING — Client Brief → Executable Plan (No Code Changes)
+
+## Mode
+- STATUS: PLAN
+- APPROVAL_REQUIRED: yes
+- TIMEBOX: 30m
+
+## Inputs
+- CLIENT_BRIEF: </abs/path/or-pasted-text>
+- REPO: /workspace
+- BRANCH: develop
+- CONTEXT: <links, constraints, prior decisions>
+- CONSTRAINTS: 
+  - Do not assume stack; derive from brief. If ambiguous, present options with trade‑offs.
+  - If healthcare domain, enforce HIPAA controls (no PHI in examples/logs; encryption in transit/at rest; RBAC; audit logging; 15‑minute session timeout).
+  - No file edits or commands during PLAN; generate plan artifacts only after approval.
+
+## STRICT
+- Read the CLIENT_BRIEF verbatim; do not paraphrase as facts. Extract signals and cite them.
+- Call out unknowns explicitly as "Clarifying Questions" and proceed with provisional assumptions marked as ASSUMPTION.
+- Avoid scope creep; separate Goals vs Non‑Goals vs Out‑of‑Scope.
+- Provide measurable Success Metrics/KPIs tied to the brief; avoid invented numbers.
+- Do not generate UI designs; planning only.
+
+## MUST
+- Produce a structured understanding:
+  - Problem Statement, Target Users, Primary Use‑Cases
+  - Goals, Non‑Goals, Constraints (tech, security, legal, budget, timeline)
+  - Success Metrics/KPIs and Acceptance Criteria
+- Architecture recommendation:
+  - Preferred Architecture with rationale + 1 alternative with trade‑offs
+  - Data model outline and integration points
+  - Security & Compliance plan relevant to the brief
+- Roadmap & Phasing:
+  - Phase 0 Foundations → Phase 1 MVP → Phase 2 Hardening/Scale (or as needed)
+  - Milestones with entry/exit criteria
+- Work Breakdown Structure (WBS):
+  - Epics → Stories → Tasks with IDs, type, owner‑role, estimate (t‑shirt or days), dependencies (DAG), acceptance criteria per task
+- Testing & Quality:
+  - Unit/Integration/E2E strategy, CI gates, coverage target, performance SLOs
+- Risks & Mitigations, Assumptions, Clarifying Questions
+- Communication & Cadence (rituals, artifacts, decision logs)
+- Delivery Artifacts list to be generated on approval:
+  - /workspace/plan/PLAN.md (human‑readable plan)
+  - /workspace/plan/tasks.json (structured tasks: id, title, type, dependsOn, estimate, acceptanceCriteria)
+  - /workspace/plan/risks.md (top risks with triggers/mitigations)
+
+## GUIDELINES
+- Prefer incremental delivery; keep Phases small and outcome‑oriented.
+- Use simple language for stakeholders; keep technical depth in appendices.
+- Map dependencies to unblock parallel work; surface critical path.
+- Propose lightweight metrics (e.g., p95 latency, error rate, coverage) aligned to domain.
+
+## Acceptance Criteria
+- [ ] Brief distilled into Goals, Non‑Goals, Constraints, KPIs
+- [ ] Architecture options (1 preferred + 1 alternative) with trade‑offs
+- [ ] Phased roadmap with milestones and entry/exit criteria
+- [ ] WBS with IDs, dependencies, and estimates ready for tasks.json
+- [ ] Security/Compliance considerations captured (and HIPAA if applicable)
+- [ ] Risks, Assumptions, Clarifying Questions listed
+- [ ] No code or repo edits performed during PLAN
+
+## Deliverables (to be created only after approval)
+- /workspace/plan/PLAN.md
+- /workspace/plan/tasks.json
+- /workspace/plan/risks.md
+
+## Done Signal
+- Above deliverables exist and satisfy all Acceptance Criteria; next steps and approvals clearly listed.
+
+## AI Response Format
+STATUS: PLAN
+BRIEF_SUMMARY: <bullet summary of signals from CLIENT_BRIEF>
+UNDERSTANDING: <problem, users, use‑cases, constraints>
+GOALS_AND_KPIS: <measurable outcomes>
+SCOPE: <in‑scope, non‑goals, out‑of‑scope>
+ARCHITECTURE: <preferred + alternative with trade‑offs>
+DATA_AND_INTEGRATIONS: <high‑level model, external systems>
+SECURITY_AND_COMPLIANCE: <items relevant to brief; include HIPAA if applicable>
+PHASED_ROADMAP: <phases with milestones and exit criteria>
+WBS: <epics → stories → tasks; show 10–20 top tasks with IDs and dependencies; full list to tasks.json on approval>
+TEST_STRATEGY: <unit/integration/e2e, coverage, performance SLOs>
+RISKS: <top risks + mitigations>
+ASSUMPTIONS: <list>
+CLARIFYING_QUESTIONS: <list>
+DELIVERABLES_ON_APPROVAL: [/workspace/plan/PLAN.md, /workspace/plan/tasks.json, /workspace/plan/risks.md]
+NEXT_ACTION_NEEDED_FROM_YOU: "Reply: APPROVE EXECUTE to generate artifacts" or answer questions.
+
