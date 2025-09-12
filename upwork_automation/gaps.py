@@ -41,14 +41,18 @@ def update_gaps_from_extracted(gaps: Dict[str, Any], extracted: Dict[str, Any], 
             "depends_on": [],
         })
 
-    # Domain-specific priority questions (top 3)
+    # Domain-specific priority questions (top 3) with simple dependency ordering
+    deps_chain: List[str] = []
     for idx, q in enumerate(domain_info.get("priority_questions", [])[:3]):
+        dep = deps_chain[-1] if deps_chain else None
+        gid = f"domain-q{idx+1}"
         gaps = _ensure_gap(gaps, {
-            "id": f"domain-q{idx+1}",
+            "id": gid,
             "question": q,
             "priority": "high" if idx == 0 else "medium",
-            "depends_on": [],
+            "depends_on": [dep] if dep else [],
         })
+        deps_chain.append(gid)
 
     # Constraints and non-functional requirements
     if not extracted.get("constraints"):
@@ -59,6 +63,12 @@ def update_gaps_from_extracted(gaps: Dict[str, Any], extracted: Dict[str, Any], 
             "depends_on": [],
         })
 
+    # Reorder open gaps: high priority first, then by dependency count
+    prio_order = {"high": 0, "medium": 1, "low": 2}
+    gaps["open_gaps"] = sorted(
+        gaps.get("open_gaps", []),
+        key=lambda g: (prio_order.get(g.get("priority", "medium"), 1), len(g.get("depends_on", [])))
+    )
     return gaps
 
 

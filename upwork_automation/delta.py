@@ -1,4 +1,20 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
+
+
+def _close_by_keywords(gaps: Dict[str, Any], reply_text: str, mapping: Dict[str, List[str]]) -> Dict[str, Any]:
+    lower = reply_text.lower()
+    close_ids: List[str] = []
+    for gid, keywords in mapping.items():
+        if any(k in lower for k in keywords):
+            close_ids.append(gid)
+    new_open = []
+    for g in gaps.get("open_gaps", []):
+        if g.get("id") in close_ids:
+            gaps.setdefault("closed_gaps", []).append(g)
+        else:
+            new_open.append(g)
+    gaps["open_gaps"] = new_open
+    return gaps
 
 
 def apply_client_reply(gaps: Dict[str, Any], reply_text: str) -> Dict[str, Any]:
@@ -8,19 +24,11 @@ def apply_client_reply(gaps: Dict[str, Any], reply_text: str) -> Dict[str, Any]:
     includes keywords indicating budget or timeline, we mark corresponding gaps
     as closed.
     """
-    lower = reply_text.lower()
-    closed_ids = []
-    if any(k in lower for k in ["$", "budget", "cost", "price"]):
-        closed_ids.append("budget")
-    if any(k in lower for k in ["week", "day", "month", "timeline", "deadline"]):
-        closed_ids.append("timeline")
-
-    new_open = []
-    for g in gaps.get("open_gaps", []):
-        if g.get("id") in closed_ids:
-            gaps.setdefault("closed_gaps", []).append(g)
-        else:
-            new_open.append(g)
-    gaps["open_gaps"] = new_open
-    return gaps
+    mapping = {
+        "budget": ["$", "budget", "cost", "price"],
+        "timeline": ["week", "day", "month", "timeline", "deadline"],
+        "kpis": ["kpi", "pagespeed", "core web vitals", "conversion", "lcp", "cls", "ttfb"],
+        "domain-q1": ["access", "collaborator", "staging", "roles", "permissions", "environment"],
+    }
+    return _close_by_keywords(gaps, reply_text, mapping)
 
