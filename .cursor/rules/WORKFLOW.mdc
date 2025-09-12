@@ -1,0 +1,60 @@
+# Master Rule: WORKFLOW VALIDATION — Pre‑Planning Gate
+
+## Mode
+- STATUS: ANALYZE
+- APPROVAL_REQUIRED: yes
+- TIMEBOX: 15m
+
+## Inputs
+- REPO: /workspace
+- CONTEXT: <project type, domain, compliance, team roles>
+- RULES_PATHS: [/workspace/.cursor/rules/]
+- TRIGGER: "APPLY INSTRUCTION FROM <abs path>"
+
+## STRICT
+- No code edits, scaffolding, or commands during ANALYZE.
+- Use only information in repo/rules and provided context; call out unknowns explicitly.
+- If healthcare domain, surface HIPAA gates (encryption, RBAC, audit logs, 15‑min session, no PHI in logs).
+
+## MUST
+- Validate end‑to‑end workflow stages and gates:
+  - Stages: DISCOVERY → PLANNING → EXECUTION → VALIDATION → DELIVERY.
+  - Handshake: "APPROVE EXECUTE" required to move from PLAN to EXECUTION.
+  - Trigger format: confirm "APPLY INSTRUCTION FROM <path>" is the single entrypoint per stage.
+- Define allowed STATUS values per stage and response format expectations.
+- Confirm approval roles, decision logging, and cadence.
+- Confirm repo conventions needed later (branching, commit style, CI gates, artifact paths).
+- Identify risks, ambiguities, and missing rules; propose concrete fixes.
+- Propose artifacts to generate on approval (workflow doc + ADR) without creating them yet.
+
+## GUIDELINES
+- Keep wording concise and action‑oriented; list bullets, not prose.
+- Prefer minimal, enforceable rules over broad suggestions.
+
+## Acceptance Criteria
+- [ ] Stages, gates, and triggers clearly enumerated
+- [ ] STATUS/Response format defined per stage
+- [ ] Approvals, decision logs, and cadence clarified
+- [ ] Repo/CI conventions and compliance gates listed
+- [ ] Gaps/Risks with recommended fixes captured
+- [ ] No code changes performed
+
+## Deliverables (to be created only after approval)
+- /workspace/docs/workflow.md (authoritative workflow)
+- /workspace/docs/adr/0001-workflow.md (decision record)
+
+## Done Signal
+- Above deliverables created and reflect the validated workflow; accepted by requester.
+
+## AI Response Format
+STATUS: ANALYZE
+WORKFLOW_SUMMARY: <current understanding of stages, gates, triggers>
+STATUS_AND_FORMAT: <allowed STATUS values, response shape per stage>
+APPROVALS_AND_CADENCE: <who approves, meetings, decision log location>
+REPO_AND_CI_CONVENTIONS: <branches, commits, CI gates, artifact paths>
+COMPLIANCE_OVERLAY: <e.g., HIPAA gates if applicable>
+GAPS: <ambiguities/risks>
+RECOMMENDATIONS: <specific fixes>
+DELIVERABLES_ON_APPROVAL: [/workspace/docs/workflow.md, /workspace/docs/adr/0001-workflow.md]
+NEXT_ACTION_NEEDED_FROM_YOU: "Reply: APPROVE WORKFLOW to generate workflow artifacts; later, APPROVE EXECUTE to start implementation" or answer questions.
+
