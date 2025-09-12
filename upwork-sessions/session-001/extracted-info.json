@@ -1,0 +1,43 @@
+{
+  "session_id": "session-001",
+  "job_post_analysis": {
+    "project_type": "Multi-role web portal",
+    "scope": "Secure document management system with questionnaires and messaging",
+    "timeline": "3-8 weeks",
+    "budget": "Not specified",
+    "complexity": "High - Enterprise-level multi-role system"
+  },
+  "technical_requirements": {
+    "frontend_options": ["React", "Next.js", "Vue"],
+    "backend_options": ["Node.js", "Django", "Laravel"],
+    "database_options": ["PostgreSQL", "MySQL", "MongoDB"],
+    "authentication": "OTP (SMS/email), password reset, role-based access",
+    "hosting_options": ["AWS", "Azure", "GCP", "Vercel"],
+    "security": "Encryption, secure payments, role-based access"
+  },
+  "core_features": [
+    "Authentication System with OTP",
+    "User Portal with questionnaires and document uploads",
+    "Reviewer Portal for user management and reviews",
+    "Admin Portal for system oversight",
+    "Document Management (PDF, JPG, PNG)",
+    "Messaging System (non-real-time)",
+    "Payment System integration",
+    "Cloud hosting with CI/CD"
+  ],
+  "information_gaps": [
+    "Budget range not specified",
+    "Technology stack preferences unclear",
+    "Questionnaire complexity details missing",
+    "Document validation requirements unknown",
+    "Payment method preferences not specified",
+    "Expected user volume unclear",
+    "Compliance requirements not mentioned",
+    "Third-party integrations not specified",
+    "Mobile requirements unclear",
+    "Reporting/analytics needs not defined"
+  ],
+  "client_communication_style": "Professional, detailed, structured",
+  "project_priority": "High - Complex enterprise system",
+  "estimated_effort": "High - 3-8 weeks suggests substantial development work"
+}
