@@ -79,6 +79,22 @@ def cmd_start(args: argparse.Namespace) -> None:
     (session_dir / "job-post.txt").write_text(job_text, encoding="utf-8")
     _append_md(session_dir / "conversation-history.md", f"# Job Post\n\n{job_text}\n")
 
+    # Initialize conversation logs
+    conv_log = {
+        "messages": [
+            {"id": "msg-001", "type": "job_post", "timestamp": datetime.utcnow().isoformat(timespec="seconds"), "text": job_text}
+        ]
+    }
+    (session_dir / "conversation_log.json").write_text(json.dumps(conv_log, indent=2) + "\n", encoding="utf-8")
+    # Build conversation index for aggregated text
+    agg = job_text
+    conv_index = {
+        "segments": [
+            {"id": "msg-001", "char_start": 0, "char_end": len(agg)}
+        ]
+    }
+    (session_dir / "conversation_index.json").write_text(json.dumps(conv_index, indent=2) + "\n", encoding="utf-8")
+
     # Extraction and domain routing
     extracted = extract_job_post(job_text)
     _write_json(session_dir / "extracted-info.json", extracted)
@@ -162,9 +178,32 @@ def cmd_add(args: argparse.Namespace) -> None:
     # Append reply
     _append_md(session_dir / "conversation-history.md", f"\n# Client Reply\n\n{reply_text}\n")
     job_text = (session_dir / "job-post.txt").read_text(encoding="utf-8")
+    # Update conversation log
+    log_path = session_dir / "conversation_log.json"
+    if log_path.exists():
+        conv_log = json.loads(log_path.read_text(encoding="utf-8"))
+    else:
+        conv_log = {"messages": [{"id": "msg-001", "type": "job_post", "timestamp": datetime.utcnow().isoformat(timespec="seconds"), "text": job_text}]}
+    next_id = f"msg-{len(conv_log['messages'])+1:03d}"
+    conv_log["messages"].append({"id": next_id, "type": "reply", "timestamp": datetime.utcnow().isoformat(timespec="seconds"), "text": reply_text})
+    log_path.write_text(json.dumps(conv_log, indent=2) + "\n", encoding="utf-8")
 
-    # Re-extract with combined context (simple approach: job post + reply)
-    combined = job_text + "\n\n" + reply_text
+    # Build aggregated conversation string and index
+    parts_txt: List[str] = []
+    segments: List[Dict[str, Any]] = []
+    cursor = 0
+    for m in conv_log["messages"]:
+        if parts_txt:
+            parts_txt.append("\n\n")
+            cursor += 2
+        start = cursor
+        parts_txt.append(m["text"])
+        cursor += len(m["text"])
+        segments.append({"id": m["id"], "char_start": start, "char_end": cursor})
+    combined = "".join(parts_txt)
+    (session_dir / "conversation_index.json").write_text(json.dumps({"segments": segments}, indent=2) + "\n", encoding="utf-8")
+
+    # Re-extract with full combined context
     extracted = extract_job_post(combined)
     _write_json(session_dir / "extracted-info.json", extracted)
 
@@ -299,6 +338,14 @@ def cmd_brief(args: argparse.Namespace) -> None:
     extracted = json.loads((session_dir / "extracted-info.json").read_text(encoding="utf-8"))
     gaps = json.loads((session_dir / "gaps.json").read_text(encoding="utf-8"))
     report = json.loads((session_dir / "validation_report.json").read_text(encoding="utf-8"))
+    # Gate: only allow brief when gaps are small (<= 3)
+    if len(gaps.get("open_gaps", [])) > 3:
+        print(json.dumps({
+            "error": "too_many_open_gaps",
+            "open_gaps": len(gaps.get("open_gaps", [])),
+            "threshold": 3
+        }))
+        return
     brief = build_project_brief(session_dir, extracted, gaps, report)
     (session_dir / "project-brief.md").write_text(brief, encoding="utf-8")
     print("brief generated")
