@@ -13,7 +13,7 @@ from typing import Dict, Any, List, Tuple
 from .extractor import extract_job_post
 from .domain_router import route_domain
 from .evidence_gate import load_candidate_facts
-from .proposal_generator import generate_proposal
+from .proposal_generator import generate_proposal, compose_sections_dict
 from .validator import validate_proposal
 from .gaps import initialize_gaps, update_gaps_from_extracted, render_gaps
 from .requirements_matrix import write_requirements_matrix
@@ -176,15 +176,23 @@ def cmd_add(args: argparse.Namespace) -> None:
     _write_json(session_dir / "gaps.json", gaps)
     write_requirements_matrix(session_dir, extracted, gaps)
 
-    # Regenerate proposal focused on deltas
+    # Regenerate proposal focused on deltas (partial-section regeneration)
     candidate_facts = load_candidate_facts(CONFIG_DIR)
-    proposal, used_refs = generate_proposal(
+    sections, used_refs = compose_sections_dict(
         job_text=combined,
         extracted=extracted,
         domain_info=domain_info,
         candidate_facts=candidate_facts,
         style_config_dir=CONFIG_DIR,
     )
+    # If certain gaps closed, we prioritize updating Understanding and Approach sections
+    proposal = "\n\n".join([
+        sections["Introduction"],
+        sections["Understanding of Project"],
+        sections["Solution Approach"],
+        sections["Value Proposition"],
+        sections["Call to Action"],
+    ])
     (session_dir / "proposal.md").write_text(proposal, encoding="utf-8")
     traces = build_traces(used_refs)
     _write_json(session_dir / "traces.json", traces)

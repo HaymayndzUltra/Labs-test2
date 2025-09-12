@@ -38,14 +38,14 @@ def _infer_tone(extracted: Dict[str, Any], style_config_dir: Path) -> str:
     return "technical" if prof == "technical" else "plain"
 
 
-def _compose_sections(
+def _compose_sections_dict(
     job_text: str,
     extracted: Dict[str, Any],
     domain_info: Dict[str, Any],
     candidate_facts: Dict[str, Any],
     style_config_dir: Path,
     variant: int | None = None,
-) -> Tuple[str, Dict[str, Any]]:
+) -> Tuple[Dict[str, str], Dict[str, Any]]:
     tone = _infer_tone(extracted, style_config_dir)
     specifics = _pick_specifics(extracted)
     domain = domain_info.get("domain", "general")
@@ -93,21 +93,25 @@ def _compose_sections(
 
     cta = [f"Call to Action: {CTA_LINE}"]
 
-    parts = [
-        " ".join(intro).strip(),
-        " ".join(understanding).strip(),
-        " ".join(approach).strip(),
-        " ".join(value).strip(),
-        " ".join(cta).strip(),
-    ]
-    text = "\n\n".join(p for p in parts if p)
+    sections = {
+        "Introduction": " ".join(intro).strip(),
+        "Understanding of Project": " ".join(understanding).strip(),
+        "Solution Approach": " ".join(approach).strip(),
+        "Value Proposition": " ".join(value).strip(),
+        "Call to Action": " ".join(cta).strip(),
+    }
 
     used_refs = {
         "specifics": lead_specs,
         "domain": domain,
         "used_facts": [micro_proof] if micro_proof else [],
+        "claims": [
+            *[{"category": "deliverables", "value": d.get("value", "")} for d in extracted.get("deliverables", [])[:3]],
+            *[{"category": "kpis", "value": k.get("value", "")} for k in extracted.get("kpis", [])[:2]],
+            *[{"category": "skills", "value": s.get("value", "")} for s in extracted.get("skills", [])[:3]],
+        ],
     }
-    return text, used_refs
+    return sections, used_refs
 
 
 def _word_count(text: str) -> int:
@@ -160,10 +164,28 @@ def generate_proposal(
     style_config_dir: Path,
     variant: int | None = None,
 ) -> Tuple[str, Dict[str, Any]]:
-    text, used_refs = _compose_sections(job_text, extracted, domain_info, candidate_facts, style_config_dir, variant)
+    sections, used_refs = _compose_sections_dict(job_text, extracted, domain_info, candidate_facts, style_config_dir, variant)
+    text = "\n\n".join([
+        sections["Introduction"],
+        sections["Understanding of Project"],
+        sections["Solution Approach"],
+        sections["Value Proposition"],
+        sections["Call to Action"],
+    ])
     text = _adjust_length_to_bounds(text)
     # Ensure CTA line exists exactly
     if CTA_LINE not in text:
         text = text.rstrip() + "\n\nCall to Action: " + CTA_LINE
     return text, used_refs
+
+
+def compose_sections_dict(
+    job_text: str,
+    extracted: Dict[str, Any],
+    domain_info: Dict[str, Any],
+    candidate_facts: Dict[str, Any],
+    style_config_dir: Path,
+    variant: int | None = None,
+) -> Tuple[Dict[str, str], Dict[str, Any]]:
+    return _compose_sections_dict(job_text, extracted, domain_info, candidate_facts, style_config_dir, variant)
 
