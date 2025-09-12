@@ -2,7 +2,7 @@
 
 ## Mode
 - STATUS: PLAN
-- APPROVAL_REQUIRED: yes
+- APPROVAL_REQUIRED: no
 - TIMEBOX: 30m
 
 ## Inputs
@@ -13,7 +13,7 @@
 - CONSTRAINTS: 
   - Do not assume stack; derive from brief. If ambiguous, present options with trade‑offs.
   - If healthcare domain, enforce HIPAA controls (no PHI in examples/logs; encryption in transit/at rest; RBAC; audit logging; 15‑minute session timeout).
-  - No file edits or commands during PLAN; generate plan artifacts only after approval.
+  - No code edits or infrastructure commands during PLAN; generating plan artifacts (docs) is allowed during PLAN.
 
 ## STRICT
 - Read the CLIENT_BRIEF verbatim; do not paraphrase as facts. Extract signals and cite them.
@@ -40,7 +40,7 @@
   - Unit/Integration/E2E strategy, CI gates, coverage target, performance SLOs
 - Risks & Mitigations, Assumptions, Clarifying Questions
 - Communication & Cadence (rituals, artifacts, decision logs)
-- Delivery Artifacts list to be generated on approval:
+- Delivery Artifacts generated during PLAN:
   - /workspace/plan/PLAN.md (human‑readable plan)
   - /workspace/plan/tasks.json (structured tasks: id, title, type, dependsOn, estimate, acceptanceCriteria)
   - /workspace/plan/risks.md (top risks with triggers/mitigations)
@@ -60,13 +60,13 @@
 - [ ] Risks, Assumptions, Clarifying Questions listed
 - [ ] No code or repo edits performed during PLAN
 
-## Deliverables (to be created only after approval)
+## Deliverables (generated during PLAN)
 - /workspace/plan/PLAN.md
 - /workspace/plan/tasks.json
 - /workspace/plan/risks.md
 
 ## Done Signal
-- Above deliverables exist and satisfy all Acceptance Criteria; next steps and approvals clearly listed.
+- Above deliverables exist and satisfy all Acceptance Criteria; PLAN ready for review/approval to freeze scope and proceed to execution gate.
 
 ## AI Response Format
 STATUS: PLAN
@@ -83,6 +83,6 @@ TEST_STRATEGY: <unit/integration/e2e, coverage, performance SLOs>
 RISKS: <top risks + mitigations>
 ASSUMPTIONS: <list>
 CLARIFYING_QUESTIONS: <list>
-DELIVERABLES_ON_APPROVAL: [/workspace/plan/PLAN.md, /workspace/plan/tasks.json, /workspace/plan/risks.md]
-NEXT_ACTION_NEEDED_FROM_YOU: "Reply: APPROVE EXECUTE to generate artifacts" or answer questions.
+ARTIFACTS_GENERATED: [/workspace/plan/PLAN.md, /workspace/plan/tasks.json, /workspace/plan/risks.md]
+NEXT_ACTION_NEEDED_FROM_YOU: "Review artifacts and reply: APPROVE PLAN to freeze scope; later reply: APPROVE EXECUTE to start implementation" or answer questions.
 

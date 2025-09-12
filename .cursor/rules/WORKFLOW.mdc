@@ -56,5 +56,5 @@ COMPLIANCE_OVERLAY: <e.g., HIPAA gates if applicable>
 GAPS: <ambiguities/risks>
 RECOMMENDATIONS: <specific fixes>
 DELIVERABLES_ON_APPROVAL: [/workspace/docs/workflow.md, /workspace/docs/adr/0001-workflow.md]
-NEXT_ACTION_NEEDED_FROM_YOU: "Reply: APPROVE EXECUTE to generate workflow artifacts" or answer questions.
+NEXT_ACTION_NEEDED_FROM_YOU: "Reply: APPROVE WORKFLOW to generate workflow artifacts; later, APPROVE EXECUTE to start implementation" or answer questions.
 
