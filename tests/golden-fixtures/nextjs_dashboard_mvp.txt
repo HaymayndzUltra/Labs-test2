@@ -1,0 +1,1 @@
+Build a Next.js dashboard MVP with authentication, role-based access, and charts. Prioritize Core Web Vitals and accessibility. We prefer TypeScript and Tailwind. Timeline is 3 weeks, budget flexible.

@@ -32,3 +32,13 @@
 ## Performance
 - Time-to-first-draft (TtFD) targets < 10s on typical posts.
 - Validator pass rate targeted > 99% on golden fixtures.
+
+## QA Suite
+
+Run golden fixtures and measure thresholds:
+
+```bash
+python -m upwork_automation.qa_runner | cat
+```
+
+Add new fixtures under `/workspace/tests/golden-fixtures/*.txt`.
