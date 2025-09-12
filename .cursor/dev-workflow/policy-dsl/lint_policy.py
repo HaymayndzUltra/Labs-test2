@@ -8,13 +8,31 @@ try:
 except Exception:
     HAS_JSONSCHEMA = False
 
-SCHEMA = '/workspace/.cursor/dev-workflow/policy-dsl/_schema/schema.json'
+def _root():
+    for key in ('WORKSPACE','GITHUB_WORKSPACE','CURSOR_WORKSPACE'):
+        v = os.getenv(key)
+        if v and (os.path.exists(os.path.join(v,'.cursor')) or os.path.exists(os.path.join(v,'.git'))):
+            return os.path.abspath(v)
+    here = os.path.abspath(__file__)
+    d = os.path.dirname(here)
+    while True:
+        if os.path.exists(os.path.join(d,'.cursor')) or os.path.exists(os.path.join(d,'.git')):
+            return d
+        nd = os.path.dirname(d)
+        if nd == d:
+            break
+        d = nd
+    return os.getcwd()
+
+ROOT = _root()
+SCHEMA = os.path.join(ROOT, '.cursor', 'dev-workflow', 'policy-dsl', '_schema', 'schema.json')
 
 def main():
     import glob
     schema = json.load(open(SCHEMA))
     errors = []
-    for path in glob.glob('/workspace/.cursor/dev-workflow/policy-dsl/*.json'):
+    import os as _os
+    for path in glob.glob(_os.path.join(ROOT, '.cursor', 'dev-workflow', 'policy-dsl', '*.json')):
         # skip schema files or internal schema folder
         fname = os.path.basename(path)
         if fname == 'schema.json' or fname.startswith('_'):

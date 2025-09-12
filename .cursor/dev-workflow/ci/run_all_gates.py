@@ -1,7 +1,26 @@
 #!/usr/bin/env python3
 import os, sys, subprocess
 
-ROOT = '/workspace'
+def _detect_repo_root():
+    # 1) environment overrides
+    for key in ('WORKSPACE', 'GITHUB_WORKSPACE', 'CURSOR_WORKSPACE'):
+        val = os.getenv(key)
+        if val and (os.path.exists(os.path.join(val, '.cursor')) or os.path.exists(os.path.join(val, '.git'))):
+            return os.path.abspath(val)
+    # 2) ascend from this file
+    here = os.path.abspath(__file__)
+    d = os.path.dirname(here)
+    while True:
+        if os.path.exists(os.path.join(d, '.cursor')) or os.path.exists(os.path.join(d, '.git')):
+            return d
+        parent = os.path.dirname(d)
+        if parent == d:
+            break
+        d = parent
+    # 3) fallback
+    return os.getcwd()
+
+ROOT = _detect_repo_root()
 CURSOR = os.path.join(ROOT, '.cursor')
 SNAP_DIR = os.path.join(CURSOR, 'dev-workflow', 'snapshots')
 FRAMEWORKS = os.path.join(ROOT, 'frameworks')

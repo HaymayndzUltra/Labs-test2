@@ -3,7 +3,23 @@ import os
 import re
 import json
 
-ROOT = '/workspace'
+def _root():
+    for key in ('WORKSPACE','GITHUB_WORKSPACE','CURSOR_WORKSPACE'):
+        v = os.getenv(key)
+        if v and (os.path.exists(os.path.join(v,'.cursor')) or os.path.exists(os.path.join(v,'.git'))):
+            return os.path.abspath(v)
+    here = os.path.abspath(__file__)
+    d = os.path.dirname(here)
+    while True:
+        if os.path.exists(os.path.join(d,'.cursor')) or os.path.exists(os.path.join(d,'.git')):
+            return d
+        nd = os.path.dirname(d)
+        if nd == d:
+            break
+        d = nd
+    return os.getcwd()
+
+ROOT = _root()
 RULES_DIR = os.path.join(ROOT, '.cursor', 'rules')
 REPORT_PATH = os.path.join(ROOT, '.cursor', 'dev-workflow', 'ci', 'rule_hygiene_report.json')
 

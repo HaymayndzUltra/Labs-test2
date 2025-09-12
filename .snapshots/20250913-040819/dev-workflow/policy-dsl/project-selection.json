@@ -1,0 +1,32 @@
+[
+  {
+    "name": "select-healthcare-fullstack",
+    "conditions": ["industry:healthcare", "project_type:fullstack"],
+    "priority": 90,
+    "recommend": { "frontend": "nextjs", "backend": "fastapi", "database": "postgres", "auth": "auth0", "compliance": "hipaa" }
+  },
+  {
+    "name": "select-finance-api",
+    "conditions": ["industry:finance", "project_type:api"],
+    "priority": 80,
+    "recommend": { "backend": "go", "database": "postgres", "auth": "cognito", "compliance": "sox,pci" }
+  },
+  {
+    "name": "select-ecommerce-fullstack",
+    "conditions": ["industry:ecommerce", "project_type:fullstack"],
+    "priority": 75,
+    "recommend": { "frontend": "nextjs", "backend": "django", "database": "postgres", "auth": "firebase", "compliance": "pci,gdpr" }
+  },
+  {
+    "name": "select-saas-api",
+    "conditions": ["industry:saas", "project_type:api"],
+    "priority": 70,
+    "recommend": { "backend": "django", "database": "postgres", "auth": "auth0" }
+  },
+  {
+    "name": "select-enterprise-web",
+    "conditions": ["industry:enterprise", "project_type:web"],
+    "priority": 65,
+    "recommend": { "frontend": "nextjs", "database": "none", "auth": "cognito" }
+  }
+]

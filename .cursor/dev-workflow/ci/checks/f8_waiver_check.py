@@ -3,7 +3,24 @@ import os
 import sys
 import json
 
-WAIVER_DIR = '/workspace/.cursor/dev-workflow/waivers'
+def _root():
+    for key in ('WORKSPACE','GITHUB_WORKSPACE','CURSOR_WORKSPACE'):
+        v = os.getenv(key)
+        if v and (os.path.exists(os.path.join(v,'.cursor')) or os.path.exists(os.path.join(v,'.git'))):
+            return os.path.abspath(v)
+    here = os.path.abspath(__file__)
+    d = os.path.dirname(here)
+    while True:
+        if os.path.exists(os.path.join(d,'.cursor')) or os.path.exists(os.path.join(d,'.git')):
+            return d
+        nd = os.path.dirname(d)
+        if nd == d:
+            break
+        d = nd
+    return os.getcwd()
+
+ROOT = _root()
+WAIVER_DIR = os.path.join(ROOT, '.cursor', 'dev-workflow', 'waivers')
 
 def main():
     # naive: if any file under waivers present with approved decision, pass; otherwise warn

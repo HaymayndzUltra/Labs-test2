@@ -1,0 +1,1126 @@
+{
+  "snapshot_id": "snap-a89ee1b8",
+  "git_commit": "unknown",
+  "rules_manifest": [
+    {
+      "path": ".cursor/rules/security-compliance-overlay.mdc",
+      "sha1": "c26040aed6f7a1ba92c44a9bbdc080c34ab21742"
+    },
+    {
+      "path": ".cursor/rules/project-rules/cross-platform-desktop-app.mdc",
+      "sha1": "1718b33007ed3419b17c45a881d0e049e10ca654"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular---Initialize-outputs-as-FileOu-22.mdc",
+      "sha1": "a8e5c2b1f931cf45337733c74be345a7f6068d51"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular.mdc",
+      "sha1": "c808952c791b499cb50130befce5f6c6ae5eafc1"
+    },
+    {
+      "path": ".cursor/rules/project-rules/synthesis.mdc",
+      "sha1": "ced02db2c6507ab36bc8fd44dfa8208d7a83c78f"
+    },
+    {
+      "path": ".cursor/rules/project-rules/unity.mdc",
+      "sha1": "3cab0a96719374170e4031f3d4ab66577fe9de8d"
+    },
+    {
+      "path": ".cursor/rules/project-rules/open-api.mdc",
+      "sha1": "2fa031dbea8f76e10bdf7f660c71704e65ac9447"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular--------------------------------25.mdc",
+      "sha1": "c168b41292afbe7b3e84a7deb42b20ced7c722b7"
+    },
+    {
+      "path": ".cursor/rules/project-rules/viem-v2.mdc",
+      "sha1": "da955be2f245a80b705a02bc4d21fba41fafbdd6"
+    },
+    {
+      "path": ".cursor/rules/project-rules/liquid.mdc",
+      "sha1": "a63bb9431967ecd33ab0310b11c094e0a82896c2"
+    },
+    {
+      "path": ".cursor/rules/project-rules/ruby.mdc",
+      "sha1": "369e421208b9c85610be1106d6f176ce4b045790"
+    },
+    {
+      "path": ".cursor/rules/project-rules/backend-development.mdc",
+      "sha1": "b6fa4424409f005e65e3bbbf215f8db34d26edfb"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular-----Code-Implementation-Guidel-13.mdc",
+      "sha1": "d838857669c60d88895c361b435ff1349bdf6473"
+    },
+    {
+      "path": ".cursor/rules/project-rules/graalvm.mdc",
+      "sha1": "426a6763efb2ddcf7fe690ed738ce8de5cdfb195"
+    },
+    {
+      "path": ".cursor/rules/project-rules/solito.mdc",
+      "sha1": "dd182a457cd8a71a146ffd90841e872b933bd556"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular----Pillow---19.mdc",
+      "sha1": "ba000179aa0c5db0f7100a88ae80e23caa46c2d9"
+    },
+    {
+      "path": ".cursor/rules/project-rules/prisma.mdc",
+      "sha1": "8d5eeba830d8dc17c324ac4c3e627a91d30134a4"
+    },
+    {
+      "path": ".cursor/rules/project-rules/theme-development.mdc",
+      "sha1": "b05828393ade1337e6b93036dae3940fb5783efd"
+    },
+    {
+      "path": ".cursor/rules/project-rules/scripting.mdc",
+      "sha1": "55b7dbdddc8b42b49ae0cd41dc6cad21dcbfb58c"
+    },
+    {
+      "path": ".cursor/rules/project-rules/devops.mdc",
+      "sha1": "3e0bf0a642528e35619187903f2ba3da3f4e6c7f"
+    },
+    {
+      "path": ".cursor/rules/project-rules/typescript-----Testing-3.mdc",
+      "sha1": "fea60f105ed94a38acaa91632a3bb5819b74ccce"
+    },
+    {
+      "path": ".cursor/rules/project-rules/global.mdc",
+      "sha1": "136fdd9c8651830ba6c49501f6874fd1fb27732e"
+    },
+    {
+      "path": ".cursor/rules/project-rules/design.mdc",
+      "sha1": "f8a2c329613d424bd150d8692462088c6ba4d1e6"
+    },
+    {
+      "path": ".cursor/rules/project-rules/async.mdc",
+      "sha1": "55b6c16c9f90a3287d401fad5787bb5e6fab45ec"
+    },
+    {
+      "path": ".cursor/rules/project-rules/game-development.mdc",
+      "sha1": "2404450bb877dc25d570bc9cc7161f479371bbab"
+    },
+    {
+      "path": ".cursor/rules/project-rules/uv.mdc",
+      "sha1": "684603da25b70b040ff1dda559391f7691a7e2e7"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular---Process----8.mdc",
+      "sha1": "7939944cd885afecaadca2adc6c2d1a2d2f11395"
+    },
+    {
+      "path": ".cursor/rules/project-rules/typescript---Process----4.mdc",
+      "sha1": "f82f9872a291af28f73abb04b6591887be8cc346"
+    },
+    {
+      "path": ".cursor/rules/project-rules/ansible.mdc",
+      "sha1": "ead24de47c360d11042d5b9753fc78e672be6fcc"
+    },
+    {
+      "path": ".cursor/rules/project-rules/radix-ui.mdc",
+      "sha1": "c50dad7cd7d09d338dbb8d0f4ca6538f5c2961c2"
+    },
+    {
+      "path": ".cursor/rules/project-rules/bash.mdc",
+      "sha1": "c90d8edeae15a3d5da8225975553e2966045b9b5"
+    },
+    {
+      "path": ".cursor/rules/project-rules/tailwindcss.mdc",
+      "sha1": "9bcfa4d38086013f8fda157abfaddc1925652b32"
+    },
+    {
+      "path": ".cursor/rules/project-rules/cpp.mdc",
+      "sha1": "bfbe76589946f351e815d5f54871f3dd9e27a6bb"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular---Process----1.mdc",
+      "sha1": "3d420c9c8cad097c4ca689383877d63c5e5c39bd"
+    },
+    {
+      "path": ".cursor/rules/project-rules/official-----Realtime-Streams-10.mdc",
+      "sha1": "eb38e1e9289a45dd831a7f8daf643e2d88df9570"
+    },
+    {
+      "path": ".cursor/rules/project-rules/feature-first.mdc",
+      "sha1": "0bc9b5ec98b0875d042f6b6476bb63d075781535"
+    },
+    {
+      "path": ".cursor/rules/project-rules/redux.mdc",
+      "sha1": "24f827312086372c560c0c5ed110e1aada725125"
+    },
+    {
+      "path": ".cursor/rules/project-rules/ghost.mdc",
+      "sha1": "fbddc950c6dc4b996e3e876b70d46ac5bd76ad17"
+    },
+    {
+      "path": ".cursor/rules/project-rules/trajectory-analysis.mdc",
+      "sha1": "50dcd7bf382c3faf9aefcaa586811187ece03fa3"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular-----Testing-6.mdc",
+      "sha1": "13d8729062a3f2ead95007d60c1c48804d74d8f4"
+    },
+    {
+      "path": ".cursor/rules/project-rules/web.mdc",
+      "sha1": "0a4ed87a43a7caa168a0cfb3a4a1b9942bc38892"
+    },
+    {
+      "path": ".cursor/rules/project-rules/official----CONSEQUENCES-OF-INCORRECT-I-3.mdc",
+      "sha1": "8f29b100857b50a6b3e0621f7461acff2fefe0c3"
+    },
+    {
+      "path": ".cursor/rules/project-rules/vuejs.mdc",
+      "sha1": "1347f2c0d0b3130fd6ef85d147b5c65b6bba41dc"
+    },
+    {
+      "path": ".cursor/rules/project-rules/stripe.mdc",
+      "sha1": "35602add2e222d2e31e502bde9050ad203a42f10"
+    },
+    {
+      "path": ".cursor/rules/project-rules/java.mdc",
+      "sha1": "9cf0d938ef5442c34308a7cc0cda25a983de72d6"
+    },
+    {
+      "path": ".cursor/rules/project-rules/golang.mdc",
+      "sha1": "3de76dcae49e1f38850723c07a03ef8d1bd03c42"
+    },
+    {
+      "path": ".cursor/rules/project-rules/spring.mdc",
+      "sha1": "f52dc43c67cdba9f35c5fa4314bb818b08aa21e9"
+    },
+    {
+      "path": ".cursor/rules/project-rules/sveltekit.mdc",
+      "sha1": "85bc5b7b4c2c08ccdfcb98b4c7bd630348924596"
+    },
+    {
+      "path": ".cursor/rules/project-rules/django.mdc",
+      "sha1": "bc56989848056a564dc98ff397e1b113f40cf1d0"
+    },
+    {
+      "path": ".cursor/rules/project-rules/technical-writing.mdc",
+      "sha1": "71b6ef7d7c980afbdc210c2358a9c8e0d90e66bc"
+    },
+    {
+      "path": ".cursor/rules/project-rules/python.mdc",
+      "sha1": "5c6c6acc1a4bdcd0b3a9463670e5c957e1588bb6"
+    },
+    {
+      "path": ".cursor/rules/project-rules/channel.mdc",
+      "sha1": "bff37803c42b69d708c2e703bae63df7422b7f1b"
+    },
+    {
+      "path": ".cursor/rules/project-rules/oas.mdc",
+      "sha1": "998a25e1c701167ff4172aaa6287bd9286ed37c2"
+    },
+    {
+      "path": ".cursor/rules/project-rules/woocommerce.mdc",
+      "sha1": "badd663528c227ca2fabdc7dff0b83f240348d2e"
+    },
+    {
+      "path": ".cursor/rules/project-rules/sanity.mdc",
+      "sha1": "ab04df564040eab10b9e6bbd4b656b72a918ad0f"
+    },
+    {
+      "path": ".cursor/rules/project-rules/wordpress.mdc",
+      "sha1": "03f6ba67b725f7a7c54e9a141842d3e4ce458471"
+    },
+    {
+      "path": ".cursor/rules/project-rules/franework.mdc",
+      "sha1": "3cf32b87953a5218843af5bca162d2aa35db056d"
+    },
+    {
+      "path": ".cursor/rules/project-rules/livewire.mdc",
+      "sha1": "4116af3125fc38b3dc3013c07ff77637db9155bc"
+    },
+    {
+      "path": ".cursor/rules/project-rules/rails.mdc",
+      "sha1": "3dfb81c004a73415e9e87a2bc83350cf34d38a83"
+    },
+    {
+      "path": ".cursor/rules/project-rules/reflection.mdc",
+      "sha1": "d0c41c47fd99e3ad526027dab181a476affefcb9"
+    },
+    {
+      "path": ".cursor/rules/project-rules/bootstrap.mdc",
+      "sha1": "c8d64e303a712c05395eace78023530b2c41b27c"
+    },
+    {
+      "path": ".cursor/rules/project-rules/solidity.mdc",
+      "sha1": "90aa4285e3761dc436e4cc0aa9b55214574c8e4b"
+    },
+    {
+      "path": ".cursor/rules/project-rules/node.mdc",
+      "sha1": "0b6856a4d316a7064cdd5c4d1082287bc1c6fadf"
+    },
+    {
+      "path": ".cursor/rules/project-rules/tutorials.mdc",
+      "sha1": "e5d70924be79e153f6cc4be7bb983130fca90965"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular-----HTML---14.mdc",
+      "sha1": "df99e890671ccbb83734930eb850af3ae24d94cc"
+    },
+    {
+      "path": ".cursor/rules/project-rules/azure.mdc",
+      "sha1": "e1a278e9dd72396b0189cddacd6637346f2fb9e0"
+    },
+    {
+      "path": ".cursor/rules/project-rules/nextjs-rsc-and-client.mdc",
+      "sha1": "a64f9636160309a54ee26f444f3093891da1e774"
+    },
+    {
+      "path": ".cursor/rules/project-rules/al.mdc",
+      "sha1": "5a56c6f4fbed3b0e614afa47227923fed8141f84"
+    },
+    {
+      "path": ".cursor/rules/project-rules/dma.mdc",
+      "sha1": "66dd16a7c7f13fb34f2afa160121275474742b8f"
+    },
+    {
+      "path": ".cursor/rules/project-rules/fastapi.mdc",
+      "sha1": "1bdbe237db08be776b780d381c35f678e1ec465f"
+    },
+    {
+      "path": ".cursor/rules/project-rules/nextjs-formatting.mdc",
+      "sha1": "300967174ce7d0a077b7e7fc88fdef0e80bf3935"
+    },
+    {
+      "path": ".cursor/rules/project-rules/svelte.mdc",
+      "sha1": "072a9139e873178a080f5faf1f49cd692fe2eccf"
+    },
+    {
+      "path": ".cursor/rules/project-rules/salesforce.mdc",
+      "sha1": "3e47281e3603a1677328e5fe3598a0993e6145a5"
+    },
+    {
+      "path": ".cursor/rules/project-rules/html.mdc",
+      "sha1": "2fa2f2adeb372418550750e7ff33f853847e3311"
+    },
+    {
+      "path": ".cursor/rules/project-rules/critique.mdc",
+      "sha1": "5392c19b1f797d52f6925a1b289b5c94263f12b5"
+    },
+    {
+      "path": ".cursor/rules/project-rules/daisyui.mdc",
+      "sha1": "4582acc5005cc873bcb93f2e68a5d193d274849a"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular-----Basic-Principles-2.mdc",
+      "sha1": "6a6bccc7233489b12769b19a35a88ae5108a2e4a"
+    },
+    {
+      "path": ".cursor/rules/project-rules/fpga.mdc",
+      "sha1": "4808cf5d6667d3489ebb2c5fb83faf1ed7783471"
+    },
+    {
+      "path": ".cursor/rules/project-rules/developer-content.mdc",
+      "sha1": "fab158eed5826211a0932bab1c5856fd840a4b9e"
+    },
+    {
+      "path": ".cursor/rules/project-rules/chrome-extension.mdc",
+      "sha1": "3e77def51619cfcc8a261b860dea961af17c80b1"
+    },
+    {
+      "path": ".cursor/rules/project-rules/typescript-----Nomenclature-2.mdc",
+      "sha1": "cc8f345b225994eb9320341f68ee5ada8c01578e"
+    },
+    {
+      "path": ".cursor/rules/project-rules/official-----Attach-a-Declarative-sched-6.mdc",
+      "sha1": "3f06e1cbf96862ee05644b953524dfde2d7afd26"
+    },
+    {
+      "path": ".cursor/rules/project-rules/cosmos.mdc",
+      "sha1": "b6d33c798f77867b3d0d9b1288924d1032881323"
+    },
+    {
+      "path": ".cursor/rules/project-rules/zod.mdc",
+      "sha1": "176de70ca138d326b790d645345d1fa0ef451349"
+    },
+    {
+      "path": ".cursor/rules/project-rules/pytorch.mdc",
+      "sha1": "582944504e78b0266d496083ec6446f3f5b49beb"
+    },
+    {
+      "path": ".cursor/rules/project-rules/official.mdc",
+      "sha1": "1e522a451c42d1b5ad842a885ae4b7b153a41631"
+    },
+    {
+      "path": ".cursor/rules/project-rules/web-scraping.mdc",
+      "sha1": "2f2f943126914f2235885e23d3cc93d4f2830f29"
+    },
+    {
+      "path": ".cursor/rules/project-rules/web-development.mdc",
+      "sha1": "a0f9b9f97767f10d37cba9d35bbfed82e15f5f20"
+    },
+    {
+      "path": ".cursor/rules/project-rules/rust.mdc",
+      "sha1": "903a731814cc3a1a71fd43dfdc539a90e8f2934c"
+    },
+    {
+      "path": ".cursor/rules/project-rules/zustand.mdc",
+      "sha1": "96af92ddfc75d0c62ffaeee47de96dcd98ab1d97"
+    },
+    {
+      "path": ".cursor/rules/project-rules/high-performance.mdc",
+      "sha1": "a10016aa7f86466661533df81a898f459f3cad32"
+    },
+    {
+      "path": ".cursor/rules/project-rules/official-----tasks-triggerAndPoll---7.mdc",
+      "sha1": "3658b89abad4458102d06880aecfbc44aa214524"
+    },
+    {
+      "path": ".cursor/rules/project-rules/jupyter.mdc",
+      "sha1": "4667c04bbf251c193f84b0ebb578ed1e23d5b7a4"
+    },
+    {
+      "path": ".cursor/rules/project-rules/blockchain.mdc",
+      "sha1": "f7ad3a3a26e3402ff51fdc7052c9906d12a84c04"
+    },
+    {
+      "path": ".cursor/rules/project-rules/shadcn-ui.mdc",
+      "sha1": "f418e6f3568356cae250c475afbe3b17765160a6"
+    },
+    {
+      "path": ".cursor/rules/project-rules/official------Retry-options-4.mdc",
+      "sha1": "a490ae03c91ea21131d192c4ceebd7b884e25eea"
+    },
+    {
+      "path": ".cursor/rules/project-rules/official-----Time-To-Live--TTL--12.mdc",
+      "sha1": "10a63d81b3c2b18f2ba7b9df7ed1f4ba3f1641af"
+    },
+    {
+      "path": ".cursor/rules/project-rules/kotlin.mdc",
+      "sha1": "5cad3dceb50afb2749513b7761f1063377e8d1c6"
+    },
+    {
+      "path": ".cursor/rules/project-rules/convex.mdc",
+      "sha1": "1e37a5d277ef0105630867e682a42f3d61951a76"
+    },
+    {
+      "path": ".cursor/rules/project-rules/accessibility.mdc",
+      "sha1": "cfb851a1096e91f9b7993707a10f26c7366b6457"
+    },
+    {
+      "path": ".cursor/rules/project-rules/python---you-can-use-any-function-tha-7.mdc",
+      "sha1": "7b98d5cde66e5b825ac970cdbaece783b19c9d94"
+    },
+    {
+      "path": ".cursor/rules/project-rules/python---Key-Conventions---3.mdc",
+      "sha1": "edb07d24e096c083b6a79d7328e47dafa58dca0d"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular---you-can-use-any-function-tha-24.mdc",
+      "sha1": "1c15435bf0587c5218c6cb8f15bc1008fc1afd4b"
+    },
+    {
+      "path": ".cursor/rules/project-rules/cloud.mdc",
+      "sha1": "9bbcf066143f89e736517a2d82df57def3ef3496"
+    },
+    {
+      "path": ".cursor/rules/project-rules/payload-cms.mdc",
+      "sha1": "a3f4e9d2fc1c86a954fc0bf1d56fe958a656b21b"
+    },
+    {
+      "path": ".cursor/rules/project-rules/remix.mdc",
+      "sha1": "7a27a3febab9fad78a2f0c24217112c61b894e3c"
+    },
+    {
+      "path": ".cursor/rules/project-rules/vivado.mdc",
+      "sha1": "1bc634a51f7f9baf76e4bf97e2fd78ac745c0080"
+    },
+    {
+      "path": ".cursor/rules/project-rules/transformer.mdc",
+      "sha1": "fe7cc9821d059f4eeaa5ebb8e0020531decc21af"
+    },
+    {
+      "path": ".cursor/rules/project-rules/enterprise.mdc",
+      "sha1": "3526626ef4de9a12c198d2ddea322a28a861c20f"
+    },
+    {
+      "path": ".cursor/rules/project-rules/swift.mdc",
+      "sha1": "9c940b9e1b9cd6494256e5bea4c71300d3ac000e"
+    },
+    {
+      "path": ".cursor/rules/project-rules/fastify.mdc",
+      "sha1": "dca744d5279282e7690c813e478fffba22dbee61"
+    },
+    {
+      "path": ".cursor/rules/project-rules/typescript---Overview-5.mdc",
+      "sha1": "c67eccd8acd032e5784c6fd10f9f40e5bcdede19"
+    },
+    {
+      "path": ".cursor/rules/project-rules/graphql.mdc",
+      "sha1": "0d29db6f596e28574b7ebe580d8cb4056031a7d8"
+    },
+    {
+      "path": ".cursor/rules/project-rules/anchor.mdc",
+      "sha1": "bb186f110df59acb214d82cffb7cedf1c8f00b46"
+    },
+    {
+      "path": ".cursor/rules/project-rules/terraform.mdc",
+      "sha1": "b4109cc526f88767a1abbdaa0b3819ae0e673a26"
+    },
+    {
+      "path": ".cursor/rules/project-rules/tauri.mdc",
+      "sha1": "d0194c917dfd2ee4a71453bc7378f49588caaf32"
+    },
+    {
+      "path": ".cursor/rules/project-rules/nestjs.mdc",
+      "sha1": "ba8fe3b8781f8625fa6df3bcd72dd7f4ba1da7d5"
+    },
+    {
+      "path": ".cursor/rules/project-rules/data-analyst.mdc",
+      "sha1": "3ed15a8f4864d3ed242afa00e0d7119839733eed"
+    },
+    {
+      "path": ".cursor/rules/project-rules/timing-optimization.mdc",
+      "sha1": "78a3097ae85e5958ba5ac93a41cf82cd39158126"
+    },
+    {
+      "path": ".cursor/rules/project-rules/observability.mdc",
+      "sha1": "6e53beca8983461ca190d48423834a3f5164f064"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular-----Nomenclature-5.mdc",
+      "sha1": "ebb25a2b305c4d5d5c5c95218ee2a5575152a800"
+    },
+    {
+      "path": ".cursor/rules/project-rules/manifest.mdc",
+      "sha1": "ddb068c7995318e0489c7ee262eea33c0adab315"
+    },
+    {
+      "path": ".cursor/rules/project-rules/react-native.mdc",
+      "sha1": "42b1e769b5ddfe4e3166bae29e211bbdb1e90c91"
+    },
+    {
+      "path": ".cursor/rules/project-rules/user-story.mdc",
+      "sha1": "1c119e1d115a119dab82f51c60e7a420b70d0e01"
+    },
+    {
+      "path": ".cursor/rules/project-rules/onchainkit.mdc",
+      "sha1": "222093e58d508e67d6c84e5a135eac1d8cb36bea"
+    },
+    {
+      "path": ".cursor/rules/project-rules/javascript.mdc",
+      "sha1": "59d54ab287a83e32a4dbee9c95888aa9387d7787"
+    },
+    {
+      "path": ".cursor/rules/project-rules/testing.mdc",
+      "sha1": "5b95979dbdcb896151209567ac022726cc795cca"
+    },
+    {
+      "path": ".cursor/rules/project-rules/react.mdc",
+      "sha1": "d52ec2338137420e54948ad9e230fcff9e8da7c5"
+    },
+    {
+      "path": ".cursor/rules/project-rules/css.mdc",
+      "sha1": "0ff7ab7dedde189842cae754148f99bbae4d8b75"
+    },
+    {
+      "path": ".cursor/rules/project-rules/shopify.mdc",
+      "sha1": "9232ab92650729ee2b7205834c654c66cacf7490"
+    },
+    {
+      "path": ".cursor/rules/project-rules/i18n.mdc",
+      "sha1": "607280c6518b3ed8d1d71d15f784d230d2879550"
+    },
+    {
+      "path": ".cursor/rules/project-rules/nethttp.mdc",
+      "sha1": "8f61336774ab898558074ce179c52a385b37a955"
+    },
+    {
+      "path": ".cursor/rules/project-rules/web3js.mdc",
+      "sha1": "935de9ccfe1fe29e97dbb79cc4dfd5b9059551f0"
+    },
+    {
+      "path": ".cursor/rules/project-rules/mobile.mdc",
+      "sha1": "238097770390e52e8f524ec91ac4ec3952e91a97"
+    },
+    {
+      "path": ".cursor/rules/project-rules/supabase.mdc",
+      "sha1": "1e0aaeda1beffa8c08fc34b0907f7b5d73ea558b"
+    },
+    {
+      "path": ".cursor/rules/project-rules/clean-architecture.mdc",
+      "sha1": "38085d373f05a53b5b80a5c6daa0b5b62a179543"
+    },
+    {
+      "path": ".cursor/rules/project-rules/mongodb.mdc",
+      "sha1": "8bf00bfd80afb70ae4aea3ced7c586622b987141"
+    },
+    {
+      "path": ".cursor/rules/project-rules/microprofile.mdc",
+      "sha1": "149623097ea062020c3730d06844af98bf676b1c"
+    },
+    {
+      "path": ".cursor/rules/project-rules/firebase.mdc",
+      "sha1": "bf58be0c75e8cf6d5f8b38a973eea5e27e8457e9"
+    },
+    {
+      "path": ".cursor/rules/project-rules/robocorp.mdc",
+      "sha1": "a662901efb34705396727b62db2171a689270c4d"
+    },
+    {
+      "path": ".cursor/rules/project-rules/llm.mdc",
+      "sha1": "635d4c87eb6cf79367ae1e5c2f0693c386150a78"
+    },
+    {
+      "path": ".cursor/rules/project-rules/lua.mdc",
+      "sha1": "99484477976215a2e3a52d8384a074f56b032282"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular-----Testing-3.mdc",
+      "sha1": "aedc038ae4a02cee4cfbae22c254608c1bb2b98d"
+    },
+    {
+      "path": ".cursor/rules/project-rules/ui.mdc",
+      "sha1": "daeec3f0e5576ec990e09a1bfd3f90a2544a1004"
+    },
+    {
+      "path": ".cursor/rules/project-rules/nuxtjs.mdc",
+      "sha1": "4b743dc2cfdeb87c28d7f16fe0991f6f072a0361"
+    },
+    {
+      "path": ".cursor/rules/project-rules/julia.mdc",
+      "sha1": "1995177ab7bd2f466dd9a738ce8055508ac92e0e"
+    },
+    {
+      "path": ".cursor/rules/project-rules/smart-contracts.mdc",
+      "sha1": "ca73de1b8fc4c00eefa06c639951b7af83d38b41"
+    },
+    {
+      "path": ".cursor/rules/project-rules/infrastructure-as-code.mdc",
+      "sha1": "fa0e99f9844a3449fc5678e57a5cf5aaea84d811"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular---Reinstall-all-script-depende-20.mdc",
+      "sha1": "7ac39a662831f043ca61f74d37c1cd8ff18c4b14"
+    },
+    {
+      "path": ".cursor/rules/project-rules/vert-x.mdc",
+      "sha1": "3306fcdd5572c1d38fc83751cd7ee65a5c73e77a"
+    },
+    {
+      "path": ".cursor/rules/project-rules/elixir.mdc",
+      "sha1": "04bb78b1238f28cbaf79edd400ce59b389f60b93"
+    },
+    {
+      "path": ".cursor/rules/project-rules/vue.mdc",
+      "sha1": "3b36e07a50bbc7f01d4855d75ca690507849104c"
+    },
+    {
+      "path": ".cursor/rules/project-rules/phoenix.mdc",
+      "sha1": "48a3dd06b7e0c6c22b492356eb940e87e7920d19"
+    },
+    {
+      "path": ".cursor/rules/project-rules/python-----Get-your-API-parameters-4.mdc",
+      "sha1": "ef21298d5966c70f2532a5c4b22a1e3841c84feb"
+    },
+    {
+      "path": ".cursor/rules/project-rules/function.mdc",
+      "sha1": "533d32fcfaacf7e94e617a2354368b16ee87e02e"
+    },
+    {
+      "path": ".cursor/rules/project-rules/deep-learning.mdc",
+      "sha1": "734b8af4f7a96dacf8d9a473e50623b3b5619027"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular-----18.mdc",
+      "sha1": "c6edd66cce0eb3b9a4eece255342ebce7eeb1bd6"
+    },
+    {
+      "path": ".cursor/rules/project-rules/swiftui.mdc",
+      "sha1": "18f8d7ada487a6119fe08c7ef56e3c0156ab0f5b"
+    },
+    {
+      "path": ".cursor/rules/project-rules/playwright.mdc",
+      "sha1": "53941c9b1ea847e58678b0f06d1a74040c1a3c0f"
+    },
+    {
+      "path": ".cursor/rules/project-rules/official----Best-Practices-1.mdc",
+      "sha1": "05f5c94285b7d4f77b41cd1bfa4ebb3a50154c47"
+    },
+    {
+      "path": ".cursor/rules/project-rules/webshop.mdc",
+      "sha1": "72a81e5efcb6a9ba3ca8d56160cc1d97103f5f81"
+    },
+    {
+      "path": ".cursor/rules/project-rules/axi.mdc",
+      "sha1": "f8632d1d2c20b802f6b9db63aeb93a4b9a162191"
+    },
+    {
+      "path": ".cursor/rules/project-rules/python-----1.mdc",
+      "sha1": "0ef0d164a423f948d8440ffef8678a2e82545f7e"
+    },
+    {
+      "path": ".cursor/rules/project-rules/orm.mdc",
+      "sha1": "0f268ed71be2581b7089513d240e79e238dcfd8d"
+    },
+    {
+      "path": ".cursor/rules/project-rules/cms.mdc",
+      "sha1": "03c644c808d7e6b24a9fd4458ed4db2bca58aab6"
+    },
+    {
+      "path": ".cursor/rules/project-rules/python---Initialize-outputs-as-FileOu-5.mdc",
+      "sha1": "47ae3bfe476199487c2fdce39a53a5e1417956ba"
+    },
+    {
+      "path": ".cursor/rules/project-rules/security.mdc",
+      "sha1": "35f1acd8cc43af12ef10667d424ea1bd7cc3282c"
+    },
+    {
+      "path": ".cursor/rules/project-rules/go.mdc",
+      "sha1": "6531e6f110b33521ae8994029eee676c6ccc345e"
+    },
+    {
+      "path": ".cursor/rules/project-rules/paraglide-js.mdc",
+      "sha1": "7ccf44d7f67cebf24ac3e11a713c398aabd6924b"
+    },
+    {
+      "path": ".cursor/rules/project-rules/-appcommon.mdc",
+      "sha1": "2f1a5cb47509d4237264eb5bed15f760afbbc1b8"
+    },
+    {
+      "path": ".cursor/rules/project-rules/systemverilog.mdc",
+      "sha1": "48916d47e0a2070ea97da35af62403b12b6fd54c"
+    },
+    {
+      "path": ".cursor/rules/project-rules/jina-ai.mdc",
+      "sha1": "828bd85e797cda38d8d6658ad07c9684e28fc8ee"
+    },
+    {
+      "path": ".cursor/rules/project-rules/kubernetes.mdc",
+      "sha1": "c89003241e42ae4307307f643c8f8a039ad6af06"
+    },
+    {
+      "path": ".cursor/rules/project-rules/gatsby.mdc",
+      "sha1": "ac2b044593e5a02b5c59bdabb7ecc3f54fe26f63"
+    },
+    {
+      "path": ".cursor/rules/project-rules/astro.mdc",
+      "sha1": "1ec62248cad3e365ff4d7b2f58cd9f9d20b93fdb"
+    },
+    {
+      "path": ".cursor/rules/project-rules/-net.mdc",
+      "sha1": "86beaf08838618ccc99750f611034af8e19d57f2"
+    },
+    {
+      "path": ".cursor/rules/project-rules/official-----Passing-tokens-to-the-fron-11.mdc",
+      "sha1": "12b2b2654166771c79e9f2af0078b9f2970ca2c0"
+    },
+    {
+      "path": ".cursor/rules/project-rules/machine-learning.mdc",
+      "sha1": "da5edbf3d6ea9b5a2b55a214a34d0e76f1e4aa6f"
+    },
+    {
+      "path": ".cursor/rules/project-rules/vite.mdc",
+      "sha1": "b779a78448933c20d819b05c3b8120316af747ef"
+    },
+    {
+      "path": ".cursor/rules/project-rules/typescript.mdc",
+      "sha1": "6b92d4a71a3e363a8937b1a108f1647659b7182c"
+    },
+    {
+      "path": ".cursor/rules/project-rules/jakarta-ee.mdc",
+      "sha1": "4e38f5b50f71282167c7a677a89b34d1264304c6"
+    },
+    {
+      "path": ".cursor/rules/project-rules/cybersecurity.mdc",
+      "sha1": "f29f8630ae7702a6d645a6961363967ca8284cc0"
+    },
+    {
+      "path": ".cursor/rules/project-rules/ionic.mdc",
+      "sha1": "34b912d5a26a8882517fb1ebe51a62a6a8dc8588"
+    },
+    {
+      "path": ".cursor/rules/project-rules/flutter.mdc",
+      "sha1": "5aa65e7e4a1bbcfd452a8858821274370a95c551"
+    },
+    {
+      "path": ".cursor/rules/project-rules/tamagui.mdc",
+      "sha1": "26883e9ff4ea48a3e3428dea9363dc81a0cc4638"
+    },
+    {
+      "path": ".cursor/rules/project-rules/python---For-non-SSE-responses--read--6.mdc",
+      "sha1": "6eb2e46e1ba185779900d4be6e8882a1e82661d8"
+    },
+    {
+      "path": ".cursor/rules/project-rules/blazor.mdc",
+      "sha1": "2217dee669bf396661313465b58467ae144d9c64"
+    },
+    {
+      "path": ".cursor/rules/project-rules/aspnet.mdc",
+      "sha1": "bef51a33183a5fee60f930c09ecc221390f4aebd"
+    },
+    {
+      "path": ".cursor/rules/project-rules/react-three-fiber.mdc",
+      "sha1": "ad01a1f1c605d60c7dc2a1436fea006019bf3097"
+    },
+    {
+      "path": ".cursor/rules/project-rules/arduino-framework.mdc",
+      "sha1": "233a8092838501374f66f8b25a72ef8f6772c5f4"
+    },
+    {
+      "path": ".cursor/rules/project-rules/nodejs.mdc",
+      "sha1": "35c20d739b8f3db7174619a7df44ce8e4c39e556"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular---Process----11.mdc",
+      "sha1": "73fdbcfcea9afcd1910136e885e777cafef07786"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular-----Testing-and-Documentation-10.mdc",
+      "sha1": "b40f7bab1fee8d50a165415a18c728423b7a9318"
+    },
+    {
+      "path": ".cursor/rules/project-rules/cordova.mdc",
+      "sha1": "721538620149ddca9a02b0e3758093252d3f75b6"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular---For-non-SSE-responses--read--23.mdc",
+      "sha1": "1655e7b2916c2119028550d8676ba9cfa94389e8"
+    },
+    {
+      "path": ".cursor/rules/project-rules/metaplex.mdc",
+      "sha1": "bc7ff65216c07f984d123fc4771018aecf44fcb7"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular-----Folder-Structure-15.mdc",
+      "sha1": "27e58e2ad63d56a8f9465ca0c668053104c5068d"
+    },
+    {
+      "path": ".cursor/rules/project-rules/tooling.mdc",
+      "sha1": "c668af0e764de9c9d1bc5152e62975bb13628727"
+    },
+    {
+      "path": ".cursor/rules/project-rules/official-----Parent---root-updates-9.mdc",
+      "sha1": "c76358c07931030e11549d6f440fc0bd49024aa2"
+    },
+    {
+      "path": ".cursor/rules/project-rules/official----CORRECT-SERVER-CLIENT-IMPLE-2.mdc",
+      "sha1": "7799017df6018d7127d5578d48d7329f2cddaf36"
+    },
+    {
+      "path": ".cursor/rules/project-rules/ex.mdc",
+      "sha1": "7c3afea07b1a27eef6c7094e8231161a6a387525"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular--myPrivateMethod-----17.mdc",
+      "sha1": "d976ccb6e4e735ac773dd5046d63d12b9c6c79f1"
+    },
+    {
+      "path": ".cursor/rules/project-rules/best-practices.mdc",
+      "sha1": "f5a68e9e2a6e01f01b8de7476cb794e96f902209"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular-----Get-your-API-parameters-21.mdc",
+      "sha1": "486dc33e8726eab09603407f88bcf96ebf54cf21"
+    },
+    {
+      "path": ".cursor/rules/project-rules/cot.mdc",
+      "sha1": "3142322ed11f3e3dc70f721b4ce85bb46edaf2a2"
+    },
+    {
+      "path": ".cursor/rules/project-rules/force-com.mdc",
+      "sha1": "a37425332af1072f79c59c63fa51edb7df5d232f"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular-----BEM-16.mdc",
+      "sha1": "0e33058f5139d1e787473eb29dee352b57a21dd9"
+    },
+    {
+      "path": ".cursor/rules/project-rules/official----AI-MODEL-RESPONSE-TEMPLATE-14.mdc",
+      "sha1": "1989b8c7f2dd59b5167d53d469bed9e822a15469"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular-AI-SDK-9.mdc",
+      "sha1": "b611993df2c8d16f9a56e9c43e8426693967f908"
+    },
+    {
+      "path": ".cursor/rules/project-rules/firestore.mdc",
+      "sha1": "0349fe12d1f00faf07ac4e7016e878cb2e55db58"
+    },
+    {
+      "path": ".cursor/rules/project-rules/threejs.mdc",
+      "sha1": "085c7a9f2109372713c3bb29de87961b0eafcc4b"
+    },
+    {
+      "path": ".cursor/rules/project-rules/business-central.mdc",
+      "sha1": "bfd9a88216ef9a51e647a935217e88dbe471b759"
+    },
+    {
+      "path": ".cursor/rules/project-rules/rspec.mdc",
+      "sha1": "eaf3db6533c603dcb6dd09385c0c7d8fc14591a7"
+    },
+    {
+      "path": ".cursor/rules/project-rules/pixijs.mdc",
+      "sha1": "8479dd13879df28904b83e3546139c3f804050e9"
+    },
+    {
+      "path": ".cursor/rules/project-rules/acting.mdc",
+      "sha1": "2fec33af23e6b8cc56626f8e2fa94309272e3230"
+    },
+    {
+      "path": ".cursor/rules/project-rules/php.mdc",
+      "sha1": "a7d987ed74565187b0fa189ad8c23447bbaa3ebe"
+    },
+    {
+      "path": ".cursor/rules/project-rules/ux.mdc",
+      "sha1": "7697225360d5271723ea8e5cbe986b512b7849ae"
+    },
+    {
+      "path": ".cursor/rules/project-rules/solana.mdc",
+      "sha1": "aaa5729f1b1e728a1a4cc89bf1991b8427bc7e89"
+    },
+    {
+      "path": ".cursor/rules/project-rules/htmx.mdc",
+      "sha1": "02ebfc64c6b79118a3ff2e3ceecacd6f4759b408"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular-AI-SDK-12.mdc",
+      "sha1": "aea9c8c0f4e08ab93b6fabde0883414a8a3ba57f"
+    },
+    {
+      "path": ".cursor/rules/project-rules/package-management.mdc",
+      "sha1": "9858b07dad2ec0672af0d088d1f5b1e5b04eb74e"
+    },
+    {
+      "path": ".cursor/rules/project-rules/diffusion.mdc",
+      "sha1": "588e9190ccc0c577af5d0f4afe216b3075020aab"
+    },
+    {
+      "path": ".cursor/rules/project-rules/jax.mdc",
+      "sha1": "85a74774521fa13f2f49f227d6ca9d940106af23"
+    },
+    {
+      "path": ".cursor/rules/project-rules/wagmi-v2.mdc",
+      "sha1": "237df68c224c705946ca3bbc581ce7cd212e5dfb"
+    },
+    {
+      "path": ".cursor/rules/project-rules/responsive-design.mdc",
+      "sha1": "37eb4775652f821cd23077c60b78586da3612efb"
+    },
+    {
+      "path": ".cursor/rules/project-rules/microservices.mdc",
+      "sha1": "c64a450f2ff056923ab26af576c9f018722d5611"
+    },
+    {
+      "path": ".cursor/rules/project-rules/ibc.mdc",
+      "sha1": "3f2e9dde13fb948be28ff2a50242d1a96a4a3291"
+    },
+    {
+      "path": ".cursor/rules/project-rules/datascience.mdc",
+      "sha1": "7c9443ddf393d02832854387a0e74c84ef6309bf"
+    },
+    {
+      "path": ".cursor/rules/project-rules/expo.mdc",
+      "sha1": "ef267c72bb39dfd5e4d5b3f95a2e1ba6bd93a6e5"
+    },
+    {
+      "path": ".cursor/rules/project-rules/laravel.mdc",
+      "sha1": "345d1612759b9190bba3fcebc2df9159e24fcfd2"
+    },
+    {
+      "path": ".cursor/rules/project-rules/official-----batch-triggerAndWait---8.mdc",
+      "sha1": "e74064203d97a17f6816dd517a3a9e9b988a44cb"
+    },
+    {
+      "path": ".cursor/rules/project-rules/python--------------------------------8.mdc",
+      "sha1": "50b4b76b9558586cb1e4162b613a78ac7cb49a9c"
+    },
+    {
+      "path": ".cursor/rules/project-rules/autohotkey.mdc",
+      "sha1": "53dc259913e3153d3c04d3bc24e5891c629dbf16"
+    },
+    {
+      "path": ".cursor/rules/project-rules/monorepo.mdc",
+      "sha1": "6838f531c935da9ae31bee09976e153337746571"
+    },
+    {
+      "path": ".cursor/rules/project-rules/mpsc.mdc",
+      "sha1": "a3c0ebe8e95aeb0f545275961a4c5276f95df9d3"
+    },
+    {
+      "path": ".cursor/rules/project-rules/tailwind.mdc",
+      "sha1": "8af349d60041ce0fb31a0e1b1463f00f275a992c"
+    },
+    {
+      "path": ".cursor/rules/project-rules/ethereum.mdc",
+      "sha1": "07d093e7987010895b0c7cc1eb45e8cf88328ec1"
+    },
+    {
+      "path": ".cursor/rules/project-rules/headless.mdc",
+      "sha1": "d80bf94868cddf086576df8bc3e60f8b161409c2"
+    },
+    {
+      "path": ".cursor/rules/project-rules/typescript----Git-Commit-Rules-6.mdc",
+      "sha1": "bf12ec3bcaa9dea3a50dd54d4af2ac3e4b5b5b7b"
+    },
+    {
+      "path": ".cursor/rules/project-rules/rest-api.mdc",
+      "sha1": "55075cd1991cbbd09e70268c69baaf9b4d77161a"
+    },
+    {
+      "path": ".cursor/rules/project-rules/drupal.mdc",
+      "sha1": "7af326939a27814d8eb64121911dc877b27ec778"
+    },
+    {
+      "path": ".cursor/rules/project-rules/odoo.mdc",
+      "sha1": "a44027ce676526ee742aa76135f3217f668eac67"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular-----Testing-and-Documentation-7.mdc",
+      "sha1": "b40f7bab1fee8d50a165415a18c728423b7a9318"
+    },
+    {
+      "path": ".cursor/rules/project-rules/sfdx.mdc",
+      "sha1": "a42cfcb4e9d1fdeffeca2d6edbea94d52b00313b"
+    },
+    {
+      "path": ".cursor/rules/project-rules/angular.mdc",
+      "sha1": "1fb6c33f436dd736eba79c296968d5e0cf55c9ac"
+    },
+    {
+      "path": ".cursor/rules/project-rules/official------Telemetry-instrumentation-13.mdc",
+      "sha1": "3aa59ab9d2cd3517ee0cd5e3a124b5f99ec385b5"
+    },
+    {
+      "path": ".cursor/rules/project-rules/nextjs.mdc",
+      "sha1": "ab6a9f16aff9378cb9365e508f6b7101422c9070"
+    },
+    {
+      "path": ".cursor/rules/project-rules/flask.mdc",
+      "sha1": "3d2a964659c92cf9d7664c2de61ca1f55362da25"
+    },
+    {
+      "path": ".cursor/rules/project-rules/nextjs-a11y.mdc",
+      "sha1": "a6f175f882de3ec925ffc28bda4a55c6c1a06e6a"
+    },
+    {
+      "path": ".cursor/rules/project-rules/meta-prompt.mdc",
+      "sha1": "e78c2ee71c6a8536e6a5a6c9e0c6575fdd40f994"
+    },
+    {
+      "path": ".cursor/rules/project-rules/official------onStart-5.mdc",
+      "sha1": "01197bf42c10a61597fdec3cab44abbf77df5488"
+    },
+    {
+      "path": ".cursor/rules/project-rules/api.mdc",
+      "sha1": "c941815ab0dfb863f7dea760b0f6d1404a5be1f7"
+    },
+    {
+      "path": ".cursor/rules/project-rules/python---Reinstall-all-script-depende-2.mdc",
+      "sha1": "5d5eefb7c343c7649f922ecb0295290882f1404a"
+    },
+    {
+      "path": ".cursor/rules/project-rules/quarkus.mdc",
+      "sha1": "39b91055771e0c70d1ab5ec0a9c3db6e42704b7e"
+    },
+    {
+      "path": ".cursor/rules/project-rules/c.mdc",
+      "sha1": "a627e300a5cf15e608e44845e438b0bc6cd2ef39"
+    },
+    {
+      "path": ".cursor/rules/project-rules/alpine-js.mdc",
+      "sha1": "e2b2b39fd5ff222673d189ce8ed8ce57417b5754"
+    },
+    {
+      "path": ".cursor/rules/project-rules/typescript-----Functions-1.mdc",
+      "sha1": "d211b53369945e1e4ea8cbae52d5267f290c9185"
+    },
+    {
+      "path": ".cursor/rules/project-rules/popular-AI-SDK-4.mdc",
+      "sha1": "0e123e667107af1bd084ed98abf9f6a67d655e9c"
+    },
+    {
+      "path": ".cursor/rules/project-rules/serverless.mdc",
+      "sha1": "af9fd69fca9de18471eeacebc0500e4e85383d76"
+    },
+    {
+      "path": ".cursor/rules/project-rules/performance.mdc",
+      "sha1": "b8bc96058173afdb4c367db5f1074734b150d146"
+    },
+    {
+      "path": ".cursor/rules/project-rules/browser-api.mdc",
+      "sha1": "dbf8aa5d0bfdbc70634d6b4e634cca0acb15dd5f"
+    },
+    {
+      "path": ".cursor/rules/project-rules/cosmwasm.mdc",
+      "sha1": "bcd3bb334512e89af2536e9422b1b5e48ef1f245"
+    },
+    {
+      "path": ".cursor/rules/project-rules/standard-js.mdc",
+      "sha1": "45cead17f75fc20ae14eb2e838cf77cd3724135c"
+    },
+    {
+      "path": ".cursor/rules/project-rules/android.mdc",
+      "sha1": "51127663385a862b6534cbac6ab70ba2dfb9defe"
+    },
+    {
+      "path": ".cursor/rules/project-rules/bloc.mdc",
+      "sha1": "5cd6c6b84d151c920407f6692a39ae8ba7a56371"
+    },
+    {
+      "path": ".cursor/rules/common-rules/common-rule-ui-foundation-design-system.mdc",
+      "sha1": "bacae093066f457413ae3547fd285097c1c88203"
+    },
+    {
+      "path": ".cursor/rules/common-rules/common-rule-ui-premium-brand-dataviz-enterprise-gated.mdc",
+      "sha1": "6d745fcb9aeb1b9025143fb895b33351faa5d38d"
+    },
+    {
+      "path": ".cursor/rules/common-rules/common-rule-ui-interaction-a11y-perf.mdc",
+      "sha1": "e3b599ac6f14624f49064c426b454b9b65667d49"
+    },
+    {
+      "path": ".cursor/rules/common-rules/common-rule-monorepo-setup-conventions.mdc",
+      "sha1": "582bb570ccfb113bcd99f10c1695590bb1865151"
+    },
+    {
+      "path": ".cursor/rules/master-rules/4-master-rule-code-modification-safety-protocol.mdc",
+      "sha1": "bebc511ae2e62e3b928c7751d5c5b7961da5897a"
+    },
+    {
+      "path": ".cursor/rules/master-rules/3-master-rule-code-quality-checklist.mdc",
+      "sha1": "78facb79f0ef447210d5a40bc35e425801189704"
+    },
+    {
+      "path": ".cursor/rules/master-rules/8-auditor-validator-protocol.mdc",
+      "sha1": "5ac801b0f3b75d44e02d307b91f2791f338dd54d"
+    },
+    {
+      "path": ".cursor/rules/master-rules/F8-security-and-compliance-overlay.mdc",
+      "sha1": "cf4c56863e1ce9f298885aa197fdeefbcd6549eb"
+    },
+    {
+      "path": ".cursor/rules/master-rules/1-master-rule-context-discovery.mdc",
+      "sha1": "650138300f3eb54529142af17ec2e918fd7c1f7c"
+    },
+    {
+      "path": ".cursor/rules/master-rules/2-master-rule-ai-collaboration-guidelines.mdc",
+      "sha1": "437ecfd1a01cc092366ff5d8fa677749f181f129"
+    },
+    {
+      "path": ".cursor/rules/master-rules/6-master-rule-complex-feature-context-preservation.mdc",
+      "sha1": "2716ab0bdb6c364d433f66d991006740dd8269cc"
+    },
+    {
+      "path": ".cursor/rules/master-rules/0-how-to-create-effective-rules.mdc",
+      "sha1": "713b42843ad9b41d094ace0b822de181040e2c02"
+    },
+    {
+      "path": ".cursor/rules/master-rules/5-master-rule-documentation-and-context-guidelines.mdc",
+      "sha1": "3889f796d2ceb1d9546e044f7ce9775a27cf5eff"
+    },
+    {
+      "path": ".cursor/rules/master-rules/9-governance-precedence.mdc",
+      "sha1": "96d2071e736cb64af7a0f34a753824b60e9d3790"
+    },
+    {
+      "path": ".cursor/rules/master-rules/7-dev-workflow-command-router.mdc",
+      "sha1": "8f8094f79d497f86c9f6e1ce23acf8e209c8f0e5"
+    }
+  ]
+}
