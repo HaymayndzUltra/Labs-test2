@@ -1,5 +1,5 @@
 ---
-description: Backend Serverless Standards
+description: Python Backend Development with microservices and serverless deployment
 globs: **/*.py,**/*.ts
 alwaysApply: false
 ---

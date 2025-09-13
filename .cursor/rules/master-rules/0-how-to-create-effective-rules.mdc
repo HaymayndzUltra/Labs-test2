@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [global,workflow,documentation] | TRIGGERS: [rule,governance ] | SCOPE: global | DESCRIPTION: The single source of truth for creating effective, discoverable, and maintainable AI rules, structured around 4 core pillars."
+description: "TAGS: [global,workflow,documentation] | TRIGGERS: [rule,governance,create_rules ] | SCOPE: global | DESCRIPTION: The single source of truth for creating effective, discoverable, and maintainable AI rules, structured around 4 core pillars."
 alwaysApply: false
 ---
 

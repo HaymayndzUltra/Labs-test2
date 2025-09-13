@@ -1,4 +1,4 @@
-#!/home/haymayndz/Labs-test2/.venv/bin/python3
+#!/home/haymayndz/Labs-test2/.venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

@@ -1,0 +1,10 @@
+{
+  "passed": 0,
+  "failed": 4,
+  "errors": [
+    "healthcare-fullstack: Project generation failed",
+    "finance-api: Project generation failed",
+    "ecommerce-mobile: Project generation failed",
+    "saas-web: Project generation failed"
+  ]
+}

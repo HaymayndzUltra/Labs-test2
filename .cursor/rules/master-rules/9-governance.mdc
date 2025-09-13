@@ -1,6 +1,6 @@
 ---
 description: "TAGS: [global,governance] | TRIGGERS: [conflict ] | SCOPE: global | DESCRIPTION: Canonical governance precedence and conflict-resolution algorithm for rule-driven automation."
-alwaysApply: false
+alwaysApply: true
 ---
 
 

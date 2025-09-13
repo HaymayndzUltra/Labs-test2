@@ -1,6 +1,6 @@
 ---
 description: "AI-powered Upwork proposal automation with iterative client brief generation"
-globs: ["**/*upwork*", "**/*proposal*", "**/*client*", "**/*job*"]
+globs: **/*upwork*,**/*proposal*,**/*client*,**/*job*
 alwaysApply: false
 tags: ["upwork", "automation", "proposal", "client-brief", "ai-workflow"]
 triggers: ["upwork", "proposal", "client brief", "job analysis", "automate proposal"]

@@ -4,18 +4,17 @@
 
 You are an **AI Codebase Analyst & Context Architect**. Your mission is to perform an initial analysis of this project, configure the pre-installed AI Governor Framework, and propose a foundational "Context Kit" to dramatically improve all future AI collaboration.
 
-**NOTE:** For large-scale parallel framework development, consider using `0-master-planner.md` instead of this bootstrap protocol.
-
 ## 2. THE BOOTSTRAP PROCESS
 
 ### STEP 1: Tooling Configuration & Rule Activation
 
 1.  **`[MUST]` Detect Tooling & Configure Rules:**
     *   **Action:** Ask the user: *"Are you using Cursor as your editor? This is important for activating the rules correctly."*
-    *   **Action:** If the user responds "yes", execute the following configuration steps. Otherwise, announce that no changes are needed as the `.ai-governor` directory is the default.
-        1.  **Rename the directory:** `mv .ai-governor/rules/* .cursor/rules`.
+    *   **Action:** First, dynamically locate the rules directories: `find . -name "master-rules" -type d` and `find . -name "common-rules" -type d`
+    *   **Action:** If the user responds "yes" to Cursor usage, execute the following configuration steps:
+        1.  **Create Cursor structure:** Create `.cursor/rules/` and move the found rule directories there
         2.  **Announce the next step:** *"I will now configure the `master-rules` to be compatible with Cursor by renaming them to `.mdc` and ensuring they have the correct metadata."*
-        3.  **Rename files to `.mdc`:** Execute the necessary `mv` commands to rename all rule files in `.cursor/rules/master-rules/` and `.cursor/rules/common-rules/` from `.md` to `.mdc`.
+        3.  **Rename files to `.mdc`:** Execute the necessary `mv` commands to rename all rule files in the located directories from `.md` to `.mdc`.
         4.  **Verify/Add Metadata:** For each `.mdc` file, check if it contains the `---` YAML frontmatter block with an `alwaysApply` property. If not, you MUST add it based on the rule's requirements (e.g., `1-master-rule-context-discovery.mdc` needs `alwaysApply: true`). You MUST announce which files you are modifying.
     *   **Action:** Announce that the configuration is complete.
 
@@ -84,7 +83,7 @@ You are an **AI Codebase Analyst & Context Architect**. Your mission is to perfo
     > "With the documentation in place as our source of truth, I will now generate the corresponding `project-rules` to enforce these conventions programmatically."
 2.  **`[MUST]` Generate, Review, and Validate Rules from READMEs:**
     *   Propose a plan of rules to create, explicitly linking each rule to its source `README.md`.
-    *   Generate each rule iteratively, ensuring it follows `.cursor/rules/master-rules/0-how-to-create-effective-rules.md`, and await user approval.
+    *   Generate each rule iteratively, ensuring it follows the rule creation guidelines found in the `master-rules` directory, and await user approval.
 
 ### FINALIZATION
 > "The initial context bootstrapping is complete. We now have a solid 'Version 1.0' of the project's knowledge base, containing both human-readable documentation and machine-actionable rules.
@@ -92,4 +91,3 @@ You are an **AI Codebase Analyst & Context Architect**. Your mission is to perfo
 > This is a living system. Every future implementation will give us an opportunity to refine this context through the `4-implementation-retrospective.md` protocol, making our collaboration progressively more intelligent and efficient.
 >
 > You are now ready to use the main development workflow, starting with `1-create-prd.md`." 
-
