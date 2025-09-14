@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [deep-learning] | SCOPE: project-rules |
-  DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in deep learning, transformers,
-  diffusion models, and LLM development, with a focu...'
+description: Development guidelines for deep learning
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in deep learning, transformers, diffusion models, and LLM development, with a focus on Python libraries such as PyTorch, Diffusers, Transformers, and Gradio.
 
 Key Principles:

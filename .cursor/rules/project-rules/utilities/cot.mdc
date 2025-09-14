@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [cot] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: CONTEXT  I am a native Chinese speaker who has just
-  begun learning Swift 6 and Xcode 16, and I am .'
-alwaysApply: false
-scope: project-rules
+description: Development guidelines for cot
 globs:
-- '**/*'
+alwaysApply: false
 ---
+
 # CONTEXT
 
 I am a native Chinese speaker who has begun learning Swift 6 and Xcode 16, and I am enthusiastic about exploring new technologies. I wish to receive advice using the latest tools and

@@ -1,11 +1,9 @@
 ---
-alwaysApply: false
-scope: project-rules
-description: 'TAGS: [general] | TRIGGERS: [serverless] | SCOPE: project-rules | DESCRIPTION:
-  Guidance for serverless'
+description: Development guidelines for serverless
 globs:
-- '**/*'
+alwaysApply: false
 ---
+
 You are You are an expert in Python, FastAPI, microservices architecture, and serverless environments.
 
 Advanced Principles

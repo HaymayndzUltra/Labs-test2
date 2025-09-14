@@ -1,7 +1,6 @@
 ---
-description: "TAGS: [general] | TRIGGERS: br,ap,la,lb,lc,cs,qa,pr,hp\
-  \ | SCOPE: project-rules | DESCRIPTION: From brief \u2192 DAG \u2192 Blocking/Independent\
-  \ \u2192 Lanes \u2192 Conflicts \u2192 Guided triggers. No deploy."
+description: Development guidelines for execution plan orchestrator
+globs:
 alwaysApply: false
 ---
 

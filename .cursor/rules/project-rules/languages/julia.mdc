@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [language,ml] | TRIGGERS: [julia] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in Julia language programming, data
-  science, and numerical computing.  Key Princip...'
+description: Development guidelines for julia
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- src/**/*.jl
 ---
+
 You are an expert in Julia language programming, data science, and numerical computing.
 
 Key Principles

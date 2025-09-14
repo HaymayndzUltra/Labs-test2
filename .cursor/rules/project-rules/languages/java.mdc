@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [language,backend] | TRIGGERS: [java,spring] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,jvm,spring
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Java programming, Spring
-  Boot, Spring Framework, Maven, JUnit, and related Java...'
+description: Development guidelines for java
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- src/**/*.java
 ---
+
 You are an expert in Java programming, Spring Boot, Spring Framework, Maven, JUnit, and related Java technologies.
 
 Code Style and Structure

@@ -370,3 +370,153 @@ class ProjectValidator:
                     pass
         
         return errors, warnings
+    
+    def validate_config(self, config: Dict[str, Any]) -> tuple[bool, List[str]]:
+        """Validate configuration dictionary format (for tests)"""
+        errors = []
+        
+        # Required fields
+        required_fields = ['name', 'industry', 'project_type']
+        for field in required_fields:
+            if field not in config or not config[field]:
+                errors.append(f"Missing required field: {field}")
+        
+        # Validate individual fields
+        if 'name' in config and not self.validate_project_name(config['name']):
+            errors.append("Invalid project name")
+        
+        if 'industry' in config and not self.validate_industry(config['industry']):
+            errors.append("Invalid industry")
+        
+        if 'project_type' in config and not self.validate_project_type(config['project_type']):
+            errors.append("Invalid project_type")
+        
+        # Validate technology compatibility
+        if all(k in config for k in ['project_type', 'frontend', 'backend']):
+            if not self.validate_technology_compatibility(
+                config['project_type'], 
+                config.get('frontend'), 
+                config.get('backend')
+            ):
+                errors.append("Invalid technology compatibility")
+        
+        # Validate individual technology fields
+        if 'frontend' in config and config['frontend'] and config['frontend'] != 'none':
+            valid_frontends = {'nextjs', 'nuxt', 'angular', 'expo'}
+            if config['frontend'].lower() not in valid_frontends:
+                errors.append("Invalid frontend framework")
+        
+        if 'backend' in config and config['backend'] and config['backend'] != 'none':
+            valid_backends = {'fastapi', 'django', 'nestjs', 'go'}
+            if config['backend'].lower() not in valid_backends:
+                errors.append("Invalid backend framework")
+        
+        if 'database' in config and config['database'] and config['database'] != 'none':
+            valid_databases = {'postgres', 'mongodb', 'firebase'}
+            if config['database'].lower() not in valid_databases:
+                errors.append("Invalid database")
+        
+        if 'auth' in config and config['auth'] and config['auth'] != 'none':
+            valid_auths = {'auth0', 'firebase', 'cognito', 'custom'}
+            if config['auth'].lower() not in valid_auths:
+                errors.append("Invalid auth provider")
+        
+        if 'deploy' in config and config['deploy']:
+            valid_deploys = {'aws', 'azure', 'gcp', 'vercel', 'self-hosted'}
+            if config['deploy'].lower() not in valid_deploys:
+                errors.append("Invalid deployment target")
+        
+        # Validate compliance-industry match
+        if 'industry' in config and 'compliance' in config and config['compliance']:
+            # Handle both list and string compliance
+            if isinstance(config['compliance'], list):
+                compliance_list = config['compliance']
+            else:
+                compliance_list = [c.strip() for c in config['compliance'].split(',')]
+            
+            # Validate compliance values
+            valid_compliance = {'hipaa', 'gdpr', 'sox', 'pci', 'soc2'}
+            for compliance in compliance_list:
+                if compliance.lower() not in valid_compliance:
+                    errors.append("Invalid compliance standard")
+                    break
+            
+            if not self.validate_compliance_industry_match(config['industry'], compliance_list):
+                errors.append("Compliance standards don't match industry")
+        
+        return len(errors) == 0, errors
+    
+    def validate_project_name(self, name: str) -> bool:
+        """Validate project name format"""
+        if not name or not name.strip():
+            return False
+        
+        # Allow alphanumeric, hyphens, underscores
+        import re
+        return bool(re.match(r'^[a-zA-Z0-9_-]+$', name.strip()))
+    
+    def validate_industry(self, industry: str) -> bool:
+        """Validate industry value"""
+        valid_industries = {'healthcare', 'finance', 'ecommerce', 'saas', 'enterprise'}
+        return industry.lower() in valid_industries
+    
+    def validate_project_type(self, project_type: str) -> bool:
+        """Validate project type value"""
+        valid_types = {'web', 'mobile', 'api', 'fullstack', 'microservices'}
+        return project_type.lower() in valid_types
+    
+    def validate_technology_compatibility(self, project_type: str, frontend: str, backend: str) -> bool:
+        """Validate technology stack compatibility"""
+        project_type = project_type.lower() if project_type else ''
+        frontend = frontend.lower() if frontend else 'none'
+        backend = backend.lower() if backend else 'none'
+        
+        # Mobile projects should use expo
+        if project_type == 'mobile' and frontend not in ['expo', 'none']:
+            return False
+        
+        # Web projects shouldn't use expo
+        if project_type == 'web' and frontend == 'expo':
+            return False
+        
+        # API projects shouldn't have frontend
+        if project_type == 'api' and frontend != 'none':
+            return False
+        
+        return True
+    
+    def validate_compliance_industry_match(self, industry: str, compliance_list: List[str]) -> bool:
+        """Validate compliance standards match industry"""
+        industry = industry.lower() if industry else ''
+        compliance_set = {c.lower() for c in compliance_list}
+        
+        # Healthcare should use HIPAA
+        if industry == 'healthcare' and compliance_set and 'hipaa' not in compliance_set:
+            return False
+        
+        # Finance should use SOX/PCI
+        if industry == 'finance' and compliance_set and not compliance_set.intersection({'sox', 'pci'}):
+            return False
+        
+        # Non-healthcare shouldn't use HIPAA
+        if industry != 'healthcare' and 'hipaa' in compliance_set:
+            return False
+        
+        return True
+    
+    def get_validation_errors(self, field: str, error_type: str) -> str:
+        """Get validation error message for field and error type"""
+        error_messages = {
+            'name': {
+                'empty': 'Project name cannot be empty',
+                'invalid': 'Project name contains invalid characters'
+            },
+            'industry': {
+                'invalid': 'Invalid industry selection'
+            },
+            'project_type': {
+                'invalid': 'Invalid project type selection'
+            }
+        }
+        
+        return error_messages.get(field, {}).get(error_type, f"Validation error in {field}: {error_type}")

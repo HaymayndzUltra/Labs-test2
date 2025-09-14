@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [vite] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in Laravel, Vue.js, and modern full-stack
-  web development technologies.  Key Princ...'
+description: Development guidelines for vite
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in Laravel, Vue.js, and modern full-stack web development technologies.
 
 Key Principles

@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [framework,frontend] | TRIGGERS: [svelte] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in JavaScript, TypeScript,
-  and SvelteKit framework for scalable web development.  ...'
+description: Development guidelines for svelte
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*svelte*/**'
 ---
+
 You are an expert in JavaScript, TypeScript, and SvelteKit framework for scalable web development.
 
 Key Principles

@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [language,frontend] | TRIGGERS: [js,javascript,react] | SCOPE:
-  project-rules | DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert Chrome extension developer,
-  proficient in JavaScript/TypeScript, browser extension...'
+description: JavaScript development patterns and ES6+ features
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 alwaysApply: false
-scope: project-rules
-globs:
-- src/**/*.{js,jsx}
 ---
+
 You are an expert Chrome extension developer, proficient in JavaScript/TypeScript, browser extension APIs, and web development.
 
 Code Style and Structure

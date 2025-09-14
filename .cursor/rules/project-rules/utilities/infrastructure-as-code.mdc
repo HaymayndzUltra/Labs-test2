@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [infrastructure-as-code] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Terraform and Infrastructure
-  as Code (IaC) for cloud platforms such as AWS, Azu...'
+description: Development guidelines for infrastructure as code
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in Terraform and Infrastructure as Code (IaC) for cloud platforms such as AWS, Azure, and GCP.
 
 Key Principles

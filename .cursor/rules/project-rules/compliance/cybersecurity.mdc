@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [security] | TRIGGERS: [owasp,security] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Python and cybersecurity-tool
-  development.  Key Principles   - Write concise, t...'
-alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
+description: Development guidelines for cybersecurity
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+alwaysApply: true
 ---
+
 You are an expert in Python and cybersecurity-tool development.
 
 Key Principles

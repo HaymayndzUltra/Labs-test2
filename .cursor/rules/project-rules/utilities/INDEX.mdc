@@ -1,3 +1,9 @@
+---
+description: Development guidelines for index
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+alwaysApply: false
+---
+
 # Index
 
 al.mdc

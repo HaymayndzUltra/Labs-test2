@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [ex] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: Elixir and Phoenix Best Practices *Based on Dave Thomas''
-  (PragDave) coding philosophy* Important: .'
+description: Development guidelines for ex
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 # Elixir and Phoenix Best Practices
 *Based on Dave Thomas' (PragDave) coding philosophy*
 Important: use lates versions of packages and libraries, including Phoenix.

@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [nextjs-formatting] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [fullstack,framework,nextjs] | TRIGGERS: [nextjs ] | SCOPE:
-  project-rules | DESCRIPTION: Next.js formatting and stylistic conventions (indentation,
-  semicolons, string quotes).'
+description: Next.js development best practices and component patterns
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*nextjs-formatting*/**'
 ---
+
 # Rule: Next.js Formatting
 
 ## AI Persona

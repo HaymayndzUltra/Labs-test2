@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [function] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are a Python programming assistant. You will be
-  given a function implementation and a series of ...'
-alwaysApply: false
-scope: project-rules
+description: Development guidelines for function
 globs:
-- '**/*'
+alwaysApply: false
 ---
+
 a Python programming assistant. You will be given
 a function implementation and a series of unit test results.
 Your goal is to write a few sentences to explain why your

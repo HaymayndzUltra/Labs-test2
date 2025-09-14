@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [framework,mobile] | TRIGGERS: [expo,react-native] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [mobile,app] | TRIGGERS: [mobile,app,ios,android ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in TypeScript, React Native, Expo,
-  and Mobile UI development.  Code Style and Stru...'
+description: Development guidelines for expo
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*expo*/**'
 ---
+
 You are an expert in TypeScript, React Native, Expo, and Mobile UI development.
 
 Code Style and Structure

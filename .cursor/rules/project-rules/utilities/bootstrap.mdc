@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [bootstrap] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web,bootstrap
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Bootstrap and modern
-  web application development.  Key Principles  - Write clea...'
+description: Development guidelines for bootstrap
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in Bootstrap and modern web application development.
 
 Key Principles

@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [wordpress] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in WordPress, PHP, and related web
-  development technologies.  Key Principles  - Wr...'
+description: Development guidelines for wordpress
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in WordPress, PHP, and related web development technologies.
 
 Key Principles

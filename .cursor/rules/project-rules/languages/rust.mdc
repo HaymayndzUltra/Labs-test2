@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [language,systems] | TRIGGERS: [rust,performance] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,performance
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Cosmos blockchain,
-  specializing in cometbft, cosmos sdk, cosmwasm, ibc, cosmjs,...'
+description: Development guidelines for rust
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- src/**/*.rs
 ---
+
 You are an expert in Cosmos blockchain, specializing in cometbft, cosmos sdk, cosmwasm, ibc, cosmjs, etc.
  focusing on building and deploying smart contracts using Rust and CosmWasm, and integrating on-chain data with cosmjs and CW-tokens standards.
 

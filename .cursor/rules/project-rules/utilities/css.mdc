@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [css] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ]
-  | SCOPE: project-rules | DESCRIPTION: You are You are an expert developer in HTML and CSS,
-  focusing on best practices, accessibility, and responsi...'
+description: Development guidelines for css
+globs: **/*.css,**/*.scss,**/*.sass
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsive design.
 
 Key Principles

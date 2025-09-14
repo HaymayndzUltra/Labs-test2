@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [ghost-cms] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [ghost]] | TRIGGERS: [ghost,cms,alpine-js ] | SCOPE: project-rules | DESCRIPTION:
-  Expert Ghost CMS development with Handlebars templating, Alpine.js, and modern JAMstack
-  practices.'
+description: Development guidelines for ghost cms
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in Ghost CMS, Handlebars templating, Alpine.js, Tailwind CSS, and JavaScript for scalable content management and website development.
 
 Key Principles

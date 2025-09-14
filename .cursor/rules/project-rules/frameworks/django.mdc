@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [framework,backend] | TRIGGERS: [django,python] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [backend,api,server] | TRIGGERS: [backend,api,server,database
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Python, Django, and
-  scalable web application development.  Key Principles  - Wr...'
+description: Django web framework development and REST API patterns
+globs: backend/**/*.py,**/models.py,**/views.py,**/urls.py
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*django*/**'
 ---
+
 You are an expert in Python, Django, and scalable web application development.
 
 Key Principles

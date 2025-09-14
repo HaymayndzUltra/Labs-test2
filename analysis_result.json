@@ -1,0 +1,175 @@
+{
+  "repo_layout": {
+    "root_template_dir_exists": true,
+    "package_template_dir_exists": false,
+    "resolved_path": "/workspace/template-packs",
+    "relationship": "independent"
+  },
+  "generator_api": {
+    "set_config": "NO - method does not exist",
+    "get_template_path": "NO - method does not exist", 
+    "copy_template": "NO - method does not exist",
+    "process_template_file": "NO - method does not exist",
+    "get_template_variables": "NO - method does not exist",
+    "create_project_structure": "NO - method does not exist",
+    "run_setup_script": "NO - method does not exist",
+    "generate_readme": "YES - private method _generate_readme() creates README with meta",
+    "generate_docker_compose": "YES - private method _generate_docker_compose() creates services",
+    "generate_makefile": "YES - private method _generate_makefile() creates targets",
+    "validate_dependencies": "NO - method does not exist",
+    "get_health_check_urls": "NO - method does not exist", 
+    "cleanup_on_failure": "NO - method does not exist",
+    "generate_project": "YES - main generate() method orchestrates full project creation",
+    "constructor_signature": "YES - supports both (output_dir, template_dir) legacy and (args, validator, config) new"
+  },
+  "validator_contract": {
+    "validate_config_return_type": "YES - returns (bool, list[str])",
+    "compliance_parsing": "accepts string (comma-separated) and converts to list internally",
+    "error_messages": {
+      "invalid_project_type": "Invalid project type",
+      "invalid_frontend": "Invalid frontend framework", 
+      "invalid_backend": "Invalid backend framework",
+      "invalid_database": "Invalid database",
+      "invalid_auth": "Invalid auth provider",
+      "invalid_deploy": "Invalid deployment target",
+      "invalid_tech_combo": "Invalid technology combination"
+    },
+    "required_fields": ["name", "industry", "project_type"],
+    "tech_compatibility_check": "YES - only when project_type, frontend, backend all present",
+    "industry_compliance_rule": "Healthcare requires HIPAA; Finance requires SOX/PCI; Non-healthcare cannot use HIPAA"
+  },
+  "templates_contract": {
+    "path_pattern": "<template_dir>/<component>/<technology>/base (or variant)",
+    "supported_components": ["frontend", "backend", "database", "cicd", "devex", "rules"],
+    "template_variables": ["{{PROJECT_NAME}}", "{{INDUSTRY}}", "{{PROJECT_TYPE}}", "{{FRONTEND}}", "{{BACKEND}}", "{{DATABASE}}", "{{AUTH}}", "{{DEPLOY}}"]
+  },
+  "generation_contract": {
+    "readme_includes_meta": "YES - includes name, industry, stack, features, compliance, quick start",
+    "docker_compose_db_service": "YES - postgres at 5432 with volume and env vars",
+    "docker_compose_api_service": "YES - backend at 8000 with depends_on db if present", 
+    "docker_compose_web_service": "YES - frontend at 3000",
+    "docker_compose_volumes": "YES - only when database service exists",
+    "makefile_targets": "NO - uses setup,dev,test,lint,build,deploy,clean not up,down,build,test,lint,format,clean",
+    "run_setup_script_behavior": "NO - method does not exist"
+  },
+  "dependency_checks": {
+    "docker_missing_fails": "YES - in comprehensive validation unless dry-run",
+    "node_missing_fails": "YES - when frontend != none or backend == nestjs",
+    "python_version_gate": "Python 3.11+ recommended for fastapi/django backends"
+  },
+  "test_alignment": {
+    "test_unit_generator": ["set_config", "get_template_path", "copy_template", "process_template_file", "create_project_structure", "run_setup_script", "generate_project"],
+    "test_unit_validator": ["validate_config", "validate_project_name", "validate_industry", "validate_project_type", "validate_technology_compatibility", "validate_compliance_industry_match", "get_validation_errors"],
+    "test_integration_generation_flow": ["generate_project", "create_project_structure", "generate_readme", "generate_docker_compose", "generate_makefile"],
+    "test_e2e_generated_projects": ["constructor with output_dir/template_dir", "generate_project", "validate_dependencies", "get_health_check_urls"]
+  },
+  "gaps": [
+    {
+      "area": "generator_api",
+      "expectation": "set_config(config) method exists",
+      "observed": "method does not exist",
+      "file": "project_generator/core/generator.py",
+      "line_or_symbol": "ProjectGenerator class"
+    },
+    {
+      "area": "generator_api", 
+      "expectation": "get_template_path(component, technology) method exists",
+      "observed": "method does not exist",
+      "file": "project_generator/core/generator.py",
+      "line_or_symbol": "ProjectGenerator class"
+    },
+    {
+      "area": "generator_api",
+      "expectation": "copy_template(source, target) method exists", 
+      "observed": "method does not exist",
+      "file": "project_generator/core/generator.py",
+      "line_or_symbol": "ProjectGenerator class"
+    },
+    {
+      "area": "generator_api",
+      "expectation": "process_template_file(content) method exists",
+      "observed": "method does not exist", 
+      "file": "project_generator/core/generator.py",
+      "line_or_symbol": "ProjectGenerator class"
+    },
+    {
+      "area": "generator_api",
+      "expectation": "get_template_variables() method exists",
+      "observed": "method does not exist",
+      "file": "project_generator/core/generator.py", 
+      "line_or_symbol": "ProjectGenerator class"
+    },
+    {
+      "area": "generator_api",
+      "expectation": "create_project_structure(project_dir) method exists",
+      "observed": "method does not exist",
+      "file": "project_generator/core/generator.py",
+      "line_or_symbol": "ProjectGenerator class"
+    },
+    {
+      "area": "generator_api",
+      "expectation": "run_setup_script(project_dir) method exists", 
+      "observed": "method does not exist",
+      "file": "project_generator/core/generator.py",
+      "line_or_symbol": "ProjectGenerator class"
+    },
+    {
+      "area": "generator_api",
+      "expectation": "validate_dependencies() method exists",
+      "observed": "method does not exist",
+      "file": "project_generator/core/generator.py",
+      "line_or_symbol": "ProjectGenerator class"
+    },
+    {
+      "area": "generator_api", 
+      "expectation": "get_health_check_urls() method exists",
+      "observed": "method does not exist",
+      "file": "project_generator/core/generator.py",
+      "line_or_symbol": "ProjectGenerator class"
+    },
+    {
+      "area": "generator_api",
+      "expectation": "cleanup_on_failure(project_dir) method exists",
+      "observed": "method does not exist", 
+      "file": "project_generator/core/generator.py",
+      "line_or_symbol": "ProjectGenerator class"
+    },
+    {
+      "area": "generator_state",
+      "expectation": "generator.config attribute is dict",
+      "observed": "generator.config is IndustryConfig instance",
+      "file": "project_generator/core/generator.py",
+      "line_or_symbol": "__init__ method"
+    },
+    {
+      "area": "makefile_targets",
+      "expectation": "Makefile has targets: up,down,build,test,lint,format,clean",
+      "observed": "Makefile has targets: setup,dev,test,lint,build,deploy,clean",
+      "file": "project_generator/core/generator.py", 
+      "line_or_symbol": "_generate_makefile method"
+    }
+  ],
+  "action_plan": [
+    {
+      "priority": "P0",
+      "file": "project_generator/core/generator.py",
+      "symbol_or_section": "ProjectGenerator class",
+      "change_summary": "Add missing public methods: set_config, get_template_path, copy_template, process_template_file, get_template_variables, create_project_structure, run_setup_script, validate_dependencies, get_health_check_urls, cleanup_on_failure as wrappers/delegates to existing private methods",
+      "tests_unblocked": "test_unit_generator, test_integration_generation_flow, test_e2e_generated_projects"
+    },
+    {
+      "priority": "P0", 
+      "file": "project_generator/core/generator.py",
+      "symbol_or_section": "__init__ method legacy support",
+      "change_summary": "Add self.config = {} attribute for legacy test compatibility when using output_dir/template_dir constructor",
+      "tests_unblocked": "test_initialization, test_set_config"
+    },
+    {
+      "priority": "P1",
+      "file": "project_generator/core/generator.py", 
+      "symbol_or_section": "_generate_makefile method",
+      "change_summary": "Add aliases: up→dev, down→clean, format→lint to match expected test targets while keeping current functionality",
+      "tests_unblocked": "test_generate_makefile"
+    }
+  ]
+}

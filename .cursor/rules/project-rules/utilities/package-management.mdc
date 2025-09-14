@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [package-management] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax
-  ] | SCOPE: project-rules | DESCRIPTION: Package Management with `uv`  These rules
-  define strict guidelines for managing Python dependencie.'
-alwaysApply: false
-scope: project-rules
+description: Development guidelines for package management
 globs:
-- '**/*'
+alwaysApply: false
 ---
+
 # Package Management with `uv`
 
 These rules define strict guidelines for managing Python dependencies in this project using the `uv` dependency manager.

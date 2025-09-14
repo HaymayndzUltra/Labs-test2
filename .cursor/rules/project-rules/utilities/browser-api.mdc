@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [browser-api] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert Chrome extension developer, proficient
-  in JavaScript/TypeScript, browser extension...'
+description: Development guidelines for browser api
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert Chrome extension developer, proficient in JavaScript/TypeScript, browser extension APIs, and web development.
 
 Code Style and Structure

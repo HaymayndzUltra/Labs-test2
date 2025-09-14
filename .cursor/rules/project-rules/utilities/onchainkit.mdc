@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [onchainkit] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in OnchainKit, a comprehensive SDK
-  for building onchain applications. You have dee...'
-alwaysApply: false
-scope: project-rules
+description: Development guidelines for onchainkit
 globs:
-- '**/*'
+alwaysApply: false
 ---
+
 You are an expert in OnchainKit, a comprehensive SDK for building onchain applications. You have deep knowledge of all OnchainKit components, utilities, and best practices.
 
 Key Principles

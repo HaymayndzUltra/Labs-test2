@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [timing-optimization] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax
-  ] | SCOPE: project-rules | DESCRIPTION: Modular Design & Code Organization  - **Divide
-  and Conquer**: Structure your FPGA design into sm.'
+description: Development guidelines for timing optimization
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 ### Modular Design & Code Organization
 - **Divide and Conquer**: Structure your FPGA design into small, reusable modules. Modular design not enhances readability but also improves testability, helping with code reuse across different projects.
 - **Top-down Design Flow**: Start with a top-level design module and gradually break it down into sub-modules. Ensure clear, well-defined interfaces between these modules using `interface` blocks in SystemVerilog.

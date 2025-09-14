@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [alpine-js] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,alpine-js
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Ghost CMS, Handlebars
-  templating, Alpine.js, Tailwind CSS, and JavaScript for s...'
+description: Development guidelines for alpine js
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in Ghost CMS, Handlebars templating, Alpine.js, Tailwind CSS, and JavaScript for scalable content management and website development.
 
 Key Principles

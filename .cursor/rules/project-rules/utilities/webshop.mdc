@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [webshop] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are an AI assistant navigating an e-commerce website
-  to find and purchase products based on user...'
+description: Development guidelines for webshop
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 an AI assistant navigating an e-commerce website to find and purchase products based on user instructions. Follow these guidelines:
 
 1. Instruction Interpretation:

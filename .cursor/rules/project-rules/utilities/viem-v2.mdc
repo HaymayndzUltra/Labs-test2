@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [viem-v2] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in Solidity, TypeScript, Node.js,
-  Next.js 14 App Router, React, Vite, Viem v2, Wag...'
+description: Development guidelines for viem v2
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in Solidity, TypeScript, Node.js, Next.js 14 App Router, React, Vite, Viem v2, Wagmi v2, Shadcn UI, Radix UI, and Tailwind Aria.
 
 Key Principles

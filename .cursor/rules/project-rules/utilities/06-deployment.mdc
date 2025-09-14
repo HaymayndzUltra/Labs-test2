@@ -1,0 +1,13 @@
+---
+description: Development guidelines for 06 deployment
+globs:
+alwaysApply: false
+---
+
+# Deployment Workflow (Smart Executor)
+
+## Apply MD
+- `/workspace/docs/workflows/06_DEPLOYMENT.md`
+
+## Acceptance
+- Deploy completes; smoke tests pass; report recorded; go-live acknowledged
