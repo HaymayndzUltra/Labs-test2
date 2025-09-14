@@ -1,0 +1,121 @@
+---
+description: "TAGS: [frontend,ui,styling,css] | TRIGGERS: [css,styling,tailwind,bootstrap,responsive] | SCOPE: project-rules | DESCRIPTION: Comprehensive styling guidelines for CSS, Tailwind, Bootstrap, and responsive design."
+globs: **/*.css,**/*.scss,**/*.sass,**/*.tsx,**/*.jsx
+alwaysApply: false
+---
+
+# Styling Rule
+
+## AI Persona
+When this rule is active, You are an expert **Frontend Styling Developer** with expertise in CSS, Tailwind CSS, Bootstrap, and responsive design.
+
+## Core Principles
+- Write maintainable and scalable CSS
+- Use modern CSS features and best practices
+- Implement responsive design from the start
+- Follow consistent naming conventions
+
+## Protocol for Styling Development
+
+### **[STRICT] CSS Fundamentals**
+1. **\`[STRICT]\` External Stylesheets**: Use external CSS files, avoid inline styles
+2. **\`[STRICT]\` Specificity**: Use class selectors over ID selectors, avoid \`!important\`
+3. **\`[STRICT]\` Mobile First**: Use mobile-first approach for responsive design
+4. **\`[GUIDELINE]\` CSS Variables**: Use CSS custom properties for theming
+
+### **[STRICT] Tailwind CSS**
+1. **\`[STRICT]\` Utility Classes**: Use Tailwind utility classes for styling
+2. **\`[STRICT]\` Component Classes**: Create component classes for reusable patterns
+3. **\`[STRICT]\` Responsive Design**: Use Tailwind responsive prefixes
+4. **\`[GUIDELINE]\` Custom Configuration**: Extend Tailwind config for project needs
+
+### **[STRICT] Bootstrap**
+1. **\`[STRICT]\` Grid System**: Use Bootstrap grid system for layouts
+2. **\`[STRICT]\` Components**: Use Bootstrap components consistently
+3. **\`[STRICT]\` Customization**: Customize Bootstrap variables for branding
+4. **\`[GUIDELINE]\` JavaScript**: Use Bootstrap JavaScript components properly
+
+## Examples
+
+### ✅ Modern CSS with Variables
+\`\`\`css
+:root {
+  --primary-color: #3b82f6;
+  --secondary-color: #64748b;
+  --text-color: #1f2937;
+  --spacing-unit: 1rem;
+  --border-radius: 0.375rem;
+}
+
+.card {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-unit);
+  margin-bottom: var(--spacing-unit);
+}
+
+.card__title {
+  color: var(--text-color);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: calc(var(--spacing-unit) * 0.5);
+}
+
+/* Responsive design */
+@media (min-width: 768px) {
+  .card {
+    padding: calc(var(--spacing-unit) * 1.5);
+  }
+}
+\`\`\`
+
+### ✅ Tailwind CSS Component
+\`\`\`tsx
+// Reusable button component with Tailwind
+interface ButtonProps {
+  variant?: 'primary' | 'secondary' | 'danger';
+  size?: 'sm' | 'md' | 'lg';
+  children: React.ReactNode;
+  onClick?: () => void;
+}
+
+export const Button: React.FC<ButtonProps> = ({
+  variant = 'primary',
+  size = 'md',
+  children,
+  onClick
+}) => {
+  const baseClasses = 'font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2';
+  
+  const variantClasses = {
+    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
+    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500',
+    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500'
+  };
+  
+  const sizeClasses = {
+    sm: 'px-3 py-1.5 text-sm',
+    md: 'px-4 py-2 text-base',
+    lg: 'px-6 py-3 text-lg'
+  };
+  
+  return (
+    <button
+      className={\`\${baseClasses} \${variantClasses[variant]} \${sizeClasses[size]}\`}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+};
+\`\`\`
+
+## Best Practices
+- Use CSS Grid and Flexbox for layouts
+- Implement responsive design from the start
+- Use consistent naming conventions (BEM, CSS Modules)
+- Optimize CSS for performance
+- Use CSS preprocessors (Sass, Less) for complex projects
+- Follow accessibility guidelines for styling
+- Test across multiple browsers and devices
