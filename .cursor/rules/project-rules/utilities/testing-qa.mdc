@@ -1,0 +1,16 @@
+---
+description: "TAGS: [workflow,testing,qa] | TRIGGERS: test,qa,coverage,security,performance,uat | SCOPE: project-rules | DESCRIPTION: Execute lint/tests/coverage, security and performance checks, and UAT prep."
+alwaysApply: false
+frontmatterPending: true
+---
+
+# Testing & QA Workflow (Smart Executor)
+
+## Core Function
+Apply MD to run lint/tests/coverage, security scans, performance checks, and secure UAT sign-off.
+
+## Apply MD
+- `/workspace/docs/workflows/TESTING_QA.md`
+
+## Acceptance
+- CI green; coverage meets gates; no critical vulns; perf OK; UAT signed-off

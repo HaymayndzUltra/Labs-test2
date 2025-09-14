@@ -1,0 +1,19 @@
+---
+description: "TAGS: [workflow,implementation,development] | TRIGGERS: implement,execute,process tasks,development | SCOPE: project-rules | DESCRIPTION: Execute feature tasks with validations, tests, and observability."
+alwaysApply: false
+frontmatterPending: true
+---
+
+# Feature Implementation Workflow (Smart Executor)
+
+## Core Function
+Drive a single parent task to completion using the MD protocol, enforcing validation, tests, and observability.
+
+## Apply MD
+- `/workspace/docs/workflows/FEATURE_IMPLEMENTATION.md`
+
+## Guardrails
+- Stop on failing tests; request guidance
+
+## Acceptance
+- DOD met; tests and lint pass; evidence attached

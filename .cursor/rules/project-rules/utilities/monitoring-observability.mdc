@@ -1,0 +1,13 @@
+---
+description: "TAGS: [workflow,monitoring,observability] | TRIGGERS: monitor,observe,logs,metrics,traces,alerts | SCOPE: project-rules | DESCRIPTION: Enforce logging, metrics, traces, and alerts."
+alwaysApply: false
+frontmatterPending: true
+---
+
+# Monitoring & Observability Workflow (Smart Executor)
+
+## Apply MD
+- `/workspace/docs/workflows/MONITORING_OBSERVABILITY.md`
+
+## Acceptance
+- Logs/metrics/traces configured; dashboards and alerts active

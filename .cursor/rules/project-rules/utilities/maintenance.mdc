@@ -1,0 +1,13 @@
+---
+description: "TAGS: [workflow,maintenance,operations] | TRIGGERS: maintain,patch,backup,audit,monitor | SCOPE: project-rules | DESCRIPTION: Execute maintenance cycles with monitoring, patching, backups, and audits."
+alwaysApply: false
+frontmatterPending: true
+---
+
+# Maintenance Workflow (Smart Executor)
+
+## Apply MD
+- `/workspace/docs/workflows/MAINTENANCE.md`
+
+## Acceptance
+- SLA met; patches current; backups verified; audits passed; docs current

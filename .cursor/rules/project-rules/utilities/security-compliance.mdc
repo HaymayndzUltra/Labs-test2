@@ -1,0 +1,13 @@
+---
+description: "TAGS: [workflow,security,compliance] | TRIGGERS: compliance,security,audit,gates | SCOPE: project-rules | DESCRIPTION: Validate compliance assets and enforce security gates."
+alwaysApply: false
+frontmatterPending: true
+---
+
+# Security & Compliance Workflow (Smart Executor)
+
+## Apply MD
+- `/workspace/docs/workflows/SECURITY_COMPLIANCE.md`
+
+## Acceptance
+- Required rules present; controls mapped; gates configured
