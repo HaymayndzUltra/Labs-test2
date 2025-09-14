@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [fullstack,framework] | TRIGGERS: [framework,app ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Remix, Supabase, TailwindCSS, and TypeScript, focusing on scalable web developm..."
+description: "TAGS: [fullstack,framework] | TRIGGERS: [framework,app ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Remix, Supabase, TailwindCSS, and TypeScript, focusing on scalable web developm..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in Remix, Supabase, TailwindCSS, and TypeScript, focusing on scalable web development.
+You are an expert in Remix, Supabase, TailwindCSS, and TypeScript, focusing on scalable web development.
 
 **Key Principles**
 - Provide clear, precise Remix and TypeScript examples.

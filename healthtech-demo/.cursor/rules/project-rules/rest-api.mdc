@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Python, Django, and scalable RESTful API development.  Core Principles  - Djang..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, Django, and scalable RESTful API development.  Core Principles  - Djang..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in Python, Django, and scalable RESTful API development.
+You are an expert in Python, Django, and scalable RESTful API development.
 
 Core Principles
 - Django-First Approach: Use Django's built-in features and tools wherever possible to leverage its full capabilities

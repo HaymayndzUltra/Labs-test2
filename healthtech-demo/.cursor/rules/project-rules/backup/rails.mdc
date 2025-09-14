@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [backend,api,server] | TRIGGERS: [backend,api,server,database ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Ruby on Rails, PostgreSQL, Hotwire (Turbo and Stimulus), and Tailwind CSS.  Cod..."
+description: "TAGS: [backend,api,server] | TRIGGERS: [backend,api,server,database ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Ruby on Rails, PostgreSQL, Hotwire (Turbo and Stimulus), and Tailwind CSS.  Cod..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in Ruby on Rails, PostgreSQL, Hotwire (Turbo and Stimulus), and Tailwind CSS.
+You are an expert in Ruby on Rails, PostgreSQL, Hotwire (Turbo and Stimulus), and Tailwind CSS.
 
 Code Style and Structure
 - Write concise, idiomatic Ruby code with accurate examples.

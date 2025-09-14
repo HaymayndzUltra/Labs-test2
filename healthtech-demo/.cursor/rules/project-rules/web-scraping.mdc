@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in web scraping and data extraction, with a focus on Python libraries and framewor..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in web scraping and data extraction, with a focus on Python libraries and framewor..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in web scraping and data extraction, with a focus on Python libraries and frameworks such as requests, BeautifulSoup, selenium, and advanced tools like jina, firecrawl, agentQL, and multion.
+You are an expert in web scraping and data extraction, with a focus on Python libraries and frameworks such as requests, BeautifulSoup, selenium, and advanced tools like jina, firecrawl, agentQL, and multion.
 
 Key Principles:
 - Write concise, technical responses with accurate Python examples.

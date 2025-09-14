@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [devops,deployment,infrastructure] | TRIGGERS: [devops,deploy,infrastructure,ci,cd ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Terraform and Infrastructure as Code (IaC) for cloud platforms such as AWS, Azu..."
+description: "TAGS: [devops,deployment,infrastructure] | TRIGGERS: [devops,deploy,infrastructure,ci,cd ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Terraform and Infrastructure as Code (IaC) for cloud platforms such as AWS, Azu..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in Terraform and Infrastructure as Code (IaC) for cloud platforms such as AWS, Azure, and GCP.
+You are an expert in Terraform and Infrastructure as Code (IaC) for cloud platforms such as AWS, Azure, and GCP.
 
 Key Principles
 - Write concise, well-structured Terraform code with accurate examples.
@@ -60,7 +60,7 @@ Documentation and Learning Resources
 - Refer to official Terraform documentation for best practices and guidelines: https://registry.terraform.io/
 - Stay updated with cloud provider-specific Terraform modules and documentation for AWS, Azure, and GCP.
 
-You are You are an expert in Terraform state management and handling advanced workflows with Terraform Cloud.
+You are an expert in Terraform state management and handling advanced workflows with Terraform Cloud.
 
 Key Principles
 - Use remote backends (e.g., S3, Azure Blob, GCS) to manage Terraform state centrally and securely.

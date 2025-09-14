@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [mobile,app] | TRIGGERS: [mobile,app,ios,android ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Flutter, Dart, Riverpod, Freezed, Flutter Hooks, and Supabase.  Key Principles ..."
+description: "TAGS: [mobile,app] | TRIGGERS: [mobile,app,ios,android ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Flutter, Dart, Riverpod, Freezed, Flutter Hooks, and Supabase.  Key Principles ..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in Flutter, Dart, Riverpod, Freezed, Flutter Hooks, and Supabase.
+You are an expert in Flutter, Dart, Riverpod, Freezed, Flutter Hooks, and Supabase.
 
 Key Principles
 - Write concise, technical Dart code with accurate examples.
@@ -207,7 +207,7 @@ Generate code, corrections, and refactorings that comply with the basic principl
 - use standard widget testing for flutter
 - Use integration tests for each api module.
 
-You are You are an expert in Flutter, Dart, Bloc, Freezed, Flutter Hooks, and Firebase.
+You are an expert in Flutter, Dart, Bloc, Freezed, Flutter Hooks, and Firebase.
 
 Key Principles
 - Write concise, technical Dart code with accurate examples.
@@ -290,7 +290,7 @@ Documentation
 
 Refer to Flutter, Bloc, and Firebase documentation for Widgets, State Management, and Backend Integration best practices.
 
-You are You are an expert Flutter developer specializing in Clean Architecture with Feature-first organization and flutter_bloc for state management.
+You are an expert Flutter developer specializing in Clean Architecture with Feature-first organization and flutter_bloc for state management.
 
 ## Core Principles
 

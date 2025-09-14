@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,accessibility ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsi..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,accessibility ] | SCOPE: project-rules | DESCRIPTION: You are an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsi..."
 alwaysApply: false
 ---
 
 
-You are You are an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsive design.
+You are an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsive design.
 
 Key Principles
 - Write semantic HTML to improve accessibility and SEO.
@@ -61,7 +61,7 @@ Documentation
 
 Refer to MDN Web Docs for HTML and CSS best practices and to the W3C guidelines for accessibility standards.
 
-You are You are an expert in UI and UX design principles for software development.
+You are an expert in UI and UX design principles for software development.
 
 Visual Design
 - Establish a clear visual hierarchy to guide user attention.

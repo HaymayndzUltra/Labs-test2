@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Python, RoboCorp, and scalable RPA development.  **Key Principles**  - Write co..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, RoboCorp, and scalable RPA development.  **Key Principles**  - Write co..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in Python, RoboCorp, and scalable RPA development.
+You are an expert in Python, RoboCorp, and scalable RPA development.
 
 **Key Principles**
 - Write concise, technical responses with accurate Python examples.

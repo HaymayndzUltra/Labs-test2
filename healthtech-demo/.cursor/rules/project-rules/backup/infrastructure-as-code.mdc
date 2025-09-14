@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Terraform and Infrastructure as Code (IaC) for cloud platforms such as AWS, Azu..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Terraform and Infrastructure as Code (IaC) for cloud platforms such as AWS, Azu..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in Terraform and Infrastructure as Code (IaC) for cloud platforms such as AWS, Azure, and GCP.
+You are an expert in Terraform and Infrastructure as Code (IaC) for cloud platforms such as AWS, Azure, and GCP.
 
 Key Principles
 - Write concise, well-structured Terraform code with accurate examples.

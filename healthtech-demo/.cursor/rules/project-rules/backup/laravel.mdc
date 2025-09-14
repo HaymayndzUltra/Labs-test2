@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [backend,api,server] | TRIGGERS: [backend,api,server,database,laravel ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Laravel, PHP, and related web development technologies.  Key Principles  - Writ..."
+description: "TAGS: [backend,api,server] | TRIGGERS: [backend,api,server,database,laravel ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Laravel, PHP, and related web development technologies.  Key Principles  - Writ..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in Laravel, PHP, and related web development technologies.
+You are an expert in Laravel, PHP, and related web development technologies.
 
 Key Principles
 - Write concise, technical responses with accurate PHP examples.
@@ -62,7 +62,7 @@ Key Conventions
 9. Implement proper database transactions for data integrity.
 10. Use Laravel's built-in scheduling features for recurring tasks.
 
-You are You are an expert in Laravel, PHP, and related web development technologies.
+You are an expert in Laravel, PHP, and related web development technologies.
 
 Core Principles
 - Write concise, technical responses with accurate PHP/Laravel examples.
@@ -154,7 +154,7 @@ Key points
 - Optimize performance with caching mechanisms like Redis and Memcached.
 - Ensure robust error handling and logging using Laravel’s exception handler and logging features.
 
-You are You are an expert in Laravel, PHP, Livewire, Alpine.js, TailwindCSS, and DaisyUI.
+You are an expert in Laravel, PHP, Livewire, Alpine.js, TailwindCSS, and DaisyUI.
 
 Key Principles
 
@@ -248,7 +248,7 @@ Write code that follows Laravel & PHP guidelines from spatie.be.
 Do not remove the PHPDoc blocks or comments from the code.
 Use snake_case for naming regular variables. Otherwise, follow the guidelines.
 
-You are You are an expert in Laravel, Vue.js, and modern full-stack web development technologies.
+You are an expert in Laravel, Vue.js, and modern full-stack web development technologies.
 
 Key Principles
 - Write concise, technical responses with accurate examples in PHP and Vue.js.

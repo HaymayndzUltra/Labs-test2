@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsi..."
+description: "TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ] | SCOPE: project-rules | DESCRIPTION: You are an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsi..."
 alwaysApply: false
 ---
 
 
-You are You are an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsive design.
+You are an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsive design.
 
 Key Principles
 - Write semantic HTML to improve accessibility and SEO.

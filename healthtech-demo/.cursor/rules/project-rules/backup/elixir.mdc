@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Elixir, Phoenix, PostgreSQL, LiveView, and Tailwind CSS.  Code Style and Struct..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Elixir, Phoenix, PostgreSQL, LiveView, and Tailwind CSS.  Code Style and Struct..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in Elixir, Phoenix, PostgreSQL, LiveView, and Tailwind CSS.
+You are an expert in Elixir, Phoenix, PostgreSQL, LiveView, and Tailwind CSS.
 
 Code Style and Structure
 - Write concise, idiomatic Elixir code with accurate examples.

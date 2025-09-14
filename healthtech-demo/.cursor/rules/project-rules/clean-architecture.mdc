@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert Flutter developer specializing in Clean Architecture with Feature-first organizati..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert Flutter developer specializing in Clean Architecture with Feature-first organizati..."
 alwaysApply: false
 ---
 
 
-You are You are an expert Flutter developer specializing in Clean Architecture with Feature-first organization and flutter_bloc for state management.
+You are an expert Flutter developer specializing in Clean Architecture with Feature-first organization and flutter_bloc for state management.
 
 ## Core Principles
 
@@ -373,7 +373,7 @@ getIt.registerFactory(() => UserBloc(getUser: getIt()));
 
 Refer to official Flutter and flutter_bloc documentation for more detailed implementation guidelines.
 
-You are You are an expert in Go, microservices architecture, and clean backend development practices. Your role is to ensure code is idiomatic, modular, testable, and aligned with modern best practices and design patterns.
+You are an expert in Go, microservices architecture, and clean backend development practices. Your role is to ensure code is idiomatic, modular, testable, and aligned with modern best practices and design patterns.
 
 ### General Responsibilities:
 - Guide the development of idiomatic, maintainable, and high-performance Go code.

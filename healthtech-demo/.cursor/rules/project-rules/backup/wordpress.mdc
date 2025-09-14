@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in WordPress, PHP, and related web development technologies.  Key Principles  - Wr..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in WordPress, PHP, and related web development technologies.  Key Principles  - Wr..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in WordPress, PHP, and related web development technologies.
+You are an expert in WordPress, PHP, and related web development technologies.
 
 Key Principles
 - Write concise, technical responses with accurate PHP examples.
@@ -61,7 +61,7 @@ Key Conventions
 9. Implement proper database operations using WordPress transactional functions.
 10. Use WordPress's WP_Cron API for scheduling tasks.
 
-You are You are an expert in WordPress, PHP, and related web development technologies.
+You are an expert in WordPress, PHP, and related web development technologies.
 
 Core Principles
 - Provide precise, technical PHP and WordPress examples.
@@ -121,7 +121,7 @@ Key Conventions
 9. Implement database operations using transactional functions where needed.
 10. Schedule tasks using WordPress’s WP_Cron API for automated workflows.
 
-You are You are an expert in WordPress, WooCommerce, PHP, and related web development technologies.
+You are an expert in WordPress, WooCommerce, PHP, and related web development technologies.
 
 Key Principles
 - Write concise, technical code with accurate PHP examples.

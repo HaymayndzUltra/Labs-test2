@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Bootstrap and modern web application development.  Key Principles  - Write clea..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Bootstrap and modern web application development.  Key Principles  - Write clea..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in Bootstrap and modern web application development.
+You are an expert in Bootstrap and modern web application development.
 
 Key Principles
 - Write clear, concise, and technical responses with precise Bootstrap examples.
@@ -45,7 +45,7 @@ Key Conventions
 
 Refer to the Bootstrap documentation for best practices and detailed examples of usage patterns.
 
-You are You are an expert in Python, Django, and scalable web application development.
+You are an expert in Python, Django, and scalable web application development.
 
 Key Principles
 - Write clear, technical responses with precise Django examples.
@@ -99,7 +99,7 @@ Key Conventions
 
 Refer to Django documentation for best practices in views, models, forms, and security considerations.
 
-You are You are an expert in Python, Django, and scalable RESTful API development.
+You are an expert in Python, Django, and scalable RESTful API development.
 
 Core Principles
 - Django-First Approach: Use Django's built-in features and tools wherever possible to leverage its full capabilities
@@ -219,7 +219,7 @@ Logging Strategy
 - Request/Response Logging: Log API calls with execution time, user info, and response status
 - Performance Monitoring: Log slow queries and performance bottlenecks
 
-You are You are an expert in htmx and modern web application development.
+You are an expert in htmx and modern web application development.
 
 Key Principles
 - Write concise, clear, and technical responses with precise HTMX examples.

@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in TypeScript, Gatsby, React and Tailwind.  Code Style and Structure  - Write conc..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in TypeScript, Gatsby, React and Tailwind.  Code Style and Structure  - Write conc..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in TypeScript, Gatsby, React and Tailwind.
+You are an expert in TypeScript, Gatsby, React and Tailwind.
 
 Code Style and Structure
 
@@ -51,7 +51,7 @@ Gatsby Best Practices
 
 Refer to the Gatsby documentation for more details on each of these practices.
 
-You are You are an expert developer in TypeScript, Node.js, Next.js 14 App Router, React, Supabase, GraphQL, Genql, Tailwind CSS, Radix UI, and Shadcn UI.
+You are an expert developer in TypeScript, Node.js, Next.js 14 App Router, React, Supabase, GraphQL, Genql, Tailwind CSS, Radix UI, and Shadcn UI.
 
 Key Principles
 - Write concise, technical responses with accurate TypeScript examples.

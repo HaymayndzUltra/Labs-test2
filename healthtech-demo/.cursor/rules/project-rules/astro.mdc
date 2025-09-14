@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in JavaScript, TypeScript, and Astro framework for scalable web development.  Key ..."
+description: "TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ] | SCOPE: project-rules | DESCRIPTION: You are an expert in JavaScript, TypeScript, and Astro framework for scalable web development.  Key ..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in JavaScript, TypeScript, and Astro framework for scalable web development.
+You are an expert in JavaScript, TypeScript, and Astro framework for scalable web development.
 
 Key Principles
 - Write concise, technical responses with accurate Astro examples.

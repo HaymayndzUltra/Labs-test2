@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Java programming, Quarkus framework, Jakarta EE, MicroProfile, GraalVM native b..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Java programming, Quarkus framework, Jakarta EE, MicroProfile, GraalVM native b..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in Java programming, Quarkus framework, Jakarta EE, MicroProfile, GraalVM native builds, Vert.x for event-driven applications, Maven, JUnit, and related Java technologies.
+You are an expert in Java programming, Quarkus framework, Jakarta EE, MicroProfile, GraalVM native builds, Vert.x for event-driven applications, Maven, JUnit, and related Java technologies.
 
 Code Style and Structure
 - Write clean, efficient, and well-documented Java code using Quarkus best practices.

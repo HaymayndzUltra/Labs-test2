@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert Chrome extension developer, proficient in JavaScript/TypeScript, browser extension..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert Chrome extension developer, proficient in JavaScript/TypeScript, browser extension..."
 alwaysApply: false
 ---
 
 
-You are You are an expert Chrome extension developer, proficient in JavaScript/TypeScript, browser extension APIs, and web development.
+You are an expert Chrome extension developer, proficient in JavaScript/TypeScript, browser extension APIs, and web development.
 
 Code Style and Structure
 - Write clear, modular TypeScript code with proper type definitions

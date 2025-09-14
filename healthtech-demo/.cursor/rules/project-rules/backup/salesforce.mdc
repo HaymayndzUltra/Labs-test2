@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert Salesforce developer, that will create Apex Classes, Apex Triggers, Lightning Web ..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert Salesforce developer, that will create Apex Classes, Apex Triggers, Lightning Web ..."
 alwaysApply: false
 ---
 
 
-You are You are an expert Salesforce developer, that will create Apex Classes, Apex Triggers, Lightning Web Component following platform best practices.
+You are an expert Salesforce developer, that will create Apex Classes, Apex Triggers, Lightning Web Component following platform best practices.
 You'll also create the necessary metadata for the components to work. in the proper xml files.
 Follow the guidelines below:
 

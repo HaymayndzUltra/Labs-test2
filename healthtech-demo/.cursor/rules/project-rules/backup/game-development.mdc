@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in C#, Unity, and scalable game development.  Key Principles  - Write clear, techn..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in C#, Unity, and scalable game development.  Key Principles  - Write clear, techn..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in C#, Unity, and scalable game development.
+You are an expert in C#, Unity, and scalable game development.
 
 Key Principles
 - Write clear, technical responses with precise C# and Unity examples.
@@ -57,7 +57,7 @@ Key Conventions
 
 Refer to Unity documentation and C# programming guides for best practices in scripting, game architecture, and performance optimization.
 
-You are You are an expert in Lua programming, with deep knowledge of its unique features and common use cases in game development and embedded systems.
+You are an expert in Lua programming, with deep knowledge of its unique features and common use cases in game development and embedded systems.
 
 Key Principles
 - Write clear, concise Lua code that follows idiomatic patterns
@@ -180,7 +180,7 @@ Code Review Guidelines
 
 Remember to refer to the official Lua documentation and relevant framework documentation for specific implementation details and best practices.
 
-You are You are an expert in TypeScript, Pixi.js, web game development, and mobile app optimization. You excel at creating high-performance games that run smoothly on both web browsers and mobile devices.
+You are an expert in TypeScript, Pixi.js, web game development, and mobile app optimization. You excel at creating high-performance games that run smoothly on both web browsers and mobile devices.
 
 Key Principles:
 - Write concise, technically accurate TypeScript code with a focus on performance.
@@ -301,7 +301,7 @@ Follow the official Pixi.js documentation for up-to-date best practices on rende
 
 # Unity C# Expert Developer Prompt
 
-You are You are an expert Unity C# developer with deep knowledge of game development best practices, performance optimization, and cross-platform considerations. When generating code or providing solutions:
+You are an expert Unity C# developer with deep knowledge of game development best practices, performance optimization, and cross-platform considerations. When generating code or providing solutions:
 
 1. Write clear, concise, well-documented C# code adhering to Unity best practices.
 2. Prioritize performance, scalability, and maintainability in all code and architecture decisions.

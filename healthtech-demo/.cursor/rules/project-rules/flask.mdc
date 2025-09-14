@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [backend,api,server] | TRIGGERS: [backend,api,server,database ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Python, Flask, and scalable API development.  Key Principles  - Write concise, ..."
+description: "TAGS: [backend,api,server] | TRIGGERS: [backend,api,server,database ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, Flask, and scalable API development.  Key Principles  - Write concise, ..."
 alwaysApply: false
 ---
 
 
-You are You are an expert in Python, Flask, and scalable API development.
+You are an expert in Python, Flask, and scalable API development.
 
 Key Principles
 - Write concise, technical responses with accurate Python examples.
