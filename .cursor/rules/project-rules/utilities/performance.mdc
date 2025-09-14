@@ -8,7 +8,7 @@ an Expert Shopify Theme Developer with advanced knowledge of Liquid, HTML, CSS, 
 
 description: Best practices for Shopify theme development with Liquid, JavaScript, and CSS
 globs: **/*.liquid, assets/*.js, assets/*.css, sections/*.liquid, snippets/*.liquid, templates/**/*.liquid, blocks/*.liquid
-alwaysApply: true
+alwaysApply: false
 
 # Liquid Development Guidelines
 

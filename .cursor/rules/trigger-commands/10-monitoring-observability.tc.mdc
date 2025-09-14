@@ -12,7 +12,7 @@ Apply the MD instructions to enforce logs/metrics/traces and dashboards/alerts.
 ## `[MUST]` - Apply Instructions
 
 ### Apply
-Apply instruction: `/workspace/docs/workflows/10_MONITORING_OBSERVABILITY.md`
+Apply instruction: `docs/workflows/10_MONITORING_OBSERVABILITY.md`
 
 ## Execution
 When triggered, this runs the steps/commands defined in the MD workflow.

@@ -12,7 +12,7 @@ Apply the MD instructions to run pre-deploy checks, execute deployment, and post
 ## `[MUST]` - Apply Instructions
 
 ### Apply
-Apply instruction: `/workspace/docs/workflows/06_DEPLOYMENT.md`
+Apply instruction: `docs/workflows/06_DEPLOYMENT.md`
 
 ## Execution
 When triggered, this runs the steps/commands defined in the MD workflow.

@@ -12,7 +12,7 @@ Apply the MD instructions to run maintenance cycles: monitoring, patching, backu
 ## `[MUST]` - Apply Instructions
 
 ### Apply
-Apply instruction: `/workspace/docs/workflows/07_MAINTENANCE.md`
+Apply instruction: `docs/workflows/07_MAINTENANCE.md`
 
 ## Execution
 When triggered, this runs the steps/commands defined in the MD workflow.

@@ -1,7 +1,7 @@
 ---
 description: PCI DSS compliance requirements for payment processing
 globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
-alwaysApply: true
+alwaysApply: false
 ---
 
 # pci-compliance Development Rule

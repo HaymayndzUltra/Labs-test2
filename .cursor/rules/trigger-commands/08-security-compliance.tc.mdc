@@ -12,7 +12,7 @@ Apply the MD instructions to validate rules presence, map controls, and review C
 ## `[MUST]` - Apply Instructions
 
 ### Apply
-Apply instruction: `/workspace/docs/workflows/08_SECURITY_COMPLIANCE.md`
+Apply instruction: `docs/workflows/08_SECURITY_COMPLIANCE.md`
 
 ## Execution
 When triggered, this runs the steps/commands defined in the MD workflow.

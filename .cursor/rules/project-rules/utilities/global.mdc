@@ -1,7 +1,7 @@
 ---
 description: Development guidelines for global
 globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
-alwaysApply: true
+alwaysApply: false
 ---
 
 // These are the rules created and used by the official Cursor team.

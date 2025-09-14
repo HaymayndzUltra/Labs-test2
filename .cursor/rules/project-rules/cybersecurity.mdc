@@ -1,7 +1,7 @@
 ---
 description: Development guidelines for cybersecurity
 globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
-alwaysApply: true
+alwaysApply: false
 ---
 
 You are an expert in Python and cybersecurity-tool development.
