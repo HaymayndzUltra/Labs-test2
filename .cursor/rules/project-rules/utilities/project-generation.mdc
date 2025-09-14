@@ -1,0 +1,40 @@
+---
+description: "TAGS: [workflow,automation,generation] | TRIGGERS: generate,bootstrap,setup,initialize,execute | SCOPE: project-rules | DESCRIPTION: Deterministic project generation with dry-run, create, validate, run."
+alwaysApply: false
+---
+
+# Project Generation Workflow
+
+## Core Function
+Create a complete, ready-to-develop project scaffold with CI/CD, docs, and compliance rules.
+
+## `[MUST]` - Execute Generation
+
+### Step 1: List Templates (Optional)
+Execute: `python scripts/generate_client_project.py --list-templates | cat`
+**Acceptance:** Templates printed without error
+
+### Step 2: Dry Run
+Execute: `python scripts/generate_client_project.py --name {{NAME}} --industry {{INDUSTRY}} --project-type {{PROJECT_TYPE}} --frontend {{FRONTEND}} --backend {{BACKEND}} --database {{DATABASE}} --auth {{AUTH}} --deploy {{DEPLOY}} {{#if COMPLIANCE}}--compliance {{COMPLIANCE}}{{/if}} --output-dir ../_generated --workers {{WORKERS|8}} --dry-run --yes --include-cursor-assets`
+**Acceptance:** Structure preview printed, no files created, exit 0
+
+### Step 3: Generate
+Execute: `python scripts/generate_client_project.py --name {{NAME}} --industry {{INDUSTRY}} --project-type {{PROJECT_TYPE}} --frontend {{FRONTEND}} --backend {{BACKEND}} --database {{DATABASE}} --auth {{AUTH}} --deploy {{DEPLOY}} {{#if COMPLIANCE}}--compliance {{COMPLIANCE}}{{/if}} --output-dir ../_generated --workers {{WORKERS|8}} --yes --force --include-cursor-assets`
+**Acceptance:** Project created, expected files exist, exit 0
+
+### Step 4: Validate Rules (Optional)
+Execute: `cd ../_generated/{{NAME}} && [ -d .git ] && python .cursor/tools/validate_rules.py && python .cursor/tools/check_compliance.py`
+**Acceptance:** Rules OK, compliance rules present
+
+### Step 5: Setup & Run
+Execute: `cd ../_generated/{{NAME}} && make setup && make dev`
+**Acceptance:** Install succeeds, dev environment starts
+
+## Execution
+When triggered, the workflow runs dry-run → generate → validate → setup in order.
+
+## Overall Acceptance
+- [ ] Success messages printed
+- [ ] Files present as expected
+- [ ] Validation scripts pass
+- [ ] Local dev starts successfully
