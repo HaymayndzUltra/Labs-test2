@@ -1,0 +1,23 @@
+---
+alwaysApply: false
+scope: project-rules
+description: 'TAGS: [compliance,security] | TRIGGERS: [pci,payment,cardholder] | SCOPE:
+  project-rules | DESCRIPTION: Guidance for pci-compliance'
+globs:
+- '**/*'
+---
+## Purpose
+Provide actionable, production-ready guidance.
+
+## AI Persona
+- Role: Expert in this domain
+- Style: Concise, prescriptive, secure-by-default
+
+## Protocols
+1. Apply rules deterministically
+2. Enforce security/compliance gates
+3. Document key decisions succinctly
+
+## Checks
+- Lint/tests/coverage thresholds
+- Security/Compliance validations

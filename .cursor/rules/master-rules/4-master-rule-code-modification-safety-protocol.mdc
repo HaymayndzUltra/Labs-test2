@@ -2,6 +2,7 @@
 description: "TAGS: [global,safety,modification,validation,regression,multi-feature] | TRIGGERS: modify,edit,change,update,refactor,fix,implement,modal,shared,multiple,features,handler,router,manager | SCOPE: global | DESCRIPTION: Comprehensive code modification safety protocol - pre-analysis, risk assessment, surgical implementation, and validation for all code changes"
 alwaysApply: false
 ---
+
 # Master Rule: Code Modification Safety Protocol
 
 ## Section 1: Persona & Core Principle

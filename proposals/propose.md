@@ -1,142 +1,56 @@
 Summary
-Senior AI SaaS Developer Needed ($1,000 + Bonus)
+Description (short):
+Ship a production news feed application end-to-end. You’ll implement source ingestion (RSS/APIs + selective scraping), content processing (extraction → de-dup → LLM classification/editorial), a fast query layer, and a clean feed UI with save/rate/report and paid filters. Code-only (React/TS) and move fast using context engineering + Claude Code/Codex. US-first scope.
 
-Build AI SaaS Business Suite – Must Have Existing SaaS Framework
+Outcomes & targets:
 
-Budget: $1,000 fixed + performance bonus
+Ingestion: RSS/Atom, regulatory and pressroom APIs; managed scraping only where needed; daily cadence (hourly when feasible).
 
+Pipeline: Fetch → extract (Trafilatura/Readability/Goose) → clean → de-dup → classify/editorialize → store.
 
----
+Performance: Feed queries p95 less than 1s; ingestion latency less than 5 min.
 
-📌 Project Overview
+UI: Filters (free + paid lock states), Save, Usefulness rating, Report controls.
 
-I am hiring ONE senior full-stack SaaS developer to deliver a multi-tenant AI-powered SaaS business platform.
+Ops: Orchestrated with Encore (schedules/jobs); optional Python extractor sidecar.
 
-⚠️ This is not a from-scratch build. You must already have a working SaaS framework/codebase that you can extend and customize. The goal is speed, efficiency, and reliability.
+Scale: Designed to expand to 100+ trusted sources over time.
 
-The MVP must be fully delivered, branded, tested, and functional within 10–21 days.
+What you’ll build:
 
+Backend (Encore/TS): source runners, schedulers, extraction/cleanup, de-dup, LLM tagging, Postgres query endpoints.
 
----
+Frontend (Next.js): performant feed UI with top-level filters and post cards; free/paid filter gating.
 
-⚙️ Core Features to Deliver
+Data layer: Postgres + JSONB tags (GIN/tsvector), keyset pagination.
 
-Multi-tenant SaaS Engine
+Must-have skills (top 5):
 
-Master admin panel (create/manage client accounts)
+Encore (TypeScript services) — schedulers, jobs, typed REST APIs
 
-Unique client logins with secure dashboards
+Next.js (React, Tailwind/ShadCN) — high-performance feed UI
 
-Role-based access (RBAC), scalable to 50,000+ users
+PostgreSQL FTS & indexing — GIN/tsvector, JSONB filters, keyset pagination
 
+Content ingestion & extraction — RSS/APIs, controlled scraping, de-duplication
 
-AI Auto-Receptionist (Voice + SMS)
+LLM classification/editorial — prompt design & context engineering (Claude Code/Codex), confidence scoring
 
-Missed call → SMS reply (if mobile)
+Code-only mandate: React/TypeScript. No Tableau/Power BI/Superset/Retool/low-code tools.
 
-Missed call → AI call-back (if landline)
+Apply with:
 
-AI agent must book, pre-qualify, answer FAQs, and close appointments
+2–3 links to code-built feeds/pipelines you shipped
 
-Calendar sync with Google/Outlook
+Your plan to hit p95 less than 1s (indexes, query shapes, pagination)
 
+How you’ll use Claude Code/Codex to accelerate delivery
 
-AI Chatbot & Lead Capture
+Availability + milestone outline
 
-Website chatbot (OpenAI-powered)
-
-Captures leads, books appointments, answers FAQs
-
-
-Automated Follow-Up & Retention
-
-SMS/email sequences until booked
-
-No-show reminders + rescheduling
-
-30/60/90-day win-back workflows
-
-Loyalty/referral automations
-
-
-Review & Reputation Manager
-
-Auto Google review requests (SMS/email)
-
-Track reviews across Google/Yelp/FB
-
-AI-suggested responses for negatives
-
-
-Competitor Intelligence
-
-Competitor snapshots via API (SerpAPI/Reviewshake)
-
-Summarized reports in dashboard + email
-
-
-ROI Dashboard & Reports
-
-Track leads, conversions, revenue generated
-
-Automated monthly PDF/email reports
-
-
-AI Marketing Assistant
-
-Generate ad copy, promotions, social media posts
-
-Push to Google/Facebook APIs
-
-
-Stripe Subscription Billing
-
-Monthly biilling per client
-
-Branded under my domain/logo
-
-
-
-
----
-
-🛠️ Required Skills (Mandatory)
-
-Frontend: React.js / Next.js, TailwindCSS or Material UI
-
-Backend: Node.js/Express OR Python/FastAPI/Django
-
-Database: PostgreSQL/MySQL (multi-tenant design), Redis caching
-
-AI/ML: OpenAI API, Whisper STT, ElevenLabs/Azure TTS, conversational AI agents
-
-Messaging/Calls: Twilio Voice + SMS, SendGrid/Mailgun email delivery
-
-Integrations: Google APIs (Calendar, My Business), SerpAPI/Reviewshake, Stripe API
-
-Cloud/DevOps: AWS/GCP/Azure, Docker (Kubernetes bonus)
-
-Security: JWT, OAuth2, RBAC, encryption best practices
-
----
-
-### Proposal
-
-#### Introduction
-I’m a full‑stack developer focused on AI SaaS. I can deliver your stack: Next.js/Node.js or FastAPI, PostgreSQL (multi‑tenant) with Redis, OpenAI + Whisper + ElevenLabs, and Twilio Voice/SMS.
-
-#### Understanding of Project
-You need to extend an existing SaaS framework (not from scratch), brand it under your domain, and ship an MVP in 10–21 days covering AI auto‑receptionist, website chatbot/lead capture, automated follow‑ups, review/reputation management, competitor intelligence (SerpAPI/Reviewshake), ROI dashboards, and Stripe subscriptions.
-
-#### Solution Approach
-- Multi‑tenant core with RBAC and master admin → tenant onboarding, secure dashboards, unique logins; designed to scale to 50,000+ users.
-- Communications: Twilio flows for missed‑call SMS and landline call‑backs; booking via AI agent with Google/Outlook Calendar sync; Whisper STT + ElevenLabs/Azure TTS.
-- Growth loops: OpenAI chatbot, SMS/email sequences, no‑show reminders, 30/60/90‑day win‑backs, loyalty/referral.
-- Reputation and intel: Auto Google review requests, tracking across Google/Yelp/FB, AI‑suggested responses; SerpAPI/Reviewshake summaries in dashboard and email.
-- Billing and ops: Stripe subscription billing per client; Dockerized deployment on AWS/GCP/Azure; security with JWT/OAuth2 and encryption best practices.
-
-#### Value Proposition
-Crisp scope, parallelized integrations, and testable deliverables keep velocity high while preserving reliability, branding, and measurable outcomes (leads, conversions, revenue) from day one.
-
-#### Call to Action
-To keep things efficient, I’ll structure everything into clear phases with goals, deliverables, and acceptance criteria. If you could share any specific requirements or reference materials upfront, I’ll integrate them right away—so we finalize scope faster without needing long back-and-forth calls
+More than 30 hrs/week
+Hourly
+More than 6 months
+Duration
+Expert
+I am willing to pay higher rates for the most experienced freelancers

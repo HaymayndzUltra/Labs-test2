@@ -1,0 +1,17 @@
+{
+  "detected_industry": "consumer_mobile",
+  "confidence_score": 0.4072727272727274,
+  "activated_rules": [
+    "common-rule-client-industry-patterns"
+  ],
+  "compliance_requirements": [
+    "App Store Guidelines",
+    "Google Play Guidelines"
+  ],
+  "recommended_tech_stack": {
+    "frontend": "React Native/Flutter for mobile apps",
+    "backend": "Node.js/Python with mobile APIs",
+    "auth": "Social login with biometric support",
+    "hosting": "CDN with mobile optimization"
+  }
+}

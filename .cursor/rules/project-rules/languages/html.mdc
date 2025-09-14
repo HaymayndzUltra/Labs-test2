@@ -1,0 +1,160 @@
+---
+description: "TAGS: [language,frontend,markup] | TRIGGERS: [html,markup,frontend,web] | SCOPE: project-rules | DESCRIPTION: Expert HTML development with semantic markup, accessibility, and modern best practices."
+alwaysApply: false
+---
+
+
+# HTML Development Rules
+
+## [STRICT] HTML Structure Requirements
+
+### 1. Document Type and Meta Tags
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Page description for SEO">
+    <title>Page Title</title>
+</head>
+<body>
+    <!-- Content goes here -->
+</body>
+</html>
+```
+
+### 2. Semantic HTML Elements
+- **ALWAYS** use semantic elements: `<header>`, `<nav>`, `<main>`, `<section>`, `<article>`, `<aside>`, `<footer>`
+- **NEVER** use `<div>` for semantic purposes
+- **ALWAYS** use proper heading hierarchy: `<h1>` → `<h2>` → `<h3>`
+
+### 3. Accessibility Requirements
+- **ALWAYS** include `alt` attributes for images
+- **ALWAYS** use `aria-label` for interactive elements
+- **ALWAYS** ensure proper focus management
+- **ALWAYS** use proper form labels
+
+### 4. Form Structure
+```html
+<form action="/submit" method="POST" novalidate>
+    <fieldset>
+        <legend>Form Title</legend>
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required aria-describedby="email-help">
+            <small id="email-help">Enter your email address</small>
+        </div>
+    </fieldset>
+    <button type="submit">Submit</button>
+</form>
+```
+
+### 5. Image Optimization
+```html
+<img src="image.jpg" 
+     alt="Descriptive alt text" 
+     width="300" 
+     height="200" 
+     loading="lazy"
+     srcset="image-300w.jpg 300w, image-600w.jpg 600w"
+     sizes="(max-width: 600px) 300px, 600px">
+```
+
+### 6. Table Structure
+```html
+<table>
+    <caption>Table Description</caption>
+    <thead>
+        <tr>
+            <th scope="col">Column 1</th>
+            <th scope="col">Column 2</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Data 1</td>
+            <td>Data 2</td>
+        </tr>
+    </tbody>
+</table>
+```
+
+## [GUIDELINE] Best Practices
+
+### Code Organization
+- Use consistent indentation (2 spaces)
+- Group related elements together
+- Add comments for complex sections
+- Use meaningful class and ID names
+
+### Performance
+- Minimize DOM depth
+- Use efficient selectors
+- Optimize images
+- Use lazy loading for images
+
+### SEO
+- Use proper heading hierarchy
+- Include meta descriptions
+- Use semantic markup
+- Optimize for mobile
+
+## [STRICT] Validation Rules
+
+### HTML Validation
+- **ALWAYS** validate HTML with W3C validator
+- **ALWAYS** ensure proper nesting
+- **ALWAYS** close all tags
+- **ALWAYS** use lowercase for attributes
+
+### Accessibility Validation
+- **ALWAYS** test with screen readers
+- **ALWAYS** ensure keyboard navigation
+- **ALWAYS** check color contrast
+- **ALWAYS** validate ARIA attributes
+
+## Examples
+
+### Complete HTML Page
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sample HTML page demonstrating best practices">
+    <title>Sample HTML Page</title>
+</head>
+<body>
+    <header>
+        <nav aria-label="Main navigation">
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section id="home">
+            <h1>Welcome to Our Website</h1>
+            <p>This is a sample paragraph with proper semantic markup.</p>
+        </section>
+        
+        <section id="about">
+            <h2>About Us</h2>
+            <article>
+                <h3>Our Mission</h3>
+                <p>We are committed to creating accessible web experiences.</p>
+            </article>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2024 Sample Website. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+```

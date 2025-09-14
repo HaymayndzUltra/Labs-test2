@@ -1,0 +1,183 @@
+---
+description: 'TAGS: [general] | TRIGGERS: [graphql] | SCOPE: project-rules | DESCRIPTION:
+  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
+  project-rules | DESCRIPTION: You are You are an expert in TypeScript, Gatsby, React and
+  Tailwind.  Code Style and Structure  - Write conc...'
+alwaysApply: false
+scope: project-rules
+globs:
+- '**/*'
+---
+You are an expert in TypeScript, Gatsby, React and Tailwind.
+
+Code Style and Structure
+
+- Write concise, technical TypeScript code.
+- Use functional and declarative programming patterns; avoid classes.
+- Prefer iteration and modularization over code duplication.
+- Use descriptive variable names with auxiliary verbs (e.g., isLoaded, hasError).
+- Structure files: exported page/component, GraphQL queries, helpers, static content, types.
+
+Naming Conventions
+
+- Favor named exports for components and utilities.
+- Prefix GraphQL query files with use (e.g., useSiteMetadata.ts).
+
+TypeScript Usage
+
+- Use TypeScript for all code; prefer interfaces over types.
+- Avoid enums; use objects or maps instead.
+- Avoid using `any` or `unknown` unless absolutely necessary. Look for type definitions in the codebase instead.
+- Avoid type assertions with `as` or `!`.
+
+Syntax and Formatting
+
+- use "function" keyword for pure functions.
+- Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
+- Use declarative JSX, keeping JSX minimal and readable.
+
+UI and Styling
+
+- Use Tailwind for utility-based styling
+- Use a mobile-first approach
+
+Gatsby Best Practices
+
+- Use Gatsby's useStaticQuery for querying GraphQL data at build time.
+- Use gatsby-node.js for programmatically creating pages based on static data.
+- Utilize Gatsby's Link component for internal navigation to ensure preloading of linked pages.
+- For pages that don't need to be created programmatically, create them in src/pages/.
+- Optimize images using Gatsby's image processing plugins (gatsby-plugin-image, gatsby-transformer-sharp).
+- Follow Gatsby's documentation for best practices in data fetching, GraphQL queries, and optimizing the build process.
+- Use environment variables for sensitive data, loaded via gatsby-config.js.
+- Utilize gatsby-browser.js and gatsby-ssr.js for handling browser and SSR-specific APIs.
+- Use Gatsby's caching strategies (gatsby-plugin-offline, gatsby-plugin-cache).
+
+Refer to the Gatsby documentation for more details on each of these practices.
+
+ You are an expert developer in TypeScript, Node.js, Next.js 14 App Router, React, Supabase, GraphQL, Genql, Tailwind CSS, Radix UI, and Shadcn UI.
+
+Key Principles
+- Write concise, technical responses with accurate TypeScript examples.
+- Use functional, declarative programming. Avoid classes.
+- Prefer iteration and modularization over duplication.
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
+- Use lowercase with dashes for directories (e.g., components/auth-wizard).
+- Favor named exports for components.
+- use Receive an Object, Return an Object (RORO) pattern.
+
+JavaScript/TypeScript
+- Use "function" keyword for pure functions. Omit semicolons.
+- Use TypeScript for all code. Prefer interfaces over types.
+- File structure: Exported component, subcomponents, helpers, static content, types.
+- Avoid unnecessary curly braces in conditional statements.
+- For single-line statements in conditionals, omit curly braces.
+- Use concise, one-line syntax for simple conditional statements (e.g., if (condition) doSomething()).
+
+Error Handling and Validation
+- Prioritize error handling and edge cases:
+- Handle errors and edge cases at the beginning of functions.
+- Use early returns for error conditions to avoid deeply nested if statements.
+- Place the happy path last in the function for improved readability.
+- Avoid unnecessary else statements; use if-return pattern instead.
+- Use guard clauses to handle preconditions and invalid states early.
+- Implement proper error logging and user-friendly error messages.
+- Consider using custom error types or error factories for consistent error handling.
+
+AI SDK
+- use Vercel AI SDK UI for implementing streaming chat UI.
+- use Vercel AI SDK Core to interact with language models.
+- use Vercel AI SDK RSC and Stream Helpers to stream and help with the generations.
+- Implement proper error handling for AI responses and model switching.
+- Implement fallback mechanisms for when an AI model is unavailable.
+- Handle rate limiting and quota exceeded scenarios gracefully.
+- Provide clear error messages to users when AI interactions fail.
+- Implement proper input sanitization for user messages before sending to AI models.
+- Use environment variables for storing API keys and sensitive information.
+
+React/Next.js
+- Use functional components and TypeScript interfaces.
+- Use declarative JSX.
+- Use function, not const, for components.
+- Use Shadcn UI, Radix, and Tailwind CSS for components and styling.
+- Implement responsive design with Tailwind CSS.
+- Use mobile-first approach for responsive design.
+- Place static content and interfaces at file end.
+- Use content variables for static content outside render functions.
+- Minimize 'use client', 'useEffect', and 'setState'. Favor React Server Components (RSC).
+- Use Zod for form validation.
+- Wrap client components in Suspense with fallback.
+- Use dynamic loading for non-critical components.
+- Optimize images: WebP format, size data, lazy loading.
+- Model expected errors as return values: Avoid using try/catch for expected errors in Server Actions.
+- Use error boundaries for unexpected errors: Implement error boundaries using error.tsx and global-error.tsx files.
+- Use useActionState with react-hook-form for form validation.
+- Code in services/ dir throw user-friendly errors that can be caught and shown to the user.
+- Use next-safe-action for all server actions.
+- Implement type-safe server actions with proper validation.
+- Handle errors gracefully and return appropriate responses.
+
+Supabase and GraphQL
+- use Supabase client for database interactions and real-time subscriptions.
+- Implement Row Level Security (RLS) policies for fine-grained access control.
+- Use Supabase Auth for user authentication and management.
+- Leverage Supabase Storage for file uploads and management.
+- Use Supabase Edge Functions for serverless API endpoints when needed.
+- use generated GraphQL client (Genql) for type-safe API interactions with Supabase.
+- Optimize GraphQL queries to fetch necessary data.
+- Use Genql queries for fetching large datasets efficiently.
+- Implement proper authentication and authorization using Supabase RLS and Policies.
+
+Key Conventions
+1. Rely on Next.js App Router for state changes and routing.
+2. Prioritize Web Vitals (LCP, CLS, FID).
+3. Minimize 'use client' usage:
+- Prefer server components and Next.js SSR features.
+- Use 'use client' for Web API access in small components.
+- Avoid using 'use client' for data fetching or state management.
+4. Follow the monorepo structure:
+- Place shared code in the 'packages' directory.
+- Keep app-specific code in the 'apps' directory.
+5. Use Taskfile commands for development and deployment tasks.
+6. Adhere to the defined database schema and use enum tables for predefined values.
+
+Naming Conventions
+- Booleans: Use auxiliary verbs such as 'does', 'has', 'is', and 'should' (e.g., isDisabled, hasError).
+- Filenames: Use lowercase with dash separators (e.g., auth-wizard.tsx).
+- File extensions: Use .config.ts, .test.ts, .context.tsx, .type.ts, .hook.ts as appropriate.
+
+Component Structure
+- Break down components into smaller parts with minimal props.
+- Suggest micro folder structure for components.
+- Use composition to build complex components.
+- Follow the order: component declaration, styled components (if any), TypeScript types.
+
+Data Fetching and State Management
+- Use React Server Components for data fetching when possible.
+- Implement the preload pattern to prevent waterfalls.
+- Leverage Supabase for real-time data synchronization and state management.
+- Use Vercel KV for chat history, rate limiting, and session storage when appropriate.
+
+Styling
+- Use Tailwind CSS for styling, following the Utility First approach.
+- Utilize the Class Variance Authority (CVA) for managing component variants.
+
+Testing
+- Implement unit tests for utility functions and hooks.
+- Use integration tests for complex components and pages.
+- Implement end-to-end tests for critical user flows.
+- Use Supabase local development for testing database interactions.
+
+Accessibility
+- Ensure interfaces are keyboard navigable.
+- Implement proper ARIA labels and roles for components.
+- Ensure color contrast ratios meet WCAG standards for readability.
+
+Documentation
+- Provide clear and concise comments for complex logic.
+- Use JSDoc comments for functions and components to improve IDE intellisense.
+- Keep the README files up-to-date with setup instructions and project overview.
+- Document Supabase schema, RLS policies, and Edge Functions when used.
+
+Refer to Next.js documentation for Data Fetching, Rendering, and Routing best practices and to the
+Vercel AI SDK documentation and OpenAI/Anthropic API guidelines for best practices in AI integration.
