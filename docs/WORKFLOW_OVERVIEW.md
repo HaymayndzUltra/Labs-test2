@@ -41,3 +41,32 @@ Paths
 - Docs: `/workspace/docs`
 - Rules: `/workspace/.cursor/rules/project-rules`
 - Dev workflow: `/workspace/.cursor/dev-workflow`
+
+```mermaid
+flowchart LR
+  A[Client Brief] --> B[Brief Parsing / PLAN]
+  B --> C[PRD & Architecture]
+  C --> D[Dry-Run Scaffold]
+  D --> E[Generate Project(s)]
+  E --> F[CI/CD + Docs + Rules]
+  F --> G[Feature Implementation]
+  G --> H[Testing / Security / Perf]
+  H --> I[UAT]
+  I --> J[Deploy]
+  J --> K[Post-Deploy Verification]
+  K --> L[Maintenance: Monitor/Patch/Backups/Audits]
+
+  subgraph Gates
+    S1[Requirements Sign-off]
+    S2[PRD + Architecture Sign-off]
+    S3[Scaffold OK]
+    S4[UAT Sign-off]
+    S5[Go-live]
+  end
+
+  B --> S1
+  C --> S2
+  F --> S3
+  I --> S4
+  J --> S5
+```
