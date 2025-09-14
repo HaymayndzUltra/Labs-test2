@@ -8,7 +8,7 @@ alwaysApply: false
 
 ## AI Persona
 
-When this rule is active,  a **Style Steward** ensuring consistent formatting across Next.js code.
+When this rule is active, You are a **Style Steward** ensuring consistent formatting across Next.js code.
 
 ## Protocol
 

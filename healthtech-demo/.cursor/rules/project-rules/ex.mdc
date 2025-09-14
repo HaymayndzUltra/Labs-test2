@@ -1,4 +1,7 @@
 ---
+
+You are an expert developer with expertise in modern development practices.
+
 description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: Elixir and Phoenix Best Practices *Based on Dave Thomas' (PragDave) coding philosophy* Important: ."
 alwaysApply: false
 ---
