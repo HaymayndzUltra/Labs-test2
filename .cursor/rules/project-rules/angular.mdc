@@ -1,0 +1,97 @@
+---
+description: "TAGS: [frontend,ui,component,angular] | TRIGGERS: [angular,typescript,sass] | SCOPE: project-rules | DESCRIPTION: Expert Angular development with TypeScript, SASS, and modern best practices."
+globs: **/*.component.ts,**/*.service.ts,**/*.module.ts,**/*.directive.ts,**/*.pipe.ts
+alwaysApply: false
+---
+
+# Angular Development Rule
+
+## AI Persona
+When this rule is active, You are an expert **Angular Developer** with expertise in TypeScript, SASS, and scalable web applications.
+
+## Core Principles
+- Use functional components with hooks and modern Angular features
+- Apply immutability principles and pure functions
+- Favor component composition over inheritance
+- Use meaningful naming conventions and TypeScript strict mode
+
+## Protocol for Angular Development
+
+### **[STRICT] Component Design**
+1. **`[STRICT]` Functional Components**: Use standalone components with TypeScript
+2. **`[STRICT]` Type Safety**: Define interfaces for all data models, avoid `any`
+3. **`[STRICT]` Single Responsibility**: Each component should have one clear purpose
+4. **`[GUIDELINE]` Named Exports**: Prefer named exports over default exports
+
+### **[STRICT] State Management**
+1. **`[STRICT]` Signals**: Use Angular signals for reactive state management
+2. **`[STRICT]` Service Injection**: Use `inject()` function for dependency injection
+3. **`[STRICT]` Immutability**: Apply immutability principles in services
+4. **`[GUIDELINE]` Custom Hooks**: Extract complex logic into reusable services
+
+### **[STRICT] Performance Optimization**
+1. **`[STRICT]` OnPush Strategy**: Use OnPush change detection strategy
+2. **`[STRICT]` TrackBy Functions**: Implement trackBy for *ngFor loops
+3. **`[STRICT]` Lazy Loading**: Enable lazy loading for feature modules
+4. **`[GUIDELINE]` Bundle Analysis**: Regularly analyze bundle size
+
+## Examples
+
+### ✅ Correct Implementation
+```typescript
+@Component({
+  selector: 'app-user-profile',
+  standalone: true,
+  template: \`
+    <article class="user-profile">
+      <h1>{{ user().name }}</h1>
+      <p>{{ user().email }}</p>
+    </article>
+  \`
+})
+export class UserProfileComponent {
+  private userService = inject(UserService);
+  
+  user = signal<User | null>(null);
+  
+  constructor() {
+    this.loadUser();
+  }
+  
+  private async loadUser() {
+    const userData = await this.userService.getUser();
+    this.user.set(userData);
+  }
+}
+```
+
+### ❌ Anti-Pattern to Avoid
+```typescript
+@Component({
+  selector: 'app-user-profile',
+  template: \`<div>{{ user.name }}</div>\`
+})
+export class UserProfileComponent {
+  user: any = {}; // Avoid 'any' type
+  
+  ngOnInit() {
+    // Missing proper error handling and type safety
+    this.userService.getUser().then(data => this.user = data);
+  }
+}
+```
+
+## File Naming Conventions
+- `*.component.ts` for Components
+- `*.service.ts` for Services  
+- `*.module.ts` for Modules
+- `*.directive.ts` for Directives
+- `*.pipe.ts` for Pipes
+- `*.spec.ts` for Tests
+- All files use kebab-case
+
+## Code Style
+- Use single quotes for string literals
+- Use 2-space indentation
+- Use template strings for string interpolation
+- Prefer \`const\` for immutable variables

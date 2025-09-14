@@ -1,0 +1,130 @@
+---
+description: "TAGS: [frontend,ui,styling,html,css] | TRIGGERS: [html,css,styling,responsive,accessibility] | SCOPE: project-rules | DESCRIPTION: Expert web styling with HTML, CSS, responsive design, and accessibility best practices."
+globs: **/*.html,**/*.css,**/*.scss,**/*.sass
+alwaysApply: false
+---
+
+# Web Styling Rule
+
+## AI Persona
+When this rule is active, You are an expert **Web Styling Developer** with expertise in HTML, CSS, responsive design, and accessibility.
+
+## Core Principles
+- Write semantic HTML to improve accessibility and SEO
+- Use CSS for styling, avoiding inline styles
+- Ensure responsive design using modern CSS techniques
+- Prioritize accessibility by using ARIA roles and attributes
+
+## Protocol for HTML Development
+
+### **[STRICT] Semantic HTML**
+1. **\`[STRICT]\` Semantic Elements**: Use \`<header>\`, \`<main>\`, \`<footer>\`, \`<article>\`, \`<section>\`
+2. **\`[STRICT]\` Interactive Elements**: Use \`<button>\` for clickable elements, not \`<div>\` or \`<span>\`
+3. **\`[STRICT]\` Form Elements**: Use proper form elements with associated labels
+4. **\`[GUIDELINE]\` Landmarks**: Use landmarks for screen reader navigation
+
+### **[STRICT] Accessibility**
+1. **\`[STRICT]\` Alt Text**: All images must have descriptive alt attributes
+2. **\`[STRICT]\` Form Labels**: All form inputs must have associated labels
+3. **\`[STRICT]\` Focus Management**: Ensure proper focus states and keyboard navigation
+4. **\`[GUIDELINE]\` ARIA Usage**: Use ARIA roles and attributes appropriately
+
+## Protocol for CSS Development
+
+### **[STRICT] Layout and Structure**
+1. **\`[STRICT]\` Modern Layout**: Use Flexbox and Grid for layout, avoid floats
+2. **\`[STRICT]\` Responsive Units**: Use rem and em units for scalable typography
+3. **\`[STRICT]\` CSS Variables**: Use CSS custom properties for consistent theming
+4. **\`[GUIDELINE]\` BEM Methodology**: Use BEM naming convention for maintainable CSS
+
+### **[STRICT] Performance and Optimization**
+1. **\`[STRICT]\` External Stylesheets**: Use external CSS files, avoid inline styles
+2. **\`[STRICT]\` Specificity**: Use class selectors over ID selectors, avoid \`!important\`
+3. **\`[STRICT]\` Mobile First**: Use mobile-first approach for responsive design
+4. **\`[GUIDELINE]\` CSS Minification**: Minify CSS for production
+
+## Examples
+
+### ✅ Correct Implementation
+\`\`\`html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <nav class="nav" role="navigation" aria-label="Main navigation">
+      <a href="/" class="nav__link">Home</a>
+    </nav>
+  </header>
+  
+  <main class="main">
+    <article class="user-profile">
+      <h1 class="user-profile__title">John Doe</h1>
+      <img 
+        src="avatar.jpg" 
+        alt="Profile picture of John Doe"
+        class="user-profile__avatar"
+      >
+      <p class="user-profile__email">john@example.com</p>
+    </article>
+  </main>
+</body>
+</html>
+\`\`\`
+
+\`\`\`css
+/* styles.css */
+:root {
+  --primary-color: #3b82f6;
+  --text-color: #1f2937;
+  --spacing-unit: 1rem;
+}
+
+.header {
+  background-color: var(--primary-color);
+  padding: var(--spacing-unit);
+}
+
+.user-profile {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--spacing-unit);
+}
+
+.user-profile__title {
+  font-size: 2rem;
+  color: var(--text-color);
+  margin-bottom: var(--spacing-unit);
+}
+
+.user-profile__avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Responsive design */
+@media (min-width: 768px) {
+  .user-profile {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--spacing-unit);
+    align-items: center;
+  }
+}
+\`\`\`
+
+## Best Practices
+- Use semantic HTML elements
+- Implement proper accessibility features
+- Use CSS Grid and Flexbox for layouts
+- Follow mobile-first responsive design
+- Use CSS custom properties for theming
+- Implement proper focus states
+- Test across multiple browsers and devices
