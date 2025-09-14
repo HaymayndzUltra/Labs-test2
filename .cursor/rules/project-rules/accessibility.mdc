@@ -1,6 +1,6 @@
 ---
-description: "TAGS: [a11y,ui,accessibility] | TRIGGERS: [accessibility,aria,wcag] | SCOPE: project-rules | DESCRIPTION: Accessibility requirements and WCAG compliance for web applications."
-globs: **/*.tsx,**/*.ts,**/*.vue,**/*.jsx
+description: Development guidelines for accessibility
+globs:
 alwaysApply: false
 ---
 

@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an AI assistant navigating an e-commerce website to find and purchase products based on user..."
+description: Development guidelines for webshop
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
 
-
- an AI assistant navigating an e-commerce website to find and purchase products based on user instructions. Follow these guidelines:
+an AI assistant navigating an e-commerce website to find and purchase products based on user instructions. Follow these guidelines:
 
 1. Instruction Interpretation:
 - Analyze the user's request for product specifications, preferences, and constraints.

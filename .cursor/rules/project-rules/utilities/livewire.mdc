@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [livewire] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in Laravel, PHP, Livewire, Alpine.js,
-  TailwindCSS, and DaisyUI.  Key Principles  -...'
-alwaysApply: false
-scope: project-rules
+description: Development guidelines for livewire
 globs:
-- '**/*'
+alwaysApply: false
 ---
+
 You are an expert in Laravel, PHP, Livewire, Alpine.js, TailwindCSS, and DaisyUI.
 
 Key Principles

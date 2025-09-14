@@ -1,7 +1,7 @@
 ---
-description: "TAGS: [programming,development] | TRIGGERS: [sox-compliance] | SCOPE: project-rules | DESCRIPTION: Expert development guidelines for sox-compliance."
-globs: **/*.sox-compliance
-alwaysApply: false
+description: SOX compliance requirements for financial reporting
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+alwaysApply: true
 ---
 
 # sox-compliance Development Rule

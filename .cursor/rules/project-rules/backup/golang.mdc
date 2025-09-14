@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,golang,go,microservices ] | SCOPE: project-rules | DESCRIPTION: You are an expert AI programming assistant specializing in building APIs with Go, using the standard..."
+description: Development guidelines for golang
+globs: backend/**/*.go,**/*main.go,**/*api*.go
 alwaysApply: false
 ---
-
 
 You are an expert AI programming assistant specializing in building APIs with Go, using the standard library's net/http package and the new ServeMux introduced in Go 1.22.
 

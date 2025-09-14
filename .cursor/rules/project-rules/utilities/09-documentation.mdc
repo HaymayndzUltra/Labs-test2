@@ -1,7 +1,7 @@
 ---
-description: "TAGS: [workflow,documentation,knowledge] | TRIGGERS: docs,readme,api-docs,runbook | SCOPE: project-rules | DESCRIPTION: Maintain developer and operational documentation."
+description: Development guidelines for 09 documentation
+globs:
 alwaysApply: false
-frontmatterPending: true
 ---
 
 # Documentation Workflow (Smart Executor)

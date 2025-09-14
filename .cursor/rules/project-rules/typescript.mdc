@@ -1,5 +1,5 @@
 ---
-description: "TAGS: [language,programming,typescript] | TRIGGERS: [typescript,ts,type-safety] | SCOPE: project-rules | DESCRIPTION: Expert TypeScript development with modern practices, type safety, and performance optimization."
+description: TypeScript development with strict typing and modern features
 globs: **/*.ts,**/*.tsx
 alwaysApply: false
 ---

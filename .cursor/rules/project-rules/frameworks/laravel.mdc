@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [framework,backend] | TRIGGERS: [laravel,php] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [backend,api,server] | TRIGGERS: [backend,api,server,database,laravel
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Laravel, PHP, and related
-  web development technologies.  Key Principles  - Writ...'
+description: Development guidelines for laravel
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*laravel*/**'
 ---
+
 You are an expert in Laravel, PHP, and related web development technologies.
 
 Key Principles

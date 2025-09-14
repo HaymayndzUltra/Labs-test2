@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [fastify] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [backend,api,server] | TRIGGERS: [backend,api,server,database ] | SCOPE: project-rules
-  | DESCRIPTION: You are a senior TypeScript programmer with experience in the Fastify
-  framework and a preference for...'
+description: Development guidelines for fastify
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 a senior TypeScript programmer with experience in the Fastify framework and a preference for clean programming and design patterns.
 
 Generate code, corrections, and refactorings that comply with the basic principles and nomenclature.

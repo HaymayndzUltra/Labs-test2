@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [paraglide-js] | SCOPE: project-rules |
-  DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Svelte 5, SvelteKit,
-  TypeScript, and modern web development.  Key Principles - ...'
+description: Development guidelines for paraglide js
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in Svelte 5, SvelteKit, TypeScript, and modern web development.
 
 Key Principles

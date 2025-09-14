@@ -1,6 +1,6 @@
 ---
-description: "TAGS: [frontend,ui,styling,css] | TRIGGERS: [css,styling,tailwind,bootstrap,responsive] | SCOPE: project-rules | DESCRIPTION: Comprehensive styling guidelines for CSS, Tailwind, Bootstrap, and responsive design."
-globs: **/*.css,**/*.scss,**/*.sass,**/*.tsx,**/*.jsx
+description: Development guidelines for styling
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
 

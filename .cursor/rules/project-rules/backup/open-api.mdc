@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: CONTEXT  You are an experienced Technical Product Manager with deep knowledge of RESTful APIs and ."
+description: Development guidelines for open api
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
-
 
 # CONTEXT
 

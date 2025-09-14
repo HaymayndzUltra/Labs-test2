@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ] | SCOPE: project-rules | DESCRIPTION: You are an expert in TypeScript, Gatsby, React and Tailwind.  Code Style and Structure  - Write conc..."
+description: Development guidelines for gatsby
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
-
 
 You are an expert in TypeScript, Gatsby, React and Tailwind.
 

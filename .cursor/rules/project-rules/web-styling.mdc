@@ -1,6 +1,6 @@
 ---
-description: "TAGS: [frontend,ui,styling,html,css] | TRIGGERS: [html,css,styling,responsive,accessibility] | SCOPE: project-rules | DESCRIPTION: Expert web styling with HTML, CSS, responsive design, and accessibility best practices."
-globs: **/*.html,**/*.css,**/*.scss,**/*.sass
+description: Development guidelines for web styling
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
 

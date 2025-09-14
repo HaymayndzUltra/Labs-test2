@@ -1,7 +1,7 @@
 ---
-description: "TAGS: [workflow,deployment,release] | TRIGGERS: deploy,release,production | SCOPE: project-rules | DESCRIPTION: Execute deployment with pre-checks and post-verification."
+description: Development guidelines for 06 deployment
+globs:
 alwaysApply: false
-frontmatterPending: true
 ---
 
 # Deployment Workflow (Smart Executor)

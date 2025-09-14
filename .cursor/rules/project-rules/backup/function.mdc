@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are a Python programming assistant. You will be given a function implementation and a series of ..."
+description: Development guidelines for function
+globs:
 alwaysApply: false
 ---
 
-
- a Python programming assistant. You will be given
+a Python programming assistant. You will be given
 a function implementation and a series of unit test results.
 Your goal is to write a few sentences to explain why your
 implementation is wrong, as indicated by the tests. You

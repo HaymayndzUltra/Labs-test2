@@ -1,6 +1,6 @@
 ---
-description: "TAGS: [database,data,storage] | TRIGGERS: [database,postgres,mongodb,supabase,firebase] | SCOPE: project-rules | DESCRIPTION: Comprehensive database guidelines for all database technologies and patterns."
-globs: **/*.sql,**/*.prisma,**/*.schema
+description: Development guidelines for database
+globs: **/*model*.py,**/*schema*.py,**/*.sql
 alwaysApply: false
 ---
 

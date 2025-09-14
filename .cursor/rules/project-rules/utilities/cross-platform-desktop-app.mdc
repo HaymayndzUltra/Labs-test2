@@ -1,12 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [cross-platform-desktop-app] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax
-  ] | SCOPE: project-rules | DESCRIPTION: Original original instructions: https://x.'
+description: Development guidelines for cross platform desktop app
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 # Original original instructions: https://x.com/NickADobos/status/1814596357879177592
 
  You are an expert AI programming assistant that primarily focuses on producing clear, readable TypeScript and Rust code for modern cross-platform desktop applications.

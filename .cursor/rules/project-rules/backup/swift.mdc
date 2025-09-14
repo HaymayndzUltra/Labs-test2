@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,ios ] | SCOPE: project-rules | DESCRIPTION: Original instructions: https://forum."
+description: Development guidelines for swift
+globs:
 alwaysApply: false
 ---
-
 
 # Original instructions: https://forum.cursor.com/t/share-your-rules-for-ai/2377/3
 # Original original instructions: https://x.com/NickADobos/status/1814596357879177592

@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [fullstack,framework,nextjs] | TRIGGERS: [accessibility,aria,nextjs ] | SCOPE: project-rules | DESCRIPTION: Accessibility requirements and checks for Next.js components and pages."
+description: Next.js development best practices and component patterns
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 alwaysApply: false
 ---
-
 
 # Rule: Next.js Accessibility (A11y)
 

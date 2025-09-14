@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [franework] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in Laravel, PHP, and related web
-  development technologies.  Core Principles  - Wri...'
+description: Development guidelines for franework
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in Laravel, PHP, and related web development technologies.
 
 Core Principles

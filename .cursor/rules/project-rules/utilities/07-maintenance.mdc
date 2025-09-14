@@ -1,7 +1,7 @@
 ---
-description: "TAGS: [workflow,maintenance,operations] | TRIGGERS: maintain,patch,backup,audit,monitor | SCOPE: project-rules | DESCRIPTION: Execute maintenance cycles with monitoring, patching, backups, and audits."
+description: Development guidelines for 07 maintenance
+globs:
 alwaysApply: false
-frontmatterPending: true
 ---
 
 # Maintenance Workflow (Smart Executor)

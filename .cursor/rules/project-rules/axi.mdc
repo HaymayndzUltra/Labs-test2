@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: Best Practices for AXI Protocols  - **AXI Protocol Compliance**: Ensure that your design adheres."
+description: Development guidelines for axi
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
-
 
 ### Best Practices for AXI Protocols
 - **AXI Protocol Compliance**: Ensure that your design adheres to the AXI protocol specifications, including proper management of read/write channels, ready/valid handshakes, and address arbitration.

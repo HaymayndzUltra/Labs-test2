@@ -1,7 +1,7 @@
 ---
-description: "TAGS: [workflow,planning,architecture] | TRIGGERS: plan,architecture,api,db,ux,estimate | SCOPE: project-rules | DESCRIPTION: Execute technical planning to produce PRD, architecture, API, UI, and estimates."
+description: Development guidelines for 02 technical planning
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-frontmatterPending: true
 ---
 
 # Technical Planning Workflow (Smart Executor)

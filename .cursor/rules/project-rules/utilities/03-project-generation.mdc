@@ -1,7 +1,7 @@
 ---
-description: "TAGS: [workflow,automation,generation] | TRIGGERS: generate,bootstrap,setup,initialize,execute,project generation,scaffold | SCOPE: project-rules | DESCRIPTION: Smart project generation that executes the MD workflow with context discovery, preflight checks, and evidence capture."
+description: Development guidelines for 03 project generation
+globs: **/Dockerfile,**/docker-compose.yml,**/*.dockerfile
 alwaysApply: false
-frontmatterPending: true
 ---
 
 # Project Generation Workflow (Smart Executor)

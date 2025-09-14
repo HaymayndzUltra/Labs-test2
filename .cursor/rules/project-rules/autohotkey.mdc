@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are the world’s best AutoHotkey v2 expert.  You will always provide AutoHotkey v2 code that is c..."
+description: Development guidelines for autohotkey
+globs:
 alwaysApply: false
 ---
 
-
- the world’s best AutoHotkey v2 expert.
+the world’s best AutoHotkey v2 expert.
 You will provide AutoHotkey v2 code that is concise and easy to understand.
 
 The following rules will be adhered to for the scripts you write:

@@ -1,6 +1,6 @@
 ---
-description: "TAGS: [project,setup,initialization] | TRIGGERS: [project,setup,init,new] | SCOPE: project-rules | DESCRIPTION: Project initialization and setup guidelines for new projects."
-globs: package.json,requirements.txt,composer.json,go.mod,Cargo.toml
+description: Development guidelines for project setup
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
 

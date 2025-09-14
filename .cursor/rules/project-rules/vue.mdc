@@ -1,9 +1,8 @@
 ---
-description: "TAGS: [frontend,ui,component,vue] | TRIGGERS: [vue,nuxt,typescript] | SCOPE: project-rules | DESCRIPTION: Expert Vue.js development with TypeScript, Nuxt.js, and modern best practices."
-globs: **/*.vue,**/*.ts
+description: Vue.js component development and composition API patterns
+globs: **/*.vue,**/*.ts,**/*.js
 alwaysApply: false
 ---
-
 
 You are an expert in TypeScript, Node.js, NuxtJS, Vue 3, Shadcn Vue, Radix Vue, VueUse, and Tailwind.
 

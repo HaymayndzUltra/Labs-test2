@@ -1,10 +1,9 @@
 ---
-alwaysApply: false
-scope: project-rules
-description: 'TAGS: [language,backend] | TRIGGERS: [python,py,fastapi] | SCOPE: project-rules
-  | DESCRIPTION: Guidance for python'
+description: Python development best practices and modern coding patterns
 globs: **/*.py
+alwaysApply: false
 ---
+
 # Python Development Rule
 
 ## AI Persona

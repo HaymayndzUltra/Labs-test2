@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: C++ Development Rules  You are a senior C++ developer with expertise in modern C++ (C++17/20), STL."
+description: Development guidelines for cpp
+globs:
 alwaysApply: false
 ---
-
 
 # C++ Development Rules
 

@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Bootstrap and modern web application development.  Key Principles  - Write clea..."
+description: Development guidelines for html
+globs: **/*.html,**/*.htm
 alwaysApply: false
 ---
-
 
 You are an expert in Bootstrap and modern web application development.
 

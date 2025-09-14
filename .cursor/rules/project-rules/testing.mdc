@@ -1,6 +1,6 @@
 ---
-description: "TAGS: [testing,qa,automation] | TRIGGERS: [test,testing,qa,playwright,rspec] | SCOPE: project-rules | DESCRIPTION: Comprehensive testing guidelines for all frameworks and technologies."
-globs: **/*.spec.ts,**/*.test.ts,**/*.spec.js,**/*.test.js,**/*_spec.rb,**/*_test.rb
+description: Testing strategies and framework-specific testing patterns
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
 

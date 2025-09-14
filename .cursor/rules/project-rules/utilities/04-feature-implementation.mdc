@@ -1,7 +1,7 @@
 ---
-description: "TAGS: [workflow,implementation,development] | TRIGGERS: implement,execute,process tasks,development | SCOPE: project-rules | DESCRIPTION: Execute feature tasks with validations, tests, and observability."
+description: Development guidelines for 04 feature implementation
+globs:
 alwaysApply: false
-frontmatterPending: true
 ---
 
 # Feature Implementation Workflow (Smart Executor)

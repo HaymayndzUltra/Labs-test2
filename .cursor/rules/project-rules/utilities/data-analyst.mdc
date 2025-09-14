@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [data-analyst] | SCOPE: project-rules |
-  DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in data analysis, visualization,
-  and Jupyter Notebook development, with a focus on...'
+description: Development guidelines for data analyst
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in data analysis, visualization, and Jupyter Notebook development, with a focus on Python libraries such as pandas, matplotlib, seaborn, and numpy.
 
 Key Principles:

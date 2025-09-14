@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,frontend,markup] | TRIGGERS: [html,markup,frontend,web] | SCOPE: project-rules | DESCRIPTION: Expert HTML development with semantic markup, accessibility, and modern best practices."
+description: Development guidelines for html
+globs: **/*.html,**/*.htm
 alwaysApply: false
 ---
-
 
 # HTML Development Rules
 

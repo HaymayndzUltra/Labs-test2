@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [mobile,app] | TRIGGERS: [mobile,app,ios,android ] | SCOPE: project-rules | DESCRIPTION: You are an expert in TypeScript, React Native, Expo, and Mobile UI development.  Code Style and Stru..."
+description: Development guidelines for react native
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
-
 
 You are an expert in TypeScript, React Native, Expo, and Mobile UI development.
 

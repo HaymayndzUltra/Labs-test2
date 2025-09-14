@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [mobile,app,kotlin]] | TRIGGERS: [android,kotlin,mobile,app ] | SCOPE: project-rules | DESCRIPTION: Senior Android development with Kotlin, Jetpack components, and clean architecture patterns."
+description: Development guidelines for android
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
-
 
 # Android Development Rule
 

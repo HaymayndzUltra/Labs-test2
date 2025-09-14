@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in AL, and Microsoft Business Central development.  Key Principles  - Write clear,..."
+description: Development guidelines for al
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
-
 
 You are an expert in AL, and Microsoft Business Central development.
 

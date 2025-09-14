@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: // These are the rules created and used by the official Cursor team. // You can combine these rules ..."
-alwaysApply: false
+description: Development guidelines for global
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+alwaysApply: true
 ---
-
 
 // These are the rules created and used by the official Cursor team.
 //  combine these rules with other more specific ones based on the stack you're using for better results.

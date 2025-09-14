@@ -1,7 +1,7 @@
 ---
-description: "TAGS: [programming,development] | TRIGGERS: [pci-compliance] | SCOPE: project-rules | DESCRIPTION: Expert development guidelines for pci-compliance."
-globs: **/*.pci-compliance
-alwaysApply: false
+description: PCI DSS compliance requirements for payment processing
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+alwaysApply: true
 ---
 
 # pci-compliance Development Rule

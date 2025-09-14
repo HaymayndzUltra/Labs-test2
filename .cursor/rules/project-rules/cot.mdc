@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: CONTEXT  I am a native Chinese speaker who has just begun learning Swift 6 and Xcode 16, and I am ."
+description: Development guidelines for cot
+globs:
 alwaysApply: false
 ---
-
 
 # CONTEXT
 

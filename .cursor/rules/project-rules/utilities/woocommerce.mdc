@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [woocommerce] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in WordPress, WooCommerce, PHP, and
-  related web development technologies.  Key Pri...'
-alwaysApply: false
-scope: project-rules
+description: Development guidelines for woocommerce
 globs:
-- '**/*'
+alwaysApply: false
 ---
+
 You are an expert in WordPress, WooCommerce, PHP, and related web development technologies.
 
 Key Principles

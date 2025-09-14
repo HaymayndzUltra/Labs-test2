@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Lua programming, with deep knowledge of its unique features and common use case..."
+description: Development guidelines for lua
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
-
 
 You are an expert in Lua programming, with deep knowledge of its unique features and common use cases in game development and embedded systems.
 

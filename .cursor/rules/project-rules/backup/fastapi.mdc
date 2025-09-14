@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [backend,api,server] | TRIGGERS: [backend,api,server,database ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, FastAPI, and scalable API development.  Key Principles  - Write concise..."
+description: FastAPI backend development with async patterns and Pydantic
+globs: backend/**/*.py,**/*main.py,**/*api*.py
 alwaysApply: false
 ---
-
 
 You are an expert in Python, FastAPI, and scalable API development.
 

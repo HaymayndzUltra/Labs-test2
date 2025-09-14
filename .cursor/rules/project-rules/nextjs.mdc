@@ -1,6 +1,6 @@
 ---
-description: "TAGS: [frontend,ui,framework,nextjs] | TRIGGERS: [nextjs,react,ssr,ssg] | SCOPE: project-rules | DESCRIPTION: Expert Next.js development with App Router, SSR/SSG, and performance optimization."
-globs: **/*.tsx,**/*.ts,**/page.tsx,**/layout.tsx,**/route.ts
+description: Next.js development best practices and component patterns
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 alwaysApply: false
 ---
 

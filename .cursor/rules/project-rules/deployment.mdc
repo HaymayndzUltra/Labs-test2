@@ -1,6 +1,6 @@
 ---
-description: "TAGS: [deployment,devops,ci-cd] | TRIGGERS: [deploy,deployment,ci,cd,devops] | SCOPE: project-rules | DESCRIPTION: Deployment strategies and best practices for production applications."
-globs: Dockerfile,docker-compose.yml,.github/workflows/*.yml,.gitlab-ci.yml
+description: Development guidelines for deployment
+globs: **/Dockerfile,**/docker-compose.yml,**/*.dockerfile
 alwaysApply: false
 ---
 

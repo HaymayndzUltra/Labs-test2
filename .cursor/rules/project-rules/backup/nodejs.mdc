@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,node ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Fullstack TypeScript development with deep knowledge of Payload CMS, MongoDB, a..."
+description: Development guidelines for nodejs
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 alwaysApply: false
 ---
-
 
 You are an expert in Fullstack TypeScript development with deep knowledge of Payload CMS, MongoDB, and Node.js.
 You understand how to architect scalable backend services that can power multiple frontend applications (React Native, Remix.js, Next.js).

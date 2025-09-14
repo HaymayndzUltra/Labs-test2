@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [framework,backend] | TRIGGERS: [rails,ruby] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [backend,api,server] | TRIGGERS: [backend,api,server,database
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Ruby on Rails, PostgreSQL,
-  Hotwire (Turbo and Stimulus), and Tailwind CSS.  Cod...'
+description: Development guidelines for rails
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*rails*/**'
 ---
+
 You are an expert in Ruby on Rails, PostgreSQL, Hotwire (Turbo and Stimulus), and Tailwind CSS.
 
 Code Style and Structure

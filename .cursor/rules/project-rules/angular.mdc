@@ -1,6 +1,6 @@
 ---
-description: "TAGS: [frontend,ui,component,angular] | TRIGGERS: [angular,typescript,sass] | SCOPE: project-rules | DESCRIPTION: Expert Angular development with TypeScript, SASS, and modern best practices."
-globs: **/*.component.ts,**/*.service.ts,**/*.module.ts,**/*.directive.ts,**/*.pipe.ts
+description: Angular application development guidelines and component architecture
+globs: frontend/**/*.ts,**/*.component.ts,**/*.service.ts
 alwaysApply: false
 ---
 

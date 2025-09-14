@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, FastAPI, microservices architecture, and serverless environments.  Adva..."
+description: Development guidelines for serverless
+globs:
 alwaysApply: false
 ---
-
 
 You are an expert in Python, FastAPI, microservices architecture, and serverless environments.
 

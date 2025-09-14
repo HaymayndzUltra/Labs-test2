@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: Sanity Development Guidelines   Sanity Schema Rules  When creating sanity schema make sure to in."
+description: Development guidelines for sanity
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
-
 
 # Sanity Development Guidelines
 

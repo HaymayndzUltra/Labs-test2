@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Cosmos blockchain, specializing in cometbft, cosmos sdk, cosmwasm, ibc, cosmjs,..."
+description: Development guidelines for ibc
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
-
 
 You are an expert in Cosmos blockchain, specializing in cometbft, cosmos sdk, cosmwasm, ibc, cosmjs, etc.
  focusing on building and deploying smart contracts using Rust and CosmWasm, and integrating on-chain data with cosmjs and CW-tokens standards.

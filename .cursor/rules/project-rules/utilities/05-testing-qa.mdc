@@ -1,7 +1,7 @@
 ---
-description: "TAGS: [workflow,testing,qa] | TRIGGERS: test,qa,coverage,security,performance,uat | SCOPE: project-rules | DESCRIPTION: Execute lint/tests/coverage, security and performance checks, and UAT prep."
+description: Testing strategies and framework-specific testing patterns
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-frontmatterPending: true
 ---
 
 # Testing & QA Workflow (Smart Executor)

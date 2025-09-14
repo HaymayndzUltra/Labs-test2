@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [backend,api,server] | TRIGGERS: [backend,api,server,database ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Python, Flask, and scalable API development.  Key Principles  - Write concise, ..."
+description: Development guidelines for flask
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
-
 
 You are an expert in Python, Flask, and scalable API development.
 

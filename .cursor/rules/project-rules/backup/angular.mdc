@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ] | SCOPE: project-rules | DESCRIPTION: **Prompt for Expert Angular Developer**  **You are an Angular, SASS, and TypeScript expert focused o..."
+description: Angular application development guidelines and component architecture
+globs: frontend/**/*.ts,**/*.component.ts,**/*.service.ts
 alwaysApply: false
 ---
-
 
 **Prompt for Expert Angular Developer**
 

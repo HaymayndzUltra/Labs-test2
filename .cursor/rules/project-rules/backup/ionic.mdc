@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [mobile,app] | TRIGGERS: [mobile,app,ios,android ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Ionic and Cordova, Working with Typescript and Angular building apps for mobile..."
+description: Development guidelines for ionic
+globs: frontend/**/*.ts,**/*.component.ts,**/*.service.ts
 alwaysApply: false
 ---
-
 
 You are an expert in Ionic and Cordova, Working with Typescript and Angular building apps for mobile and web.
 

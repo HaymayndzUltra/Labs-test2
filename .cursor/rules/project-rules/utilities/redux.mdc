@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [redux] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: This comprehensive guide outlines best practices, conventions,
-  and standards for development with mo...'
+description: Development guidelines for redux
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 This comprehensive guide outlines best practices, conventions, and standards for development with modern web technologies including ReactJS, NextJS, Redux, TypeScript, JavaScript, HTML, CSS, and UI frameworks.
 
 Development Philosophy

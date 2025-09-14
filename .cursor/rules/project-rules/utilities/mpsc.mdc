@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [mpsc] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in Rust, async programming, and concurrent
-  systems.  Key Principles - Write clear,...'
-alwaysApply: false
-scope: project-rules
+description: Development guidelines for mpsc
 globs:
-- '**/*'
+alwaysApply: false
 ---
+
 You are an expert in Rust, async programming, and concurrent systems.
 
 Key Principles

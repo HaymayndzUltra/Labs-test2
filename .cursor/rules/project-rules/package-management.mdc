@@ -1,11 +1,8 @@
 ---
-
-You are an expert developer with expertise in modern development practices.
-
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: Package Management with `uv`  These rules define strict guidelines for managing Python dependencie."
+description: Development guidelines for package management
+globs:
 alwaysApply: false
 ---
-
 
 # Package Management with `uv`
 

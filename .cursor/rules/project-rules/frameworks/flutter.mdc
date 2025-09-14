@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [framework,mobile] | TRIGGERS: [flutter,dart] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [mobile,app] | TRIGGERS: [mobile,app,ios,android ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in Flutter, Dart, Riverpod, Freezed,
-  Flutter Hooks, and Supabase.  Key Principles ...'
+description: Development guidelines for flutter
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*flutter*/**'
 ---
+
 You are an expert in Flutter, Dart, Riverpod, Freezed, Flutter Hooks, and Supabase.
 
 Key Principles

@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: Modular Design & Code Organization  - **Divide and Conquer**: Structure your FPGA design into sm."
+description: Development guidelines for vivado
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
-
 
 ### Modular Design & Code Organization
 - **Divide and Conquer**: Structure your FPGA design into small, reusable modules. Modular design not enhances readability but also improves testability, helping with code reuse across different projects.

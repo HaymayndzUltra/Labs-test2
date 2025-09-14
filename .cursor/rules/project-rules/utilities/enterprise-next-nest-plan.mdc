@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [enterprise-next-nest-plan] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [enterprise,planning,nextjs,nestjs] | TRIGGERS: BR,AP,LA,LB,LC,CS,QA,PR,HP
-  | SCOPE: project-rules | DESCRIPTION: Enterprise Next.js + NestJS plan with lanes,
-  conflicts, and guided triggers. No deploy.'
+description: Development guidelines for enterprise next nest plan
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 # Enterprise Plan — Next.js + NestJS
 
 ## [STRICT] Scope

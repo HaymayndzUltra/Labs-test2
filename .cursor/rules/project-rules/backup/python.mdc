@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,machine-learning ] | SCOPE: project-rules | DESCRIPTION: Expert Python development with modern practices, type hints, and performance optimization."
+description: Python development best practices and modern coding patterns
+globs: **/*.py
 alwaysApply: false
 ---
-
 
 # Python Development Rule
 

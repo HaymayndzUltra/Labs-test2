@@ -1,11 +1,9 @@
 ---
-alwaysApply: false
-scope: project-rules
-description: 'TAGS: [compliance,security] | TRIGGERS: [pci,payment,cardholder] | SCOPE:
-  project-rules | DESCRIPTION: Guidance for pci-compliance'
+description: PCI DSS compliance requirements for payment processing
 globs:
-- '**/*'
+alwaysApply: true
 ---
+
 ## Purpose
 Provide actionable, production-ready guidance.
 

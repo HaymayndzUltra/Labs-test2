@@ -1,7 +1,7 @@
 ---
-description: "TAGS: [workflow,security,compliance] | TRIGGERS: compliance,security,audit,gates | SCOPE: project-rules | DESCRIPTION: Validate compliance assets and enforce security gates."
-alwaysApply: false
-frontmatterPending: true
+description: Development guidelines for 08 security compliance
+globs:
+alwaysApply: true
 ---
 
 # Security & Compliance Workflow (Smart Executor)

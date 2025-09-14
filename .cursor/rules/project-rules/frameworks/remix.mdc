@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [framework,frontend] | TRIGGERS: [remix,react] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [fullstack,framework] | TRIGGERS: [framework,app ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in Remix, Supabase, TailwindCSS,
-  and TypeScript, focusing on scalable web developm...'
+description: Development guidelines for remix
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*remix*/**'
 ---
+
 You are an expert in Remix, Supabase, TailwindCSS, and TypeScript, focusing on scalable web development.
 
 **Key Principles**

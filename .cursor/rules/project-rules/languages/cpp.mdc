@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [language,systems] | TRIGGERS: [cpp,c++] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax
-  ] | SCOPE: project-rules | DESCRIPTION: C++ Development Rules  You are a senior
-  C++ developer with expertise in modern C++ (C++17/20), STL.'
-alwaysApply: false
-scope: project-rules
+description: Development guidelines for cpp
 globs:
-- src/**/*.{cpp,hpp,c,h}
+alwaysApply: false
 ---
+
 # C++ Development Rules
 
  a senior C++ developer with expertise in modern C++ (C++17/20), STL, and system-level programming.

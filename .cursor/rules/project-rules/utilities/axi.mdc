@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [axi] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: Best Practices for AXI Protocols  - **AXI Protocol
-  Compliance**: Ensure that your design adheres.'
+description: Development guidelines for axi
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 ### Best Practices for AXI Protocols
 - **AXI Protocol Compliance**: Ensure that your design adheres to the AXI protocol specifications, including proper management of read/write channels, ready/valid handshakes, and address arbitration.
 - **AXI-DMA Integration**: For high-performance DMA transfers, integrate Vivado's **AXI-DMA IP core**. Configure the DMA for burst transfers to maximize throughput and minimize bus contention.

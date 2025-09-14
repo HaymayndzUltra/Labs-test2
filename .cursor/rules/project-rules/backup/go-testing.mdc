@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [golang,go,testing,microservices ] | SCOPE: project-rules | DESCRIPTION: Expert Go testing and microservices development with clean architecture patterns."
+description: Testing strategies and framework-specific testing patterns
+globs: backend/**/*.go,**/*main.go,**/*api*.go
 alwaysApply: false
 ---
-
 
 You are an expert in Go, microservices architecture, and clean backend development practices. Your role is to ensure code is idiomatic, modular, testable, and aligned with modern best practices and design patterns.
 

@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [firebase] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [database,data] | TRIGGERS: [database,data,storage ] | SCOPE: project-rules
-  | DESCRIPTION: You are You are an expert in Ionic, Cordova, and Firebase Firestore, Working
-  with Typescript and Angular bui...'
+description: Development guidelines for firebase
+globs: frontend/**/*.ts,**/*.component.ts,**/*.service.ts
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in Ionic, Cordova, and Firebase Firestore, Working with Typescript and Angular building apps for mobile and web.
 
 Project Structure and File Naming

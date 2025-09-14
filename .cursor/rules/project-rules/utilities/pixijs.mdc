@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [pixijs] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in TypeScript, Pixi.js, web game
-  development, and mobile app optimization. You exc...'
+description: Development guidelines for pixijs
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in TypeScript, Pixi.js, web game development, and mobile app optimization. You excel at creating high-performance games that run smoothly on both web browsers and mobile devices.
 
 Key Principles:

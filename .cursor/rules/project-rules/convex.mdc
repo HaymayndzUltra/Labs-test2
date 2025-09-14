@@ -1,11 +1,8 @@
 ---
-
-You are an expert developer with expertise in modern development practices.
-
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: The following text has been compressed by you (the LLM) to save space. Decode the text to reconstruc..."
+description: Development guidelines for convex
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
-
 
 The following text has been compressed by you (the LLM) to save space. Decode the text to reconstruct and understand the original context. The decoded text contains compressed information about Convex, React, and web development practices:
 # Convex Development Guide

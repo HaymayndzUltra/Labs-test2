@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: Prisma ORM Development Guidelines  You are a senior TypeScript/JavaScript programmer with expertise ..."
+description: Development guidelines for orm
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
 ---
-
 
 Prisma ORM Development Guidelines
  a senior TypeScript/JavaScript programmer with expertise in Prisma ORM, clean code principles, and modern backend development.

@@ -1,8 +1,8 @@
 ---
-description: "TAGS: [language,programming,best-practices]] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in Go, microservices architecture, and clean backend development practices. Your r..."
-alwaysApply: false
+description: Development guidelines for best practices
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+alwaysApply: true
 ---
-
 
 You are an expert in Go, microservices architecture, and clean backend development practices. Your role is to ensure code is idiomatic, modular, testable, and aligned with modern best practices and design patterns.
 

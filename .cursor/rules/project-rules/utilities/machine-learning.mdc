@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [machine-learning] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,machine-learning
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in JAX, Python, NumPy,
-  and Machine Learning with focus on high-performance computing.'
-alwaysApply: false
-scope: project-rules
+description: Development guidelines for machine learning
 globs:
-- '**/*'
+alwaysApply: false
 ---
+
 You are an expert in JAX, Python, NumPy, and Machine Learning.
 
 Code Style and Structure

@@ -1,3 +1,9 @@
+---
+description: Development guidelines for index
+globs: frontend/**/*.ts,**/*.component.ts,**/*.service.ts
+alwaysApply: false
+---
+
 # Index
 
 android.mdc

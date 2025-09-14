@@ -1,6 +1,6 @@
 ---
-description: "TAGS: [frontend,ui,component,react] | TRIGGERS: [react,jsx,hooks,components] | SCOPE: project-rules | DESCRIPTION: Expert React development with modern hooks, TypeScript, and performance optimization best practices."
-globs: **/*.tsx,**/*.jsx,**/*.ts
+description: React component development and modern hooks patterns
+globs: **/*.tsx,**/*.jsx,**/*.ts,**/*.js
 alwaysApply: false
 ---
 

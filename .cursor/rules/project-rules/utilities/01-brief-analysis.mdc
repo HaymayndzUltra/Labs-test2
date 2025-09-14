@@ -1,7 +1,7 @@
 ---
-description: "TAGS: [workflow,analysis,requirements] | TRIGGERS: analyze,brief,requirements,prd | SCOPE: project-rules | DESCRIPTION: Execute brief analysis to produce a requirements summary and optional plan artifacts."
+description: Development guidelines for 01 brief analysis
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-frontmatterPending: true
 ---
 
 # Brief Analysis Workflow (Smart Executor)

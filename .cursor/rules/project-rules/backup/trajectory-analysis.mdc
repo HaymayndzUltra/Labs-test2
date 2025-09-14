@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an AI assistant tasked with analyzing trajectories of solutions to question-answering tasks...."
+description: Development guidelines for trajectory analysis
+globs:
 alwaysApply: false
 ---
 
-
- an AI assistant tasked with analyzing trajectories of solutions to question-answering tasks. Follow these guidelines:
+an AI assistant tasked with analyzing trajectories of solutions to question-answering tasks. Follow these guidelines:
 
 1. Trajectory Components:
 - Observations: Environmental information about the situation.
