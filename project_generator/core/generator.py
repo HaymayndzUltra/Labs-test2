@@ -834,7 +834,7 @@ def extract_triggers_and_scope(description: str) -> Tuple[List[str], str]:
     triggers = []
     scope = ''
     try:
-        m_trg = re.search(r'TRIGGERS:\s*([^|]+)', description, flags=re.IGNORECASE)
+        m_trg = re.search(r'TRIGGERS:\\s*([^|]+)', description, flags=re.IGNORECASE)
         if m_trg:
             triggers = [t.strip() for t in m_trg.group(1).split(',') if t.strip()]
         m_scope = re.search(r'SCOPE:\s*([^|]+)', description, flags=re.IGNORECASE)

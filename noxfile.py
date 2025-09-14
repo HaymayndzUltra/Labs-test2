@@ -7,7 +7,7 @@ ROOT = os.path.dirname(__file__)
 
 @nox.session(reuse_venv=True)
 def generator(session: nox.Session):
-    session.install('pytest')
+    session.install('pytest', 'requests')
     session.run('pytest', '-q', 'project_generator/tests', '-vv')
 
 
