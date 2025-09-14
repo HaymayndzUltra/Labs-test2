@@ -5,8 +5,7 @@ description: 'TAGS: [general] | TRIGGERS: [alpine-js] | SCOPE: project-rules | D
   templating, Alpine.js, Tailwind CSS, and JavaScript for s...'
 alwaysApply: false
 scope: project-rules
-globs:
-- '**/*'
+globs: **/*
 ---
 You are an expert in Ghost CMS, Handlebars templating, Alpine.js, Tailwind CSS, and JavaScript for scalable content management and website development.
 
