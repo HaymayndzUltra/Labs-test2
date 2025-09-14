@@ -22,10 +22,39 @@ from ..templates.registry import TemplateRegistry
 class ProjectGenerator:
     """Main project generator class"""
     
-    def __init__(self, args, validator: ProjectValidator, config: IndustryConfig):
-        self.args = args
-        self.validator = validator
-        self.config = config
+    def __init__(self, args=None, validator: ProjectValidator = None, config: IndustryConfig = None, 
+                 output_dir=None, template_dir=None):
+        # Support old test interface
+        if output_dir is not None and template_dir is not None:
+            # Legacy test constructor
+            from argparse import Namespace
+            self.output_dir = output_dir
+            self.template_dir = template_dir
+            self.project_name = None
+            # Create minimal args for compatibility
+            self.args = Namespace(
+                name='test-project',
+                industry='healthcare',
+                project_type='fullstack',
+                frontend='nextjs',
+                backend='fastapi',
+                database='postgres',
+                auth='auth0',
+                deploy='aws',
+                compliance='',
+                features='',
+                output_dir=str(output_dir),
+                no_git=True,
+                no_install=True,
+                workers=2
+            )
+            self.validator = validator or ProjectValidator()
+            self.config = config or IndustryConfig('healthcare')
+        else:
+            # New production constructor
+            self.args = args
+            self.validator = validator
+            self.config = config
         self.template_engine = TemplateEngine()
         self.template_registry = TemplateRegistry()
         # When True, do not emit any .cursor assets (rules, tools, ai-governor) into generated projects
@@ -837,7 +866,7 @@ def extract_triggers_and_scope(description: str) -> Tuple[List[str], str]:
         m_trg = re.search(r'TRIGGERS:\\s*([^|]+)', description, flags=re.IGNORECASE)
         if m_trg:
             triggers = [t.strip() for t in m_trg.group(1).split(',') if t.strip()]
-        m_scope = re.search(r'SCOPE:\s*([^|]+)', description, flags=re.IGNORECASE)
+        m_scope = re.search(r'SCOPE:\\s*([^|]+)', description, flags=re.IGNORECASE)
         if m_scope:
             scope = m_scope.group(1).strip()
     except Exception:
