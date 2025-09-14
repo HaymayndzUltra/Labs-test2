@@ -7,7 +7,7 @@ frontmatterPending: true
 # Security & Compliance Workflow (Smart Executor)
 
 ## Apply MD
-- `/workspace/docs/workflows/SECURITY_COMPLIANCE.md`
+- `/workspace/docs/workflows/08_SECURITY_COMPLIANCE.md`
 
 ## Acceptance
 - Required rules present; controls mapped; gates configured

@@ -7,7 +7,7 @@ frontmatterPending: true
 # Deployment Workflow (Smart Executor)
 
 ## Apply MD
-- `/workspace/docs/workflows/DEPLOYMENT.md`
+- `/workspace/docs/workflows/06_DEPLOYMENT.md`
 
 ## Acceptance
 - Deploy completes; smoke tests pass; report recorded; go-live acknowledged

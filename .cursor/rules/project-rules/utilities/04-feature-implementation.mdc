@@ -10,7 +10,7 @@ frontmatterPending: true
 Drive a single parent task to completion using the MD protocol, enforcing validation, tests, and observability.
 
 ## Apply MD
-- `/workspace/docs/workflows/FEATURE_IMPLEMENTATION.md`
+- `/workspace/docs/workflows/04_FEATURE_IMPLEMENTATION.md`
 
 ## Guardrails
 - Stop on failing tests; request guidance

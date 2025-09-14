@@ -31,7 +31,7 @@ Execute the Project Generation workflow by applying the human MD instructions wi
 ## `[MUST]` - Apply MD Instructions
 
 ### Source MD
-Apply instructions from: `/workspace/docs/workflows/PROJECT_GENERATION.md`
+Apply instructions from: `/workspace/docs/workflows/03_PROJECT_GENERATION.md`
 - Execute steps in order.
 - Use acceptance criteria from the MD to self-validate each step.
 

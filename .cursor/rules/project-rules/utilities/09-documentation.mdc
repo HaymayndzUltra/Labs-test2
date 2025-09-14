@@ -7,7 +7,7 @@ frontmatterPending: true
 # Documentation Workflow (Smart Executor)
 
 ## Apply MD
-- `/workspace/docs/workflows/DOCUMENTATION.md`
+- `/workspace/docs/workflows/09_DOCUMENTATION.md`
 
 ## Acceptance
 - Docs updated and validated; runbook and troubleshooting present

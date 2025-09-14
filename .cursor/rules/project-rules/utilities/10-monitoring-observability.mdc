@@ -7,7 +7,7 @@ frontmatterPending: true
 # Monitoring & Observability Workflow (Smart Executor)
 
 ## Apply MD
-- `/workspace/docs/workflows/MONITORING_OBSERVABILITY.md`
+- `/workspace/docs/workflows/10_MONITORING_OBSERVABILITY.md`
 
 ## Acceptance
 - Logs/metrics/traces configured; dashboards and alerts active

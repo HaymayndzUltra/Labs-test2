@@ -14,7 +14,7 @@ Apply the human MD instructions to locate the brief, summarize requirements, der
 - Capture `{{BRIEF_PATH}}` if provided.
 
 ## `[MUST]` - Apply MD
-Apply instructions from: `/workspace/docs/workflows/BRIEF_ANALYSIS.md`
+Apply instructions from: `/workspace/docs/workflows/01_BRIEF_ANALYSIS.md`
 - Validate acceptance per step; capture evidence of files created.
 
 ## `[SHOULD]` - Stack/Compliance Inference

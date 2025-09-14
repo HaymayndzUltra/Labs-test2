@@ -10,7 +10,7 @@ frontmatterPending: true
 Apply MD to run lint/tests/coverage, security scans, performance checks, and secure UAT sign-off.
 
 ## Apply MD
-- `/workspace/docs/workflows/TESTING_QA.md`
+- `/workspace/docs/workflows/05_TESTING_QA.md`
 
 ## Acceptance
 - CI green; coverage meets gates; no critical vulns; perf OK; UAT signed-off
