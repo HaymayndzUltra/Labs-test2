@@ -1,0 +1,18 @@
+---
+description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-09,docs,readme,api-docs,runbook | SCOPE: project-rules | DESCRIPTION: Trigger to apply Documentation workflow instructions."
+alwaysApply: false
+frontmatterPending: true
+---
+
+# TC-09 Documentation (Trigger Command)
+
+## Core Function
+Apply the MD instructions to update developer and operational docs.
+
+## `[MUST]` - Apply Instructions
+
+### Apply
+Apply instruction: `/workspace/docs/workflows/09_DOCUMENTATION.md`
+
+## Execution
+When triggered, this runs the steps/commands defined in the MD workflow.

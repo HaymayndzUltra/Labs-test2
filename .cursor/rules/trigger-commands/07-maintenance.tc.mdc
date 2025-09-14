@@ -1,0 +1,18 @@
+---
+description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-07,maintain,patch,backup,audit,monitor | SCOPE: project-rules | DESCRIPTION: Trigger to apply Maintenance workflow instructions."
+alwaysApply: false
+frontmatterPending: true
+---
+
+# TC-07 Maintenance (Trigger Command)
+
+## Core Function
+Apply the MD instructions to run maintenance cycles: monitoring, patching, backups, audits.
+
+## `[MUST]` - Apply Instructions
+
+### Apply
+Apply instruction: `/workspace/docs/workflows/07_MAINTENANCE.md`
+
+## Execution
+When triggered, this runs the steps/commands defined in the MD workflow.

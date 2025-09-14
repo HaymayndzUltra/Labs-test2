@@ -1,0 +1,18 @@
+---
+description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-02,plan,architecture,api,db,ux | SCOPE: project-rules | DESCRIPTION: Trigger to apply Technical Planning workflow instructions."
+alwaysApply: false
+frontmatterPending: true
+---
+
+# TC-02 Technical Planning (Trigger Command)
+
+## Core Function
+Apply the MD instructions to produce PRD, architecture, API/UI plans, and estimates.
+
+## `[MUST]` - Apply Instructions
+
+### Apply
+Apply instruction: `/workspace/docs/workflows/02_TECHNICAL_PLANNING.md`
+
+## Execution
+When triggered, this runs the steps/commands defined in the MD workflow.
