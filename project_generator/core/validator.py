@@ -389,7 +389,7 @@ class ProjectValidator:
             errors.append("Invalid industry")
         
         if 'project_type' in config and not self.validate_project_type(config['project_type']):
-            errors.append("Invalid project type")
+            errors.append("Invalid project_type")
         
         # Validate technology compatibility
         if all(k in config for k in ['project_type', 'frontend', 'backend']):
@@ -398,11 +398,49 @@ class ProjectValidator:
                 config.get('frontend'), 
                 config.get('backend')
             ):
-                errors.append("Invalid technology combination")
+                errors.append("Invalid technology compatibility")
+        
+        # Validate individual technology fields
+        if 'frontend' in config and config['frontend'] and config['frontend'] != 'none':
+            valid_frontends = {'nextjs', 'nuxt', 'angular', 'expo'}
+            if config['frontend'].lower() not in valid_frontends:
+                errors.append("Invalid frontend framework")
+        
+        if 'backend' in config and config['backend'] and config['backend'] != 'none':
+            valid_backends = {'fastapi', 'django', 'nestjs', 'go'}
+            if config['backend'].lower() not in valid_backends:
+                errors.append("Invalid backend framework")
+        
+        if 'database' in config and config['database'] and config['database'] != 'none':
+            valid_databases = {'postgres', 'mongodb', 'firebase'}
+            if config['database'].lower() not in valid_databases:
+                errors.append("Invalid database")
+        
+        if 'auth' in config and config['auth'] and config['auth'] != 'none':
+            valid_auths = {'auth0', 'firebase', 'cognito', 'custom'}
+            if config['auth'].lower() not in valid_auths:
+                errors.append("Invalid auth provider")
+        
+        if 'deploy' in config and config['deploy']:
+            valid_deploys = {'aws', 'azure', 'gcp', 'vercel', 'self-hosted'}
+            if config['deploy'].lower() not in valid_deploys:
+                errors.append("Invalid deployment target")
         
         # Validate compliance-industry match
         if 'industry' in config and 'compliance' in config and config['compliance']:
-            compliance_list = [c.strip() for c in config['compliance'].split(',')]
+            # Handle both list and string compliance
+            if isinstance(config['compliance'], list):
+                compliance_list = config['compliance']
+            else:
+                compliance_list = [c.strip() for c in config['compliance'].split(',')]
+            
+            # Validate compliance values
+            valid_compliance = {'hipaa', 'gdpr', 'sox', 'pci', 'soc2'}
+            for compliance in compliance_list:
+                if compliance.lower() not in valid_compliance:
+                    errors.append("Invalid compliance standard")
+                    break
+            
             if not self.validate_compliance_industry_match(config['industry'], compliance_list):
                 errors.append("Compliance standards don't match industry")
         
