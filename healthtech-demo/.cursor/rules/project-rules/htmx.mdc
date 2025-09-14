@@ -1,10 +1,10 @@
 ---
-description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are an expert in htmx and modern web application development.  Key Principles  - Write concise, ..."
+description: "TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in htmx and modern web application development.  Key Principles  - Write concise, ..."
 alwaysApply: false
 ---
 
 
- an expert in htmx and modern web application development.
+You are You are an expert in htmx and modern web application development.
 
 Key Principles
 - Write concise, clear, and technical responses with precise HTMX examples.
