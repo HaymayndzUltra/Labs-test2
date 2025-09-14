@@ -1,40 +1,71 @@
 ---
-description: "TAGS: [workflow,automation,generation] | TRIGGERS: generate,bootstrap,setup,initialize,execute | SCOPE: project-rules | DESCRIPTION: Deterministic project generation with dry-run, create, validate, run."
+description: "TAGS: [workflow,automation,generation] | TRIGGERS: generate,bootstrap,setup,initialize,execute,project generation,scaffold | SCOPE: project-rules | DESCRIPTION: Smart project generation that executes the MD workflow with context discovery, preflight checks, and evidence capture."
 alwaysApply: false
 ---
 
-# Project Generation Workflow
+# Project Generation Workflow (Smart Executor)
 
 ## Core Function
-Create a complete, ready-to-develop project scaffold with CI/CD, docs, and compliance rules.
+Execute the Project Generation workflow by applying the human MD instructions with smarter context handling: resolve inputs from a client brief or config, run preflight checks, branch dry-run vs actual, validate acceptance per step, and capture evidence.
 
-## `[MUST]` - Execute Generation
+## `[MUST]` - Context Discovery & Variable Resolution
 
-### Step 1: List Templates (Optional)
-Execute: `python scripts/generate_client_project.py --list-templates | cat`
-**Acceptance:** Templates printed without error
+### Inputs
+- Preferred sources in order:
+  1) Brief: `docs/briefs/*/brief.md` (use `project_generator.core.brief_parser` semantics)
+  2) Resolved config: `generator-config.json` (if present from prior interactive runs)
+  3) Explicit variables injected by the user: `{{NAME}}`, `{{INDUSTRY}}`, `{{PROJECT_TYPE}}`, `{{FRONTEND}}`, `{{BACKEND}}`, `{{DATABASE}}`, `{{AUTH}}`, `{{DEPLOY}}`, `{{COMPLIANCE}}`, `{{WORKERS|8}}`
 
-### Step 2: Dry Run
-Execute: `python scripts/generate_client_project.py --name {{NAME}} --industry {{INDUSTRY}} --project-type {{PROJECT_TYPE}} --frontend {{FRONTEND}} --backend {{BACKEND}} --database {{DATABASE}} --auth {{AUTH}} --deploy {{DEPLOY}} {{#if COMPLIANCE}}--compliance {{COMPLIANCE}}{{/if}} --output-dir ../_generated --workers {{WORKERS|8}} --dry-run --yes --include-cursor-assets`
-**Acceptance:** Structure preview printed, no files created, exit 0
+### Actions
+- Detect presence of a brief file under `docs/briefs/`.
+- If brief exists and separate FE/BE repos are desired, prefer the dedicated brief flow (see Branching below). Otherwise, resolve variables from sources 2→3.
+- Normalize defaults if missing: `WORKERS=8`, `DEPLOY=aws`, choose `nextjs` for web/fullstack FE; `fastapi` for api/fullstack BE; `postgres` if BE present; `auth0` by default; compliance from industry (hipaa for healthcare; sox,pci for finance; gdpr for ecommerce; none otherwise).
 
-### Step 3: Generate
-Execute: `python scripts/generate_client_project.py --name {{NAME}} --industry {{INDUSTRY}} --project-type {{PROJECT_TYPE}} --frontend {{FRONTEND}} --backend {{BACKEND}} --database {{DATABASE}} --auth {{AUTH}} --deploy {{DEPLOY}} {{#if COMPLIANCE}}--compliance {{COMPLIANCE}}{{/if}} --output-dir ../_generated --workers {{WORKERS|8}} --yes --force --include-cursor-assets`
-**Acceptance:** Project created, expected files exist, exit 0
+## `[MUST]` - Preflight Checks
+- Verify tools available (non-fatal warn if missing but required by chosen stack):
+  - `python3`, `git`, `docker`
+  - `node` and `npm` if FE != none or BE == nestjs
+- If repo has a root `.cursor/`, ensure `--include-cursor-assets` is used so tools/rules are emitted into the generated project.
 
-### Step 4: Validate Rules (Optional)
-Execute: `cd ../_generated/{{NAME}} && [ -d .git ] && python .cursor/tools/validate_rules.py && python .cursor/tools/check_compliance.py`
-**Acceptance:** Rules OK, compliance rules present
+## `[MUST]` - Apply MD Instructions
 
-### Step 5: Setup & Run
-Execute: `cd ../_generated/{{NAME}} && make setup && make dev`
-**Acceptance:** Install succeeds, dev environment starts
+### Source MD
+Apply instructions from: `/workspace/docs/workflows/PROJECT_GENERATION.md`
+- Execute steps in order.
+- Use acceptance criteria from the MD to self-validate each step.
+
+### Branching
+- If a brief file exists and separate FE/BE projects are intended, you MAY instead run:
+  - `python scripts/generate_from_brief.py --brief docs/briefs/<proj>/brief.md --output-root ../_generated --workers {{WORKERS|8}} --force --yes`
+- Otherwise, follow the MD’s `generate_client_project.py` dry-run → generate flow with resolved variables.
+
+## `[MUST]` - Evidence Capture
+- For each step, capture stdout/stderr snippets and check exit codes.
+- Summarize evidence at the end (files created; key paths):
+  - `../_generated/{{NAME}}/.github/workflows/*`
+  - `../_generated/{{NAME}}/docs/*`
+  - `../_generated/{{NAME}}/.cursor/*` (if assets included)
+  - `../_generated/{{NAME}}/Makefile`, `docker-compose.yml`
+
+## `[MUST]` - Acceptance Validation
+- Dry-run: printed structure and exit=0
+- Generate: success message, expected files exist
+- Optional rules checks (if .git exists in the generated project):
+  - `python .cursor/tools/validate_rules.py`
+  - `python .cursor/tools/check_compliance.py`
+- Local run: `make setup && make dev` completes without fatal errors
+
+## `[SHOULD]` - Failure Handling
+- Validation errors (exit 2): adjust inputs (flags), rerun
+- Unexpected error (exit 1): rerun with `--verbose`, confirm prerequisites
+- If rules were not emitted due to isolation defaults, re-run with `--include-cursor-assets`
+- If only minimal rules appeared, update manifests to use relative paths (e.g., `frameworks/fastapi.mdc`) and re-generate
 
 ## Execution
-When triggered, the workflow runs dry-run → generate → validate → setup in order.
+When triggered, the executor performs: context discovery → preflight → apply MD (or brief generator branch) → validate per-step acceptance → capture evidence → report final status.
 
 ## Overall Acceptance
-- [ ] Success messages printed
-- [ ] Files present as expected
-- [ ] Validation scripts pass
-- [ ] Local dev starts successfully
+- [ ] Success messages printed for each step
+- [ ] Required files present in generated project
+- [ ] (Optional) Rules and compliance validation OK when applicable
+- [ ] Local dev environment starts successfully
