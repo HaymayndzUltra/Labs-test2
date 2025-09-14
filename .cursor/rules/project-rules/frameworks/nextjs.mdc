@@ -1,11 +1,9 @@
 ---
+description: Next.js development best practices and component patterns
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 alwaysApply: false
-scope: project-rules
-description: 'TAGS: [framework,frontend] | TRIGGERS: [nextjs,react] | SCOPE: project-rules
-  | DESCRIPTION: Guidance for nextjs'
-globs:
-- '**/*nextjs*/**'
 ---
+
 # Nextjs Development Rule
 
 ## AI Persona

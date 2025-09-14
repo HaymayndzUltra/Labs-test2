@@ -1,14 +1,9 @@
 ---
-description: 'TAGS: [language,frontend] | TRIGGERS: [ts,typescript,react,nextjs] |
-  SCOPE: project-rules | DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax
-  ] | SCOPE: project-rules | DESCRIPTION: Expert TypeScript development with modern
-  practices, type safety, and performance optimization. | GLOBS: src/features/**/*.ts,
-  !src/features/experimental/**, src/lib/utils/*.ts'
+description: TypeScript development with strict typing and modern features
+globs: **/*.ts,**/*.tsx
 alwaysApply: false
-scope: project-rules
-globs:
-- src/**/*.{ts,tsx}
 ---
+
 # TypeScript Development Rule
 
 ## AI Persona

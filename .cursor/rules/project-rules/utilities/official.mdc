@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [official] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [frontend,ui,component,nextjs]] | TRIGGERS: [frontend,ui,component,interface,web,nextjs
-  ] | SCOPE: project-rules | DESCRIPTION: Guidelines for writing Next.js apps with
-  tRPC following best practices for end-to-end typesafe APIs.'
+description: Development guidelines for official
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 ## Overview
 
 [tRPC](https://trpc.io/) enables end-to-end typesafe APIs, allowing you to build and consume APIs without schemas, code generation, or runtime errors. These rules will help you follow best practices for tRPC v11.

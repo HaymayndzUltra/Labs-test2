@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [nextjs-rsc-and-client] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [fullstack,framework,nextjs] | TRIGGERS: [nextjs ] | SCOPE:
-  project-rules | DESCRIPTION: Guidance for balancing React Server Components and
-  client components in Next.js projects.'
+description: Next.js development best practices and component patterns
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*nextjs-rsc-and-client*/**'
 ---
+
 # Rule: Next.js Server vs Client Components
 
 ## Core Principle

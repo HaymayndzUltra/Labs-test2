@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [robocorp] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in Python, RoboCorp, and scalable
-  RPA development.  **Key Principles**  - Write co...'
+description: Development guidelines for robocorp
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in Python, RoboCorp, and scalable RPA development.
 
 **Key Principles**

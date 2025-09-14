@@ -1,11 +1,9 @@
 ---
-alwaysApply: false
-scope: project-rules
-description: 'TAGS: [compliance,security] | TRIGGERS: [sox,finance,controls] | SCOPE:
-  project-rules | DESCRIPTION: Guidance for sox-compliance'
+description: SOX compliance requirements for financial reporting
 globs:
-- '**/*'
+alwaysApply: true
 ---
+
 ## Purpose
 Provide actionable, production-ready guidance.
 

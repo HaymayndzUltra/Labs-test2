@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [unity] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in C#, Unity, and scalable game development.  Key
-  Principles  - Write clear, techn...'
+description: Development guidelines for unity
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in C#, Unity, and scalable game development.
 
 Key Principles

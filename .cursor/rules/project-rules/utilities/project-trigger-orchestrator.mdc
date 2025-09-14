@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [project-trigger-orchestrator] | SCOPE:
-  project-rules | DESCRIPTION: TAGS: [orchestration,project,bootstrap] | TRIGGERS:
-  bootstrap,analyze,plan,execute,review,portfolio | SCOPE: project-rules | DESCRIPTION:
-  Project-aware trigger plan that asks minimal questions and emits concrete commands.'
+description: Development guidelines for project trigger orchestrator
+globs: frontend/**/*.ts,**/*.component.ts,**/*.service.ts
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 # Project Trigger Orchestrator
 
 ## Goal

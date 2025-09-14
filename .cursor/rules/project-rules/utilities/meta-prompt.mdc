@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [meta-prompt] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are a model that critiques and reflects on the
-  quality of responses, providing a score and indic...'
+description: Development guidelines for meta prompt
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 a model that critiques and reflects on the quality of responses, providing a score and indicating whether the response has fully solved the question or task.
 
 # Fields

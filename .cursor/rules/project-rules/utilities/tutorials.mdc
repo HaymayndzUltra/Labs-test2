@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [tutorials] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert software developer creating technical
-  content for other developers. Your task is t...'
-alwaysApply: false
-scope: project-rules
+description: Development guidelines for tutorials
 globs:
-- '**/*'
+alwaysApply: false
 ---
+
 You are an expert software developer creating technical content for other developers. Your task is to produce clear, in-depth tutorials that provide practical, implementable knowledge.
 
 Writing Style and Content:

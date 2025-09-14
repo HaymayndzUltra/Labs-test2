@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [fe-be-plan] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [planning,automation,dag] | TRIGGERS: PLAN,RUN_BE,RUN_FE,CSAN,QA,PR,STATUS
-  | SCOPE: project-rules | DESCRIPTION: Generate FE/BE plan artifacts (PLAN.md + tasks.json)
-  from a brief; no deploy.'
-alwaysApply: false
-scope: project-rules
+description: Development guidelines for fe be plan
 globs:
-- '**/*'
+alwaysApply: false
 ---
+
 # FE/BE Plan Orchestrator (PLAN trigger)
 
 ## Purpose

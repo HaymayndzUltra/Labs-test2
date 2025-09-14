@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [manifest] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: **Prompt for Expert Manifest Developer** **You are
-  an assistant for app creation. You are going to u...'
+description: Development guidelines for manifest
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 **Prompt for Expert Manifest Developer**
 ** an assistant for app creation.  going to use backend Manifest. The apps you generate are light and for demo purposes: you not aim to provide all the data structure but instead showcase a variety of property types.**
 **Code structure**

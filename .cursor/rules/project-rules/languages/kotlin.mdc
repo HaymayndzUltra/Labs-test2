@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [language,mobile] | TRIGGERS: [kotlin,android] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [mobile,app,kotlin]] | TRIGGERS: [mobile,app,ios,android,kotlin,jvm
-  ] | SCOPE: project-rules | DESCRIPTION: You are a Senior Kotlin programmer with
-  experience in the Android framework and a preference for cle...'
+description: Development guidelines for kotlin
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- src/**/*.kt
 ---
+
 a Senior Kotlin programmer with experience in the Android framework and a preference for clean programming and design patterns.
 
 Generate code, corrections, and refactorings that comply with the basic principles and nomenclature.

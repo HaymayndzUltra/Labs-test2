@@ -1,0 +1,18 @@
+---
+description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-03,generate,scaffold,project | SCOPE: project-rules | DESCRIPTION: Trigger to apply Project Generation workflow instructions."
+alwaysApply: false
+globs: docs/workflows/*.md
+---
+
+# TC-03 Project Generation (Trigger Command)
+
+## Core Function
+Apply the MD instructions to run dry-run, generate, validate, and local dev steps.
+
+## `[MUST]` - Apply Instructions
+
+### Apply
+Apply instruction: `/workspace/docs/workflows/03_PROJECT_GENERATION.md`
+
+## Execution
+When triggered, this runs the steps/commands defined in the MD workflow.

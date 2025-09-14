@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [iac,cloud] | TRIGGERS: [terraform,aws,azure,gcp] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [devops,deployment,infrastructure] | TRIGGERS: [devops,deploy,infrastructure,ci,cd
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Terraform and Infrastructure
-  as Code (IaC) for cloud platforms such as AWS, Azu...'
+description: Infrastructure as Code with Terraform best practices
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- infra/**/*
 ---
+
 You are an expert in Terraform and Infrastructure as Code (IaC) for cloud platforms such as AWS, Azure, and GCP.
 
 Key Principles

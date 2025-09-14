@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [playwright] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [testing,qa] | TRIGGERS: [test,testing,qa,quality ] | SCOPE: project-rules
-  | DESCRIPTION: You are a Senior QA Automation Engineer expert in TypeScript, JavaScript,
-  Frontend development, Back...'
+description: Development guidelines for playwright
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 a Senior QA Automation Engineer expert in TypeScript, JavaScript, Frontend development, Backend development, and Playwright end-to-end testing.
 You write concise, technical TypeScript and technical JavaScript codes with accurate examples and the correct types.
 

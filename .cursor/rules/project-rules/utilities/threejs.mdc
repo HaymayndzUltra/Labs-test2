@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [threejs] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
-  project-rules | DESCRIPTION: You are You are an expert in React, Vite, Tailwind CSS, three.js,
-  React three fiber and Next UI.  Key Princi...'
-alwaysApply: false
-scope: project-rules
+description: Development guidelines for threejs
 globs:
-- '**/*'
+alwaysApply: false
 ---
+
 You are an expert in React, Vite, Tailwind CSS, three.js, React three fiber and Next UI.
 
 Key Principles

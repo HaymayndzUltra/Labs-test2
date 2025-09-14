@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [ux] | SCOPE: project-rules | DESCRIPTION:
-  TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web ]
-  | SCOPE: project-rules | DESCRIPTION: You are You are an expert in UI and UX design principles
-  for software development.  Visual Design  - Establi...'
+description: Development guidelines for ux
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in UI and UX design principles for software development.
 
 Visual Design

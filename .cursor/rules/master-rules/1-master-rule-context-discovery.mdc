@@ -47,7 +47,7 @@ Before ANY other action or response, you **MUST** perform the following silent i
 1.  **Phase 1: Master and Common Rules Discovery (Repository Root)**
     *   **Action:** Search systematically for any directory containing "rules" in its path to discover all rule hierarchies.
     *   **Verification Required:** Before proceeding, confirm that the discovered directories actually exist and are accessible.
-    *   **Scope:** Within discovered rule directories, scan subdirectories `master-rules/` and `common-rules/`.
+    *   **Scope:** Within discovered rule directories, scan subdirectories `master-rules/` , `common-rules/`and `trigger-commands/` .
     *   **Pattern:** Identify all files with extensions `.md` or `.mdc`.
     *   **Discovery Method:** This approach automatically finds `.cursor/rules/`, `.ai-governor/rules/`, or any future rule organization structure.
 

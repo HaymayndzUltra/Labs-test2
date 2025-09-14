@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [trajectory-analysis] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax
-  ] | SCOPE: project-rules | DESCRIPTION: You are an AI assistant tasked with analyzing
-  trajectories of solutions to question-answering tasks....'
-alwaysApply: false
-scope: project-rules
+description: Development guidelines for trajectory analysis
 globs:
-- '**/*'
+alwaysApply: false
 ---
+
 an AI assistant tasked with analyzing trajectories of solutions to question-answering tasks. Follow these guidelines:
 
 1. Trajectory Components:

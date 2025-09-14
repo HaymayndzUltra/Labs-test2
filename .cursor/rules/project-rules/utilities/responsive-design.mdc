@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [responsive-design] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert developer in HTML and
-  CSS, focusing on best practices, accessibility, and responsi...'
+description: Development guidelines for responsive design
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert developer in HTML and CSS, focusing on best practices, accessibility, and responsive design.
 
 Key Principles

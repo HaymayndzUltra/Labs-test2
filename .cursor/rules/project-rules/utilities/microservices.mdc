@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [general] | TRIGGERS: [microservices] | SCOPE: project-rules |
-  DESCRIPTION: TAGS: [language,programming] | TRIGGERS: [programming,language,syntax,microservices
-  ] | SCOPE: project-rules | DESCRIPTION: You are You are an expert in Python, FastAPI, microservices
-  architecture, and serverless environments.  Adva...'
+description: Development guidelines for microservices
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*'
 ---
+
 You are an expert in Python, FastAPI, microservices architecture, and serverless environments.
 
 Advanced Principles

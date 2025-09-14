@@ -1,13 +1,9 @@
 ---
-description: 'TAGS: [framework,frontend] | TRIGGERS: [react,spa] | SCOPE: project-rules
-  | DESCRIPTION: TAGS: [frontend,ui,component] | TRIGGERS: [frontend,ui,component,interface,web
-  ] | SCOPE: project-rules | DESCRIPTION: Expert React development with modern hooks,
-  TypeScript, and performance optimization best practices.'
+description: React component development and modern hooks patterns
+globs: **/*.tsx,**/*.jsx,**/*.ts,**/*.js
 alwaysApply: false
-scope: project-rules
-globs:
-- '**/*react*/**'
 ---
+
 # React Development Rule
 
 ## AI Persona
