@@ -1,7 +1,7 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-10,monitor,observe,logs,metrics,traces,alerts | SCOPE: project-rules | DESCRIPTION: Trigger to apply Monitoring & Observability workflow instructions."
 alwaysApply: false
-frontmatterPending: true
+globs: docs/workflows/*.md
 ---
 
 # TC-10 Monitoring & Observability (Trigger Command)

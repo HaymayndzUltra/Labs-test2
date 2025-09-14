@@ -1,7 +1,7 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-03,generate,scaffold,project | SCOPE: project-rules | DESCRIPTION: Trigger to apply Project Generation workflow instructions."
 alwaysApply: false
-frontmatterPending: true
+globs: docs/workflows/*.md
 ---
 
 # TC-03 Project Generation (Trigger Command)

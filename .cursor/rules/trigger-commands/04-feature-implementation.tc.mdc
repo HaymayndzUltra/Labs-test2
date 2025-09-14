@@ -1,7 +1,7 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-04,implement,development,tasks | SCOPE: project-rules | DESCRIPTION: Trigger to apply Feature Implementation workflow instructions."
 alwaysApply: false
-frontmatterPending: true
+globs: docs/workflows/*.md
 ---
 
 # TC-04 Feature Implementation (Trigger Command)

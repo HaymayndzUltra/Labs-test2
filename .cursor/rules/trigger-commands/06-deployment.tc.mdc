@@ -1,7 +1,7 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-06,deploy,release,production | SCOPE: project-rules | DESCRIPTION: Trigger to apply Deployment workflow instructions."
 alwaysApply: false
-frontmatterPending: true
+globs: docs/workflows/*.md
 ---
 
 # TC-06 Deployment (Trigger Command)

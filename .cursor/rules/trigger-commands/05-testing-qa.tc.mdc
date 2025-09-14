@@ -1,7 +1,7 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-05,test,qa,coverage,security,performance | SCOPE: project-rules | DESCRIPTION: Trigger to apply Testing & QA workflow instructions."
 alwaysApply: false
-frontmatterPending: true
+globs: docs/workflows/*.md
 ---
 
 # TC-05 Testing & QA (Trigger Command)
