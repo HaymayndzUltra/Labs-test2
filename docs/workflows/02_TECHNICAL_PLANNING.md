@@ -1,3 +1,15 @@
+---
+title: "Phase 02: Technical Planning"
+phase: 2
+triggers: ["phase-02","plan","architecture","api","db","ux"]
+scope: "project-rules"
+inputs: ["Approved requirements summary from Phase 1"]
+outputs: ["PRD.md","ARCHITECTURE.md","DB outline","API list","UI map","Security plan","Estimates"]
+artifacts: ["docs/PRD.md","docs/ARCHITECTURE.md"]
+gates: { coverage: ">=80%", perf_p95_ms: "<=500", vulns_critical: 0 }
+owner: "Tech Lead"
+---
+
 # Technical Planning Workflow
 
 ## Overview
@@ -40,3 +52,7 @@ Acceptance:
 
 ## Overall Acceptance
 - [ ] PRD + Architecture approved by client/tech lead
+
+## Failure Modes & Troubleshooting
+- Missing stakeholder approval → schedule review and sign-off
+- Architecture ambiguity → add ADRs and update diagrams

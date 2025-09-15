@@ -1,3 +1,15 @@
+---
+title: "Phase 01: Brief Analysis"
+phase: 1
+triggers: ["phase-01","brief","analyze","requirements"]
+scope: "project-rules"
+inputs: ["Client brief markdown path"]
+outputs: ["Requirements summary","Open questions list","PLAN.md","PLAN.tasks.json"]
+artifacts: ["docs/briefs/*/brief.md","docs/briefs/*/PLAN.md"]
+gates: { coverage: ">=80%", perf_p95_ms: "<=500", vulns_critical: 0 }
+owner: "Product/BA"
+---
+
 # Brief Analysis Workflow
 
 ## Overview

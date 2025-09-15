@@ -1,3 +1,19 @@
+---
+title: "Phase 08: Security & Compliance"
+phase: 8
+triggers: ["phase-08","compliance","security","audit","gates"]
+scope: "project-rules"
+inputs: ["Generated project context","Rules/validation tools available"]
+outputs: ["Compliance checklist","Gates config snapshot"]
+artifacts: [".cursor/tools/check_compliance.py","gates_config.yaml"]
+gates: { coverage: ">=80%", perf_p95_ms: "<=500", vulns_critical: 0 }
+owner: "Security Lead"
+---
+
+## Prerequisites
+- Generated project context available
+- Validation tools present (.cursor/tools/*)
+
 # Security & Compliance Workflow
 
 ## Overview
@@ -23,3 +39,13 @@ Acceptance:
 
 ## Evidence
 - Compliance checklist; gates config snapshot
+
+## Failure Modes & Troubleshooting
+- Missing controls → add/verify encryption, RBAC, audit logging, session timeout
+- CI gates not enforced → ensure jobs read gates_config.yaml and fail on breach
+
+## Overall Acceptance
+- [ ] Required rules present and validated
+- [ ] Controls documented and mapped
+- [ ] CI gates enabled with thresholds set
+- [ ] Related Phases: 02 (planning), 05 (gates), 06 (pre-deploy)

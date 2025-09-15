@@ -1,3 +1,15 @@
+---
+title: "Workflow Conventions"
+phase: 0
+triggers: ["conventions","schema","docs"]
+scope: "project-rules"
+inputs: ["Governance requirements"]
+outputs: ["Frontmatter schema","Section template"]
+artifacts: ["docs/workflows/CONVENTIONS.md"]
+gates: { coverage: ">=80%", perf_p95_ms: "<=500", vulns_critical: 0 }
+owner: "Docs Lead"
+---
+
 # Workflow Conventions
 
 ## YAML Frontmatter (required on all workflow docs)
@@ -45,3 +57,22 @@ owner: "QA Lead"
 ## Cross-Phase Linking
 - Add "Related Phases" at bottom of each doc
 - Reference inputs from prior phase and outputs to next phase
+
+## Overview
+This document defines required frontmatter and section structure for all workflows.
+
+## Prerequisites
+- None
+
+## Steps
+- Apply the schema to all workflow docs
+- Validate with scripts/validate_workflows.py
+
+## Evidence
+- Validator output showing zero missing fields/sections
+
+## Failure Modes & Troubleshooting
+- Schema drift → update this file and re-run validation
+
+## Overall Acceptance
+- [ ] All workflow docs pass validator checks

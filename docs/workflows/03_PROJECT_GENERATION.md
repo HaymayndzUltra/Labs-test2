@@ -1,3 +1,15 @@
+---
+title: "Phase 03: Project Generation"
+phase: 3
+triggers: ["phase-03","generate","scaffold","project"]
+scope: "project-rules"
+inputs: ["Approved PRD and planning outputs"]
+outputs: ["Generated project structure","CI files","Docs","Rules"]
+artifacts: ["../_generated/{{NAME}}","../_generated/{{NAME}}/.github/workflows/*"]
+gates: { coverage: ">=80%", perf_p95_ms: "<=500", vulns_critical: 0 }
+owner: "Build Engineer"
+---
+
 # Project Generation Workflow
 
 ## Overview
@@ -71,6 +83,10 @@ Acceptance:
 - [ ] Dependencies install without fatal errors
 - [ ] Services start locally
 - Evidence: services listening on 3000/8000 (if FE/BE present)
+
+## Evidence
+- Console outputs from dry-run and generation
+- Directory listings and presence of CI/docs files
 
 ## Failure Modes & Troubleshooting
 - Exit 2 (validation errors): inspect listed errors; fix flags/inputs; rerun

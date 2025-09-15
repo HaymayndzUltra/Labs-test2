@@ -1,7 +1,9 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-08,compliance,security,audit,gates | SCOPE: project-rules | DESCRIPTION: Trigger to apply Security & Compliance workflow instructions."
 alwaysApply: false
-globs: docs/workflows/*.md
+phase: 8
+apply: docs/workflows/08_SECURITY_COMPLIANCE.md
+globs: ["docs/workflows/**/*.md"]
 ---
 
 # TC-08 Security & Compliance (Trigger Command)

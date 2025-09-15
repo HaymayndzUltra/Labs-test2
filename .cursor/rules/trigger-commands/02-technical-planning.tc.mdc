@@ -1,7 +1,9 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-02,plan,architecture,api,db,ux | SCOPE: project-rules | DESCRIPTION: Trigger to apply Technical Planning workflow instructions."
 alwaysApply: false
-globs: docs/workflows/*.md
+phase: 2
+apply: docs/workflows/02_TECHNICAL_PLANNING.md
+globs: ["docs/workflows/**/*.md"]
 ---
 
 # TC-02 Technical Planning (Trigger Command)

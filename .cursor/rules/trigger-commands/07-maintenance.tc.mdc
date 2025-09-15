@@ -1,7 +1,9 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-07,maintain,patch,backup,audit,monitor | SCOPE: project-rules | DESCRIPTION: Trigger to apply Maintenance workflow instructions."
 alwaysApply: false
-globs: docs/workflows/*.md
+phase: 7
+apply: docs/workflows/07_MAINTENANCE.md
+globs: ["docs/workflows/**/*.md"]
 ---
 
 # TC-07 Maintenance (Trigger Command)

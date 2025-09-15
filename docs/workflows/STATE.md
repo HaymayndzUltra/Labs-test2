@@ -1,3 +1,15 @@
+---
+title: "Workflow State"
+phase: 0
+triggers: ["state","inventory","progress"]
+scope: "project-rules"
+inputs: ["Repository contents"]
+outputs: ["Inventory","Issues list","Decisions"]
+artifacts: ["docs/workflows/STATE.md"]
+gates: { coverage: ">=80%", perf_p95_ms: "<=500", vulns_critical: 0 }
+owner: "Maintainer"
+---
+
 # Workflow State — Phase 01 Inventory
 
 ## Scope
@@ -122,3 +134,21 @@
 - [x] Files exist and run locally (help output / dry-run OK)
 - [x] make workflow.phase.1 prints intended checks
 - [x] validator catches a known missing-section test case
+
+## Overview
+State tracker for workflow improvements across phases.
+
+## Prerequisites
+- None
+
+## Steps
+- Update inventory each phase; record issues and decisions
+
+## Evidence
+- Validator outputs and change logs
+
+## Failure Modes
+- Drift from conventions → re-run validator and align docs
+
+## Overall Acceptance
+- [ ] State reflects latest changes and decisions
