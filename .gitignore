@@ -11,6 +11,10 @@ __pycache__/
 coverage/
 dist/
 build/
+.venv/
+.env
+.env.*
+*.db
 .next/
 .svelte-kit/
 .cursor/dev-workflow/snapshots/
