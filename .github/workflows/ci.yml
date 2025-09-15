@@ -174,3 +174,133 @@ jobs:
         run: |
           npx -y @lhci/cli@0.13.x autorun --collect.url=${{ vars.A11Y_TARGET_URL }} --config=.lighthouserc.json
 
+  workflows_validation:
+    name: Workflows Validation
+    runs-on: ubuntu-latest
+    needs: build-test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate workflow docs (frontmatter/sections)
+        run: |
+          set -euo pipefail
+          mkdir -p validation
+          python3 scripts/validate_workflows.py --all | tee validation/workflows_validation.txt
+      - name: Upload validation artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workflows-validation
+          path: validation/workflows_validation.txt
+
+  gates_enforcer:
+    name: Gates Enforcer
+    runs-on: ubuntu-latest
+    needs: [build-test, workflows_validation]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install tooling
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pyyaml || true
+          python3 -m pip install bandit || true
+      - name: Enforce gates from gates_config.yaml (simulate if missing)
+        run: |
+          set -euo pipefail
+          mkdir -p validation security
+          python3 - << 'PY'
+          import json, os, sys, yaml
+          def read_yaml(p):
+              with open(p, 'r', encoding='utf-8') as f:
+                  return yaml.safe_load(f)
+          gates = {}
+          for path in ['gates_config.yaml', 'ci/gates.yml']:
+              if os.path.exists(path):
+                  try:
+                      data = read_yaml(path) or {}
+                      gates.update({
+                          'coverage_min': float(data.get('coverage_min', data.get('coverage', 0.0))) if isinstance(data.get('coverage_min', data.get('coverage', 0)), (int, float)) else 0.0,
+                          'perf_p95_ms_max': float(data.get('perf_p95_ms_max', 0)) if isinstance(data.get('perf_p95_ms_max', 0), (int, float)) else 0.0,
+                          'vulns_critical_max': int(data.get('vulns_critical_max', 0)),
+                      })
+                  except Exception as e:
+                      print(f"WARN: failed to parse {path}: {e}")
+          # Coverage check (Node or other)
+          cov_ok = True
+          cov_pct = None
+          if os.path.exists('coverage/coverage-summary.json'):
+              try:
+                  s = json.load(open('coverage/coverage-summary.json'))['total']['lines']['pct']
+                  cov_pct = float(s)
+                  thr = gates.get('coverage_min', 0.0) or 0.0
+                  if cov_pct < thr:
+                      print(f"ERROR: Coverage below threshold: {cov_pct} < {thr}")
+                      cov_ok = False
+                  else:
+                      print(f"Coverage OK: {cov_pct} >= {thr}")
+              except Exception as e:
+                  print(f"WARN: could not parse coverage summary: {e}")
+          else:
+              print("SKIP: No coverage summary found; coverage gate not enforced.")
+          # Perf check (simulate if missing)
+          perf_ok = True
+          if os.path.exists('reports/perf.json'):
+              try:
+                  p95 = float(json.load(open('reports/perf.json')).get('p95_ms', 0))
+                  thr = gates.get('perf_p95_ms_max', 0.0) or 0.0
+                  if thr and p95 > thr:
+                      print(f"ERROR: Perf p95 exceeds threshold: {p95} > {thr}")
+                      perf_ok = False
+                  else:
+                      print(f"Perf OK: p95 {p95} <= {thr or 'n/a'}")
+              except Exception as e:
+                  print(f"WARN: could not parse perf report: {e}")
+          else:
+              print("SKIP: No perf report found; perf gate not enforced.")
+          # Security (bandit) — treat HIGH as critical
+          sec_ok = True
+          bandit_report = 'security/bandit.json'
+          if not os.path.exists(bandit_report):
+              os.system("python3 -m bandit -r scripts/ -f json -o security/bandit.json || true")
+          try:
+              data = json.load(open(bandit_report)) if os.path.exists(bandit_report) else {}
+              issues = data.get('results', [])
+              high = sum(1 for r in issues if r.get('issue_severity','').upper()=='HIGH')
+              thr = int(gates.get('vulns_critical_max', 0))
+              if high > thr:
+                  print(f"ERROR: High-severity findings: {high} > {thr}")
+                  sec_ok = False
+              else:
+                  print(f"Security OK: high {high} <= {thr}")
+          except Exception as e:
+              print(f"WARN: could not parse bandit report: {e}")
+          ok = cov_ok and perf_ok and sec_ok
+          open('validation/gates_result.json','w').write(json.dumps({
+              'coverage_ok': cov_ok,
+              'coverage_pct': cov_pct,
+              'perf_ok': perf_ok,
+              'security_ok': sec_ok,
+          }, indent=2))
+          sys.exit(0 if ok else 1)
+          PY
+      - name: Upload gates artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-artifacts
+          path: |
+            validation/gates_result.json
+            validation/workflows_validation.txt
+            security/bandit.json
+

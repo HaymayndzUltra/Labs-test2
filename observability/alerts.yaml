@@ -1,0 +1,29 @@
+groups:
+  - name: workflow-alerts
+    rules:
+      - alert: HighValidationFailureRate
+        expr: rate(workflow_validation_failures_total[15m]) > 0.1
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: Validation failure rate elevated
+          description: More than 0.1 failures/min in the last 15m
+
+      - alert: LowCIPassRate
+        expr: (ci_pipeline_pass_total / (ci_pipeline_pass_total + ci_pipeline_fail_total)) < 0.8
+        for: 30m
+        labels:
+          severity: critical
+        annotations:
+          summary: CI pass rate below 80%
+          description: Investigate failing checks and gates
+
+      - alert: PerfP95Exceeded
+        expr: workflow_perf_p95_ms > 500
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Workflow perf p95 exceeded 500ms
+          description: Performance regression detected

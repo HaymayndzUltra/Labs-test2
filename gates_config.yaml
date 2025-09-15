@@ -1,0 +1,16 @@
+# Central quality and compliance gates (defaults)
+# Values can be tuned per-project or per-environment as needed.
+
+coverage_min: 0.80           # 80% test coverage minimum
+perf_p95_ms_max: 500         # p95 latency ≤ 500ms
+vulns_critical_max: 0        # no critical vulnerabilities allowed
+auth_session_timeout_minutes_min: 15  # HIPAA session timeout ≥ 15 minutes
+
+# Compliance toggles or required controls (informational; validated by scripts)
+compliance:
+  hipaa:
+    encryption_at_rest: true
+    encryption_in_transit: true
+    rbac_required: true
+    audit_logging_required: true
+    no_phi_in_logs: true

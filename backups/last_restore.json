@@ -1,0 +1,6 @@
+{
+  "timestamp": "2025-09-15T00:37:00.143854+00:00",
+  "archive": "backups/workflows_backup.tar.gz",
+  "restore_dir": "backups/restore_test",
+  "missing": []
+}

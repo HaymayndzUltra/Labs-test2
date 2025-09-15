@@ -84,8 +84,13 @@ def build_be_manifest(backend: str, database: str, compliance: List[str]) -> Lis
     return rules
 
 
-def run(cmd: str, cwd: Path | None = None) -> int:
-    return subprocess.call(cmd, shell=True, cwd=str(cwd) if cwd else None)
+def run_argv(argv: list[str], cwd: Path | None = None) -> int:
+    try:
+        out = subprocess.run(argv, cwd=str(cwd) if cwd else None, check=False, text=True)
+        return out.returncode
+    except Exception as e:
+        print(f"[ERROR] command failed: {argv}: {e}")
+        return 1
 
 
 def parse_args() -> argparse.Namespace:
@@ -157,7 +162,7 @@ def main() -> None:
             f" {'--force' if args.force else ''}"
         ).strip()
         print(f"\n[FE] {cmd}")
-        code = run(cmd, cwd=repo_root)
+        code = run_argv(shlex.split(cmd), cwd=repo_root)
         if code != 0:
             raise SystemExit(code)
 
@@ -192,7 +197,7 @@ def main() -> None:
             f" {'--force' if args.force else ''}"
         ).strip()
         print(f"\n[BE] {cmd}")
-        code = run(cmd, cwd=repo_root)
+        code = run_argv(shlex.split(cmd), cwd=repo_root)
         if code != 0:
             raise SystemExit(code)
 

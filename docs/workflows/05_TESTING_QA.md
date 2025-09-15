@@ -1,3 +1,15 @@
+---
+title: "Phase 05: Testing & QA"
+phase: 5
+triggers: ["phase-05","test","qa","coverage","security","performance"]
+scope: "project-rules"
+inputs: ["Implemented features from Phase 04"]
+outputs: ["Test results","Coverage report","Security & perf reports","UAT package"]
+artifacts: ["reports/coverage.xml","reports/security.json","reports/perf.json"]
+gates: { coverage: ">=80%", perf_p95_ms: "<=500", vulns_critical: 0 }
+owner: "QA Lead"
+---
+
 # Testing & QA Workflow
 
 ## Overview
@@ -32,3 +44,40 @@ Acceptance:
 
 ## Evidence
 - CI run links; coverage badge; security and perf reports
+
+## Failure Modes & Troubleshooting
+- Flaky tests → rerun with seeds; stabilize timing; isolate network
+- Coverage shortfall → add missing unit tests; focus on critical paths
+
+## Overall Acceptance
+- [ ] Coverage ≥ 80%
+- [ ] 0 critical vulnerabilities
+- [ ] Perf p95 ≤ 500ms
+- [ ] UAT sign-off by Product/QA
+- [ ] Related Phases: 04 (inputs), 06 (deployment gate)
+
+Variables
+- PROJ=<project-key>
+
+Run Commands
+```
+# Lint + tests + coverage
+make lint
+make test
+
+# Security (baseline)
+python3 -m bandit -r scripts/ -f json | tee security/bandit.json || true
+
+# Perf (if applicable) → write reports/perf.json { "p95_ms": <value> }
+```
+
+Generated/Updated Files
+- reports/coverage.xml (if configured)
+- security/bandit.json
+- reports/perf.json
+
+Gate to Phase 06
+- [ ] Tests green; coverage ≥ 80%
+- [ ] 0 critical vulnerabilities
+- [ ] Perf p95 ≤ 500ms
+- [ ] UAT sign-off captured

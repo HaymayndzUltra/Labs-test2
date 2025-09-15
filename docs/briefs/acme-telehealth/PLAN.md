@@ -1,49 +1,59 @@
-# PLAN — acme-telehealth
+# ACME Telehealth — PLAN (Derived from Brief)
 
-Industry: healthcare | Type: fullstack | Frontend: nextjs | Backend: fastapi
+## Overview
+Secure, HIPAA‑compliant telehealth platform enabling video consults, secure messaging, billing, and EHR (FHIR) integration.
 
-## Lanes
+## Objectives
+- Reduce no‑show rate by 15% (6 months)
+- Increase provider utilization by 10%
+- Achieve CSAT ≥ 4.5/5 within 3 months post‑launch
 
-### Lane: backend
+## Scope (Phase 1)
+- Web portals: Patient, Clinician, Admin
+- Appointments, Video (WebRTC), Secure Messaging, Prescriptions view, Billing, Reporting
+- EHR (FHIR) read first; write‑back in Phase 2
 
-- [BE-SCH] Design DB schema (blocked_by: -)
-- [BE-SEED] Seed loaders (CSV/mock) (blocked_by: BE-SCH)
-- [BE-MDL] Aggregates/MatViews (funnel, revenue, etc.) (blocked_by: BE-SEED)
-- [BE-API-KPI] GET /api/v1/kpis (blocked_by: BE-MDL)
-- [BE-API-REV] GET /api/v1/revenue (blocked_by: BE-MDL)
-- [BE-API-CAT] GET /api/v1/categories (blocked_by: BE-MDL)
-- [BE-API-PLT] GET /api/v1/platforms (blocked_by: BE-MDL)
-- [BE-API-CUS] GET /api/v1/customers/insights (blocked_by: BE-MDL)
-- [BE-API-FDB] GET /api/v1/feedback (blocked_by: BE-MDL)
-- [BE-EXP] GET /api/v1/export/csv (blocked_by: BE-API-KPI, BE-API-REV, BE-API-CAT, BE-API-PLT, BE-API-CUS, BE-API-FDB)
-- [BE-AUTH] Auth0/RBAC skeleton (blocked_by: -)
-- [BE-OBS] Structured logs + correlation IDs (blocked_by: -)
-- [BE-TST] Unit+Integration tests (Testcontainers) (blocked_by: BE-API-KPI, BE-API-REV)
+## Out of Scope (Phase 1)
+- Native mobile apps
+- In‑person clinic hardware flows
 
-### Lane: frontend
+## Architecture (Target)
+- Frontend: Next.js 14 (App Router), Tailwind
+- Backend: FastAPI (async), Pydantic v2
+- Database: PostgreSQL
+- Auth: Auth0 (RBAC, MFA optional)
+- Files: S3 (presigned URLs)
+- Infra: AWS (ECS/Fargate, RDS, CloudFront)
+- Observability: structured logs with correlation id; basic traces
 
-- [FE-DSN] Shell/Layout/Routes (blocked_by: -)
-- [FE-TYPES] openapi-typescript client (blocked_by: -)
-- [FE-MOCKS] MSW/Prism mocks (blocked_by: -)
-- [FE-KPI] KPI cards + filters (blocked_by: FE-DSN, FE-TYPES)
-- [FE-REV] Revenue chart + range selectors (blocked_by: FE-DSN, FE-TYPES)
-- [FE-PLT] Platform distribution (bars) (blocked_by: FE-DSN, FE-TYPES)
-- [FE-CAT] Category ranks (bars) (blocked_by: FE-DSN, FE-TYPES)
-- [FE-CUS] Customer insights panel (blocked_by: FE-DSN, FE-TYPES)
-- [FE-FDB] Feedback timeline (blocked_by: FE-DSN, FE-TYPES)
-- [FE-EXP] Exports (CSV/PNG) (blocked_by: FE-KPI, FE-REV, FE-PLT, FE-CAT, FE-CUS, FE-FDB)
-- [FE-A11Y-PERF] WCAG AA + code-split/memoize (blocked_by: -)
-- [FE-TST] Component + E2E smoke (blocked_by: FE-KPI, FE-REV)
+## Security & Compliance (HIPAA)
+- AES‑256 at rest; TLS 1.2+ in transit
+- RBAC; session timeout 15m; re‑auth for sensitive actions
+- Audit logging of all PHI access/changes; integrity controls
+- No PHI in logs
 
-## Conflicts & Guardrails
+## API (Representative)
+- Auth: POST /auth/login, /auth/refresh, /auth/logout; GET/PATCH /me
+- Appointments: GET /appointments, POST /appointments, PATCH /appointments/{id}
+- Messaging: GET /threads, GET /threads/{id}, POST /threads/{id}/message
+- Prescriptions: GET /patients/{id}/prescriptions
+- Billing: GET /patients/{id}/invoices, POST /invoices/{id}/pay
 
-- Ports: FE 3000, BE 8000 (configurable)
-- Migrations vs seed/tests: lock sequencing
-- Secrets: no plaintext; env-injection only
+## UI (Representative)
+- Patient: Login, Dashboard, Appointments, Messages, Prescriptions, Billing, Profile
+- Clinician: Schedule, Patients, Consult Room, Messaging, Notes
+- Admin: Scheduling, Billing, Reports, Settings
 
-## Next Triggers
+## Milestones
+- M1 (Weeks 1–3): Auth, Profiles, Appointments CRUD, base UI shell
+- M2 (Weeks 4–6): Video consults (pre‑join checks), Messaging MVP, Billing (test)
+- M3 (Weeks 7–8): FHIR read integration, Reporting basics, UAT + hardening
 
-- RUN_BE and RUN_FE in parallel (≤3 concurrent per lane)
-- CSAN if blocked
-- QA for completed scope
-- PR: artifacts + acceptance (STOP, no deploy)
+## Risks/Assumptions
+- EHR sandbox stability; client PHI policy sign‑off; Stripe readiness
+
+## Acceptance
+- Patients can book and attend video consults end‑to‑end
+- Secure messaging and billing flows work with test cards
+- HIPAA controls implemented; audit logs verifiable
+- CI gates enforced (tests ≥ 80% for PHI modules; no critical vulns)
