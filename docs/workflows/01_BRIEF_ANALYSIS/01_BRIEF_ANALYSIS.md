@@ -64,3 +64,33 @@ Acceptance:
 
 ## Overall Acceptance
 - [ ] Requirements summary and questions ready for client sign-off
+
+---
+
+Variables
+- PROJ=<project-key>
+
+Run Commands
+```
+# Validate brief path
+test -f docs/briefs/$PROJ/brief.md
+
+# Generate Phase 01 artifacts
+python3 scripts/scaffold_phase_artifacts.py --project $PROJ --phase 1
+
+# Validate docs and HIPAA mentions (pre-gate)
+python3 scripts/validate_workflows.py --all
+python3 scripts/check_compliance_docs.py
+```
+
+Generated/Updated Files
+- docs/briefs/$PROJ/requirements_summary.md
+- docs/briefs/$PROJ/questions.md
+- docs/briefs/$PROJ/stack_compliance_inference.md
+- (optional) docs/briefs/$PROJ/PLAN.md
+
+Gate to Phase 02
+- [ ] Brief exists and readable
+- [ ] Requirements summary + questions present
+- [ ] Stack & compliance inference present
+- [ ] Validators pass (workflows + HIPAA mentions)

@@ -62,3 +62,33 @@ Acceptance:
 ## Failure Modes & Troubleshooting
 - Missing stakeholder approval → schedule review and sign-off
 - Architecture ambiguity → add ADRs and update diagrams
+
+---
+
+Variables
+- PROJ=<project-key>
+
+Run Commands
+```
+# Generate Phase 02 artifacts
+python3 scripts/scaffold_phase_artifacts.py --project $PROJ --phase 2
+
+# Validate docs and HIPAA mentions (pre-gate)
+python3 scripts/validate_workflows.py --all
+python3 scripts/check_compliance_docs.py
+```
+
+Generated/Updated Files
+- docs/briefs/$PROJ/PRD.md
+- docs/briefs/$PROJ/ARCHITECTURE.md
+- docs/briefs/$PROJ/API_PLAN.md
+- docs/briefs/$PROJ/UI_MAP.md
+- docs/briefs/$PROJ/SECURITY_COMPLIANCE_PLAN.md
+- docs/briefs/$PROJ/ESTIMATES.md
+
+Gate to Phase 03
+- [ ] PRD + Architecture approved by tech lead/client
+- [ ] API/UI plans documented
+- [ ] Security/compliance plan reviewed
+- [ ] Estimates approved
+- [ ] Validators pass
