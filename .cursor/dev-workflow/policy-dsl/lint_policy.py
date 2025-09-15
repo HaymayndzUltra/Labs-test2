@@ -37,15 +37,22 @@ def main():
         fname = os.path.basename(path)
         if fname == 'schema.json' or fname.startswith('_'):
             continue
+        # project-selection.json uses a different structure (recommendations), skip schema check
+        if fname == 'project-selection.json':
+            continue
         try:
             doc = json.load(open(path))
-            if HAS_JSONSCHEMA:
-                validate(instance=doc, schema=schema)
-            else:
-                # basic check: required keys present
-                for k in ['name','scope','priority','actions']:
-                    if k not in doc:
-                        errors.append({'path':path,'error':f'missing {k}'})
+            docs = doc if isinstance(doc, list) else [doc]
+            for d in docs:
+                if not isinstance(d, dict):
+                    errors.append({'path':path,'error':'document is not an object'})
+                    continue
+                if HAS_JSONSCHEMA:
+                    validate(instance=d, schema=schema)
+                else:
+                    for k in ['name','scope','priority','actions']:
+                        if k not in d:
+                            errors.append({'path':path,'error':f'missing {k}'})
         except Exception as e:
             errors.append({'path':path,'error':str(e)})
     if errors:
