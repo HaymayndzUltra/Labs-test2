@@ -124,3 +124,12 @@ export default function UserProfile(props) {
 - Follow accessibility guidelines
 - Use proper testing patterns
 - Implement proper loading and error states
+
+## Forms and Validation
+- Prefer controlled components for form inputs
+- Use react-hook-form for complex forms and performance
+- Validate with Zod where schemas are shared; otherwise keep validation local
+
+## Security
+- Sanitize any HTML before using dangerouslySetInnerHTML; avoid when possible
+- Avoid leaking sensitive data via props or error messages
