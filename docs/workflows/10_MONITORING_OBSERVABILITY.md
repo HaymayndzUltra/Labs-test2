@@ -43,6 +43,26 @@ Acceptance:
 - Dashboard exports (JSON) and alert definitions
 - Links to monitoring systems
 
+## Templates
+- Grafana dashboard: `observability/grafana_dashboard.json`
+- Alert rules (Prometheus-compatible): `observability/alerts.yaml`
+
+## SLIs/SLOs
+- SLIs:
+  - Validation failures rate (per hour): `workflow_validation_failures_total`
+  - CI pass rate: `ci_pipeline_pass_total / (ci_pipeline_pass_total + ci_pipeline_fail_total)`
+  - Time-to-fix P95 (hours): `workflow_fix_time_bucket`
+  - Perf p95 (ms): `workflow_perf_p95_ms`
+- SLOs:
+  - CI pass rate ≥ 0.9
+  - Validation failures rate ≤ 0.05/h
+  - Time-to-fix P95 ≤ 24h
+  - Perf p95 ≤ 500ms
+
+## Dashboard & Alerts Links
+- Dashboard: `observability/grafana_dashboard.json`
+- Alerts: `observability/alerts.yaml`
+
 ## Failure Modes & Troubleshooting
 - Alert fatigue → refine thresholds and deduplication
 - Missing traces → enable instrumentation on critical paths
