@@ -1,0 +1,20 @@
+---
+description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-05,test,qa,coverage,security,performance | SCOPE: project-rules | DESCRIPTION: Trigger to apply Testing & QA workflow instructions."
+alwaysApply: false
+phase: 5
+apply: docs/workflows/05_TESTING_QA.md
+globs: docs/workflows/**/*.md
+---
+
+# TC-05 Testing & QA (Trigger Command)
+
+## Core Function
+Apply the MD instructions to run lint/tests/coverage, security scans, and perf checks; prepare UAT.
+
+## `[MUST]` - Apply Instructions
+
+### Apply
+Apply instruction: `docs/workflows/05_TESTING_QA.md`
+
+## Execution
+When triggered, this runs the steps/commands defined in the MD workflow.

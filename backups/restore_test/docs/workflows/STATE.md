@@ -152,27 +152,3 @@ State tracker for workflow improvements across phases.
 
 ## Overall Acceptance
 - [ ] State reflects latest changes and decisions
-
----
-
-# Phase 07 — Maintenance (Ops Hygiene) Results
-
-## Deliverables
-- Backup script: `scripts/backup_workflows.py`
-- Restore script: `scripts/restore_workflows.py`
-- Makefile targets: `backup-workflows`, `restore-test`
-- Maintenance doc updated with schedule, SLA/ownership, and backup/restore steps
-
-## Verification
-- Backup: SUCCESS → `backups/workflows_backup.tar.gz`, proof at `backups/last_success.json`
-- Restore Test: SUCCESS → extracted to `backups/restore_test`, proof at `backups/last_restore.json`
-
-## SLA / Ownership
-- Ops Lead: backups/restore
-- Security Lead: audits
-- Docs Lead: documentation currency
-
-## Acceptance (Phase 07)
-- [x] Maintenance guide present; restore test documented and verified
-- [x] SLA/ownership entries updated in STATE.md
-- [x] Backups configured with proof of last success

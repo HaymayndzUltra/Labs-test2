@@ -235,3 +235,12 @@ security-scripts:
 coverage-scripts:
 	@echo "🔵 Coverage for scripts (validator)..."
 	@python3 -m pytest project_generator/tests/test_unit/test_validate_workflows_script.py -q --cov=scripts/validate_workflows.py --cov-report=term-missing
+
+# Maintenance (Phase 07)
+backup-workflows:
+	@echo "🔵 Backing up workflows and triggers..."
+	@python3 scripts/backup_workflows.py | cat
+
+restore-test:
+	@echo "🔵 Restoring backup to verify integrity..."
+	@python3 scripts/restore_workflows.py | cat

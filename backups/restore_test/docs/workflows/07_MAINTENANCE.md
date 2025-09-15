@@ -45,16 +45,6 @@ Acceptance:
 - Audit outputs and remediation logs
 - Backup restore proof
 
-## Maintenance Schedule & Ownership
-- Schedule: Weekly backups; monthly audit reviews
-- SLA: Critical fixes within 24h; high within 3 days
-- Owner: Ops Lead (backup/restore), Security Lead (audits), Docs Lead (updates)
-
-## Backup & Restore Test
-- Backup: `make backup-workflows` → produces `backups/workflows_backup.tar.gz` and `backups/last_success.json`
-- Restore Test: `make restore-test` → extracts to `backups/restore_test` and writes `backups/last_restore.json`
-- Acceptance: Restore prints "Restore OK" and `last_restore.json` shows no missing files
-
 ## Failure Modes & Troubleshooting
 - Alert noise → tune thresholds; deduplicate rules
 - Backup restore failure → review retention and storage; test smaller scope

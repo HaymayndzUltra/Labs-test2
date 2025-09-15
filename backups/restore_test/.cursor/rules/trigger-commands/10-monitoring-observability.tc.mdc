@@ -1,0 +1,20 @@
+---
+description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-10,monitor,observe,logs,metrics,traces,alerts | SCOPE: project-rules | DESCRIPTION: Trigger to apply Monitoring & Observability workflow instructions."
+alwaysApply: false
+phase: 10
+apply: docs/workflows/10_MONITORING_OBSERVABILITY.md
+globs: docs/workflows/**/*.md
+---
+
+# TC-10 Monitoring & Observability (Trigger Command)
+
+## Core Function
+Apply the MD instructions to enforce logs/metrics/traces and dashboards/alerts.
+
+## `[MUST]` - Apply Instructions
+
+### Apply
+Apply instruction: `docs/workflows/10_MONITORING_OBSERVABILITY.md`
+
+## Execution
+When triggered, this runs the steps/commands defined in the MD workflow.
