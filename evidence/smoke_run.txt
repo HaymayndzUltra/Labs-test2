@@ -1,5 +1,0 @@
-Commit: b4db66aefea247070afc65cb5ba3aa13eb7371fb
-
-Timestamp: 2025-09-15T05:50:24Z
-
-MISSING: /tmp/demo (project generation blocked by validator: Docker is required).
