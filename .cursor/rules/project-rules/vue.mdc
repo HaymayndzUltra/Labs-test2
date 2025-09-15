@@ -1,6 +1,6 @@
 ---
 description: Vue.js component development and composition API patterns
-globs: **/*.vue,**/*.ts,**/*.js
+globs: **/*.vue,**/*.ts,**/*.js,**/vite.config.*
 alwaysApply: false
 ---
 

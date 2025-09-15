@@ -1,6 +1,6 @@
 ---
 description: Angular application development guidelines and component architecture
-globs: frontend/**/*.ts,**/*.component.ts,**/*.service.ts
+globs: **/*.ts,**/*.html,**/*.scss
 alwaysApply: false
 ---
 

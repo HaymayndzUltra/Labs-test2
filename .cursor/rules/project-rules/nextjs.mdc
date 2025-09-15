@@ -1,6 +1,6 @@
 ---
 description: Next.js development best practices and component patterns
-globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
+globs: **/*.tsx,**/*.ts
 alwaysApply: false
 ---
 

@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for web3js
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+globs: **/*.ts,**/*.js
 alwaysApply: false
 ---
 

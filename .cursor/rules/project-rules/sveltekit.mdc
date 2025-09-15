@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for sveltekit
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+globs: **/*.svelte,**/*.ts,**/*.js
 alwaysApply: false
 ---
 

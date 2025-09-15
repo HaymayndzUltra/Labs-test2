@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for observability
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+globs: **/*.go,**/*.py,**/*.ts,**/*.js,**/*.yaml,**/*.yml
 alwaysApply: false
 ---
 

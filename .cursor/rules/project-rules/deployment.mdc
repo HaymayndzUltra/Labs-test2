@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for deployment
-globs: **/Dockerfile,**/docker-compose.yml,**/*.dockerfile
+globs: **/Dockerfile,**/Dockerfile.*,**/.dockerignore,**/docker-compose.yml,**/docker-compose.yaml,**/compose.yml,**/compose.yaml,**/*.tf,**/*.tfvars,**/*.tf.json
 alwaysApply: false
 ---
 

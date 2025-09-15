@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for graphql
-globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
+globs: **/*.graphql,**/*.gql,**/*.ts,**/*.tsx
 alwaysApply: false
 ---
 

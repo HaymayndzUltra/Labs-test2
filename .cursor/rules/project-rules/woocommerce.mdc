@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for woocommerce
-globs:
+globs: **/*.php,**/*.phtml
 alwaysApply: false
 ---
 

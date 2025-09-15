@@ -1,6 +1,6 @@
 ---
 description: Testing strategies and framework-specific testing patterns
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js,**/*.test.tsx,**/*.spec.tsx
 alwaysApply: false
 ---
 

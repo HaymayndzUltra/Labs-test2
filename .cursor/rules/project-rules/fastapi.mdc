@@ -1,6 +1,6 @@
 ---
 description: FastAPI backend development with async patterns and Pydantic
-globs: backend/**/*.py,**/*main.py,**/*api*.py
+globs: **/*.py
 alwaysApply: false
 ---
 

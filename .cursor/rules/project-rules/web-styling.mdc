@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for web styling
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+globs: **/*.html,**/*.htm,**/*.css,**/*.scss,**/*.sass,**/*.less,**/*.pcss
 alwaysApply: false
 ---
 

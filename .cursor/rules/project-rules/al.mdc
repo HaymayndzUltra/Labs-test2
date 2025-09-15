@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for al
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+globs: **/*.al
 alwaysApply: false
 ---
 

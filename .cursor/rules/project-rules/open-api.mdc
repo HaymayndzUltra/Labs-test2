@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for open api
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+globs: **/openapi.yaml,**/openapi.yml,**/openapi.json,**/swagger.yaml,**/swagger.yml
 alwaysApply: false
 ---
 

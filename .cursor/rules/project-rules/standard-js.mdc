@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for standard js
-globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
+globs: **/*.js,**/*.cjs,**/*.mjs
 alwaysApply: false
 ---
 

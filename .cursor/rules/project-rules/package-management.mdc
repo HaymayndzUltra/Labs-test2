@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for package management
-globs:
+globs: **/pyproject.toml,**/requirements.txt,**/requirements-*.txt,**/Pipfile,**/Pipfile.lock,**/poetry.lock,**/package.json,**/package-lock.json,**/pnpm-lock.yaml,**/yarn.lock
 alwaysApply: false
 ---
 

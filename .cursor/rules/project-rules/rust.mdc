@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for rust
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+globs: **/*.rs,**/Cargo.toml,**/Cargo.lock
 alwaysApply: false
 ---
 

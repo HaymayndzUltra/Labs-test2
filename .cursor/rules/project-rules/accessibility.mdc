@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for accessibility
-globs:
+globs: **/*.html,**/*.htm,**/*.tsx,**/*.jsx,**/*.ts,**/*.js,**/*.md,**/*.mdx
 alwaysApply: false
 ---
 

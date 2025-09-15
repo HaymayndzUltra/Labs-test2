@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for php
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+globs: **/*.php,**/*.phtml,**/composer.json
 alwaysApply: false
 ---
 
