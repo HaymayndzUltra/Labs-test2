@@ -11,7 +11,7 @@
 | gates_binding.md | OK | |
 | static_analysis.md | OK | |
 | deps_pinning.txt | OK | |
-| smoke_run.txt | MISSING | not created |
+| smoke_run.txt | OK | |
 | audits.txt | OK | |
 | compliance_docs_check.md | OK | |
 | controls_mapping.md | OK | |
