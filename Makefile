@@ -2,7 +2,8 @@
 
 .PHONY: help setup test test-unit test-integration test-e2e test-all lint format security clean install dev \
 	workflow.phase.1 workflow.phase.2 workflow.phase.3 workflow.phase.4 workflow.phase.5 \
-	workflow.phase.6 workflow.phase.7 workflow.phase.8 workflow.phase.9 workflow.phase.10
+	workflow.phase.6 workflow.phase.7 workflow.phase.8 workflow.phase.9 workflow.phase.10 \
+	test-scripts lint-scripts security-scripts coverage-scripts
 
 # Default target
 help:
@@ -49,38 +50,38 @@ test: test-all
 
 test-unit:
 	@echo "🔵 Running unit tests..."
-	@python run_tests.py --unit
+	@python3 run_tests.py --unit
 
 test-integration:
 	@echo "🔵 Running integration tests..."
-	@python run_tests.py --integration
+	@python3 run_tests.py --integration
 
 test-e2e:
 	@echo "🔵 Running E2E tests..."
-	@python run_tests.py --e2e
+	@python3 run_tests.py --e2e
 
 test-all:
 	@echo "🔵 Running all tests..."
-	@python run_tests.py --all
+	@python3 run_tests.py --all
 
 test-coverage:
 	@echo "🔵 Running tests with coverage..."
-	@python -m pytest project_generator/tests/ -v --cov=project_generator --cov-report=html --cov-report=term --cov-report=xml
+	@python3 -m pytest project_generator/tests/ -v --cov=project_generator --cov-report=html --cov-report=term --cov-report=xml
 
 # Code Quality
 lint:
 	@echo "🔵 Running linting checks..."
-	@python run_tests.py --lint
+	@python3 run_tests.py --lint
 
 format:
 	@echo "🔵 Formatting code..."
-	@python -m black project_generator/ scripts/
-	@python -m isort project_generator/ scripts/
+	@python3 -m black project_generator/ scripts/
+	@python3 -m isort project_generator/ scripts/
 	@echo "✅ Code formatted!"
 
 security:
 	@echo "🔵 Running security checks..."
-	@python run_tests.py --security
+	@python3 run_tests.py --security
 
 # Development
 dev:
@@ -181,13 +182,13 @@ test-generated:
 # Performance benchmark
 benchmark:
 	@echo "🔵 Running performance benchmarks..."
-	@python -m pytest project_generator/tests/test_unit/test_generator.py::TestProjectGenerator::test_generate_project -v --durations=10
+	@python3 -m pytest project_generator/tests/test_unit/test_generator.py::TestProjectGenerator::test_generate_project -v --durations=10
 	@echo "✅ Benchmark completed!"
 
 # Documentation
 docs:
 	@echo "🔵 Generating documentation..."
-	@python -c "import pydoc; pydoc.writedocs('project_generator')"
+	@python3 -c "import pydoc; pydoc.writedocs('project_generator')"
 	@echo "✅ Documentation generated!"
 
 # Docker support
@@ -200,14 +201,14 @@ docker-test:
 # Release preparation
 release-prep: clean install lint test-all security
 	@echo "🔵 Preparing for release..."
-	@python -m build
+	@python3 -m build
 	@echo "✅ Release preparation completed!"
 
 # Install development dependencies
 install-dev: install
 	@echo "🔵 Installing development dependencies..."
-	@python -m pip install -r requirements.txt
-	@python -m pip install pre-commit
+	@python3 -m pip install -r requirements.txt
+	@python3 -m pip install pre-commit
 	@pre-commit install
 	@echo "✅ Development dependencies installed!"
 
@@ -216,3 +217,21 @@ pre-commit:
 	@echo "🔵 Running pre-commit hooks..."
 	@pre-commit run --all-files
 	@echo "✅ Pre-commit hooks completed!"
+
+# Scripts-only targets (Phase 05)
+test-scripts:
+	@echo "🔵 Running scripts unit tests (validator only)..."
+	@python3 -m pytest project_generator/tests/test_unit/test_validate_workflows_script.py -v --cov=scripts/validate_workflows.py --cov-report=term --cov-report=xml
+
+lint-scripts:
+	@echo "🔵 Linting scripts (black/isort checks)..."
+	@python3 -m black scripts/ --check || true
+	@python3 -m isort scripts/ --check-only || true
+
+security-scripts:
+	@echo "🔵 Security scan (bandit) on scripts/..."
+	@python3 -m bandit -r scripts/ -f json | cat
+
+coverage-scripts:
+	@echo "🔵 Coverage for scripts (validator)..."
+	@python3 -m pytest project_generator/tests/test_unit/test_validate_workflows_script.py -q --cov=scripts/validate_workflows.py --cov-report=term-missing
