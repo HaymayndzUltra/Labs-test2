@@ -1,20 +1,18 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-02,plan,architecture,api,db,ux | SCOPE: project-rules | DESCRIPTION: Trigger to apply Technical Planning workflow instructions."
 alwaysApply: false
-phase: 2
-apply: docs/workflows/02_TECHNICAL_PLANNING.md
-globs: docs/workflows/**/*.md
+globs: .cursor/dev-workflow/2-planning-and-architecture.md
 ---
 
-# TC-02 Technical Planning (Trigger Command)
+# PROTOCOL 2: TECHNICAL PLANNING
 
 ## Core Function
-Apply the MD instructions to produce PRD, architecture, API/UI plans, and estimates.
+Apply the human workflow instructions to produce PRD, architecture, API/UI plans, and estimates.
 
 ## `[MUST]` - Apply Instructions
 
 ### Apply
-Apply instruction: `docs/workflows/02_TECHNICAL_PLANNING.md`
+Apply instruction: `.cursor/dev-workflow/2-planning-and-architecture.md`
 
 ## Execution
 When triggered, this runs the steps/commands defined in the MD workflow.

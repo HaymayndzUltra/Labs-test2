@@ -1,20 +1,18 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-08,compliance,security,audit,gates | SCOPE: project-rules | DESCRIPTION: Trigger to apply Security & Compliance workflow instructions."
 alwaysApply: false
-phase: 8
-apply: docs/workflows/08_SECURITY_COMPLIANCE.md
-globs: docs/workflows/**/*.md
+globs: .cursor/dev-workflow/8-handover-and-training.md
 ---
 
-# TC-08 Security & Compliance (Trigger Command)
+# PROTOCOL 8: SECURITY & COMPLIANCE
 
 ## Core Function
-Apply the MD instructions to validate rules presence, map controls, and review CI gates.
+Apply the human workflow instructions to validate rules presence, map controls, and review CI gates.
 
 ## `[MUST]` - Apply Instructions
 
 ### Apply
-Apply instruction: `docs/workflows/08_SECURITY_COMPLIANCE.md`
+Apply instruction: `.cursor/dev-workflow/8-handover-and-training.md`
 
 ## Execution
 When triggered, this runs the steps/commands defined in the MD workflow.

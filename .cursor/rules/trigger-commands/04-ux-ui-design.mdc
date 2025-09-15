@@ -1,20 +1,18 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-04,implement,development,tasks | SCOPE: project-rules | DESCRIPTION: Trigger to apply Feature Implementation workflow instructions."
 alwaysApply: false
-phase: 4
-apply: docs/workflows/04_FEATURE_IMPLEMENTATION.md
-globs: docs/workflows/**/*.md
+globs: .cursor/dev-workflow/4-ux-ui-design.md
 ---
 
-# TC-04 Feature Implementation (Trigger Command)
+# PROTOCOL 4: FEATURE IMPLEMENTATION
 
 ## Core Function
-Apply the MD instructions to execute feature tasks with validations and tests.
+Apply the human workflow instructions to execute feature tasks with validations and tests.
 
 ## `[MUST]` - Apply Instructions
 
 ### Apply
-Apply instruction: `docs/workflows/04_FEATURE_IMPLEMENTATION.md`
+Apply instruction: `.cursor/dev-workflow/4-ux-ui-design.md`
 
 ## Execution
 When triggered, this runs the steps/commands defined in the MD workflow.
