@@ -1,23 +1,3 @@
-Commit: b8a7d0956f620cd3689b2d906f9f831d742f386d
+Commit: 260d5f9625bbbdfcf98d493b5bfda1786e19515b
 
-Timestamp: 2025-09-15T05:56:25Z
-
-+ tool versions
-  Python 3.13.3
-  v22.16.0
-  10.9.2
-  go version go1.24.2 linux/amd64
-  git version 2.48.1
-
-+ tool presence
-  python3: present
-  node: present
-  npm: present
-  docker: MISSING
-  go: present
-  rg: MISSING
-  tree: MISSING
-  pip-audit: MISSING
-
-+ git status --porcelain
- M evidence/precheck.txt
+Env: py 3.13.3 | node v22.16.0 | docker -
