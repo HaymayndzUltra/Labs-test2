@@ -90,3 +90,8 @@ end
 - Test both happy path and edge cases
 - Maintain test documentation
 - Regular test maintenance and cleanup
+
+### **[GUIDELINE] React Unit/Integration (Jest + RTL)**
+- Prefer RTL queries by role/label for resilient tests
+- Test behavior, not implementation details (avoid over-mocking React internals)
+- Cover controlled inputs, form submission, and error states

@@ -132,3 +132,7 @@ export default function UsersPage() {
 - Use proper SEO metadata
 - Implement loading and error states
 - Follow accessibility guidelines
+
+## URL State and Web Vitals
+- Use `nuqs` (or equivalent) for URL search parameter state when appropriate
+- Monitor and improve Core Web Vitals (LCP, CLS, INP)
