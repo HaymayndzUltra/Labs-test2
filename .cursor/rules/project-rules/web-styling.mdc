@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for web styling
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+globs: **/*.html,**/*.htm,**/*.css,**/*.scss,**/*.sass,**/*.less,**/*.pcss
 alwaysApply: false
 ---
 
@@ -128,3 +128,13 @@ When this rule is active, You are an expert **Web Styling Developer** with exper
 - Use CSS custom properties for theming
 - Implement proper focus states
 - Test across multiple browsers and devices
+
+## Stylus Modules (when applicable)
+- Co-locate Stylus modules with components (e.g., Button.module.styl)
+- Use camelCase for class name exports
+- Prefer variables and mixins; keep nesting shallow to avoid specificity issues
+- Avoid global leakage; prefer module scoping
+
+## BEM for Maintainability
+- Name classes as block__element--modifier for clarity
+- Keep selectors simple; avoid deep descendant chains

@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for swift
-globs:
+globs: **/*.swift
 alwaysApply: false
 ---
 

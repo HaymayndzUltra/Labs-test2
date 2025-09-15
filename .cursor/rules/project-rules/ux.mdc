@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for ux
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+globs: **/*.md,**/*.mdx
 alwaysApply: false
 ---
 

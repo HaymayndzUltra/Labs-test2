@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for cpp
-globs:
+globs: **/*.c,**/*.h,**/*.cpp,**/*.cc,**/*.cxx,**/*.hpp,**/*.hh,**/*.hxx
 alwaysApply: false
 ---
 

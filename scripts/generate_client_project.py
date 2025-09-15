@@ -153,6 +153,10 @@ Examples:
     # Performance tuning
     parser.add_argument('--workers', type=int, default=0,
                         help='Number of worker threads for template processing (0=auto)')
+
+    # System checks relaxation for CI/local environments
+    parser.add_argument('--skip-system-checks', action='store_true',
+                        help='Allow generation even if system deps (e.g., Docker) are not available')
     
     # Discovery / tooling
     parser.add_argument('--list-templates', action='store_true',

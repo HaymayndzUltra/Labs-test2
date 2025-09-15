@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for golang
-globs: backend/**/*.go,**/*main.go,**/*api*.go
+globs: **/*.go
 alwaysApply: false
 ---
 

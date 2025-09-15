@@ -1,0 +1,90 @@
+Commit: c0cc79bd8ba179b81bd8c46cb4a1c805dd42bcd3
+\nTimestamp: 2025-09-15T05:45:00Z\n
+ls -la (root):
+total 6880
+drwxr-xr-x 29 ubuntu ubuntu    4096 Sep 15 05:38 .
+drwxr-xr-x  1 root   root      4096 Sep 15 05:36 ..
+-rw-r--r--  1 ubuntu ubuntu 1822446 Sep 15 05:36 2 Fion's Layout Improvement (Revised).txt
+-rw-r--r--  1 ubuntu ubuntu    4247 Sep 15 05:36 ai-direct-communication.mdc
+-rw-r--r--  1 ubuntu ubuntu    8563 Sep 15 05:36 analysis_result.json
+drwxr-xr-x  3 ubuntu ubuntu    4096 Sep 15 05:36 backups
+drwxr-xr-x  3 ubuntu ubuntu    4096 Sep 15 05:36 baselines
+drwxr-xr-x  4 ubuntu ubuntu    4096 Sep 15 05:36 _bench
+drwxr-xr-x  2 ubuntu ubuntu    4096 Sep 15 05:36 ci
+-rw-r--r--  1 ubuntu ubuntu    4863 Sep 15 05:36 conftest.py
+-rw-r--r--  1 ubuntu ubuntu   14848 Sep 15 05:36 CONSOLIDATED_DOCUMENTATION.md
+-rw-r--r--  1 ubuntu ubuntu   22085 Sep 15 05:36 consolidated-master-rules.md
+-rw-r--r--  1 ubuntu ubuntu   64839 Sep 15 05:36 contracts_repo_flow.png
+-rw-r--r--  1 ubuntu ubuntu    6973 Sep 15 05:36 CONTRIBUTING.md
+-rw-r--r--  1 ubuntu ubuntu   10942 Sep 15 05:36 convert_rules_for_routing.py
+drwxr-xr-x  5 ubuntu ubuntu    4096 Sep 15 05:36 .cursor
+-rw-r--r--  1 ubuntu ubuntu    1086 Sep 15 05:36 debug_runner.py
+-rw-r--r--  1 ubuntu ubuntu   10180 Sep 15 05:36 DEV_WORKFLOW_DOCUMENTATION.md
+drwxr-xr-x  7 ubuntu ubuntu    4096 Sep 15 05:36 docs
+drwxr-xr-x  2 ubuntu ubuntu    4096 Sep 15 05:45 evidence
+-rw-r--r--  1 ubuntu ubuntu    2382 Sep 15 05:36 find_duplicates.py
+-rw-r--r--  1 ubuntu ubuntu    2238 Sep 15 05:36 fix_yaml_frontmatter.py
+-rw-r--r--  1 ubuntu ubuntu    2269 Sep 15 05:36 fix_yaml_syntax.py
+-rw-r--r--  1 ubuntu ubuntu    1621 Sep 15 05:36 foldertree.md
+drwxr-xr-x  2 ubuntu ubuntu    4096 Sep 15 05:36 frameworks
+-rw-r--r--  1 ubuntu ubuntu     613 Sep 15 05:36 gates_config.yaml
+drwxr-xr-x  7 ubuntu ubuntu    4096 Sep 15 05:36 _generated
+-rw-r--r--  1 ubuntu ubuntu 2148718 Sep 15 05:36 get-pip.py
+drwxr-xr-x  7 ubuntu ubuntu    4096 Sep 15 05:38 .git
+drwxr-xr-x  3 ubuntu ubuntu    4096 Sep 15 05:36 .github
+-rw-r--r--  1 ubuntu ubuntu     600 Sep 15 05:36 .gitignore
+drwxr-xr-x  9 ubuntu ubuntu    4096 Sep 15 05:36 healthtech-demo
+-rw-r--r--  1 ubuntu ubuntu   12695 Sep 15 05:36 IMPLEMENTATION_STATUS.md
+-rw-r--r--  1 ubuntu ubuntu    8455 Sep 15 05:36 IMPLEMENTATION_SUMMARY.md
+-rw-r--r--  1 ubuntu ubuntu     488 Sep 15 05:36 industry-analysis.json
+drwxr-xr-x  8 ubuntu ubuntu    4096 Sep 15 05:36 legal-doc-platform
+-rw-r--r--  1 ubuntu ubuntu    8290 Sep 15 05:36 Makefile
+-rw-r--r--  1 ubuntu ubuntu     473 Sep 15 05:36 nly main
+-rw-r--r--  1 ubuntu ubuntu    1297 Sep 15 05:36 noxfile.py
+drwxr-xr-x  2 ubuntu ubuntu    4096 Sep 15 05:36 observability
+-rw-r--r--  1 ubuntu ubuntu    5486 Sep 15 05:36 OPTIMIZATION_SUMMARY.md
+-rw-r--r--  1 ubuntu ubuntu   14981 Sep 15 05:36 optimize_rules.py
+-rw-r--r--  1 ubuntu ubuntu    2414 Sep 15 05:36 OPTION_A.md
+-rw-r--r--  1 ubuntu ubuntu       0 Sep 15 05:36 OPTION_B.md
+-rw-r--r--  1 ubuntu ubuntu    2761 Sep 15 05:36 PHASE_1_RULES_INIT_ENHANCED.md
+-rw-r--r--  1 ubuntu ubuntu   10022 Sep 15 05:36 PLAN2.MD
+-rw-r--r--  1 ubuntu ubuntu    2085 Sep 15 05:36 PLAN.md
+-rw-r--r--  1 ubuntu ubuntu    7748 Sep 15 05:36 PLAN.tasks.json
+drwxr-xr-x  2 ubuntu ubuntu    4096 Sep 15 05:36 policy-tests
+-rw-r--r--  1 ubuntu ubuntu 2454939 Sep 15 05:36 popular.html
+-rw-r--r--  1 ubuntu ubuntu   11458 Sep 15 05:36 prd-ai-governor-enhancement.md
+-rw-r--r--  1 ubuntu ubuntu    4243 Sep 15 05:36 PR_DETAILS.md
+-rw-r--r--  1 ubuntu ubuntu    9487 Sep 15 05:36 PROJECT_BRIEF_AI_GOVERNOR_ENHANCEMENT.md
+drwxr-xr-x  7 ubuntu ubuntu    4096 Sep 15 05:36 project_generator
+drwxr-xr-x  2 ubuntu ubuntu    4096 Sep 15 05:36 proposals
+-rw-r--r--  1 ubuntu ubuntu    9226 Sep 15 05:36 README.md
+-rw-r--r--  1 ubuntu ubuntu    3485 Sep 15 05:36 remove_duplicates.py
+-rwxr-xr-x  1 ubuntu ubuntu    3095 Sep 15 05:36 repo_capability.sh
+-rw-r--r--  1 ubuntu ubuntu     502 Sep 15 05:36 requirements.txt
+-rw-r--r--  1 ubuntu ubuntu     148 Sep 15 05:36 rule_optimization_report.json
+-rw-r--r--  1 ubuntu ubuntu   14798 Sep 15 05:36 RULES_DOCUMENTATION.md
+-rw-r--r--  1 ubuntu ubuntu    1306 Sep 15 05:36 RUNBOOK.md
+-rw-r--r--  1 ubuntu ubuntu    3774 Sep 15 05:36 run_tests.py
+drwxr-xr-x  3 ubuntu ubuntu    4096 Sep 15 05:36 sample
+-rw-r--r--  1 ubuntu ubuntu   13431 Sep 15 05:36 scaffold-role-generator.mdc
+-rw-r--r--  1 ubuntu ubuntu    3528 Sep 15 05:36 scrape_cursor_rules.py
+drwxr-xr-x  2 ubuntu ubuntu    4096 Sep 15 05:36 scripts
+drwxr-xr-x  3 ubuntu ubuntu    4096 Sep 15 05:36 .snapshots
+drwxr-xr-x  4 ubuntu ubuntu    4096 Sep 15 05:36 src
+-rw-r--r--  1 ubuntu ubuntu    4243 Sep 15 05:36 standardize_metadata.py
+-rw-r--r--  1 ubuntu ubuntu    3441 Sep 15 05:36 system_update_report_20250908_011949.md
+-rw-r--r--  1 ubuntu ubuntu     689 Sep 15 05:36 system_update_report_.md
+-rw-r--r--  1 ubuntu ubuntu   15557 Sep 15 05:36 tasks-ai-governor-enhancement.md
+drwxr-xr-x  9 ubuntu ubuntu    4096 Sep 15 05:36 template-packs
+-rw-r--r--  1 ubuntu ubuntu    3516 Sep 15 05:36 tentativeplan2.md
+-rw-r--r--  1 ubuntu ubuntu    1280 Sep 15 05:36 tentativeplan.md
+-rw-r--r--  1 ubuntu ubuntu   20480 Sep 15 05:36 test.db
+drwxr-xr-x  3 ubuntu ubuntu    4096 Sep 15 05:36 _tmp_next
+-rw-r--r--  1 ubuntu ubuntu      32 Sep 15 05:36 .update_snapshot_id
+drwxr-xr-x  3 ubuntu ubuntu    4096 Sep 15 05:36 upwork-sessions
+-rw-r--r--  1 ubuntu ubuntu   14301 Sep 15 05:36 validate_templates.py
+drwxr-xr-x  2 ubuntu ubuntu    4096 Sep 15 05:36 validation
+drwxr-xr-x  5 ubuntu ubuntu    4096 Sep 15 05:36 .venv
+drwxr-xr-x  3 ubuntu ubuntu    4096 Sep 15 05:36 web
+
+git tag --list:

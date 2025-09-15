@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for database
-globs: **/*model*.py,**/*schema*.py,**/*.sql
+globs: **/*model*.py,**/*schema*.py,**/*.sql,**/*.prisma
 alwaysApply: false
 ---
 

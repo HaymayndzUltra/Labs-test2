@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for threejs
-globs:
+globs: **/*.ts,**/*.tsx,**/*.js,**/*.jsx,**/*.glsl,**/*.vert,**/*.frag
 alwaysApply: false
 ---
 

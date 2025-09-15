@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for viem v2
-globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
+globs: **/*.ts,**/*.tsx
 alwaysApply: false
 ---
 

@@ -1,6 +1,6 @@
 ---
 description: Next.js development best practices and component patterns
-globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
+globs: **/*.tsx,**/*.ts
 alwaysApply: false
 ---
 
@@ -132,3 +132,7 @@ export default function UsersPage() {
 - Use proper SEO metadata
 - Implement loading and error states
 - Follow accessibility guidelines
+
+## URL State and Web Vitals
+- Use `nuqs` (or equivalent) for URL search parameter state when appropriate
+- Monitor and improve Core Web Vitals (LCP, CLS, INP)

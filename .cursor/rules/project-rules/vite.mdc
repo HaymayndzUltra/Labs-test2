@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for vite
-globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
+globs: **/vite.config.js,**/vite.config.ts,**/*.ts,**/*.js
 alwaysApply: false
 ---
 

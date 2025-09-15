@@ -218,10 +218,12 @@ class ProjectValidator:
             errors.extend(comp_errors)
             warnings.extend(comp_warnings)
         
-        # 4. System dependency checks
-        sys_errors, sys_warnings = self._validate_system_dependencies(args)
-        errors.extend(sys_errors)
-        warnings.extend(sys_warnings)
+        # 4. System dependency checks (allow override via --skip-system-checks or --dry-run)
+        skip_checks = bool(getattr(args, 'skip_system_checks', False))
+        if not getattr(args, 'dry_run', False) and not skip_checks:
+            sys_errors, sys_warnings = self._validate_system_dependencies(args)
+            errors.extend(sys_errors)
+            warnings.extend(sys_warnings)
         
         return {
             'valid': len(errors) == 0,

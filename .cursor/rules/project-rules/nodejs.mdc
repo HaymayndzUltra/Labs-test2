@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for nodejs
-globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
+globs: **/*.ts,**/*.js,**/package.json,**/tsconfig.json
 alwaysApply: false
 ---
 

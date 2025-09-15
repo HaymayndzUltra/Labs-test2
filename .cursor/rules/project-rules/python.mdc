@@ -1,6 +1,6 @@
 ---
 description: Python development best practices and modern coding patterns
-globs: **/*.py
+globs: **/*.py,**/*.pyi
 alwaysApply: false
 ---
 

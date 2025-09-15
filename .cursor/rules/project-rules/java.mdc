@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for java
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+globs: **/*.java,**/*.kt,**/*.kts,**/pom.xml,**/*.gradle,**/*.gradle.kts
 alwaysApply: false
 ---
 

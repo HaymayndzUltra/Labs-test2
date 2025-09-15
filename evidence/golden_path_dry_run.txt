@@ -1,0 +1,44 @@
+Commit: 007eaa7aac2d66dd8fe1b2dfb7ca339b22a8ebbd
+
+Timestamp: 2025-09-15T05:58:25Z
+
+python3 /workspace/scripts/generate_client_project.py --name demo-api --output-dir /tmp --frontend none --backend fastapi --database postgres --auth auth0 --deploy aws --industry healthcare --project-type api --yes --dry-run
+
+⚠️  Configuration warnings:
+  - Healthcare projects typically require HIPAA compliance
+  - Docker not found; proceeding due to --dry-run
+
+🔍 Validating project configuration...
+
+📊 Project Generation Summary
+==================================================
+Project Name:     demo-api
+Industry:         HEALTHCARE
+Project Type:     api
+Frontend:         N/A
+Backend:          fastapi
+Database:         postgres
+Authentication:   auth0
+Deployment:       aws
+Compliance:       None
+Features:         None
+Output Directory: /tmp
+==================================================
+
+🏃 DRY RUN MODE - No files will be created
+
+📁 Project Structure:
+demo-api
+│   backend/
+│   │   src/
+│   │   tests/
+│       requirements.txt
+│   .cursor/
+│   │   rules/
+│       project.json
+│   .github/
+│       workflows/
+│   docs/
+│   docker-compose.yml
+│   Makefile
+    README.md
