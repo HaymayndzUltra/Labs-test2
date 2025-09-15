@@ -7,6 +7,7 @@
 | validators_binding.md | OK | |
 | templates_tree.txt | OK | |
 | golden_path_manifest.txt | OK | |
+| golden_path_dry_run.txt | OK | |
 | workflows_overview.md | OK | |
 | gates_binding.md | OK | |
 | static_analysis.md | OK | |
@@ -17,3 +18,4 @@
 | controls_mapping.md | OK | |
 | provenance.txt | OK | |
 | hygiene_findings.txt | OK | |
+| docs_controls_evidence.md | OK | |
