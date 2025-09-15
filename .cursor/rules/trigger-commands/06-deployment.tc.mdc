@@ -3,7 +3,7 @@ description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-06,deploy,relea
 alwaysApply: false
 phase: 6
 apply: docs/workflows/06_DEPLOYMENT.md
-globs: ["docs/workflows/**/*.md"]
+globs: docs/workflows/**/*.md
 ---
 
 # TC-06 Deployment (Trigger Command)

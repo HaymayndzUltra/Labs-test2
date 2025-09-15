@@ -3,7 +3,7 @@ description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-03,generate,sca
 alwaysApply: false
 phase: 3
 apply: docs/workflows/03_PROJECT_GENERATION.md
-globs: ["docs/workflows/**/*.md"]
+globs: docs/workflows/**/*.md
 ---
 
 # TC-03 Project Generation (Trigger Command)

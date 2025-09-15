@@ -3,7 +3,7 @@ description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-04,implement,de
 alwaysApply: false
 phase: 4
 apply: docs/workflows/04_FEATURE_IMPLEMENTATION.md
-globs: ["docs/workflows/**/*.md"]
+globs: docs/workflows/**/*.md
 ---
 
 # TC-04 Feature Implementation (Trigger Command)

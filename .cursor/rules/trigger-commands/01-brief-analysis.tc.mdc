@@ -3,7 +3,7 @@ description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-01,brief,analyz
 alwaysApply: false
 phase: 1
 apply: docs/workflows/01_BRIEF_ANALYSIS/01_BRIEF_ANALYSIS.md
-globs: ["docs/workflows/**/*.md"]
+globs: docs/workflows/**/*.md
 ---
 
 # TC-01 Brief Analysis (Trigger Command)

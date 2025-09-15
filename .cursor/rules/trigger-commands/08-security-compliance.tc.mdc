@@ -3,7 +3,7 @@ description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-08,compliance,s
 alwaysApply: false
 phase: 8
 apply: docs/workflows/08_SECURITY_COMPLIANCE.md
-globs: ["docs/workflows/**/*.md"]
+globs: docs/workflows/**/*.md
 ---
 
 # TC-08 Security & Compliance (Trigger Command)
