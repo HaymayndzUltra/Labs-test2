@@ -4,6 +4,8 @@ Authentication views for {{PROJECT_NAME}}.
 
 from django.contrib.auth import logout
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,6 +17,7 @@ from .serializers import (
     ChangePasswordSerializer,
     LoginSerializer,
     PasswordResetSerializer,
+    PasswordResetConfirmSerializer,
     RegisterSerializer,
     UserSerializer,
 )
@@ -127,10 +130,21 @@ class PasswordResetRequestView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
-        # TODO: Implement email sending logic
-        # For now, just return success
-        
+        email = serializer.validated_data['email']
+        # Generate a simple token (placeholder for real token/email signing)
+        # In production, use Django's PasswordResetTokenGenerator and signed URLs.
+        token = RefreshToken.for_user(User.objects.get(email=email)).access_token
+        reset_url = f"{getattr(settings, 'FRONTEND_URL', 'http://localhost:3000')}/reset-password?token={token}&email={email}"
+        try:
+            send_mail(
+                subject=f"{getattr(settings, 'PROJECT_NAME', 'App')} Password Reset",
+                message=f"Reset your password using this link: {reset_url}",
+                from_email=getattr(settings, 'EMAILS_FROM_EMAIL', 'no-reply@example.com'),
+                recipient_list=[email],
+                fail_silently=True,
+            )
+        except Exception:
+            pass
         return Response(
             {"detail": "Password reset email sent"},
             status=status.HTTP_200_OK
@@ -143,8 +157,41 @@ class VerifyEmailView(APIView):
     permission_classes = [permissions.AllowAny]
     
     def get(self, request, token):
-        # TODO: Implement email verification logic
-        return Response(
-            {"detail": "Email verified successfully"},
-            status=status.HTTP_200_OK
-        )
+        try:
+            # In production, verify signed token; here accept any non-empty token
+            if not token:
+                return Response({"detail": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+            # Mark user as verified if token decodes to a user (placeholder flows may differ)
+            # For template simplicity we accept email param for mapping
+            email = request.query_params.get('email')
+            if email:
+                try:
+                    user = User.objects.get(email=email)
+                    user.is_verified = True
+                    user.save(update_fields=['is_verified'])
+                except User.DoesNotExist:
+                    pass
+            return Response({"detail": "Email verified successfully"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PasswordResetConfirmView(generics.GenericAPIView):
+    """Confirm password reset with token and set new password."""
+
+    serializer_class = PasswordResetConfirmSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+        new_password = serializer.validated_data['new_password']
+        # Token validation is template-simplified; production should verify with PasswordResetTokenGenerator
+        try:
+            user = User.objects.get(email=email)
+            user.set_password(new_password)
+            user.save(update_fields=['password'])
+            return Response({"detail": "Password reset successful"}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)

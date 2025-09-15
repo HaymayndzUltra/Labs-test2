@@ -1,6 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '@core/services/auth.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '@environments/environment';
 
 interface Stats {
   totalUsers: number;
@@ -197,6 +199,7 @@ interface Activity {
 })
 export class DashboardComponent implements OnInit {
   private authService = inject(AuthService);
+  private http = inject(HttpClient);
   
   user = this.authService.user;
   
@@ -237,8 +240,18 @@ export class DashboardComponent implements OnInit {
   }
 
   loadDashboardData(): void {
-    // TODO: Replace with actual API calls
-    console.log('Loading dashboard data...');
+    this.http.get<Stats>(`${environment.apiUrl}/health`).subscribe({
+      next: (res: any) => {
+        // Map health to simple stats demo
+        this.stats = {
+          totalUsers: this.stats.totalUsers,
+          activeSessions: this.stats.activeSessions,
+          apiCalls: this.stats.apiCalls,
+          systemHealth: res?.status ? 'healthy' : 'unknown'
+        };
+      },
+      error: () => {}
+    });
   }
 
   formatRelativeTime(date: Date): string {
