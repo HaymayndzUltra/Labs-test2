@@ -1,8 +1,23 @@
-Commit: c0cc79bd8ba179b81bd8c46cb4a1c805dd42bcd3
-Timestamp: 2025-09-15T05:38:08Z
+Commit: b8a7d0956f620cd3689b2d906f9f831d742f386d
 
-+ git rev-parse HEAD
-c0cc79bd8ba179b81bd8c46cb4a1c805dd42bcd3
+Timestamp: 2025-09-15T05:56:25Z
+
++ tool versions
+  Python 3.13.3
+  v22.16.0
+  10.9.2
+  go version go1.24.2 linux/amd64
+  git version 2.48.1
+
++ tool presence
+  python3: present
+  node: present
+  npm: present
+  docker: MISSING
+  go: present
+  rg: MISSING
+  tree: MISSING
+  pip-audit: MISSING
 
 + git status --porcelain
-?? evidence/
+ M evidence/precheck.txt

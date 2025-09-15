@@ -1,23 +1,25 @@
-Commit: c0cc79bd8ba179b81bd8c46cb4a1c805dd42bcd3
-\nTimestamp: 2025-09-15T05:44:52Z\n
-PROJ=UNSET
-== /workspace/docs/briefs/UNSET/PRD.md ==
+Commit: b8a7d0956f620cd3689b2d906f9f831d742f386d
+
+Timestamp: 2025-09-15T05:56:46Z
+
+PROJ=demo-app
+== /workspace/docs/briefs/demo-app/PRD.md ==
 MISSING or empty
 
-== /workspace/docs/briefs/UNSET/ARCHITECTURE.md ==
+== /workspace/docs/briefs/demo-app/ARCHITECTURE.md ==
 MISSING or empty
 
-== /workspace/docs/briefs/UNSET/API_PLAN.md ==
+== /workspace/docs/briefs/demo-app/API_PLAN.md ==
 MISSING or empty
 
-== /workspace/docs/briefs/UNSET/UI_MAP.md ==
+== /workspace/docs/briefs/demo-app/UI_MAP.md ==
 MISSING or empty
 
-== /workspace/docs/briefs/UNSET/SECURITY_COMPLIANCE_PLAN.md ==
+== /workspace/docs/briefs/demo-app/SECURITY_COMPLIANCE_PLAN.md ==
 MISSING or empty
 
-== /workspace/docs/briefs/UNSET/ESTIMATES.md ==
+== /workspace/docs/briefs/demo-app/ESTIMATES.md ==
 MISSING or empty
 
 -- SECURITY_COMPLIANCE_PLAN headings check --
-MISSING: /workspace/docs/briefs/UNSET/SECURITY_COMPLIANCE_PLAN.md
+MISSING: /workspace/docs/briefs/demo-app/SECURITY_COMPLIANCE_PLAN.md
