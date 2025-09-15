@@ -17,20 +17,37 @@ EXPECTED = [
 ]
 
 
+def _is_safe_member(member: tarfile.TarInfo, base: Path) -> bool:
+    name = Path(member.name)
+    # Disallow absolute paths and parent traversal
+    if name.is_absolute() or any(part == ".." for part in name.parts):
+        return False
+    # Final resolved path must stay within base
+    dest = (base / name).resolve()
+    try:
+        return str(dest).startswith(str(base.resolve()))
+    except Exception:
+        return False
+
+
 def extract():
     if not ARCHIVE.exists():
         print("ERROR: backup archive not found")
         raise SystemExit(2)
     if RESTORE_DIR.exists():
-        for p in RESTORE_DIR.rglob("*"):
-            try:
-                if p.is_file():
-                    p.unlink()
-            except Exception:
-                pass
+        for p in sorted(RESTORE_DIR.rglob("*"), reverse=True):
+            if p.is_file():
+                p.unlink(missing_ok=True)
+            elif p.is_dir():
+                try:
+                    p.rmdir()
+                except OSError:
+                    # directory not empty; continue
+                    pass
     RESTORE_DIR.mkdir(parents=True, exist_ok=True)
     with tarfile.open(ARCHIVE, "r:gz") as tar:
-        tar.extractall(RESTORE_DIR)
+        safe_members = [m for m in tar.getmembers() if _is_safe_member(m, RESTORE_DIR)]
+        tar.extractall(RESTORE_DIR, members=safe_members)
 
 
 def verify() -> list[str]:
