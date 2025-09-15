@@ -84,6 +84,7 @@
 ### 1.2 Frontend Templates
 
 #### Next.js (complete)
+**Current Status**: App Router + TS + Tailwind present (`template-packs/frontend/nextjs/base`)
 **Acceptance Criteria**: All met
 
 #### Nuxt (complete)
@@ -147,22 +148,24 @@
 #### PostgreSQL (complete)
 **Acceptance Criteria**: All met
 
-#### MongoDB
+#### MongoDB (complete)
+**Current Status**: Present under `template-packs/database/mongodb/base`
 **Acceptance Criteria**:
-- [ ] docker-compose.yml with proper config
-- [ ] init-mongo.js with collections/indexes
-- [ ] README.md with connection strings
-- [ ] Sample schemas (Mongoose/Prisma)
-- [ ] Backup/restore scripts
+- [x] docker-compose.yml with proper config
+- [x] init-mongo.js with collections/indexes
+- [x] README.md with connection strings
+- [x] Sample schemas (Mongoose/Prisma)
+- [x] Backup/restore scripts
 
-#### Firebase
+#### Firebase (partial)
+**Current Status**: Base present; indexes added; rules and functions scaffolded (`template-packs/database/firebase/base`)
 **Acceptance Criteria**:
-- [ ] firebase.json configured
-- [ ] Firestore security rules
-- [ ] Firestore indexes defined
-- [ ] README.md with setup guide
-- [ ] Sample Cloud Functions
-- [ ] Storage rules
+- [x] firebase.json configured
+- [x] Firestore security rules
+- [x] Firestore indexes defined
+- [x] README.md with setup guide
+- [x] Sample Cloud Functions
+- [x] Storage rules
 
 ## Phase 2: Generator Enhancement (1-2 days)
 
