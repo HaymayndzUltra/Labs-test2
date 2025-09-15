@@ -54,13 +54,15 @@ class ProjectGenerator:
             # New production constructor
             self.args = args
             self.validator = validator
-            self.config = config
-            
-        # Ensure config is always a dict for test compatibility
+            self.config = config or IndustryConfig(getattr(args, 'industry', 'healthcare'))
+
+        # Legacy tests previously expected a dict here; preserve functionality while
+        # keeping an object that exposes merge_features(). If a dict slipped in,
+        # replace it with an IndustryConfig based on the requested industry.
         if not hasattr(self, 'config') or self.config is None:
-            self.config = {}
-        elif not isinstance(self.config, dict):
-            self.config = {}
+            self.config = IndustryConfig(getattr(self.args, 'industry', 'healthcare'))
+        elif isinstance(self.config, dict):
+            self.config = IndustryConfig(getattr(self.args, 'industry', 'healthcare'))
             
         self.template_engine = TemplateEngine()
         self.template_registry = TemplateRegistry()
