@@ -193,3 +193,22 @@ State tracker for workflow improvements across phases.
 - [x] Compliance checklist completed; mappings to artifacts documented
 - [x] Automated checks show required controls are present
 - [x] No PHI in logs guideline explicitly stated in 10 and validated
+
+---
+
+# Phase 09 — Documentation (Developer/Operational) Results
+
+## Deliverables
+- Updated `docs/DEVELOPMENT.md` with validators, frontmatter/gates, CI usage
+- Updated `CONTRIBUTING.md` to require frontmatter/sections validation
+- Updated `README.md` with workflow & gates section
+- Added `RUNBOOK.md` with run/test/deploy/monitoring procedures and troubleshooting
+
+## Verification
+- Docs reflect validators (`scripts/validate_workflows.py`, `check_compliance_docs.py`) and CI gates
+- Runbook/troubleshooting added and linked from Phase 09 workflow
+
+## Acceptance (Phase 09)
+- [x] Docs reflect new commands, validators, and gates
+- [x] Runbook/troubleshooting complete and linked
+- [ ] Docs PR reviewed/approved (pending human review)

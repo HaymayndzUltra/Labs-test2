@@ -39,6 +39,11 @@ Acceptance:
 - Links to updated docs and runbook
 - Release notes changelog entries
 
+## Related Docs
+- Development Guide: `docs/DEVELOPMENT.md`
+- Runbook: `RUNBOOK.md`
+- Contributing: `CONTRIBUTING.md`
+
 ## Failure Modes & Troubleshooting
 - Docs drift → schedule doc reviews on major merges; link PRs
 - Runbook gaps → add incident procedures and escalation paths

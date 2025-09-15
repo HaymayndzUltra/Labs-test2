@@ -208,6 +208,12 @@ Each generated project includes:
 - Master quality and safety rules
 - Documentation guidelines
 
+### Workflow & Gates
+- Workflow docs live in `docs/workflows` with YAML frontmatter for discoverability.
+- Validate locally: `python3 scripts/validate_workflows.py --all`.
+- Compliance check (docs): `python3 scripts/check_compliance_docs.py` → `validation/compliance_report.json`.
+- CI enforces gates (coverage/perf/security) via `.github/workflows/ci.yml` jobs `workflows_validation` and `gates_enforcer`.
+
 ## 🔒 Compliance Features
 
 ### HIPAA (Healthcare)
