@@ -100,3 +100,31 @@ Acceptance:
 - [ ] Docs present
 - [ ] Compliance rules present (if requested)
 - [ ] Local dev environment starts
+
+---
+
+Variables
+- PROJ=<project-key>
+
+Run Commands
+```
+# Generate scaffold (example; adjust flags accordingly)
+python scripts/generate_client_project.py \
+  --name $PROJ \
+  --industry <industry> \
+  --project-type <web|api|fullstack|microservices> \
+  --frontend <nextjs|nuxt|angular|expo|none> \
+  --backend <fastapi|django|nestjs|go|none> \
+  --database <postgres|mongodb|firebase|none> \
+  --auth <auth0|firebase|cognito|custom|none> \
+  --deploy <aws|azure|gcp|vercel|self-hosted> \
+  --compliance <hipaa,gdpr,sox,pci> \
+  --output-dir ../_generated --workers 8 --yes --force --include-cursor-assets
+```
+
+Generated/Updated Files
+- ../_generated/$PROJ/** (CI files, docs, rules, Makefile, docker-compose.yml)
+
+Gate to Phase 04
+- [ ] Structure meets standards; CI files + docs present
+- [ ] Local dev starts without fatal errors
