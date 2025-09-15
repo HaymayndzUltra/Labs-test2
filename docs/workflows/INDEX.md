@@ -1,35 +1,35 @@
+---
+title: "Workflow Index"
+phase: 0
+triggers: ["workflows","index","overview"]
+scope: "project-rules"
+inputs: ["All phase docs","validators","gates config"]
+outputs: ["Execution map","Gate checklist"]
+artifacts: ["docs/workflows/*.md","gates_config.yaml"]
+gates: { coverage: ">=80%", perf_p95_ms: "<=500", vulns_critical: 0 }
+owner: "Workflow Owner"
+---
+
 # Workflow Index (Phases, Commands, Gates)
 
-## Phase Order
-1. 01_BRIEF_ANALYSIS → Gate: brief exists; summaries; stack/compliance inference
-2. 02_TECHNICAL_PLANNING → Gate: PRD + ARCHITECTURE ready; API/UI plans; security plan; estimates
-3. 03_PROJECT_GENERATION → Gate: structure, CI files, docs present; local dev starts
-4. 04_FEATURE_IMPLEMENTATION → Gate: DOD, validations, integrations, tests/coverage
-5. 05_TESTING_QA → Gate: coverage ≥ 80%, no critical vulns, perf p95 ≤ 500ms
-6. 06_DEPLOYMENT → Gate: required checks green; smoke tests pass
-7. 07_MAINTENANCE → Gate: backup + restore proof updated
-8. 08_SECURITY_COMPLIANCE → Gate: HIPAA (or relevant) controls present; docs checker PASS
-9. 09_DOCUMENTATION → Gate: dev guide + runbook updated; troubleshooting linked
-10. 10_MONITORING_OBSERVABILITY → Gate: dashboard/alerts templates + SLOs documented
+## Overview
+This index provides the ordered phases, local commands, and CI gates for sequential, gated execution across projects.
 
-## Run Commands (Local)
-Variables
-- PROJ=<project-key>
+## Prerequisites
+- Python 3 and make available
+- Validators present in `scripts/`
 
-Commands
-```bash
-# Validate workflows & compliance
-python3 scripts/validate_workflows.py --all
-python3 scripts/check_compliance_docs.py
+## Steps
 
-# Phase dry-run overview
-make workflow.phase.N
+### Map and Commands
 
-# Scaffold artifacts
-python3 scripts/scaffold_phase_artifacts.py --project $PROJ --phase 1
-python3 scripts/scaffold_phase_artifacts.py --project $PROJ --phase 2
-```
+## Evidence
+- Validator runs attached to PRs
 
-## CI Gates (PR)
-- workflows_validation (required): blocks missing frontmatter/sections
-- gates_enforcer (required): blocks coverage/perf/security violations; uploads artifacts
+## Failure Modes & Troubleshooting
+- Missing validators → run `python3 scripts/validate_workflows.py --all`
+- CI gate failures → review `gates_config.yaml` and fix thresholds or code
+
+## Overall Acceptance
+- [ ] All phases listed with gates and commands
+- [ ] Validators and gates referenced
