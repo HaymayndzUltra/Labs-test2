@@ -1,3 +1,5 @@
+File: project_generator/core/generator.py
+
     74	        # Determine workers
     75	        auto_workers = max(2, (os.cpu_count() or 2) * 2)
     76	        self.workers = getattr(self.args, 'workers', 0) or auto_workers
@@ -77,3 +79,42 @@
    150	                'error': str(e)
    151	            }
    152	    
+
+Internal steps (calls) in order:
+1. _create_base_structure()
+2. _generate_frontend()
+3. _generate_backend()
+4. _setup_database()
+5. _generate_devex_assets()
+6. _generate_cicd_workflows()
+7. _generate_compliance_rules()
+8. _prepare_ai_governor_assets()
+9. _generate_industry_gates()
+10. _generate_documentation()
+11. _initialize_git() (conditional)
+12. _generate_setup_commands()
+13. _generate_next_steps()
+
+Guards (validation gating):
+   215	        # 3. Compliance prerequisites
+   216	        if args.compliance:
+   217	            comp_errors, comp_warnings = self._validate_compliance_prerequisites(args)
+   218	            errors.extend(comp_errors)
+   219	            warnings.extend(comp_warnings)
+   220	        
+   221	        # 4. System dependency checks (allow override via --skip-system-checks or --dry-run)
+   222	        skip_checks = bool(getattr(args, 'skip_system_checks', False))
+   223	        if not getattr(args, 'dry_run', False) and not skip_checks:
+   224	            sys_errors, sys_warnings = self._validate_system_dependencies(args)
+   225	            errors.extend(sys_errors)
+   226	            warnings.extend(sys_warnings)
+   227	        
+   228	        return {
+   229	            'valid': len(errors) == 0,
+   230	            'errors': errors,
+   231	            'warnings': warnings
+   232	        }
+   233	    
+   234	    def _validate_features(self, args) -> tuple[List[str], List[str]]:
+   235	        """Validate feature prerequisites"""
+   236	        errors = []

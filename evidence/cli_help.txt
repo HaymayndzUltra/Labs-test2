@@ -1,7 +1,3 @@
-Commit: c0cc79bd8ba179b81bd8c46cb4a1c805dd42bcd3
-
-Timestamp: 2025-09-15T05:48:42Z
-
 usage: generate_client_project.py [-h] --name NAME
                                   --industry {healthcare,finance,ecommerce,saas,enterprise}
                                   --project-type {web,mobile,api,fullstack,microservices}
@@ -23,7 +19,7 @@ usage: generate_client_project.py [-h] --name NAME
                                   [--rules-mode {auto,minimal,none}]
                                   [--rules-manifest RULES_MANIFEST]
                                   [--minimal-cursor] [--workers WORKERS]
-                                  [--list-templates]
+                                  [--skip-system-checks] [--list-templates]
                                   [--category {test,example,demo,archived}]
 
 Generate industry-specific client projects with compliance support
@@ -88,6 +84,8 @@ options:
                         selected rules). Skips dev-workflow and tools.
   --workers WORKERS     Number of worker threads for template processing
                         (0=auto)
+  --skip-system-checks  Allow generation even if system deps (e.g., Docker)
+                        are not available
   --list-templates      List available templates and exit
   --category {test,example,demo,archived}
                         Category for the generated project
