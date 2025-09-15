@@ -3,6 +3,7 @@ import os
 import json
 import uuid
 import datetime
+import re
 from pathlib import Path
 from collections import OrderedDict
 
@@ -161,6 +162,25 @@ def evaluate_policies(policies, context_map):
     matches.sort(key=lambda x: x.get('priority', 0), reverse=True)
     return matches
 
+def _redact_sensitive(value):
+    patterns = re.compile(r"(password|secret|token|credential|api[_-]?key)", re.IGNORECASE)
+    if isinstance(value, dict):
+        clean = {}
+        for k, v in value.items():
+            if isinstance(k, str) and patterns.search(k):
+                # drop or mask sensitive keys entirely
+                continue
+            clean[k] = _redact_sensitive(v)
+        return clean
+    if isinstance(value, list):
+        return [_redact_sensitive(v) for v in value]
+    if isinstance(value, str):
+        if patterns.search(value):
+            return "[REDACTED]"
+        return value
+    return value
+
+
 def route_decision(context):
     precedence = load_precedence()
     policies = list_policies()
@@ -209,16 +229,15 @@ def route_decision(context):
         if isinstance(win_name, str) and win_name:
             decision = win_name
 
+    # Trace correlation
+    trace_id = context.get('trace_id') or str(uuid.uuid4())
     log = {
         'session_id': str(uuid.uuid4()),
         'timestamp': datetime.datetime.utcnow().isoformat() + 'Z',
         'decision': decision,
-        'confidence': 1.0 if winning else 0.0,
         'rules_considered': considered,
         'winning_rule': decision,
-        'override_reason': None,
-        'approver': None,
-        'snapshot_id': context.get('snapshot_id')
+        'trace_id': str(trace_id),
     }
     # populate LRU
     if not CACHE_DISABLED:
@@ -232,7 +251,8 @@ def route_decision(context):
     outdir = ROOT / '.cursor' / 'dev-workflow' / 'routing_logs'
     outdir.mkdir(parents=True, exist_ok=True)
     fpath = outdir / (log['session_id'] + '.json')
-    fpath.write_text(json.dumps(log, indent=2), encoding='utf-8')
+    safe_log = _redact_sensitive(log)
+    fpath.write_text(json.dumps(safe_log, indent=2), encoding='utf-8')
     return log
 
 if __name__ == '__main__':
