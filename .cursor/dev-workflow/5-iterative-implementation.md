@@ -1,3 +1,15 @@
+---
+title: "Phase 05 — Iterative Implementation"
+phase: 5
+gates:
+  - unit-tests-green
+  - integration-tests-green
+  - lint-green
+---
+
+1. Break tasks into small deliverables.
+2. Implement feature slices end-to-end.
+3. Keep PRs small; add/adjust tests.
 # PROTOCOL 5: ITERATIVE IMPLEMENTATION
 
 ## 1. AI ROLE AND MISSION

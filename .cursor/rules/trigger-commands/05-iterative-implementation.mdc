@@ -1,4 +1,13 @@
 ---
+description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-05,implement,delivery | SCOPE: project-rules | DESCRIPTION: Trigger to apply Iterative Implementation workflow instructions."
+alwaysApply: false
+globs: .cursor/dev-workflow/5-iterative-implementation.md
+---
+
+# Trigger: Phase 05 — Iterative Implementation
+
+Apply instructions from `.cursor/dev-workflow/5-iterative-implementation.md`.
+---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-05,test,qa,coverage,security,performance | SCOPE: project-rules | DESCRIPTION: Trigger to apply Testing & QA workflow instructions."
 alwaysApply: false
 globs: .cursor/dev-workflow/5-iterative-implementation.md

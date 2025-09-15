@@ -1,0 +1,25 @@
+---
+description: "TAGS: [governance,precedence,router] | TRIGGERS: precedence,router,tie-break | SCOPE: master-rules | DESCRIPTION: Defines the global rule Priority Order for deterministic routing tie-breaks."
+alwaysApply: false
+---
+
+# Governance Precedence
+
+The following Priority Order is used by the workflow router to deterministically resolve tie-breaks when multiple rules match.
+
+## Priority Order
+
+- F8-security-and-compliance-overlay
+- 8-auditor-validator-protocol
+- 4-master-rule-code-modification-safety-protocol
+- 3-master-rule-code-quality-checklist
+- 6-master-rule-complex-feature-context-preservation
+- 2-master-rule-ai-collaboration-guidelines
+- 5-master-rule-documentation-and-context-guidelines
+- 7-dev-workflow-command-router
+- project-rules
+
+## Notes
+
+- Keep this list synchronized with the intelligent precedence base order used by CI gates.
+- Changes to this list must be accompanied by CI updates and a short ADR entry.

@@ -1,3 +1,12 @@
+---
+title: "Dev Workflow Configuration"
+---
+
+Environment variables:
+
+- CURSOR_CONTEXT_ENCRYPTION_KEY: 32-byte base64 key for context cache encryption.
+
+Routing logs are stored under `.cursor/dev-workflow/routing_logs/` with sensitive fields redacted.
 The Governor Workflow: From Idea to Production
 1. Why: A Structured Workflow for Predictable Results
 Working with AI can sometimes feel unpredictable. The AI Governor Framework provides a development workflow designed to fix that, for both new and existing projects.

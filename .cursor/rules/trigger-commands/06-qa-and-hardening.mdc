@@ -1,4 +1,13 @@
 ---
+description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-06,qa,hardening | SCOPE: project-rules | DESCRIPTION: Trigger to apply QA & Hardening workflow instructions."
+alwaysApply: false
+globs: .cursor/dev-workflow/6-qa-and-hardening.md
+---
+
+# Trigger: Phase 06 — QA & Hardening
+
+Apply instructions from `.cursor/dev-workflow/6-qa-and-hardening.md`.
+---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-06,deploy,release,production | SCOPE: project-rules | DESCRIPTION: Trigger to apply Deployment workflow instructions."
 alwaysApply: false
 globs: .cursor/dev-workflow/6-qa-and-hardening.md

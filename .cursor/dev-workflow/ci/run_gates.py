@@ -1,4 +1,58 @@
 #!/usr/bin/env python3
+import json
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[3]
+
+def check_precedence_parity() -> int:
+    prec_file = ROOT / '.cursor' / 'rules' / 'master-rules' / '9-governance-precedence.mdc'
+    base = [
+        'F8-security-and-compliance-overlay',
+        '8-auditor-validator-protocol',
+        '4-master-rule-code-modification-safety-protocol',
+        '3-master-rule-code-quality-checklist',
+        '6-master-rule-complex-feature-context-preservation',
+        '2-master-rule-ai-collaboration-guidelines',
+        '5-master-rule-documentation-and-context-guidelines',
+        '7-dev-workflow-command-router',
+        'project-rules',
+    ]
+    if not prec_file.exists():
+        print('[GATES] precedence file missing')
+        return 2
+    text = prec_file.read_text(encoding='utf-8')
+    # Parse only the Priority Order block to avoid YAML frontmatter and notes
+    lower = text.lower()
+    start = lower.find('priority order')
+    block = text[start: start + 2000] if start != -1 else text
+    lines = [l.strip() for l in block.splitlines() if l.strip().startswith('-') and not l.strip().startswith('---')]
+    # Only collect the first 9 items
+    order = []
+    for l in lines:
+        tok = l.lstrip('-').strip().split(' ')[0]
+        order.append(tok)
+        if len(order) >= 9:
+            break
+    if order != base:
+        print('[GATES] precedence mismatch')
+        print('expected:', json.dumps(base))
+        print('found   :', json.dumps(order))
+        return 1
+    print('[GATES] precedence parity OK')
+    return 0
+
+def main() -> int:
+    failures = 0
+    rc = check_precedence_parity()
+    if rc != 0:
+        failures += 1
+    return 1 if failures else 0
+
+if __name__ == '__main__':
+    sys.exit(main())
+
+#!/usr/bin/env python3
 import hashlib, os, sys, yaml, importlib.util
 from pathlib import Path
 

@@ -1,3 +1,13 @@
+security:
+  encryption:
+    enabled: true
+    algorithm: "AES-256"
+    key_env: "CURSOR_CONTEXT_ENCRYPTION_KEY"
+    key_rotation_days: 90
+ttl:
+  default_seconds: 7200
+  industry_adjustments:
+    healthcare: 3600
 # Context Cache Configuration
 # Defines caching strategies and performance optimization settings
 

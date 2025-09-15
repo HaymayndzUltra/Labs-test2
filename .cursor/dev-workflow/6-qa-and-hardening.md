@@ -1,3 +1,15 @@
+---
+title: "Phase 06 — QA & Hardening"
+phase: 6
+gates:
+  - coverage>=80%
+  - perf_p95_ms<=500
+  - security_vulns_critical==0
+---
+
+1. Expand unit/integration/E2E tests.
+2. Fix defects and tighten validations.
+3. Run performance and security scans.
 # PROTOCOL 6: QA & HARDENING
 
 ## 1. AI ROLE AND MISSION

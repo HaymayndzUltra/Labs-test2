@@ -115,15 +115,33 @@ def _normalize_context(context_map) -> str:
         return str(context_map).lower().replace('-', ' ')
 
 def evaluate_policies(policies, context_map):
-    # Normalize context values to a single lower-cased string for robust substring matching
-    normalized_context = _normalize_context(context_map)
+    """Match policies by exact token/set containment instead of substring.
+
+    Converts the context map into a set of lowercase tokens; a policy matches
+    only if its required condition tokens are a subset of the context tokens.
+    """
+    # Tokenize context into a set
+    tokens: set[str] = set()
+    try:
+        if isinstance(context_map, dict):
+            for v in context_map.values():
+                if isinstance(v, (list, tuple, set)):
+                    for x in v:
+                        tokens.update(str(x).lower().replace('-', ' ').split())
+                else:
+                    tokens.update(str(v).lower().replace('-', ' ').split())
+        else:
+            tokens.update(str(context_map).lower().replace('-', ' ').split())
+    except Exception:
+        tokens.update(str(context_map).lower().replace('-', ' ').split())
+
     matches = []
     for policy in policies:
-        conditions = policy.get('conditions') or []
-        conditions_lc = [str(c).lower() for c in conditions]
-        if all(c in normalized_context for c in conditions_lc):
+        raw_conditions = policy.get('conditions') or []
+        required = {str(c).lower() for c in raw_conditions}
+        if required.issubset(tokens):
             matches.append(policy)
-    # Primary ordering by priority (desc). Tie-break left as stable order for now
+    # Primary ordering by priority (desc)
     matches.sort(key=lambda x: x.get('priority', 0), reverse=True)
     return matches
 

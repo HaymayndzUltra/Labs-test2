@@ -1,4 +1,13 @@
 ---
+description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-07,release,deploy,production | SCOPE: project-rules | DESCRIPTION: Trigger to apply Release & Deployment workflow instructions."
+alwaysApply: false
+globs: .cursor/dev-workflow/7-release-and-deployment.md
+---
+
+# Trigger: Phase 07 — Release & Deployment
+
+Apply instructions from `.cursor/dev-workflow/7-release-and-deployment.md`.
+---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-07,maintain,patch,backup,audit,monitor | SCOPE: project-rules | DESCRIPTION: Trigger to apply Maintenance workflow instructions."
 alwaysApply: false
 globs: .cursor/dev-workflow/7-release-and-deployment.md

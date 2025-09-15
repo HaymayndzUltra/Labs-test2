@@ -1,3 +1,15 @@
+---
+title: "Phase 07 — Release & Deployment"
+phase: 7
+gates:
+  - all-tests-green
+  - security-scan-green
+  - smoke-tests-green
+---
+
+1. Prepare release notes and versioning.
+2. Deploy via CI with rollback plan.
+3. Run smoke tests and verify health endpoints.
 # PROTOCOL 7: RELEASE & DEPLOYMENT
 
 ## 1. AI ROLE AND MISSION
