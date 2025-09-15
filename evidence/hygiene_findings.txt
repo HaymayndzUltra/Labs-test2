@@ -1,0 +1,57 @@
+Commit: c0cc79bd8ba179b81bd8c46cb4a1c805dd42bcd3
+\nTimestamp: 2025-09-15T05:45:04Z\n
+Check stray artifacts:
+No .venv or test.db found in tree
+
+.gitignore:
+# Security
+# Compliance
+# Evidence files go herenode_modules/
+
+__pycache__/
+*.pyc
+.env
+.DS_Store
+.idea/
+.vscode/
+coverage/
+dist/
+build/
+.next/
+.svelte-kit/
+.cursor/dev-workflow/snapshots/
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+.nox/
+.tox/
+venv/
+.venv/
+.env
+.env.*
+.DS_Store
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log
+pnpm-lock.yaml
+# Editor/OS
+.idea/
+.vscode/
+Thumbs.db
+# Cursor rules and snapshots
+.cursor/dev-workflow/snapshots/
+.cursor/dev-workflow/routing_logs/
+.cursor/dev-workflow/waivers/
+.snapshots/
+# Build artifacts
+dist/
+build/
+.cache/
+
+Potential secrets (pattern scan):

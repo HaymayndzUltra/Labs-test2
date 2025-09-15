@@ -1,0 +1,37 @@
+Commit: c0cc79bd8ba179b81bd8c46cb4a1c805dd42bcd3
+\nTimestamp: 2025-09-15T05:44:37Z\n
+Locks and manifests:
+- requirements.txt
+
+== requirements.txt (first 30 lines) ==
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+sqlalchemy==2.0.23
+alembic==1.13.1
+asyncpg==0.29.0
+redis==5.0.1
+slowapi==0.1.9
+httpx==0.25.2
+
+# Testing dependencies
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+pytest-xdist==3.5.0
+
+# Code quality
+black==23.11.0
+isort==5.12.0
+mypy==1.7.1
+bandit==1.7.5
+flake8==6.1.0
+
+# Additional utilities
+requests==2.31.0
+

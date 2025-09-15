@@ -1,0 +1,302 @@
+Commit: c0cc79bd8ba179b81bd8c46cb4a1c805dd42bcd3
+\nTimestamp: 2025-09-15T05:45:46Z\n
+.github/workflows contents:
+== .github/workflows/ci-nox.yml ==
+name: CI (nox)
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'project_generator/**'
+      - '.github/workflows/ci-nox.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'project_generator/**'
+      - '.github/workflows/ci-nox.yml'
+  workflow_dispatch:
+    inputs:
+      run_fastapi:
+        description: "Run FastAPI template tests"
+        required: false
+        default: 'false'
+      run_django:
+        description: "Run Django template tests"
+        required: false
+        default: 'false'
+      run_next:
+        description: "Run Next.js template tests"
+        required: false
+        default: 'false'
+      run_angular:
+        description: "Run Angular template tests"
+        required: false
+        default: 'false'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install nox
+        run: |
+          python -m pip install --upgrade pip
+          pip install nox
+      - name: Run generator session (default)
+        run: nox -s generator
+      - name: Upload artifacts (optional)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: ./.nox/**/log*
+      - name: Run FastAPI template tests
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_fastapi == 'true' }}
+        run: nox -s fastapi
+      - name: Run Django template tests
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_django == 'true' }}
+        run: nox -s django
+      - name: Run Next.js template tests
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_next == 'true' }}
+        run: nox -s next
+      - name: Install Chromium (for Angular)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_angular == 'true' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser || sudo apt-get install -y chromium
+          echo "CHROME_BIN=$(command -v chromium-browser || command -v chromium)" >> $GITHUB_ENV
+      - name: Run Angular template tests
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_angular == 'true' }}
+        env:
+          CHROME_BIN: ${{ env.CHROME_BIN }}
+        run: nox -s angular
+
+
+== .github/workflows/ci.yml ==
+name: CI
+
+on:
+  pull_request:
+    branches: [ integration, main ]
+  push:
+    branches: [ integration, main ]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install deps
+        run: |
+          if [ -f package.json ]; then npm ci; fi
+      - name: Lint
+        run: |
+          if [ -f package.json ] && npm run | grep -q lint; then npm run lint; else echo "skip"; fi
+      - name: Test
+        run: |
+          if [ -f package.json ] && npm run | grep -q test; then npm run test -- --ci --reporters=default --coverage; else echo "skip"; fi
+      - name: Enforce coverage gate (>=80%)
+        if: always()
+        run: |
+          if [ -f coverage/coverage-summary.json ]; then \
+            node -e "const s=require('./coverage/coverage-summary.json').total; const pct=s.lines.pct; if(pct<80){console.error('Coverage below 80%:',pct); process.exit(1)} else {console.log('Coverage OK:',pct)}"; \
+          else echo "No coverage file; skipping"; fi
+      - name: Security scan (npm audit)
+        run: |
+          if [ -f package.json ]; then npm audit --audit-level=high; else echo "skip"; fi
+      - name: SBOM (CycloneDX)
+        run: |
+          if [ -f package.json ]; then npx @cyclonedx/cyclonedx-npm --output-file security/sbom/sbom.json --output-format json || true; fi
+
+  contracts:
+    name: Contracts & Schemas
+    runs-on: ubuntu-latest
+    needs: build-test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate OpenAPI (swagger-cli)
+        run: |
+          if [ -f contracts/api/openapi.yaml ]; then npx -y swagger-cli@4.0.4 validate contracts/api/openapi.yaml; else echo "no openapi"; fi
+      - name: Lint OpenAPI (redocly)
+        run: |
+          if [ -f contracts/api/openapi.yaml ]; then npx -y @redocly/cli@latest lint contracts/api/openapi.yaml; else echo "no openapi"; fi
+      - name: Run tokens pipeline merge
+        run: |
+          if [ -f data/pipelines/tokens_sync.py ]; then python3 data/pipelines/tokens_sync.py; else echo "no tokens pipeline"; fi
+      - name: Validate merged tokens JSON
+        run: |
+          if [ -f data/pipelines/out/tokens.json ]; then jq . data/pipelines/out/tokens.json > /dev/null; else echo "no merged tokens"; fi
+
+  security:
+    name: Secrets & Supply Chain
+    runs-on: ubuntu-latest
+    needs: build-test
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gitleaks (secrets scan)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with: {}
+      - name: SBOM (CycloneDX)
+        run: |
+          if [ -f package.json ]; then npx -y @cyclonedx/cyclonedx-npm --output-file security/sbom/sbom.json --output-format json; else echo "skip"; fi
+
+  policy:
+    name: Policy as Code (OPA/Conftest)
+    runs-on: ubuntu-latest
+    needs: build-test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install conftest
+        env:
+          CONFTEST_VERSION: ${{ vars.CONFTEST_VERSION }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y jq file
+          if [ -n "${CONFTEST_VERSION:-}" ]; then
+            API_URL="https://api.github.com/repos/open-policy-agent/conftest/releases/tags/v${CONFTEST_VERSION}"
+          else
+            API_URL="https://api.github.com/repos/open-policy-agent/conftest/releases/latest"
+          fi
+          ASSET_URL=$(curl -sSfL "$API_URL" | jq -r '.assets[].browser_download_url' | grep -E 'Linux_(x86_64|amd64)\.tar\.gz$' | head -n1)
+          if [ -z "$ASSET_URL" ]; then
+            echo "Could not resolve Conftest asset URL via GitHub API: $API_URL" >&2
+            exit 1
+          fi
+          echo "Downloading Conftest from: $ASSET_URL"
+          curl -sSfL -o conftest.tar.gz "$ASSET_URL"
+          if file conftest.tar.gz | grep -q 'gzip compressed data'; then
+            tar -xzf conftest.tar.gz
+            sudo mv conftest /usr/local/bin/
+            conftest --version
+          else
+            echo "Downloaded asset is not a gzip archive; please verify asset type." >&2
+            exit 1
+          fi
+      - name: Test OpenAPI against policies
+        run: |
+          if [ -f contracts/api/openapi.yaml ]; then conftest test --policy security/policy contracts/api/openapi.yaml; else echo "no openapi"; fi
+      - name: Test Lighthouse config against policies
+        run: |
+          if [ -f .lighthouserc.json ]; then conftest test --policy security/policy .lighthouserc.json; else echo "no lh config"; fi
+
+  governor:
+    name: AI Governor Gates
+    runs-on: ubuntu-latest
+    needs: build-test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install deps
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install jsonschema pyyaml
+      - name: Generate snapshot (if missing)
+        run: |
+          python3 .cursor/dev-workflow/snapshots/generate_snapshot.py || true
+      - name: Run all AI Governor gates
+        run: |
+          python3 .cursor/dev-workflow/ci/run_all_gates.py
+        env:
+          GOVERNOR_ADVISORY_MODE: ${{ vars.GOVERNOR_ADVISORY_MODE || 'true' }}
+      - name: Rule normalization (dry-run)
+        run: |
+          python3 .cursor/dev-workflow/ci/normalize_rules.py || true
+      - name: Policy decision tests
+        run: |
+          python3 scripts/test_policy_decisions.py || true
+
+  a11y_perf:
+    if: ${{ vars.A11Y_TARGET_URL != '' }}
+    name: A11y & Perf Smoke (optional)
+    runs-on: ubuntu-latest
+    needs: build-test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Lighthouse CI (assert categories >=0.9)
+        run: |
+          npx -y @lhci/cli@0.13.x autorun --collect.url=${{ vars.A11Y_TARGET_URL }} --config=.lighthouserc.json
+
+  workflows_validation:
+    name: Workflows Validation
+    runs-on: ubuntu-latest
+    needs: build-test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate workflow docs (frontmatter/sections)
+        run: |
+          set -euo pipefail
+          mkdir -p validation
+          python3 scripts/validate_workflows.py --all | tee validation/workflows_validation.txt
+      - name: Upload validation artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workflows-validation
+          path: validation/workflows_validation.txt
+
+  gates_enforcer:
+    name: Gates Enforcer
+    runs-on: ubuntu-latest
+    needs: [build-test, workflows_validation]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install tooling
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pyyaml || true
+          python3 -m pip install bandit || true
+      - name: Enforce gates from gates_config.yaml (simulate if missing)
+        run: |
+          set -euo pipefail
+
