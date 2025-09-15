@@ -42,6 +42,12 @@ Action: Document access control, audit logging, encryption, and compliance mappi
 Acceptance:
 - [ ] Security/compliance plan reviewed
 
+Controls to cover (HIPAA/industry):
+- Encryption at rest (e.g., AES-256) and in transit (TLS)
+- RBAC (minimum necessary access)
+- Audit logging for PHI access/changes
+- Session timeout ≥ 15 minutes
+
 ### Step 5: Estimates & Milestones
 Action: Provide timeline and resource estimates
 Acceptance:

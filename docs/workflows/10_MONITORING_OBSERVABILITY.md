@@ -25,6 +25,10 @@ Action: Structured logs with correlation IDs; no PHI/PII leakage
 Acceptance:
 - [ ] Logs structured; sensitive data absent
 
+No PHI in logs (explicit):
+- Ensure log statements never include PHI/PII
+- Add filters/scrubbers to logging pipeline
+
 ### Step 2: Metrics & Traces
 Action: Define key SLIs/SLOs; enable tracing on critical paths
 Acceptance:

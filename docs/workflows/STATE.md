@@ -176,3 +176,20 @@ State tracker for workflow improvements across phases.
 - [x] Maintenance guide present; restore test documented and verified
 - [x] SLA/ownership entries updated in STATE.md
 - [x] Backups configured with proof of last success
+
+---
+
+# Phase 08 — Security & Compliance (Controls Validation) Results
+
+## Deliverables
+- Compliance doc checker: `scripts/check_compliance_docs.py`
+- Evidence mapping updated in `08_SECURITY_COMPLIANCE.md`
+
+## Verification
+- Automated checks: PASS → `validation/compliance_report.json` shows all required controls present in docs
+- No PHI in logs guideline explicitly stated in `10_MONITORING_OBSERVABILITY.md`
+
+## Acceptance (Phase 08)
+- [x] Compliance checklist completed; mappings to artifacts documented
+- [x] Automated checks show required controls are present
+- [x] No PHI in logs guideline explicitly stated in 10 and validated

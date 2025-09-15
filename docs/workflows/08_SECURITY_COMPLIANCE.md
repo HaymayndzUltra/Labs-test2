@@ -32,6 +32,13 @@ Action: Confirm encryption at rest/in transit, RBAC, audit logging, session time
 Acceptance:
 - [ ] Controls documented and mapped
 
+Required controls (HIPAA):
+- Encryption at rest (e.g., AES-256)
+- Encryption in transit (TLS/HTTPS)
+- RBAC (role-based access control)
+- Audit logging for PHI access/changes
+- Session timeout ≥ 15 minutes
+
 ### Step 3: CI Gates
 Action: Review `gates_config.yaml` and security scans
 Acceptance:
@@ -39,6 +46,7 @@ Acceptance:
 
 ## Evidence
 - Compliance checklist; gates config snapshot
+  - `validation/compliance_report.json` (automated doc controls report)
 
 ## Failure Modes & Troubleshooting
 - Missing controls → add/verify encryption, RBAC, audit logging, session timeout
