@@ -57,3 +57,21 @@ Acceptance:
 - [ ] Controls documented and mapped
 - [ ] CI gates enabled with thresholds set
 - [ ] Related Phases: 02 (planning), 05 (gates), 06 (pre-deploy)
+
+---
+
+Variables
+- PROJ=<project-key>
+
+Run Commands
+```
+# Validate controls mentions in workflow docs
+python3 scripts/check_compliance_docs.py
+```
+
+Generated/Updated Files
+- validation/compliance_report.json
+
+Gate to Phase 09
+- [ ] Compliance checklist completed; report PASS
+- [ ] Controls mapping documented

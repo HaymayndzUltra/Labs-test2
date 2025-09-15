@@ -53,3 +53,21 @@ Acceptance:
 - [ ] Runbook and troubleshooting complete
 - [ ] Change log entries linked to PRs/tickets
 - [ ] Related Phases: 06 (deploy/runbook), 07 (ops updates)
+
+Variables
+- PROJ=<project-key>
+
+Run Commands
+```
+# Validate workflows and compliance mentions
+python3 scripts/validate_workflows.py --all
+python3 scripts/check_compliance_docs.py
+```
+
+Generated/Updated Files
+- docs/DEVELOPMENT.md, RUNBOOK.md, CONTRIBUTING.md, README.md (updated)
+
+Gate to Phase 10
+- [ ] Docs reflect validators/gates/commands
+- [ ] Runbook/troubleshooting complete and linked
+- [ ] Docs PR reviewed/approved

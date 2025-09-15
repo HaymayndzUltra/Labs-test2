@@ -63,3 +63,25 @@ Acceptance:
 - [ ] Patches current; backups restorable; audits passed
 - [ ] Docs and roadmap updated
 - [ ] Related Phases: 06 (post-deploy), 10 (observability)
+
+---
+
+Variables
+- PROJ=<project-key>
+
+Run Commands
+```
+# Backup and restore test
+make backup-workflows
+make restore-test
+```
+
+Generated/Updated Files
+- backups/workflows_backup.tar.gz
+- backups/last_success.json
+- backups/restore_test/**
+- backups/last_restore.json
+
+Gate to Phase 08
+- [ ] Backups configured with proof; restore test passes
+- [ ] Monitoring/alerts configured; audits scheduled

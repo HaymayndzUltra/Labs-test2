@@ -72,3 +72,23 @@ Acceptance:
 - [ ] SLIs tracked; traces visible
 - [ ] Alerts actionable; dashboards shared
 - [ ] Related Phases: 07 (ops), 06 (post-deploy validation)
+
+---
+
+Variables
+- PROJ=<project-key>
+
+Run Commands
+```
+# Import templates to your monitoring stack; record links in Evidence section
+# (No local command changes required in repo)
+```
+
+Generated/Updated Files
+- observability/grafana_dashboard.json (imported)
+- observability/alerts.yaml (imported)
+
+Gate (Completion)
+- [ ] Templates available and documented
+- [ ] SLIs/SLOs defined and tracked
+- [ ] Dashboard/alert links recorded in Evidence

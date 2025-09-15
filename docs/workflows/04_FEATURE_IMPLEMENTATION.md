@@ -58,3 +58,29 @@ Acceptance:
 - [ ] Code review approved; QA pass
 - [ ] Gates satisfied (coverage ≥ 80%, 0 critical vulns, p95 ≤ 500ms)
 - [ ] Related Phases: 03 (inputs), 05 (validation)
+
+---
+
+Variables
+- PROJ=<project-key>
+
+Run Commands
+```
+# Lint + tests before PR
+make lint || true
+make test || true
+
+# (Optional) scripts-only checks
+python3 -m bandit -r scripts/ -f json | tee security/bandit.json || true
+```
+
+Generated/Updated Files
+- pull-requests/* (PR with feature changes)
+- reports/tests/* (coverage/test outputs if configured)
+- security/bandit.json (optional)
+
+Gate to Phase 05
+- [ ] DOD met; no lint errors
+- [ ] Validation and error paths tested
+- [ ] Integrations pass tests
+- [ ] Coverage meets target

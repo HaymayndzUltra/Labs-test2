@@ -52,3 +52,21 @@ Acceptance:
 - [ ] Smoke tests pass
 - [ ] Alerts nominal post-deploy
 - [ ] Related Phases: 05 (gates input), 07/10 (operations)
+
+Variables
+- PROJ=<project-key>
+
+Run Commands
+```
+# Ensure CI checks are required (workflows_validation, gates_enforcer)
+# Trigger deployment via CI workflow or approved manual run
+```
+
+Generated/Updated Files
+- ci/deploy-logs.txt
+- post-deploy/smoke-report.json
+
+Gate to Phase 07
+- [ ] CI jobs green on base branch
+- [ ] Deployment completed without critical errors
+- [ ] Smoke tests pass; alerts nominal
