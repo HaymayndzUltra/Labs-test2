@@ -1,0 +1,12 @@
+- name: no-false-positive-healthcare-needs-both
+  context:
+    tokens:
+      - "industry:healthcare"
+  expect_decision: "none"
+
+- name: exact-match-healthcare-fullstack
+  context:
+    tokens:
+      - "industry:healthcare"
+      - "project_type:fullstack"
+  expect_decision: "select-healthcare-fullstack"

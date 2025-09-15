@@ -43,13 +43,25 @@ _LRU: OrderedDict[str, dict] = OrderedDict()
 _CACHE_EPOCH = 0  # bumped when precedence/policies change
 RULES_DIR = ROOT / '.cursor' / 'rules'
 PRECEDENCE_FILE = RULES_DIR / 'master-rules' / '9-governance-precedence.mdc'
+BASE_PRECEDENCE = [
+    'F8-security-and-compliance-overlay',
+    '8-auditor-validator-protocol',
+    '4-master-rule-code-modification-safety-protocol',
+    '3-master-rule-code-quality-checklist',
+    '6-master-rule-complex-feature-context-preservation',
+    '2-master-rule-ai-collaboration-guidelines',
+    '5-master-rule-documentation-and-context-guidelines',
+    '7-dev-workflow-command-router',
+    'project-rules',
+]
 POLICY_DIR = ROOT / '.cursor' / 'dev-workflow' / 'policy-dsl'
 ROUTING_LOG_SCHEMA = ROOT / '.cursor' / 'dev-workflow' / 'schemas' / 'routing_log.json'
 
 def load_precedence():
     global _PREC_CACHE, _PREC_MTIME, _CACHE_EPOCH
     if not PRECEDENCE_FILE.exists():
-        _PREC_CACHE = []
+        # Fallback to base precedence to preserve deterministic tie-breaks
+        _PREC_CACHE = BASE_PRECEDENCE.copy()
         _PREC_MTIME = None
         return _PREC_CACHE
     mtime = PRECEDENCE_FILE.stat().st_mtime
@@ -86,10 +98,14 @@ def list_policies():
             continue
     if not CACHE_DISABLED and _POLICY_CACHE is not None and _POLICY_MTIME and abs(mt - _POLICY_MTIME) < 1.0:
         return _POLICY_CACHE
-    out = []
+    out: list[dict] = []
     for f in files:
         try:
-            out.append(json.loads(f.read_text(encoding='utf-8')))
+            doc = json.loads(f.read_text(encoding='utf-8'))
+            if isinstance(doc, list):
+                out.extend([d for d in doc if isinstance(d, dict)])
+            elif isinstance(doc, dict):
+                out.append(doc)
         except Exception:
             continue
     _POLICY_CACHE = out
