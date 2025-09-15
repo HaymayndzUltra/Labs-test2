@@ -372,6 +372,13 @@ class ProjectGenerator:
         # Gates configuration
         gates_config = self._generate_gates_config()
         (self.project_root / 'gates_config.yaml').write_text(gates_config)
+        
+        # Minimal PCI/SOX overlays: add simple job triggers when selected
+        if self.args.compliance:
+            comps = [c.strip().lower() for c in self.args.compliance.split(',')]
+            if 'pci' in comps or 'sox' in comps:
+                base_ci = self._generate_base_ci_overlays(comps)
+                (workflows_dir / 'ci-compliance-overlays.yml').write_text(base_ci)
     
     def _generate_compliance_rules(self):
         """Generate compliance and project-specific rules"""
@@ -2606,3 +2613,33 @@ This document outlines the compliance measures implemented in {self.args.name}.
 - Email: legal@company.com
 - Phone: +1-xxx-xxx-xxxx
 """
+
+    def _generate_base_ci_overlays(self, comps: List[str]) -> str:
+        jobs: List[str] = []
+        if 'pci' in comps:
+            jobs.append(
+                """
+  pci-min-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PCI minimal check (dependency vulns)
+        run: |
+          if [ -f package.json ]; then npm audit --audit-level=high; else echo "no node"; fi
+          if [ -f requirements.txt ]; then python -m pip install --upgrade pip pip-audit && pip-audit -r requirements.txt || true; fi
+                """.rstrip()
+            )
+        if 'sox' in comps:
+            jobs.append(
+                """
+  sox-min-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: SOX minimal audit trail check (git metadata)
+        run: |
+          git log -1 --pretty=fuller | cat
+                """.rstrip()
+            )
+        body = "\n\n".join(jobs) if jobs else ""
+        return f"""name: Compliance Overlays\n\non:\n  pull_request:\n    branches: [ main, develop, integration ]\n  push:\n    branches: [ main, develop, integration ]\n\njobs:{body}\n"""
