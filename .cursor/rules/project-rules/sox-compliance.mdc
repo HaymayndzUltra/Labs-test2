@@ -1,7 +1,7 @@
 ---
 description: SOX compliance requirements for financial reporting
 globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
-alwaysApply: true
+alwaysApply: false
 ---
 
 # sox-compliance Development Rule

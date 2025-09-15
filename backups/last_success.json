@@ -1,0 +1,9 @@
+{
+  "timestamp": "2025-09-15T00:36:52.395866+00:00",
+  "archive": "backups/workflows_backup.tar.gz",
+  "archived_paths": [
+    "docs/workflows",
+    ".cursor/rules/trigger-commands"
+  ],
+  "size_bytes": 11603
+}

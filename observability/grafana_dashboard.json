@@ -1,0 +1,34 @@
+{
+  "title": "Workflow Health",
+  "timezone": "browser",
+  "panels": [
+    {
+      "title": "Validation Failures Rate (per hour)",
+      "type": "graph",
+      "targets": [
+        { "expr": "rate(workflow_validation_failures_total[1h])" }
+      ]
+    },
+    {
+      "title": "CI Pass Rate",
+      "type": "stat",
+      "targets": [
+        { "expr": "ci_pipeline_pass_total / (ci_pipeline_pass_total + ci_pipeline_fail_total)" }
+      ]
+    },
+    {
+      "title": "Time to Fix (P95 hours)",
+      "type": "stat",
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum(rate(workflow_fix_time_bucket[1d])) by (le))" }
+      ]
+    },
+    {
+      "title": "Perf p95 (ms)",
+      "type": "stat",
+      "targets": [
+        { "expr": "workflow_perf_p95_ms" }
+      ]
+    }
+  ]
+}

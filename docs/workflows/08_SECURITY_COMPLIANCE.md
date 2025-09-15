@@ -1,3 +1,19 @@
+---
+title: "Phase 08: Security & Compliance"
+phase: 8
+triggers: ["phase-08","compliance","security","audit","gates"]
+scope: "project-rules"
+inputs: ["Generated project context","Rules/validation tools available"]
+outputs: ["Compliance checklist","Gates config snapshot"]
+artifacts: [".cursor/tools/check_compliance.py","gates_config.yaml"]
+gates: { coverage: ">=80%", perf_p95_ms: "<=500", vulns_critical: 0 }
+owner: "Security Lead"
+---
+
+## Prerequisites
+- Generated project context available
+- Validation tools present (.cursor/tools/*)
+
 # Security & Compliance Workflow
 
 ## Overview
@@ -16,6 +32,13 @@ Action: Confirm encryption at rest/in transit, RBAC, audit logging, session time
 Acceptance:
 - [ ] Controls documented and mapped
 
+Required controls (HIPAA):
+- Encryption at rest (e.g., AES-256)
+- Encryption in transit (TLS/HTTPS)
+- RBAC (role-based access control)
+- Audit logging for PHI access/changes
+- Session timeout ≥ 15 minutes
+
 ### Step 3: CI Gates
 Action: Review `gates_config.yaml` and security scans
 Acceptance:
@@ -23,3 +46,32 @@ Acceptance:
 
 ## Evidence
 - Compliance checklist; gates config snapshot
+  - `validation/compliance_report.json` (automated doc controls report)
+
+## Failure Modes & Troubleshooting
+- Missing controls → add/verify encryption, RBAC, audit logging, session timeout
+- CI gates not enforced → ensure jobs read gates_config.yaml and fail on breach
+
+## Overall Acceptance
+- [ ] Required rules present and validated
+- [ ] Controls documented and mapped
+- [ ] CI gates enabled with thresholds set
+- [ ] Related Phases: 02 (planning), 05 (gates), 06 (pre-deploy)
+
+---
+
+Variables
+- PROJ=<project-key>
+
+Run Commands
+```
+# Validate controls mentions in workflow docs
+python3 scripts/check_compliance_docs.py
+```
+
+Generated/Updated Files
+- validation/compliance_report.json
+
+Gate to Phase 09
+- [ ] Compliance checklist completed; report PASS
+- [ ] Controls mapping documented

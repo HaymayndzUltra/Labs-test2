@@ -166,6 +166,7 @@ def test_healthcare_project_generation():
 - Include code examples
 - Update README when adding features
 - Add docstrings to all functions
+ - For workflow docs, include required YAML frontmatter and required sections per `docs/workflows/CONVENTIONS.md`; validate with `python3 scripts/validate_workflows.py --all`
 
 ## 📋 Pull Request Process
 

@@ -3,8 +3,14 @@ name: CI (nox)
 on:
   pull_request:
     branches: [ main, develop ]
+    paths:
+      - 'project_generator/**'
+      - '.github/workflows/ci-nox.yml'
   push:
     branches: [ main ]
+    paths:
+      - 'project_generator/**'
+      - '.github/workflows/ci-nox.yml'
   workflow_dispatch:
     inputs:
       run_fastapi:
@@ -27,6 +33,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python

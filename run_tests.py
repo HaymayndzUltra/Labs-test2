@@ -29,49 +29,49 @@ def run_command(cmd, description):
 
 def run_unit_tests():
     """Run unit tests"""
-    cmd = "python -m pytest project_generator/tests/test_unit/ -v --cov=project_generator --cov-report=html --cov-report=term"
+    cmd = "python3 -m pytest project_generator/tests/test_unit/ -v --cov=project_generator --cov-report=html --cov-report=term"
     return run_command(cmd, "Unit Tests")
 
 
 def run_integration_tests():
     """Run integration tests"""
-    cmd = "python -m pytest project_generator/tests/test_integration/ -v"
+    cmd = "python3 -m pytest project_generator/tests/test_integration/ -v"
     return run_command(cmd, "Integration Tests")
 
 
 def run_e2e_tests():
     """Run end-to-end tests"""
-    cmd = "python -m pytest project_generator/tests/test_e2e/ -v"
+    cmd = "python3 -m pytest project_generator/tests/test_e2e/ -v"
     return run_command(cmd, "E2E Tests")
 
 
 def run_all_tests():
     """Run all tests"""
-    cmd = "python -m pytest project_generator/tests/ -v --cov=project_generator --cov-report=html --cov-report=term"
+    cmd = "python3 -m pytest project_generator/tests/ -v --cov=project_generator --cov-report=html --cov-report=term"
     return run_command(cmd, "All Tests")
 
 
 def run_linting():
     """Run code linting"""
     # Black formatting
-    black_cmd = "python -m black project_generator/ --check"
+    black_cmd = "python3 -m black project_generator/ --check"
     if not run_command(black_cmd, "Black Formatting Check"):
         print("⚠️  Code formatting issues found. Run 'black project_generator/' to fix.")
     
     # isort import sorting
-    isort_cmd = "python -m isort project_generator/ --check-only"
+    isort_cmd = "python3 -m isort project_generator/ --check-only"
     if not run_command(isort_cmd, "Import Sorting Check"):
         print("⚠️  Import sorting issues found. Run 'isort project_generator/' to fix.")
     
     # mypy type checking
-    mypy_cmd = "python -m mypy project_generator/ --ignore-missing-imports"
+    mypy_cmd = "python3 -m mypy project_generator/ --ignore-missing-imports"
     run_command(mypy_cmd, "Type Checking")
 
 
 def run_security_checks():
     """Run security checks"""
     # bandit security linter
-    bandit_cmd = "python -m bandit -r project_generator/ -f json"
+    bandit_cmd = "python3 -m bandit -r project_generator/ -f json"
     run_command(bandit_cmd, "Security Analysis")
 
 

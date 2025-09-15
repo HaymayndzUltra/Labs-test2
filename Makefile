@@ -1,6 +1,9 @@
 # Client Project Generator Makefile
 
-.PHONY: help setup test test-unit test-integration test-e2e test-all lint format security clean install dev
+.PHONY: help setup test test-unit test-integration test-e2e test-all lint format security clean install dev \
+	workflow.phase.1 workflow.phase.2 workflow.phase.3 workflow.phase.4 workflow.phase.5 \
+	workflow.phase.6 workflow.phase.7 workflow.phase.8 workflow.phase.9 workflow.phase.10 \
+	test-scripts lint-scripts security-scripts coverage-scripts
 
 # Default target
 help:
@@ -26,6 +29,9 @@ help:
 	@echo "  dev            Start development environment"
 	@echo "  clean          Clean up generated files and caches"
 	@echo ""
+	@echo "Workflows:"
+	@echo "  workflow.phase.N  Validate workflow docs (frontmatter/sections)"
+	@echo ""
 
 # Setup
 setup: install
@@ -44,38 +50,38 @@ test: test-all
 
 test-unit:
 	@echo "🔵 Running unit tests..."
-	@python run_tests.py --unit
+	@python3 run_tests.py --unit
 
 test-integration:
 	@echo "🔵 Running integration tests..."
-	@python run_tests.py --integration
+	@python3 run_tests.py --integration
 
 test-e2e:
 	@echo "🔵 Running E2E tests..."
-	@python run_tests.py --e2e
+	@python3 run_tests.py --e2e
 
 test-all:
 	@echo "🔵 Running all tests..."
-	@python run_tests.py --all
+	@python3 run_tests.py --all
 
 test-coverage:
 	@echo "🔵 Running tests with coverage..."
-	@python -m pytest project_generator/tests/ -v --cov=project_generator --cov-report=html --cov-report=term --cov-report=xml
+	@python3 -m pytest project_generator/tests/ -v --cov=project_generator --cov-report=html --cov-report=term --cov-report=xml
 
 # Code Quality
 lint:
 	@echo "🔵 Running linting checks..."
-	@python run_tests.py --lint
+	@python3 run_tests.py --lint
 
 format:
 	@echo "🔵 Formatting code..."
-	@python -m black project_generator/ scripts/
-	@python -m isort project_generator/ scripts/
+	@python3 -m black project_generator/ scripts/
+	@python3 -m isort project_generator/ scripts/
 	@echo "✅ Code formatted!"
 
 security:
 	@echo "🔵 Running security checks..."
-	@python run_tests.py --security
+	@python3 run_tests.py --security
 
 # Development
 dev:
@@ -109,6 +115,47 @@ validate: lint test-unit
 ci: clean install lint test-all security
 	@echo "✅ CI pipeline completed!"
 
+# Workflow validators (non-interactive)
+workflow.phase.1:
+	@echo "🔎 Phase 01 — Brief Analysis: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.2:
+	@echo "🔎 Phase 02 — Technical Planning: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.3:
+	@echo "🔎 Phase 03 — Project Generation: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.4:
+	@echo "🔎 Phase 04 — Feature Implementation: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.5:
+	@echo "🔎 Phase 05 — Testing & QA: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.6:
+	@echo "🔎 Phase 06 — Deployment: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.7:
+	@echo "🔎 Phase 07 — Maintenance: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.8:
+	@echo "🔎 Phase 08 — Security & Compliance: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.9:
+	@echo "🔎 Phase 09 — Documentation: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.10:
+	@echo "🔎 Phase 10 — Monitoring & Observability: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
 # Generate sample project for testing
 generate-sample:
 	@echo "🔵 Generating sample project..."
@@ -135,13 +182,13 @@ test-generated:
 # Performance benchmark
 benchmark:
 	@echo "🔵 Running performance benchmarks..."
-	@python -m pytest project_generator/tests/test_unit/test_generator.py::TestProjectGenerator::test_generate_project -v --durations=10
+	@python3 -m pytest project_generator/tests/test_unit/test_generator.py::TestProjectGenerator::test_generate_project -v --durations=10
 	@echo "✅ Benchmark completed!"
 
 # Documentation
 docs:
 	@echo "🔵 Generating documentation..."
-	@python -c "import pydoc; pydoc.writedocs('project_generator')"
+	@python3 -c "import pydoc; pydoc.writedocs('project_generator')"
 	@echo "✅ Documentation generated!"
 
 # Docker support
@@ -154,14 +201,14 @@ docker-test:
 # Release preparation
 release-prep: clean install lint test-all security
 	@echo "🔵 Preparing for release..."
-	@python -m build
+	@python3 -m build
 	@echo "✅ Release preparation completed!"
 
 # Install development dependencies
 install-dev: install
 	@echo "🔵 Installing development dependencies..."
-	@python -m pip install -r requirements.txt
-	@python -m pip install pre-commit
+	@python3 -m pip install -r requirements.txt
+	@python3 -m pip install pre-commit
 	@pre-commit install
 	@echo "✅ Development dependencies installed!"
 
@@ -170,3 +217,30 @@ pre-commit:
 	@echo "🔵 Running pre-commit hooks..."
 	@pre-commit run --all-files
 	@echo "✅ Pre-commit hooks completed!"
+
+# Scripts-only targets (Phase 05)
+test-scripts:
+	@echo "🔵 Running scripts unit tests (validator only)..."
+	@python3 -m pytest project_generator/tests/test_unit/test_validate_workflows_script.py -v --cov=scripts/validate_workflows.py --cov-report=term --cov-report=xml
+
+lint-scripts:
+	@echo "🔵 Linting scripts (black/isort checks)..."
+	@python3 -m black scripts/ --check || true
+	@python3 -m isort scripts/ --check-only || true
+
+security-scripts:
+	@echo "🔵 Security scan (bandit) on scripts/..."
+	@python3 -m bandit -r scripts/ -f json | cat
+
+coverage-scripts:
+	@echo "🔵 Coverage for scripts (validator)..."
+	@python3 -m pytest project_generator/tests/test_unit/test_validate_workflows_script.py -q --cov=scripts/validate_workflows.py --cov-report=term-missing
+
+# Maintenance (Phase 07)
+backup-workflows:
+	@echo "🔵 Backing up workflows and triggers..."
+	@python3 scripts/backup_workflows.py | cat
+
+restore-test:
+	@echo "🔵 Restoring backup to verify integrity..."
+	@python3 scripts/restore_workflows.py | cat

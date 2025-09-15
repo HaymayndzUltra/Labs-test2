@@ -1,3 +1,15 @@
+---
+title: "Phase 01: Brief Analysis"
+phase: 1
+triggers: ["phase-01","brief","analyze","requirements"]
+scope: "project-rules"
+inputs: ["Client brief markdown path"]
+outputs: ["Requirements summary","Open questions list","PLAN.md","PLAN.tasks.json"]
+artifacts: ["docs/briefs/*/brief.md","docs/briefs/*/PLAN.md"]
+gates: { coverage: ">=80%", perf_p95_ms: "<=500", vulns_critical: 0 }
+owner: "Product/BA"
+---
+
 # Brief Analysis Workflow
 
 ## Overview
@@ -52,3 +64,33 @@ Acceptance:
 
 ## Overall Acceptance
 - [ ] Requirements summary and questions ready for client sign-off
+
+---
+
+Variables
+- PROJ=<project-key>
+
+Run Commands
+```
+# Validate brief path
+test -f docs/briefs/$PROJ/brief.md
+
+# Generate Phase 01 artifacts
+python3 scripts/scaffold_phase_artifacts.py --project $PROJ --phase 1
+
+# Validate docs and HIPAA mentions (pre-gate)
+python3 scripts/validate_workflows.py --all
+python3 scripts/check_compliance_docs.py
+```
+
+Generated/Updated Files
+- docs/briefs/$PROJ/requirements_summary.md
+- docs/briefs/$PROJ/questions.md
+- docs/briefs/$PROJ/stack_compliance_inference.md
+- (optional) docs/briefs/$PROJ/PLAN.md
+
+Gate to Phase 02
+- [ ] Brief exists and readable
+- [ ] Requirements summary + questions present
+- [ ] Stack & compliance inference present
+- [ ] Validators pass (workflows + HIPAA mentions)
