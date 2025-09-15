@@ -1,0 +1,65 @@
+name: Lint
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  lint-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install black isort flake8 mypy
+      - name: Black
+        run: black --check project_generator || (echo "Run 'black project_generator/'" && exit 1)
+      - name: isort
+        run: isort --check-only project_generator || (echo "Run 'isort project_generator/'" && exit 1)
+      - name: Flake8
+        run: flake8 project_generator
+      - name: Mypy
+        run: mypy project_generator --ignore-missing-imports
+      - name: Rule hygiene check
+        run: |
+          if [ -f .cursor/dev-workflow/ci/normalize_project_rules.py ]; then \
+            python3 .cursor/dev-workflow/ci/normalize_project_rules.py --check ; \
+            python3 - << 'PY'
+import json, sys
+p = '.cursor/dev-workflow/ci/rule_hygiene_report.json'
+try:
+    data = json.load(open(p))
+    errs = sum(len(f.get('errors') or []) for f in data.get('files', []))
+    print(f"rule_hygiene errors: {errs}")
+    sys.exit(0 if errs == 0 else 1)
+except Exception as e:
+    print(f"WARN: could not read {p}: {e}")
+    sys.exit(0)
+PY
+          else
+            echo "No rule hygiene script; skipping"
+          fi
+      - name: Precedence parity check
+        run: |
+          python3 - << 'PY'
+import re, yaml, sys, pathlib
+root = pathlib.Path('.')
+cfg = yaml.safe_load((root/'.cursor/dev-workflow/config/intelligent-precedence-config.yaml').read_text())
+base = [str(x) for x in (cfg.get('base_precedence') or [])]
+m = (root/'.cursor/rules/master-rules/9-governance-precedence.mdc').read_text()
+block = m[m.find('Priority Order'):]
+md = [re.sub(r'^-\s*', '', ln).strip() for ln in block.splitlines() if ln.strip().startswith('-')]
+ok = base == md
+print('base_precedence:', base)
+print('md_precedence  :', md)
+sys.exit(0 if ok else 1)
+PY
+

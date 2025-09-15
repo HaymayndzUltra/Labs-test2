@@ -11,7 +11,7 @@ industry_patterns:
     
     compliance_rules:
       - "hipaa-compliance"
-      - "hitECH-compliance"
+      - "HITECH-compliance"
       - "fda-compliance"
     
     security_rules:
