@@ -97,3 +97,28 @@
 
 ## Notes / Deviations
 - None beyond identified issues; no blockers to proceed to Phase 02.
+
+---
+
+# Phase 03 — Project Generation (Scaffolds) Results
+
+## Deliverables Created
+- scripts/validate_workflows.py (CLI with --help, --list, --frontmatter, --sections, --all, --dry-run)
+- Makefile workflow targets: workflow.phase.{1..10}
+- gates_config.yaml (seed values aligned to success metrics)
+- STATE.md (this file) updated with Phase 03 results
+
+## Verification
+- help output: OK (prints usage via python3 scripts/validate_workflows.py)
+- dry-run OK: make workflow.phase.1 / workflow.phase.3 executed and printed sample failures
+- compilation: OK (python3 -m py_compile scripts/validate_workflows.py)
+- known missing-section case detected (e.g., Failure Modes/Overall Acceptance absent in several phases)
+
+## Issues / Deviations
+- Environment uses python3 (python not available). Makefile targets updated to use python3.
+- Validator currently uses naive YAML parsing (sufficient for presence checks; robust parsing can be added later if needed).
+
+## Acceptance (Phase 03)
+- [x] Files exist and run locally (help output / dry-run OK)
+- [x] make workflow.phase.1 prints intended checks
+- [x] validator catches a known missing-section test case

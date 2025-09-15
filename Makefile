@@ -1,6 +1,8 @@
 # Client Project Generator Makefile
 
-.PHONY: help setup test test-unit test-integration test-e2e test-all lint format security clean install dev
+.PHONY: help setup test test-unit test-integration test-e2e test-all lint format security clean install dev \
+	workflow.phase.1 workflow.phase.2 workflow.phase.3 workflow.phase.4 workflow.phase.5 \
+	workflow.phase.6 workflow.phase.7 workflow.phase.8 workflow.phase.9 workflow.phase.10
 
 # Default target
 help:
@@ -25,6 +27,9 @@ help:
 	@echo "Development:"
 	@echo "  dev            Start development environment"
 	@echo "  clean          Clean up generated files and caches"
+	@echo ""
+	@echo "Workflows:"
+	@echo "  workflow.phase.N  Validate workflow docs (frontmatter/sections)"
 	@echo ""
 
 # Setup
@@ -108,6 +113,47 @@ validate: lint test-unit
 # Full CI pipeline
 ci: clean install lint test-all security
 	@echo "✅ CI pipeline completed!"
+
+# Workflow validators (non-interactive)
+workflow.phase.1:
+	@echo "🔎 Phase 01 — Brief Analysis: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.2:
+	@echo "🔎 Phase 02 — Technical Planning: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.3:
+	@echo "🔎 Phase 03 — Project Generation: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.4:
+	@echo "🔎 Phase 04 — Feature Implementation: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.5:
+	@echo "🔎 Phase 05 — Testing & QA: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.6:
+	@echo "🔎 Phase 06 — Deployment: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.7:
+	@echo "🔎 Phase 07 — Maintenance: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.8:
+	@echo "🔎 Phase 08 — Security & Compliance: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.9:
+	@echo "🔎 Phase 09 — Documentation: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
+
+workflow.phase.10:
+	@echo "🔎 Phase 10 — Monitoring & Observability: validating docs/workflows..."
+	@python3 scripts/validate_workflows.py --all --dry-run | cat
 
 # Generate sample project for testing
 generate-sample:
