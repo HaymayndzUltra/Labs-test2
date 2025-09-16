@@ -1,0 +1,9 @@
+---
+description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-10,monitor,observe,logs,metrics,traces,alerts | SCOPE: project-rules | DESCRIPTION: Trigger to apply Monitoring & Observability workflow instructions."
+alwaysApply: false
+globs: .cursor/dev-workflow/10-monitoring-and-observability.md
+---
+
+# Trigger: Phase 10 — Monitoring & Observability
+
+Apply instructions from `.cursor/dev-workflow/10-monitoring-and-observability.md`.

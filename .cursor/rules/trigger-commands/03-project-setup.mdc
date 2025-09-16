@@ -1,7 +1,7 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-03,generate,scaffold,project | SCOPE: project-rules | DESCRIPTION: Trigger to apply Project Generation workflow instructions."
 alwaysApply: false
-globs: .cursor/dev-workflow/3-project-setup.md
+globs: .cursor/commands/3-design-orchestrator.md
 ---
 
 # PROTOCOL 3: PROJECT GENERATION
@@ -12,7 +12,7 @@ Apply the human workflow instructions to run dry-run, generate, validate, and lo
 ## `[MUST]` - Apply Instructions
 
 ### Apply
-Apply instruction: `.cursor/dev-workflow/3-project-setup.md`
+Apply instruction: `.cursor/commands/3-design-orchestrator.md`
 
 ## Execution
 When triggered, this runs the steps/commands defined in the MD workflow.

@@ -1,7 +1,7 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-02,plan,architecture,api,db,ux | SCOPE: project-rules | DESCRIPTION: Trigger to apply Technical Planning workflow instructions."
 alwaysApply: false
-globs: .cursor/dev-workflow/GPTAyawmaniwala.md
+globs: .cursor/commands/2-technical-planner-and-system-architect.md
 ---
 
 # PROTOCOL 2: TECHNICAL PLANNING
@@ -12,7 +12,6 @@ Apply the human workflow instructions to produce PRD, architecture, API/UI plans
 ## `[MUST]` - Apply Instructions
 
 ### Apply
-Apply instruction: `.cursor/dev-workflow/GPTAyawmaniwala.md`
-
+Apply instruction: `.cursor/commands/2-technical-planner-and-system-architect.md`
 ## Execution
 When triggered, this runs the steps/commands defined in the MD workflow.

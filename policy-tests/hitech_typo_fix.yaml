@@ -1,0 +1,6 @@
+- name: hitech-activation-corrected
+  context:
+    tokens:
+      - "industry:healthcare"
+      - "compliance:hitech"
+  expect_decision: "HITECH-compliance"

@@ -1,0 +1,14 @@
+{
+  "session_id": "86ea31d3-0883-4307-a4b9-96923586d82d",
+  "timestamp": "2025-09-15T22:13:16.005862Z",
+  "decision": "select-healthcare-fullstack",
+  "confidence": 1.0,
+  "rules_considered": [
+    "select-healthcare-fullstack",
+    "allow-all"
+  ],
+  "winning_rule": "select-healthcare-fullstack",
+  "override_reason": null,
+  "approver": null,
+  "snapshot_id": null
+}

@@ -3,6 +3,7 @@ import os
 import json
 import uuid
 import datetime
+import re
 from pathlib import Path
 from collections import OrderedDict
 
@@ -43,13 +44,25 @@ _LRU: OrderedDict[str, dict] = OrderedDict()
 _CACHE_EPOCH = 0  # bumped when precedence/policies change
 RULES_DIR = ROOT / '.cursor' / 'rules'
 PRECEDENCE_FILE = RULES_DIR / 'master-rules' / '9-governance-precedence.mdc'
+BASE_PRECEDENCE = [
+    'F8-security-and-compliance-overlay',
+    '8-auditor-validator-protocol',
+    '4-master-rule-code-modification-safety-protocol',
+    '3-master-rule-code-quality-checklist',
+    '6-master-rule-complex-feature-context-preservation',
+    '2-master-rule-ai-collaboration-guidelines',
+    '5-master-rule-documentation-and-context-guidelines',
+    '7-dev-workflow-command-router',
+    'project-rules',
+]
 POLICY_DIR = ROOT / '.cursor' / 'dev-workflow' / 'policy-dsl'
 ROUTING_LOG_SCHEMA = ROOT / '.cursor' / 'dev-workflow' / 'schemas' / 'routing_log.json'
 
 def load_precedence():
     global _PREC_CACHE, _PREC_MTIME, _CACHE_EPOCH
     if not PRECEDENCE_FILE.exists():
-        _PREC_CACHE = []
+        # Fallback to base precedence to preserve deterministic tie-breaks
+        _PREC_CACHE = BASE_PRECEDENCE.copy()
         _PREC_MTIME = None
         return _PREC_CACHE
     mtime = PRECEDENCE_FILE.stat().st_mtime
@@ -86,10 +99,14 @@ def list_policies():
             continue
     if not CACHE_DISABLED and _POLICY_CACHE is not None and _POLICY_MTIME and abs(mt - _POLICY_MTIME) < 1.0:
         return _POLICY_CACHE
-    out = []
+    out: list[dict] = []
     for f in files:
         try:
-            out.append(json.loads(f.read_text(encoding='utf-8')))
+            doc = json.loads(f.read_text(encoding='utf-8'))
+            if isinstance(doc, list):
+                out.extend([d for d in doc if isinstance(d, dict)])
+            elif isinstance(doc, dict):
+                out.append(doc)
         except Exception:
             continue
     _POLICY_CACHE = out
@@ -115,17 +132,54 @@ def _normalize_context(context_map) -> str:
         return str(context_map).lower().replace('-', ' ')
 
 def evaluate_policies(policies, context_map):
-    # Normalize context values to a single lower-cased string for robust substring matching
-    normalized_context = _normalize_context(context_map)
+    """Match policies by exact token/set containment instead of substring.
+
+    Converts the context map into a set of lowercase tokens; a policy matches
+    only if its required condition tokens are a subset of the context tokens.
+    """
+    # Tokenize context into a set
+    tokens: set[str] = set()
+    try:
+        if isinstance(context_map, dict):
+            for v in context_map.values():
+                if isinstance(v, (list, tuple, set)):
+                    for x in v:
+                        tokens.update(str(x).lower().replace('-', ' ').split())
+                else:
+                    tokens.update(str(v).lower().replace('-', ' ').split())
+        else:
+            tokens.update(str(context_map).lower().replace('-', ' ').split())
+    except Exception:
+        tokens.update(str(context_map).lower().replace('-', ' ').split())
+
     matches = []
     for policy in policies:
-        conditions = policy.get('conditions') or []
-        conditions_lc = [str(c).lower() for c in conditions]
-        if all(c in normalized_context for c in conditions_lc):
+        raw_conditions = policy.get('conditions') or []
+        required = {str(c).lower() for c in raw_conditions}
+        if required.issubset(tokens):
             matches.append(policy)
-    # Primary ordering by priority (desc). Tie-break left as stable order for now
+    # Primary ordering by priority (desc)
     matches.sort(key=lambda x: x.get('priority', 0), reverse=True)
     return matches
+
+def _redact_sensitive(value):
+    patterns = re.compile(r"(password|secret|token|credential|api[_-]?key)", re.IGNORECASE)
+    if isinstance(value, dict):
+        clean = {}
+        for k, v in value.items():
+            if isinstance(k, str) and patterns.search(k):
+                # drop or mask sensitive keys entirely
+                continue
+            clean[k] = _redact_sensitive(v)
+        return clean
+    if isinstance(value, list):
+        return [_redact_sensitive(v) for v in value]
+    if isinstance(value, str):
+        if patterns.search(value):
+            return "[REDACTED]"
+        return value
+    return value
+
 
 def route_decision(context):
     precedence = load_precedence()
@@ -175,16 +229,15 @@ def route_decision(context):
         if isinstance(win_name, str) and win_name:
             decision = win_name
 
+    # Trace correlation
+    trace_id = context.get('trace_id') or str(uuid.uuid4())
     log = {
         'session_id': str(uuid.uuid4()),
         'timestamp': datetime.datetime.utcnow().isoformat() + 'Z',
         'decision': decision,
-        'confidence': 1.0 if winning else 0.0,
         'rules_considered': considered,
         'winning_rule': decision,
-        'override_reason': None,
-        'approver': None,
-        'snapshot_id': context.get('snapshot_id')
+        'trace_id': str(trace_id),
     }
     # populate LRU
     if not CACHE_DISABLED:
@@ -198,7 +251,8 @@ def route_decision(context):
     outdir = ROOT / '.cursor' / 'dev-workflow' / 'routing_logs'
     outdir.mkdir(parents=True, exist_ok=True)
     fpath = outdir / (log['session_id'] + '.json')
-    fpath.write_text(json.dumps(log, indent=2), encoding='utf-8')
+    safe_log = _redact_sensitive(log)
+    fpath.write_text(json.dumps(safe_log, indent=2), encoding='utf-8')
     return log
 
 if __name__ == '__main__':

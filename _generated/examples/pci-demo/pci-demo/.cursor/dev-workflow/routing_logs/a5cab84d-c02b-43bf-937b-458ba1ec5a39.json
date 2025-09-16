@@ -1,0 +1,14 @@
+{
+  "session_id": "a5cab84d-c02b-43bf-937b-458ba1ec5a39",
+  "timestamp": "2025-09-15T22:12:34.531777Z",
+  "decision": "HITECH-compliance",
+  "confidence": 1.0,
+  "rules_considered": [
+    "HITECH-compliance",
+    "allow-all"
+  ],
+  "winning_rule": "HITECH-compliance",
+  "override_reason": null,
+  "approver": null,
+  "snapshot_id": null
+}

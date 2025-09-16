@@ -1,0 +1,13 @@
+{
+  "session_id": "f09eac87-2a04-45fe-b607-76e5d884a8a4",
+  "timestamp": "2025-09-08T02:21:18.365499Z",
+  "decision": "none",
+  "confidence": 0.0,
+  "rules_considered": [
+    "allow-all"
+  ],
+  "winning_rule": "none",
+  "override_reason": null,
+  "approver": null,
+  "snapshot_id": null
+}

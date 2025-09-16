@@ -377,3 +377,19 @@ PY
             validation/workflows_validation.txt
             security/bandit.json
 
+  precedence_parity:
+    name: Precedence Parity & Rule Hygiene
+    runs-on: ubuntu-latest
+    needs: [build-test]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Run precedence parity gate
+        run: |
+          python3 .cursor/dev-workflow/ci/run_gates.py
+

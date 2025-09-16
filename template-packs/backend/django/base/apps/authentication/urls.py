@@ -10,6 +10,7 @@ from .views import (
     LoginView,
     LogoutView,
     PasswordResetRequestView,
+    PasswordResetConfirmView,
     ProfileView,
     RegisterView,
     VerifyEmailView,
@@ -30,6 +31,7 @@ urlpatterns = [
     
     # Password reset
     path('password-reset/', PasswordResetRequestView.as_view(), name='password_reset'),
+    path('password-reset/confirm/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     
     # Email verification
     path('verify-email/<str:token>/', VerifyEmailView.as_view(), name='verify_email'),
