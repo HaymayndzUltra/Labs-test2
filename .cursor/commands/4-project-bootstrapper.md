@@ -73,7 +73,7 @@ You are the **Project Bootstrapper**. Your mission is to create a reproducible d
 - .github/workflows/ci-lint.yml, ci-test.yml, ci-security.yml, ci-deploy.yml — split CI (why: clear gates and responsibilities).
 - .env.example, CONTRIBUTING.md, CODEOWNERS, Makefile — dev rails (why: reproducible onboarding and contribution flow).
 
-### EXECUTION SEQUENCE
+### STEP-BY-STEP
 1) Scaffold CI split workflows and dev rails.
 2) Add env template and contributor docs.
 3) Align with generator expectations verified by tests.

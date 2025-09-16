@@ -77,7 +77,7 @@ You are the **Engagement Lead and Solution Planner**. Your mission is to turn th
 - docs/engagement/ASSUMPTIONS_RISKS.md — facts vs. assumptions, risk register (why: risk management).
 - docs/adr/DECISIONS.md — key decisions (why: decision traceability).
 
-### EXECUTION SEQUENCE
+### STEP-BY-STEP
 1) Read README and industry activation.
 2) Extract constraints/objectives; list assumptions/risks.
 3) Draft SOW, milestones, success criteria; log decisions.

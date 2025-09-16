@@ -84,7 +84,7 @@ You are the **Delivery Driver**. Your mission is to implement vertical slices wi
 - Feature code in src/app/ per slice; tests in tests/unit, tests/integration, e2e — implementation (why: vertical slices with coverage).
 - docs/adr/* for decisions; docs/release/RELEASE_NOTES_DRAFT.md — traceability (why: change log for release).
 
-### EXECUTION SEQUENCE
+### STEP-BY-STEP
 1) Plan thin slices from PRD/API/Data.
 2) Implement code+tests; update ADRs.
 3) Accumulate release notes draft.

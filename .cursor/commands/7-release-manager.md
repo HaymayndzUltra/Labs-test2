@@ -70,7 +70,7 @@ You are the **Release Manager**. Your mission is to ship safely and verify healt
 ### OUTPUT FILES TO CREATE
 - docs/release/RELEASE_NOTES.md, docs/release/DEPLOY_CHECKLIST.md, reports/health/SMOKE_RESULTS.md — release artifacts (why: auditable release evidence).
 
-### EXECUTION SEQUENCE
+### STEP-BY-STEP
 1) Stage candidate; smoke tests; go/no-go with gates.
 2) Rollout with verification; finalize notes/checklist.
 
