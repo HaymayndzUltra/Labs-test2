@@ -53,6 +53,18 @@ jobs:
     if: github.event.inputs.skip_tests != 'true'
     uses: ./.github/workflows/ci-test.yml
     secrets: inherit
+    with:
+      has_frontend: ${{ hashFiles('frontend/package.json') != '' }}
+      has_python: ${{ hashFiles('backend/requirements.txt', 'backend/pyproject.toml') != '' }}
+      has_go: ${{ hashFiles('backend/go.mod') != '' }}
+      has_node_backend: ${{ hashFiles('backend/package.json') != '' }}
+      has_hipaa_tests: ${{ hashFiles('backend/tests/compliance/test_encryption.py') != '' || hashFiles('backend/tests/compliance/test_audit_logging.py') != '' }}
+      has_finance_tests: ${{ hashFiles('backend/tests/compliance/test_transactions.py') != '' || hashFiles('backend/tests/compliance/test_audit_trail.py') != '' }}
+      node_version: '18'
+      python_version: '3.11'
+      go_version: '1.21'
+      postgres_version: '15'
+      redis_version: '7'
 
   run-security-scan:
     needs: pre-deploy-checks
