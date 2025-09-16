@@ -13,6 +13,5 @@ Apply the human workflow instructions to produce PRD, architecture, API/UI plans
 
 ### Apply
 Apply instruction: `.cursor/commands/2-technical-planner-and-system-architect.md`
-
 ## Execution
 When triggered, this runs the steps/commands defined in the MD workflow.
