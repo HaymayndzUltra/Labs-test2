@@ -1,0 +1,50 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options: [ staging, production ]
+
+jobs:
+  prechecks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify branch for production
+        if: inputs.environment == 'production'
+        run: |
+          if [ "${{ github.ref }}" != "refs/heads/main" ]; then echo "Production deploys only from main"; exit 1; fi
+
+  run-tests:
+    needs: prechecks
+    uses: ./.github/workflows/ci-test.yml
+    secrets: inherit
+
+  run-security:
+    needs: prechecks
+    uses: ./.github/workflows/ci-security.yml
+    secrets: inherit
+
+  build:
+    needs: [run-tests, run-security]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build artifacts (placeholder)
+        run: |
+          echo "Build step here"
+
+  smoke:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Smoke tests (placeholder)
+        run: |
+          echo "Smoke tests here"
+

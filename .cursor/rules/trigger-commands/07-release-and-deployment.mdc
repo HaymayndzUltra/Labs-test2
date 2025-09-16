@@ -1,13 +1,13 @@
 ---
-description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-07,maintain,patch,backup,audit,monitor | SCOPE: project-rules | DESCRIPTION: Trigger to apply Maintenance workflow instructions."
+description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-07,deploy,release,production | SCOPE: project-rules | DESCRIPTION: Trigger to apply Release & Deployment workflow instructions."
 alwaysApply: false
 globs: .cursor/dev-workflow/7-release-and-deployment.md
 ---
 
-# PROTOCOL 7: MAINTENANCE
+# PROTOCOL 7: RELEASE & DEPLOYMENT
 
 ## Core Function
-Apply the human workflow instructions to run maintenance cycles: monitoring, patching, backups, audits.
+Apply the human workflow instructions to run pre-deploy checks, execute deployment, and post-deploy verification.
 
 ## `[MUST]` - Apply Instructions
 

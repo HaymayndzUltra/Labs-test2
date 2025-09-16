@@ -22,7 +22,7 @@ ttl:
   
   # Industry-specific TTL adjustments
   industry_adjustments:
-    healthcare: 7200    # 2 hours - high compliance requirements
+    healthcare: 3600    # 1 hour - high compliance requirements
     finance: 7200       # 2 hours - high security requirements
     ecommerce: 3600     # 1 hour - moderate requirements
     enterprise: 5400    # 1.5 hours - moderate requirements
@@ -145,7 +145,7 @@ warming:
 security:
   # Data encryption
   encryption:
-    enabled: false  # Set to true for sensitive data
+    enabled: true  # Enabled by default for healthcare contexts
     algorithm: "AES-256"
     key_rotation_interval: 86400 # 24 hours
   

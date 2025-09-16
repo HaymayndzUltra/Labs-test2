@@ -115,15 +115,32 @@ def _normalize_context(context_map) -> str:
         return str(context_map).lower().replace('-', ' ')
 
 def evaluate_policies(policies, context_map):
-    # Normalize context values to a single lower-cased string for robust substring matching
-    normalized_context = _normalize_context(context_map)
+    # Token/set containment: match only when all tokens are present as discrete tokens
+    def tokenize(val: str) -> set[str]:
+        return set(val.lower().replace('-', ' ').split())
+
+    # Build token set from context values
+    ctx_tokens: set[str] = set()
+    try:
+        if isinstance(context_map, dict):
+            for v in context_map.values():
+                if isinstance(v, (list, tuple, set)):
+                    for x in v:
+                        ctx_tokens |= tokenize(str(x))
+                else:
+                    ctx_tokens |= tokenize(str(v))
+        else:
+            ctx_tokens |= tokenize(str(context_map))
+    except Exception:
+        ctx_tokens |= tokenize(str(context_map))
+
     matches = []
     for policy in policies:
         conditions = policy.get('conditions') or []
-        conditions_lc = [str(c).lower() for c in conditions]
-        if all(c in normalized_context for c in conditions_lc):
+        cond_tokens_list = [tokenize(str(c)) for c in conditions]
+        if all(ct.issubset(ctx_tokens) for ct in cond_tokens_list):
             matches.append(policy)
-    # Primary ordering by priority (desc). Tie-break left as stable order for now
+    # Primary ordering by priority (desc)
     matches.sort(key=lambda x: x.get('priority', 0), reverse=True)
     return matches
 
@@ -162,6 +179,28 @@ def route_decision(context):
     else:
         winning = None
 
+    # Fallback precedence if precedence file is missing
+    if matched and (not precedence or len(precedence) == 0):
+        base_fallback = [
+            "F8-security-and-compliance-overlay",
+            "8-auditor-validator-protocol",
+            "4-master-rule-code-modification-safety-protocol",
+            "3-master-rule-code-quality-checklist",
+            "6-master-rule-complex-feature-context-preservation",
+            "2-master-rule-ai-collaboration-guidelines",
+            "5-master-rule-documentation-and-context-guidelines",
+            "7-dev-workflow-command-router",
+            "project-rules",
+        ]
+        fb_index = {k: i for i, k in enumerate(base_fallback)}
+        top_pri = matched[0].get('priority', 0)
+        top = [p for p in matched if p.get('priority', 0) == top_pri]
+        if len(top) > 1:
+            def fb_rank(p):
+                return fb_index.get(str(p.get('precedence_tag')), len(fb_index))
+            top.sort(key=fb_rank)
+            winning = top[0]
+
     # Non-null, type-safe fields
     considered = []
     for p in matched:
@@ -177,6 +216,7 @@ def route_decision(context):
 
     log = {
         'session_id': str(uuid.uuid4()),
+        'trace_id': str(uuid.uuid4()),
         'timestamp': datetime.datetime.utcnow().isoformat() + 'Z',
         'decision': decision,
         'confidence': 1.0 if winning else 0.0,
@@ -186,6 +226,14 @@ def route_decision(context):
         'approver': None,
         'snapshot_id': context.get('snapshot_id')
     }
+    # Redaction: ensure no sensitive patterns present in fields we control
+    try:
+        sanitization_patterns = {"password", "secret", "key", "token", "credential"}
+        # Currently we do not include raw context in logs.
+        # Keep a defensive check that considered names are not sensitive tokens.
+        considered = [c for c in considered if str(c).lower() not in sanitization_patterns]
+    except Exception:
+        pass
     # populate LRU
     if not CACHE_DISABLED:
         if cached is None:

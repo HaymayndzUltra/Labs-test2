@@ -1,13 +1,13 @@
 ---
-description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-05,test,qa,coverage,security,performance | SCOPE: project-rules | DESCRIPTION: Trigger to apply Testing & QA workflow instructions."
+description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-05,implement,delivery | SCOPE: project-rules | DESCRIPTION: Trigger to apply Iterative Implementation workflow instructions."
 alwaysApply: false
 globs: .cursor/dev-workflow/5-iterative-implementation.md
 ---
 
-# PROTOCOL 5: TESTING & QA
+# PROTOCOL 5: ITERATIVE IMPLEMENTATION
 
 ## Core Function
-Apply the human workflow instructions to run lint/tests/coverage, security scans, and perf checks; prepare UAT.
+Apply the human workflow instructions to implement vertical slices with tests and continuous integration.
 
 ## `[MUST]` - Apply Instructions
 
