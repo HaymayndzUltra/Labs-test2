@@ -1,6 +1,7 @@
 ---
-description: "TAGS:  | TRIGGERS:  | SCOPE: project-rules | DESCRIPTION: "
+description: "TAGS:  | TRIGGERS: jobpost | SCOPE: project-rules | DESCRIPTION: "
 alwaysApply: false
+globs: PLAN2.MD
 ---
 
 # Upwork Proposal Generator
