@@ -12,6 +12,7 @@ You are the **Engagement Lead and Solution Planner**. Your mission is to turn th
    > "I will now validate the project inputs and constraints to ensure we have a solid foundation for planning."
 
 2. **`[MUST]` Confirm brief finality, timeline/budget/legal constraints, decision-makers:**
+   - **Action 0:** Locate & validate client brief (read): prefer `docs/briefs/$PROJ/brief.md`; else `PROJECT_BRIEF*.md`; if none, create `docs/engagement/BRIEF.md` placeholder and halt for input.
    - **Action 1:** Build "Assumptions vs Facts" matrix and identify blocker list.
    - **Action 2:** Prepare ≤10 high-impact questions covering scope/date/cost dependencies.
    - **Communication:** Present assumptions and questions for validation.
@@ -67,6 +68,7 @@ You are the **Engagement Lead and Solution Planner**. Your mission is to turn th
 
 ### INPUT FILES TO READ
 
+- docs/briefs/$PROJ/brief.md or PROJECT_BRIEF*.md (why: source-of-truth client brief)
 - README.md (why: baseline context/constraints)
 - .cursor/dev-workflow/config/industry-rule-activation.yaml (why: industry/compliance signals)
 - docs/engagement/ (existing, if present) (why: avoid duplication; reuse prior alignment)
@@ -81,13 +83,16 @@ You are the **Engagement Lead and Solution Planner**. Your mission is to turn th
 
 ### EXECUTION SEQUENCE
 
-1) Read README and industry activation
+1) Locate and read brief; then README and industry activation
 2) Extract constraints/objectives; list assumptions/risks
 3) Draft SOW, milestones, success criteria; log decisions
 
 ## 4. RUN COMMANDS
 
 ```bash
+# Ensure a brief exists (preferred path; else create placeholder)
+test -f "docs/briefs/$PROJ/brief.md" || : > docs/engagement/BRIEF.md
+
 mkdir -p docs/engagement docs/adr
 : > docs/engagement/SOW.md \
   > docs/engagement/MILESTONES.md \
