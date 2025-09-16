@@ -1,418 +1,205 @@
-# Architecture Documentation
+# AI GOVERNOR FRAMEWORK ENHANCEMENT - SYSTEM ARCHITECTURE
 
-## Overview
+## 1. ARCHITECTURAL OVERVIEW
 
-The Client Project Generator is a sophisticated code generation system that creates production-ready applications with industry-specific configurations, compliance support, and integrated development workflows.
+### System Context
+The AI Governor Framework Enhancement is a comprehensive development platform that transforms the existing Cursor-based AI governance system into an industry-aware, multi-project development platform. The system operates within the existing `.cursor/rules` ecosystem while extending it with intelligent project generation, component libraries, and portfolio management capabilities.
 
-## System Architecture
+### Core Architectural Principles
+1. **Modularity**: Each component is independently deployable and maintainable
+2. **Extensibility**: Easy addition of new industry modules and components
+3. **Compliance-First**: Built-in compliance and security from the ground up
+4. **Performance-Optimized**: Sub-second response times for critical operations
+5. **Industry-Aware**: Context-sensitive behavior based on project type
 
-```mermaid
-graph TB
-    subgraph "User Interface"
-        CLI[CLI Interface]
-        Interactive[Interactive Mode]
-    end
-    
-    subgraph "Core Engine"
-        Generator[Project Generator]
-        Validator[Configuration Validator]
-        Config[Industry Config]
-        Template[Template Engine]
-    end
-    
-    subgraph "Templates"
-        Frontend[Frontend Templates]
-        Backend[Backend Templates]
-        Database[Database Templates]
-        DevEx[DevEx Assets]
-    end
-    
-    subgraph "Integration Layer"
-        AIGov[AI Governor Integration]
-        PolicyDSL[Policy DSL]
-        Rules[Rule System]
-    end
-    
-    subgraph "Output"
-        Project[Generated Project]
-        CICD[CI/CD Pipelines]
-        Docs[Documentation]
-    end
-    
-    CLI --> Generator
-    Interactive --> Generator
-    Generator --> Validator
-    Generator --> Config
-    Generator --> Template
-    Generator --> AIGov
-    
-    Template --> Frontend
-    Template --> Backend
-    Template --> Database
-    Template --> DevEx
-    
-    AIGov --> PolicyDSL
-    AIGov --> Rules
-    
-    Generator --> Project
-    Generator --> CICD
-    Generator --> Docs
-```
-
-## Core Components
-
-### 1. CLI Interface (`scripts/generate_client_project.py`)
-
-The main entry point that handles:
-- Command-line argument parsing
-- Interactive mode for guided setup
-- Validation of user inputs
-- Orchestration of the generation process
-
-**Key Features:**
-- Comprehensive argument validation
-- Industry-aware prompts
-- Dry-run capability
-- Verbose output options
-
-### 2. Project Generator (`project_generator/core/generator.py`)
-
-The central orchestrator that:
-- Coordinates all generation activities
-- Manages file system operations
-- Processes templates with variable substitution
-- Integrates with external systems
-
-**Responsibilities:**
-- Directory structure creation
-- Template selection and processing
-- Integration coordination
-- Git initialization
-
-### 3. Configuration Validator (`project_generator/core/validator.py`)
-
-Ensures configuration integrity:
-- Technology compatibility validation
-- Compliance requirement checking
-- Industry-specific validation rules
-- Feature compatibility verification
-
-**Validation Matrix:**
-```python
-compatibility_matrix = {
-    'frontend': {
-        'nextjs': {
-            'backend': ['fastapi', 'django', 'nestjs', 'go'],
-            'auth': ['auth0', 'firebase', 'cognito'],
-            'deploy': ['vercel', 'aws', 'azure', 'gcp']
-        }
-    }
-}
-```
-
-### 4. Industry Configuration (`project_generator/core/industry_config.py`)
-
-Manages industry-specific requirements:
-- Default feature sets
-- Compliance requirements
-- Recommended technology stacks
-- Security configurations
-
-**Industry Support:**
-- Healthcare (HIPAA)
-- Finance (SOX, PCI)
-- E-commerce (PCI, GDPR)
-- SaaS (SOC2, GDPR)
-- Enterprise (SOC2)
-
-### 5. Template Engine (`project_generator/templates/template_engine.py`)
-
-Generates code from templates:
-- Language-specific code generation
-- Framework-aware boilerplate
-- Industry-specific components
-- Compliance-ready patterns
-
-## Template System
-
-### Template Structure
+## 2. SYSTEM CONTEXT DIAGRAM
 
 ```
-template-packs/
-├── frontend/
-│   ├── nextjs/
-│   │   ├── base/          # Minimal setup
-│   │   ├── enterprise/    # Enterprise features
-│   │   └── compliance/    # Compliance-ready
-│   └── [other frameworks]
-├── backend/
-│   └── [framework]/[variant]/
-├── database/
-│   └── [database]/[configuration]/
-└── devex/
-    └── [tool configurations]
+┌─────────────────────────────────────────────────────────────────┐
+│                    EXTERNAL SYSTEMS                            │
+├─────────────────────────────────────────────────────────────────┤
+│  GitHub Actions  │  Cloud Providers  │  Security Scanners     │
+│  CI/CD Pipelines │  AWS/Azure/GCP    │  Snyk, SonarQube      │
+│  Code Repos      │  Container Regs   │  Compliance Tools      │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    AI GOVERNOR FRAMEWORK                       │
+├─────────────────────────────────────────────────────────────────┤
+│  Project Generator  │  Rule Engine    │  Component Library     │
+│  Portfolio Manager  │  Compliance     │  Quality Assurance     │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    GENERATED PROJECTS                          │
+├─────────────────────────────────────────────────────────────────┤
+│  Healthcare Apps  │  Finance Apps    │  E-commerce Apps       │
+│  Enterprise Apps  │  Custom Apps     │  Compliance-Ready      │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-### Template Variables
+## 3. COMPONENT ARCHITECTURE
 
-Templates use double-brace syntax for substitution:
-- `{{PROJECT_NAME}}` - Project identifier
-- `{{INDUSTRY}}` - Industry vertical
-- `{{BACKEND}}` - Backend framework
-- `{{COMPLIANCE}}` - Compliance requirements
+### Core Framework Components
 
-### Template Processing Pipeline
-
-1. **Selection**: Choose appropriate template variant
-2. **Loading**: Read template files
-3. **Processing**: Replace variables
-4. **Validation**: Ensure output validity
-5. **Writing**: Save processed files
-
-## Policy DSL System
-
-### Policy Structure
-
+#### 3.1 Project Generator Engine
 ```yaml
-industry_policies:
-  healthcare:
-    constraints:
-      compliance: ["hipaa"]
-      security_level: "maximum"
-    web_stack:
-      required:
-        frontend: ["nextjs", "nuxt"]
-        backend: ["fastapi", "django"]
+Component: Project Generator Engine
+Purpose: Generate production-ready projects based on industry requirements
+Responsibilities:
+  - Parse project requirements and industry specifications
+  - Select appropriate technology stack and templates
+  - Generate project structure and configuration files
+  - Apply industry-specific compliance patterns
+  - Integrate with CI/CD and quality assurance tools
+
+Interfaces:
+  - Input: Project specification (YAML/JSON)
+  - Output: Complete project structure with configuration
+  - Dependencies: Template Engine, Rule Engine, Component Library
 ```
 
-### Policy Evaluation
-
-1. **Load Policies**: Read YAML configuration
-2. **Match Context**: Find applicable policies
-3. **Validate Stack**: Check technology compatibility
-4. **Apply Constraints**: Enforce requirements
-5. **Generate Report**: Document decisions
-
-## AI Governor Integration
-
-### Integration Points
-
-1. **Rule Copying**: Transfer master rules
-2. **Workflow Setup**: Configure AI workflows
-3. **Validation**: Policy compliance checking
-4. **Instructions**: Generate AI guidance
-5. **Reporting**: Integration documentation
-
-### Workflow Configuration
-
-```json
-{
-  "workflows": {
-    "analyze": "dev-workflow/1-analyze-and-plan-prd.md",
-    "plan": "dev-workflow/2-create-actionable-plan.md",
-    "execute": "dev-workflow/3-execute-tasks-parallel.md",
-    "review": "dev-workflow/4-retrospective-learnings.md"
-  }
-}
-```
-
-## CI/CD Pipeline Architecture
-
-### Pipeline Stages
-
-1. **Lint Stage**
-   - Code style checking
-   - Static analysis
-   - Security linting
-
-2. **Test Stage**
-   - Unit tests
-   - Integration tests
-   - E2E tests
-   - Coverage analysis
-
-3. **Security Stage**
-   - Dependency scanning
-   - SAST/DAST
-   - Secret detection
-   - Container scanning
-
-4. **Build Stage**
-   - Docker image creation
-   - Asset optimization
-   - Version tagging
-
-5. **Deploy Stage**
-   - Environment-specific deployment
-   - Health checks
-   - Smoke tests
-   - Rollback capability
-
-### Quality Gates
-
+#### 3.2 Dynamic Rule Engine
 ```yaml
-quality_gates:
-  code_quality:
-    lint:
-      threshold: 0
-      blocking: true
-  test_coverage:
-    unit_tests:
-      threshold: 80  # Healthcare/Finance
-      threshold: 70  # Others
-  security:
-    dependency_scan:
-      critical_threshold: 0
+Component: Dynamic Rule Engine
+Purpose: Context-aware rule activation and enforcement
+Responsibilities:
+  - Detect project context and industry type
+  - Load relevant industry-specific rules
+  - Apply compliance and security patterns
+  - Manage rule conflicts and priorities
+  - Provide rule effectiveness metrics
+
+Interfaces:
+  - Input: Project context, industry type, compliance requirements
+  - Output: Active rule set, enforcement actions
+  - Dependencies: Rule Storage, Context Analyzer, Compliance Engine
 ```
 
-## Security Architecture
+#### 3.3 Component Library System
+```yaml
+Component: Component Library System
+Purpose: Manage reusable components and industry-specific patterns
+Responsibilities:
+  - Store and version components
+  - Provide component search and discovery
+  - Manage component dependencies
+  - Track component usage and metrics
+  - Ensure component quality and compatibility
+
+Interfaces:
+  - Input: Component queries, usage patterns
+  - Output: Component definitions, usage analytics
+  - Dependencies: Component Storage, Version Control, Quality Engine
+```
+
+#### 3.4 Portfolio Management Dashboard
+```yaml
+Component: Portfolio Management Dashboard
+Purpose: Multi-project coordination and resource management
+Responsibilities:
+  - Track project status and progress
+  - Manage resource allocation and capacity
+  - Coordinate timelines and dependencies
+  - Provide risk assessment and alerts
+  - Generate portfolio-level reports
+
+Interfaces:
+  - Input: Project data, resource information, timeline updates
+  - Output: Dashboard views, reports, alerts
+  - Dependencies: Project Database, Resource Manager, Analytics Engine
+```
+
+## 4. DEPLOYMENT ARCHITECTURE
+
+### Infrastructure Components
+
+#### 4.1 Core Services
+```yaml
+Service: Framework Core
+Deployment: Containerized (Docker)
+Scaling: Horizontal (Kubernetes)
+Resources:
+  - CPU: 2 cores minimum, 4 cores recommended
+  - Memory: 4GB minimum, 8GB recommended
+  - Storage: 20GB for framework and templates
+  - Network: Load balancer with SSL termination
+
+Dependencies:
+  - PostgreSQL for rule and component storage
+  - Redis for caching and session management
+  - MinIO for component and template storage
+```
+
+#### 4.2 Data Storage Strategy
+```yaml
+Primary Database: PostgreSQL
+  - Rules and configuration data
+  - Project metadata and status
+  - User and permission data
+  - Audit logs and compliance data
+
+Cache Layer: Redis
+  - Rule caching for performance
+  - Component caching
+  - Session management
+  - Real-time data updates
+
+Object Storage: MinIO
+  - Component files and templates
+  - Generated project artifacts
+  - Backup and archive data
+  - Static assets and documentation
+```
+
+## 5. SECURITY ARCHITECTURE
 
 ### Security Layers
+```yaml
+Network Security:
+  - VPC with private subnets
+  - Load balancer with SSL termination
+  - WAF for application protection
+  - DDoS protection
 
-1. **Code Security**
-   - Input validation templates
-   - Secure defaults
-   - Encryption utilities
+Application Security:
+  - Authentication and authorization
+  - Input validation and sanitization
+  - Output encoding and escaping
+  - Session management and timeout
 
-2. **Infrastructure Security**
-   - Container security
-   - Network policies
-   - Secret management
+Data Security:
+  - Encryption at rest (AES-256)
+  - Encryption in transit (TLS 1.3)
+  - Key management and rotation
+  - Data masking and anonymization
+```
 
-3. **Compliance Security**
-   - Audit logging
-   - Access controls
-   - Data protection
+## 6. INTEGRATION ARCHITECTURE
 
-### Compliance Implementation
+### External Integrations
+```yaml
+CI/CD Integration:
+  - GitHub Actions workflows
+  - GitLab CI/CD pipelines
+  - Jenkins integration
+  - Automated testing and deployment
 
-#### HIPAA (Healthcare)
-- PHI encryption (AES-256)
-- Audit logging framework
-- Session management (15 min)
-- Access control templates
+Cloud Provider Integration:
+  - AWS services (S3, RDS, Lambda)
+  - Azure services (Blob Storage, SQL Database)
+  - GCP services (Cloud Storage, Cloud SQL)
+  - Multi-cloud deployment support
 
-#### GDPR (Privacy)
-- Consent management
-- Data portability
-- Deletion workflows
-- Privacy by design
+Security Integration:
+  - Snyk for vulnerability scanning
+  - SonarQube for code quality
+  - OWASP ZAP for security testing
+  - Compliance scanning tools
+```
 
-#### SOX (Financial)
-- Change control
-- Audit trails
-- Segregation of duties
-- Financial controls
+---
 
-#### PCI (Payment)
-- Cardholder data protection
-- Network segmentation
-- Tokenization support
-- Security scanning
-
-## Extensibility
-
-### Adding New Technologies
-
-1. **Create Template Pack**
-   ```
-   template-packs/<category>/<technology>/
-   ├── base/
-   ├── enterprise/
-   └── compliance/
-   ```
-
-2. **Update Template Engine**
-   ```python
-   def _<technology>_template(self, ...):
-       # Template generation logic
-   ```
-
-3. **Add Validation Rules**
-   ```python
-   compatibility_matrix['<category>']['<technology>'] = {
-       'compatible_with': [...]
-   }
-   ```
-
-4. **Update Policy DSL**
-   ```yaml
-   technology_compatibility:
-     <technology>:
-       compatible_backends: [...]
-   ```
-
-### Adding Industries
-
-1. **Define Configuration**
-   ```python
-   'new_industry': {
-       'default_features': [...],
-       'compliance': [...],
-       'recommended_stack': {...}
-   }
-   ```
-
-2. **Create Compliance Rules**
-3. **Add Policy Definitions**
-4. **Update Documentation**
-
-## Performance Considerations
-
-### Optimization Strategies
-
-1. **Template Caching**: Cache parsed templates
-2. **Parallel Processing**: Generate components concurrently
-3. **Lazy Loading**: Load templates on demand
-4. **Minimal I/O**: Batch file operations
-
-### Scalability
-
-- Modular architecture supports extension
-- Template system allows easy additions
-- Policy DSL enables configuration without code changes
-- Integration layer supports multiple frameworks
-
-## Error Handling
-
-### Error Categories
-
-1. **Validation Errors**: Invalid configuration
-2. **Template Errors**: Missing or corrupt templates
-3. **Integration Errors**: External system failures
-4. **File System Errors**: Permission or space issues
-
-### Recovery Strategies
-
-- Graceful degradation
-- Detailed error messages
-- Rollback capability
-- Retry mechanisms
-
-## Future Enhancements
-
-### Planned Features
-
-1. **Cloud-Native Templates**: Kubernetes, serverless
-2. **More Frameworks**: Vue.js, Svelte, Spring Boot
-3. **Infrastructure as Code**: Terraform, Pulumi
-4. **Advanced Compliance**: ISO 27001, FedRAMP
-5. **Multi-Cloud Support**: Enhanced cloud templates
-
-### Architecture Evolution
-
-- Plugin system for custom generators
-- Web UI for project configuration
-- Template marketplace
-- Real-time collaboration features
-
-## Conclusion
-
-The Client Project Generator architecture is designed for:
-- **Extensibility**: Easy to add new technologies
-- **Maintainability**: Clear separation of concerns
-- **Reliability**: Comprehensive validation
-- **Performance**: Efficient generation process
-- **Compliance**: Built-in regulatory support
-
-This architecture enables rapid, consistent, and compliant project generation across various industries and technology stacks.
+*This architecture document provides a comprehensive blueprint for the AI Governor Framework Enhancement, ensuring scalability, security, compliance, and performance across all system components.*

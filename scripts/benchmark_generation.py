@@ -17,7 +17,7 @@ from project_generator.core.industry_config import IndustryConfig
 
 
 def run_once(name: str, workers: int) -> float:
-    bench_root = Path('/workspace/_bench')
+    bench_root = Path('./_bench')
     proj_dir = bench_root / name
     if proj_dir.exists():
         shutil.rmtree(proj_dir)
