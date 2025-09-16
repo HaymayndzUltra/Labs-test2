@@ -1,7 +1,7 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-07,release,deploy,production | SCOPE: project-rules | DESCRIPTION: Trigger to apply Release & Deployment workflow instructions."
 alwaysApply: false
-globs: .cursor/dev-workflow/7-release-and-deployment.md
+globs: .cursor/commands/7-release-manager.md
 ---
 
 # Trigger: Phase 07 — Release & Deployment
@@ -21,7 +21,7 @@ Apply the human workflow instructions to run maintenance cycles: monitoring, pat
 ## `[MUST]` - Apply Instructions
 
 ### Apply
-Apply instruction: `.cursor/dev-workflow/7-release-and-deployment.md`
+Apply instruction: `.cursor/commands/7-release-manager.md`
 
 ## Execution
 When triggered, this runs the steps/commands defined in the MD workflow.

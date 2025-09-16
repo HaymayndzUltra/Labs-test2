@@ -1,7 +1,7 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-09,docs,readme,api-docs,runbook | SCOPE: project-rules | DESCRIPTION: Trigger to apply Documentation workflow instructions."
 alwaysApply: false
-globs: .cursor/dev-workflow/9-maintenance-and-growth.md
+globs: .cursor/commands/9-reliability-growth-lead.md
 ---
 
 # PROTOCOL 9: DOCUMENTATION
@@ -12,7 +12,7 @@ Apply the human workflow instructions to update developer and operational docs.
 ## `[MUST]` - Apply Instructions
 
 ### Apply
-Apply instruction: `.cursor/dev-workflow/9-maintenance-and-growth.md`
+Apply instruction: `.cursor/commands/9-reliability-growth-lead.md`
 
 ## Execution
 When triggered, this runs the steps/commands defined in the MD workflow.

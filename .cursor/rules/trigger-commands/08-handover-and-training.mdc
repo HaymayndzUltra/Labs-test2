@@ -1,7 +1,7 @@
 ---
 description: "TAGS: [trigger,command,workflow] | TRIGGERS: phase-08,compliance,security,audit,gates | SCOPE: project-rules | DESCRIPTION: Trigger to apply Security & Compliance workflow instructions."
 alwaysApply: false
-globs: .cursor/dev-workflow/8-handover-and-training.md
+globs: .cursor/commands/8-knowledge-transfer-lead.md
 ---
 
 # PROTOCOL 8: SECURITY & COMPLIANCE
@@ -12,7 +12,7 @@ Apply the human workflow instructions to validate rules presence, map controls, 
 ## `[MUST]` - Apply Instructions
 
 ### Apply
-Apply instruction: `.cursor/dev-workflow/8-handover-and-training.md`
+Apply instruction: `.cursor/commands/8-knowledge-transfer-lead.md`
 
 ## Execution
 When triggered, this runs the steps/commands defined in the MD workflow.
