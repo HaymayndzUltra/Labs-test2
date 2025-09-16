@@ -319,22 +319,29 @@ jobs:
           if [ -f tests/compliance/test_encryption.py ]; then pytest tests/compliance/test_encryption.py -v; fi
           if [ -f tests/compliance/test_audit_logging.py ]; then pytest tests/compliance/test_audit_logging.py -v; fi
   
-  {{#if INDUSTRY == 'finance'}}
   test-financial-compliance:
+    # Run only if finance compliance tests are present in the repo
+    if: ${{ hashFiles('backend/tests/compliance/test_transactions.py') != '' || hashFiles('backend/tests/compliance/test_audit_trail.py') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Test transaction integrity
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - name: Install test deps
+        working-directory: backend
         run: |
-          # Run financial transaction tests
-          cd backend && python -m pytest tests/compliance/test_transactions.py -v
-      
-      - name: Test audit trail
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || true
+          pip install -r requirements-test.txt || true
+          pip install pytest
+      - name: Run finance tests
+        working-directory: backend
         run: |
-          # Verify complete audit trail
-          cd backend && python -m pytest tests/compliance/test_audit_trail.py -v
-  {{/if}}
+          if [ -f tests/compliance/test_transactions.py ]; then pytest tests/compliance/test_transactions.py -v; fi
+          if [ -f tests/compliance/test_audit_trail.py ]; then pytest tests/compliance/test_audit_trail.py -v; fi
 
   coverage-gate:
     needs: [test-frontend, test-backend-python, test-backend-go, test-backend-node]
