@@ -97,7 +97,7 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix={{branch}}-
+            type=sha
       
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -113,8 +113,8 @@ jobs:
             VCS_REF=${{ github.sha }}
             VERSION=${{ steps.meta.outputs.version }}
 
-  {{#if DEPLOY == 'aws'}}
   deploy-aws:
+    if: ${{ vars.DEPLOY_TARGET == 'aws' }}
     needs: [pre-deploy-checks, build-and-push]
     runs-on: ubuntu-latest
     environment: ${{ needs.pre-deploy-checks.outputs.deploy_env }}
@@ -132,24 +132,23 @@ jobs:
         run: |
           # Update task definition with new image
           aws ecs register-task-definition \
-            --family {{PROJECT_NAME}}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
+            --family ${{ github.event.repository.name }}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
             --task-definition-file ./deploy/aws/task-definition.json
           
           # Update service
           aws ecs update-service \
-            --cluster {{PROJECT_NAME}}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
-            --service {{PROJECT_NAME}}-service \
-            --task-definition {{PROJECT_NAME}}-${{ needs.pre-deploy-checks.outputs.deploy_env }}
+            --cluster ${{ github.event.repository.name }}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
+            --service ${{ github.event.repository.name }}-service \
+            --task-definition ${{ github.event.repository.name }}-${{ needs.pre-deploy-checks.outputs.deploy_env }}
       
       - name: Wait for deployment
         run: |
           aws ecs wait services-stable \
-            --cluster {{PROJECT_NAME}}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
-            --services {{PROJECT_NAME}}-service
-  {{/if}}
+            --cluster ${{ github.event.repository.name }}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
+            --services ${{ github.event.repository.name }}-service
 
-  {{#if DEPLOY == 'azure'}}
   deploy-azure:
+    if: ${{ vars.DEPLOY_TARGET == 'azure' }}
     needs: [pre-deploy-checks, build-and-push]
     runs-on: ubuntu-latest
     environment: ${{ needs.pre-deploy-checks.outputs.deploy_env }}
@@ -164,15 +163,14 @@ jobs:
       - name: Deploy to Container Instances
         uses: azure/aci-deploy@v1
         with:
-          resource-group: {{PROJECT_NAME}}-${{ needs.pre-deploy-checks.outputs.deploy_env }}-rg
-          dns-name-label: {{PROJECT_NAME}}-${{ needs.pre-deploy-checks.outputs.deploy_env }}
+          resource-group: ${{ github.event.repository.name }}-${{ needs.pre-deploy-checks.outputs.deploy_env }}-rg
+          dns-name-label: ${{ github.event.repository.name }}-${{ needs.pre-deploy-checks.outputs.deploy_env }}
           image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          name: {{PROJECT_NAME}}-container
+          name: ${{ github.event.repository.name }}-container
           location: ${{ vars.AZURE_LOCATION }}
-  {{/if}}
 
-  {{#if DEPLOY == 'gcp'}}
   deploy-gcp:
+    if: ${{ vars.DEPLOY_TARGET == 'gcp' }}
     needs: [pre-deploy-checks, build-and-push]
     runs-on: ubuntu-latest
     environment: ${{ needs.pre-deploy-checks.outputs.deploy_env }}
@@ -187,15 +185,14 @@ jobs:
       
       - name: Deploy to Cloud Run
         run: |
-          gcloud run deploy {{PROJECT_NAME}}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
+          gcloud run deploy ${{ github.event.repository.name }}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
             --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             --platform managed \
             --region ${{ vars.GCP_REGION }} \
             --allow-unauthenticated
-  {{/if}}
 
-  {{#if DEPLOY == 'vercel'}}
   deploy-vercel:
+    if: ${{ vars.DEPLOY_TARGET == 'vercel' }}
     needs: [pre-deploy-checks, build-and-push]
     runs-on: ubuntu-latest
     environment: ${{ needs.pre-deploy-checks.outputs.deploy_env }}
@@ -210,7 +207,6 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: ${{ needs.pre-deploy-checks.outputs.deploy_env == 'production' && '--prod' || '' }}
           working-directory: ./frontend
-  {{/if}}
 
   database-migrations:
     needs: [pre-deploy-checks, build-and-push]
@@ -223,16 +219,18 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          {{#if BACKEND == 'fastapi' || BACKEND == 'django'}}
-          pip install alembic psycopg2-binary
-          alembic upgrade head
-          {{else if BACKEND == 'go'}}
-          go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
-          migrate -path ./migrations -database $DATABASE_URL up
-          {{else if BACKEND == 'nestjs'}}
-          npm install -g typeorm
-          typeorm migration:run
-          {{/if}}
+          if [ -f backend/alembic.ini ] || [ -d backend/alembic ]; then
+            pip install alembic psycopg2-binary
+            cd backend && alembic upgrade head
+          elif [ -d backend/migrations ]; then
+            go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+            migrate -path ./backend/migrations -database $DATABASE_URL up
+          elif [ -f backend/package.json ]; then
+            npm install -g typeorm
+            cd backend && npx typeorm migration:run
+          else
+            echo "No migrations to run"
+          fi
 
   smoke-tests:
     needs: [deploy-aws, deploy-azure, deploy-gcp, deploy-vercel, database-migrations]
@@ -273,17 +271,17 @@ jobs:
         run: |
           echo "❌ Deployment failed, initiating rollback"
           
-          {{#if DEPLOY == 'aws'}}
+          if [ "${{ vars.DEPLOY_TARGET }}" = "aws" ]; then
           # Roll back ECS to previous task definition
           aws ecs update-service \
-            --cluster {{PROJECT_NAME}}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
-            --service {{PROJECT_NAME}}-service \
+            --cluster ${{ github.event.repository.name }}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
+            --service ${{ github.event.repository.name }}-service \
             --task-definition $(aws ecs describe-services \
-              --cluster {{PROJECT_NAME}}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
-              --services {{PROJECT_NAME}}-service \
+              --cluster ${{ github.event.repository.name }}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
+              --services ${{ github.event.repository.name }}-service \
               --query 'services[0].taskDefinition' --output text | \
               awk -F: '{print $1":"$2-1}')
-          {{/if}}
+          fi
       
       - name: Notify team
         uses: 8398a7/action-slack@v3
@@ -324,11 +322,11 @@ jobs:
         with:
           status: ${{ job.status }}
           fields: repo,message,commit,author,action,eventName,ref,workflow
-          text: '{{PROJECT_NAME}} successfully deployed to ${{ needs.pre-deploy-checks.outputs.deploy_env }}'
+          text: '${{ github.event.repository.name }} successfully deployed to ${{ needs.pre-deploy-checks.outputs.deploy_env }}'
           webhook_url: ${{ secrets.SLACK_WEBHOOK }}
       
-      {{#if COMPLIANCE contains 'hipaa' || COMPLIANCE contains 'sox'}}
-      - name: Generate compliance report
+      - name: Generate compliance report (if compliance vars set)
+        if: ${{ contains(vars.COMPLIANCE || '', 'hipaa') || contains(vars.COMPLIANCE || '', 'sox') }}
         run: |
           echo "# Deployment Compliance Report" > compliance-report.md
           echo "Date: $(date)" >> compliance-report.md
@@ -349,4 +347,3 @@ jobs:
           name: compliance-report-${{ github.run_number }}
           path: compliance-report.md
           retention-days: 2555  # 7 years for compliance
-      {{/if}}

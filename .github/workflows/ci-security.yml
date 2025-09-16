@@ -83,8 +83,8 @@ jobs:
       
       - name: Build Docker images
         run: |
-          docker build -t {{PROJECT_NAME}}-frontend ./frontend
-          docker build -t {{PROJECT_NAME}}-backend ./backend
+          docker build -t ${{ github.event.repository.name }}-frontend ./frontend
+          docker build -t ${{ github.event.repository.name }}-backend ./backend
         if: ${{ hashFiles('frontend/Dockerfile') != '' || hashFiles('backend/Dockerfile') != '' }}
       
       - name: Run Trivy on Docker images
@@ -212,8 +212,8 @@ jobs:
         run: |
           grep -r "@Encrypted" backend/app/models || true
   
-  {{#if INDUSTRY == 'finance'}}
   financial-security-check:
+    if: ${{ vars.INDUSTRY == 'finance' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -227,7 +227,6 @@ jobs:
         run: |
           # Check for transaction atomicity patterns
           grep -r "@Transactional" backend/ || grep -r "BEGIN.*COMMIT" backend/ || exit 1
-  {{/if}}
 
   infrastructure-scan:
     runs-on: ubuntu-latest
@@ -270,11 +269,11 @@ jobs:
           echo "- Secret Scanning: ${{ needs.secret-scanning.result }}" >> security-report.md
           echo "" >> security-report.md
           
-          {{#if COMPLIANCE}}
-          echo "## Compliance Requirements" >> security-report.md
-          echo "- Compliance Standards: {{COMPLIANCE}}" >> security-report.md
-          echo "- Enhanced Security Checks: Enabled" >> security-report.md
-          {{/if}}
+          if [ -n "${{ vars.COMPLIANCE }}" ]; then
+            echo "## Compliance Requirements" >> security-report.md
+            echo "- Compliance Standards: ${{ vars.COMPLIANCE }}" >> security-report.md
+            echo "- Enhanced Security Checks: Enabled" >> security-report.md
+          fi
       
       - name: Upload security report
         uses: actions/upload-artifact@v3
