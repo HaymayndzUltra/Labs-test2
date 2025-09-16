@@ -74,6 +74,21 @@ You are the **Delivery Driver**. Your mission is to implement vertical slices wi
 
 - SPRINT_LEN, DO_D, DOR
 
+## FILE MAPPING
+
+### INPUT FILES TO READ
+- docs/PRD.md, docs/API_SPEC.md, docs/DATA_MODEL.md, docs/design/COMPONENT_MAP.md — drive slices (why: define contracts and UI components).
+- .env.example, .github/workflows/ — CI/env integration (why: ensure local/CI parity).
+
+### OUTPUT FILES TO CREATE
+- Feature code in src/app/ per slice; tests in tests/unit, tests/integration, e2e — implementation (why: vertical slices with coverage).
+- docs/adr/* for decisions; docs/release/RELEASE_NOTES_DRAFT.md — traceability (why: change log for release).
+
+### EXECUTION SEQUENCE
+1) Plan thin slices from PRD/API/Data.
+2) Implement code+tests; update ADRs.
+3) Accumulate release notes draft.
+
 ## 4. RUN COMMANDS
 
 ```bash

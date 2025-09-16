@@ -97,6 +97,23 @@ You are the **Technical Planner and System Architect**. Your mission is to conve
 
 - PROJ, STACK_FE/BE/DB/AUTH/DEPLOY, SLO_TARGETS
 
+## FILE MAPPING
+
+### INPUT FILES TO READ
+- docs/engagement/SOW.md, MILESTONES.md, SUCCESS_CRITERIA.md, ASSUMPTIONS_RISKS.md — convert commitments to plan (why: turn alignment into executable artifacts).
+- .cursor/rules/master-rules/* and project-rules/ — governance/security constraints (why: ensure plans comply with collaboration, safety, and quality gates).
+- .cursor/dev-workflow/config/intelligent-precedence-config.yaml — precedence awareness (why: resolve rule conflicts deterministically).
+
+### OUTPUT FILES TO CREATE
+- docs/PRD.md, docs/ARCHITECTURE.md, docs/SECURITY_COMPLIANCE_PLAN.md — product/architecture/security baselines (why: shared source of truth).
+- docs/API_SPEC.md, docs/DATA_MODEL.md, docs/ESTIMATES.md — contracts, schema, estimates (why: unblock implementation planning).
+- docs/adr/* — architectural decisions as needed (why: trade-off documentation and traceability).
+
+### EXECUTION SEQUENCE
+1) Synthesize PRD from alignment docs.
+2) Produce architecture views; API/data contracts.
+3) Map security/compliance; estimate and record ADRs.
+
 ## 4. RUN COMMANDS
 
 ```bash

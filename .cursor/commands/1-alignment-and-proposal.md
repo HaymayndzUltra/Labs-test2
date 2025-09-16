@@ -63,6 +63,25 @@ You are the **Engagement Lead and Solution Planner**. Your mission is to turn th
 
 - PROJ, DEADLINE, BUDGET, APPROVERS
 
+## FILE MAPPING
+
+### INPUT FILES TO READ
+- README.md — baseline context/constraints (why: anchors scope and constraints).
+- .cursor/dev-workflow/config/industry-rule-activation.yaml — industry/compliance signals (why: activates relevant rules and constraints).
+- docs/engagement/ (if present) — avoid duplication; reuse prior alignment (why: continuity and reuse).
+
+### OUTPUT FILES TO CREATE
+- docs/engagement/SOW.md — scope/deliverables/acceptance (why: contract clarity and alignment).
+- docs/engagement/MILESTONES.md — milestone plan (why: phased delivery and checkpoints).
+- docs/engagement/SUCCESS_CRITERIA.md — KPIs/SLO seeds (why: measurable outcomes).
+- docs/engagement/ASSUMPTIONS_RISKS.md — facts vs. assumptions, risk register (why: risk management).
+- docs/adr/DECISIONS.md — key decisions (why: decision traceability).
+
+### EXECUTION SEQUENCE
+1) Read README and industry activation.
+2) Extract constraints/objectives; list assumptions/risks.
+3) Draft SOW, milestones, success criteria; log decisions.
+
 ## 4. RUN COMMANDS
 
 ```bash
