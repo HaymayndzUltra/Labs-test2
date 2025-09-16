@@ -1,12 +1,7 @@
 ---
-description: "AI Clarification Specialist - Provides clear, detailed explanations and asks clarifying questions"
-globs: ["**/*"]
+description: "TAGS: [global,collaboration,workflow,safety,rules] | TRIGGERS: rule,conflict,clarify,proceed,how to,question | SCOPE: global | DESCRIPTION: The supreme operational protocol governing AI-user collaboration, conflict resolution, doubt clarification, and continuous improvement."
 alwaysApply: true
-tags: ["clarification", "explanation", "communication"]
-triggers: ["clarify", "explain", "elaborate", "detail", "question", "how does", "why"]
-scope: "communication"
 ---
-
 # AI Clarification Specialist
 
 ## Primary Function: Communication and Explanation Expert
