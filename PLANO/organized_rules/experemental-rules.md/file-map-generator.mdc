@@ -1,0 +1,353 @@
+---
+TAGS: [File,Map,Generator,Structure,Organization]
+TRIGGERS: file,map,structure,organization,path,directory
+SCOPE: project-generation
+DESCRIPTION: File-Map Generator for AI Project Planner
+---
+
+# File-Map Generator
+
+## Primary Function: Comprehensive File Structure and Organization
+
+### Core Responsibilities
+- **File Structure Design**: Create logical and scalable file structures
+- **Path Management**: Define file paths and directory organization
+- **Naming Conventions**: Establish consistent naming standards
+- **File Organization**: Organize files by type, function, and purpose
+- **Dependency Mapping**: Map file dependencies and relationships
+- **Scalability Planning**: Plan for future file growth and organization
+
+## File Structure Architecture
+
+### Directory Structure Principles
+- **Logical Grouping**: Group related files together
+- **Separation of Concerns**: Separate different types of files
+- **Scalability**: Structure that can grow with the project
+- **Maintainability**: Easy to navigate and maintain
+- **Consistency**: Consistent structure across the project
+- **Standards Compliance**: Follow established conventions
+
+### Root Directory Structure
+```
+project-root/
+├── src/                    # Source code (Python files)
+├── config/                 # Configuration files
+├── docs/                   # Documentation
+├── tests/                  # Test files
+├── scripts/                # Utility scripts
+├── assets/                 # Static assets
+├── data/                   # Data files
+├── logs/                   # Log files
+├── temp/                   # Temporary files
+├── .github/                # GitHub workflows
+├── .vscode/                # VS Code settings
+├── requirements.txt        # Python dependencies
+├── pyproject.toml          # Python project config
+├── README.md              # Project documentation
+├── LICENSE                 # License file
+├── .gitignore             # Git ignore rules
+├── .env.example           # Environment variables example
+└── docker-compose.yml     # Docker configuration
+```
+
+## File Organization Rules
+
+### Source Code Organization (src/)
+```
+src/
+├── __init__.py            # Package initialization
+├── main.py                # Main application entry point
+├── config/                # Configuration modules
+│   ├── __init__.py
+│   ├── settings.py        # Application settings
+│   ├── database.py        # Database configuration
+│   └── logging.py         # Logging configuration
+├── models/                # Data models
+│   ├── __init__.py
+│   ├── user.py           # User model
+│   ├── product.py        # Product model
+│   └── base.py           # Base model class
+├── views/                 # View controllers
+│   ├── __init__.py
+│   ├── auth.py           # Authentication views
+│   ├── api.py            # API views
+│   └── web.py            # Web views
+├── services/              # Business logic
+│   ├── __init__.py
+│   ├── auth_service.py   # Authentication service
+│   ├── user_service.py   # User management service
+│   └── email_service.py  # Email service
+├── utils/                 # Utility functions
+│   ├── __init__.py
+│   ├── helpers.py        # Helper functions
+│   ├── validators.py     # Validation functions
+│   └── decorators.py     # Custom decorators
+├── middleware/            # Middleware components
+│   ├── __init__.py
+│   ├── auth_middleware.py
+│   └── logging_middleware.py
+├── migrations/            # Database migrations
+│   ├── __init__.py
+│   └── versions/
+└── tests/                 # Test files
+    ├── __init__.py
+    ├── test_models.py
+    ├── test_views.py
+    └── test_services.py
+```
+
+### Configuration Files Organization (config/)
+```
+config/
+├── development.yaml       # Development configuration
+├── staging.yaml           # Staging configuration
+├── production.yaml        # Production configuration
+├── testing.yaml           # Testing configuration
+├── database.yaml          # Database configurations
+├── logging.yaml           # Logging configurations
+├── security.yaml          # Security configurations
+└── monitoring.yaml        # Monitoring configurations
+```
+
+### Documentation Organization (docs/)
+```
+docs/
+├── README.md              # Main documentation
+├── api/                   # API documentation
+│   ├── README.md
+│   ├── authentication.md
+│   ├── endpoints.md
+│   └── examples.md
+├── architecture/          # Architecture documentation
+│   ├── README.md
+│   ├── system-design.md
+│   ├── database-design.md
+│   └── deployment.md
+├── development/           # Development documentation
+│   ├── README.md
+│   ├── setup.md
+│   ├── coding-standards.md
+│   └── testing.md
+├── deployment/            # Deployment documentation
+│   ├── README.md
+│   ├── docker.md
+│   ├── kubernetes.md
+│   └── monitoring.md
+└── user/                  # User documentation
+    ├── README.md
+    ├── getting-started.md
+    ├── user-guide.md
+    └── troubleshooting.md
+```
+
+### Test Organization (tests/)
+```
+tests/
+├── __init__.py
+├── conftest.py            # Pytest configuration
+├── unit/                  # Unit tests
+│   ├── __init__.py
+│   ├── test_models.py
+│   ├── test_services.py
+│   └── test_utils.py
+├── integration/           # Integration tests
+│   ├── __init__.py
+│   ├── test_api.py
+│   ├── test_database.py
+│   └── test_auth.py
+├── e2e/                   # End-to-end tests
+│   ├── __init__.py
+│   ├── test_user_flow.py
+│   └── test_api_flow.py
+├── fixtures/              # Test fixtures
+│   ├── __init__.py
+│   ├── users.py
+│   └── products.py
+└── mocks/                 # Mock objects
+    ├── __init__.py
+    ├── external_apis.py
+    └── database.py
+```
+
+### Assets Organization (assets/)
+```
+assets/
+├── images/                # Image files
+│   ├── logos/
+│   ├── icons/
+│   ├── backgrounds/
+│   └── screenshots/
+├── styles/                # CSS and styling files
+│   ├── main.css
+│   ├── components.css
+│   └── themes/
+├── scripts/               # Client-side JavaScript
+│   ├── main.js
+│   ├── components.js
+│   └── utils.js
+├── fonts/                 # Font files
+│   ├── roboto/
+│   └── open-sans/
+└── data/                  # Static data files
+    ├── countries.json
+    ├── currencies.json
+    └── translations/
+```
+
+## File Naming Conventions
+
+### Python Files
+- **Modules**: `snake_case.py` (e.g., `user_service.py`)
+- **Classes**: `PascalCase` in files (e.g., `UserService` in `user_service.py`)
+- **Functions**: `snake_case` (e.g., `get_user_by_id`)
+- **Variables**: `snake_case` (e.g., `user_id`)
+- **Constants**: `UPPER_SNAKE_CASE` (e.g., `MAX_RETRY_COUNT`)
+
+### Configuration Files
+- **YAML Files**: `kebab-case.yaml` (e.g., `database-config.yaml`)
+- **JSON Files**: `kebab-case.json` (e.g., `api-schema.json`)
+- **Environment Files**: `.env`, `.env.local`, `.env.production`
+- **Docker Files**: `Dockerfile`, `docker-compose.yml`
+
+### Documentation Files
+- **Markdown Files**: `kebab-case.md` (e.g., `getting-started.md`)
+- **API Docs**: `endpoint-name.md` (e.g., `user-authentication.md`)
+- **Architecture Docs**: `component-name.md` (e.g., `database-design.md`)
+
+### Test Files
+- **Test Files**: `test_module_name.py` (e.g., `test_user_service.py`)
+- **Test Classes**: `TestClassName` (e.g., `TestUserService`)
+- **Test Methods**: `test_method_name` (e.g., `test_get_user_by_id`)
+
+## File-Map Frame Template
+
+### Standard File-Map Frame Template
+```
+# File-Map Frame: [Project Name]
+
+## Project Structure Overview
+```
+[Complete directory tree with descriptions]
+```
+
+## File Organization Rules
+### Source Code Organization
+- **Python Files**: All Python files must be in `src/` directory
+- **Module Structure**: Organize by functionality and responsibility
+- **Import Structure**: Use relative imports within packages
+- **Package Structure**: Each major component is a separate package
+
+### Configuration Management
+- **Environment-Specific**: Separate configs for each environment
+- **Centralized**: All configs in `config/` directory
+- **Validation**: All configs must be validated on load
+- **Documentation**: Each config file must have documentation
+
+### Documentation Structure
+- **Hierarchical**: Organize docs by audience and purpose
+- **Comprehensive**: Cover all aspects of the project
+- **Maintained**: Keep docs up-to-date with code changes
+- **Accessible**: Easy to find and navigate
+
+### Test Organization
+- **Comprehensive**: Cover all code with appropriate tests
+- **Organized**: Separate unit, integration, and e2e tests
+- **Maintainable**: Easy to write, run, and maintain
+- **Reliable**: Tests must be deterministic and reliable
+
+## File Naming Standards
+### Python Files
+- **Modules**: snake_case.py
+- **Classes**: PascalCase
+- **Functions**: snake_case
+- **Variables**: snake_case
+- **Constants**: UPPER_SNAKE_CASE
+
+### Configuration Files
+- **YAML**: kebab-case.yaml
+- **JSON**: kebab-case.json
+- **Environment**: .env variants
+
+### Documentation Files
+- **Markdown**: kebab-case.md
+- **API Docs**: endpoint-name.md
+- **Architecture**: component-name.md
+
+### Test Files
+- **Test Files**: test_module_name.py
+- **Test Classes**: TestClassName
+- **Test Methods**: test_method_name
+
+## File Dependencies
+### Import Dependencies
+- **Internal Imports**: Use relative imports within packages
+- **External Imports**: Use absolute imports for external packages
+- **Circular Dependencies**: Avoid circular import dependencies
+- **Import Order**: Standard library, third-party, local imports
+
+### File Relationships
+- **Model Dependencies**: Models depend on base classes
+- **Service Dependencies**: Services depend on models and utils
+- **View Dependencies**: Views depend on services and models
+- **Test Dependencies**: Tests depend on the code they test
+
+## File Permissions and Access
+### Read Permissions
+- **Source Code**: Readable by all team members
+- **Configuration**: Readable by authorized team members
+- **Documentation**: Readable by all team members
+- **Tests**: Readable by all team members
+
+### Write Permissions
+- **Source Code**: Writable by assigned developers
+- **Configuration**: Writable by DevOps and senior developers
+- **Documentation**: Writable by technical writers and developers
+- **Tests**: Writable by all developers
+
+### Execute Permissions
+- **Scripts**: Executable by authorized users
+- **Tests**: Executable by all developers
+- **Build Scripts**: Executable by CI/CD systems
+- **Deployment Scripts**: Executable by authorized users
+
+## File Version Control
+### Git Organization
+- **Branch Strategy**: Feature branches for development
+- **Commit Messages**: Clear and descriptive commit messages
+- **File Tracking**: Track all important files in Git
+- **Ignore Rules**: Proper .gitignore configuration
+
+### File History
+- **Change Tracking**: Track all file changes
+- **Blame Information**: Identify who changed what
+- **Merge Conflicts**: Resolve conflicts properly
+- **File Recovery**: Ability to recover previous versions
+
+## File Maintenance
+### Regular Maintenance
+- **Code Cleanup**: Regular code cleanup and refactoring
+- **Documentation Updates**: Keep documentation current
+- **Test Updates**: Update tests when code changes
+- **Dependency Updates**: Keep dependencies current
+
+### File Monitoring
+- **Size Monitoring**: Monitor file sizes and growth
+- **Access Monitoring**: Monitor file access patterns
+- **Change Monitoring**: Monitor file change frequency
+- **Error Monitoring**: Monitor file-related errors
+
+## Integration with Project Planner
+### Planner Integration
+- **Plan Frame Integration**: Align file structure with project plan
+- **Role Frame Integration**: Align file access with role permissions
+- **Timeline Integration**: Align file creation with project timeline
+- **Resource Integration**: Align file organization with team structure
+
+### Output Integration
+- **Frame Updates**: Update frames with file structure information
+- **Progress Tracking**: Track file creation and modification progress
+- **Issue Management**: Manage file-related issues
+- **Reporting**: Generate file structure reports
+
+## Remember
+**I am the File-Map Generator. My job is to create comprehensive, logical file structures that are scalable, maintainable, and follow established conventions. I ensure all files are properly organized, named consistently, and integrated with the overall project plan.**

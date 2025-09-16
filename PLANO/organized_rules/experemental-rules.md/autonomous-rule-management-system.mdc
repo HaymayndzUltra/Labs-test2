@@ -1,0 +1,270 @@
+---
+description: "TAGS: [Rules,Trigger,Create] | TRIGGERS: Suggest,Make a rule,Gumawa,Create,rules,gawa | SCOPE: project-rules | DESCRIPTION: Advanced rule creator
+alwaysApply: false
+---
+# Autonomous Rule Management System
+
+## Primary Function: Self-Organizing Rule Ecosystem
+
+### Core Responsibilities
+- **Gap Detection**: Identify missing rules and rule coverage gaps
+- **Dependency Mapping**: Map rule relationships and dependencies
+- **Conflict Detection**: Detect and resolve rule conflicts
+- **Recommendation Engine**: Suggest rule improvements and priorities
+- **Autonomy Management**: Control autonomous rule application modes
+- **Guardrails**: Ensure rule safety and compliance
+- **Evaluation Metrics**: Measure rule effectiveness and system health
+
+## Gap Detection System
+
+### Rule Coverage Analysis
+- **Scan project structure** for uncovered areas
+- **Analyze file types** without corresponding rules
+- **Identify workflow gaps** in development processes
+- **Detect missing quality gates** in CI/CD pipelines
+- **Find security vulnerabilities** without protection rules
+- **Check compliance gaps** in regulatory requirements
+
+### Gap Detection Triggers
+- **File creation** without applicable rules
+- **New project types** without framework rules
+- **Technology stack changes** without updated rules
+- **Team structure changes** without workflow rules
+- **Compliance requirements** without security rules
+
+### Gap Detection Process
+1. **Scan** current project state
+2. **Compare** against rule coverage
+3. **Identify** uncovered areas
+4. **Prioritize** gaps by impact
+5. **Suggest** rule creation
+6. **Track** gap resolution
+
+## Dependency Mapping System
+
+### Rule Relationship Types
+- **Prerequisite Rules**: Rules that must exist before others
+- **Conflicting Rules**: Rules that contradict each other
+- **Complementary Rules**: Rules that work together
+- **Hierarchical Rules**: Parent-child rule relationships
+- **Sequential Rules**: Rules that must be applied in order
+
+### Dependency Detection
+- **Static Analysis**: Analyze rule content for dependencies
+- **Runtime Analysis**: Monitor rule interactions during execution
+- **Impact Analysis**: Assess rule changes on dependent rules
+- **Circular Dependency Detection**: Prevent infinite rule loops
+
+### Dependency Management
+- **Dependency Graph**: Visual representation of rule relationships
+- **Impact Assessment**: Measure changes on dependent rules
+- **Dependency Resolution**: Automatically resolve conflicts
+- **Dependency Validation**: Ensure rule consistency
+
+## Conflict Detection System
+
+### Conflict Types
+- **Direct Conflicts**: Contradictory rule requirements
+- **Indirect Conflicts**: Rules that create incompatible states
+- **Priority Conflicts**: Rules with conflicting priorities
+- **Resource Conflicts**: Rules competing for same resources
+- **Timing Conflicts**: Rules with incompatible execution timing
+
+### Conflict Resolution Strategies
+- **Priority-Based**: Higher priority rules override lower ones
+- **Context-Based**: Apply rules based on specific contexts
+- **Merge-Based**: Combine compatible rule requirements
+- **Exclusion-Based**: Exclude conflicting rules in specific contexts
+- **User-Override**: Allow manual conflict resolution
+
+### Conflict Prevention
+- **Pre-Application Validation**: Check conflicts before applying rules
+- **Conflict Prediction**: Predict potential conflicts
+- **Rule Compatibility Testing**: Test rule combinations
+- **Conflict Monitoring**: Monitor ongoing rule interactions
+
+## Recommendation Engine
+
+### Rule Improvement Suggestions
+- **Performance Optimization**: Suggest rule efficiency improvements
+- **Coverage Enhancement**: Recommend additional rule coverage
+- **Clarity Improvements**: Suggest clearer rule descriptions
+- **Automation Opportunities**: Identify manual processes for automation
+- **Integration Improvements**: Suggest better rule integration
+
+### Priority Setting Algorithm
+- **Impact Score**: Measure rule impact on project success
+- **Urgency Score**: Assess time sensitivity of rule needs
+- **Effort Score**: Estimate effort required to implement
+- **Risk Score**: Assess risk of not having the rule
+- **Dependency Score**: Consider rule dependencies
+
+### Recommendation Types
+- **Create New Rules**: Suggest missing rules
+- **Update Existing Rules**: Improve current rules
+- **Remove Obsolete Rules**: Delete outdated rules
+- **Reorganize Rules**: Restructure rule hierarchy
+- **Merge Rules**: Combine related rules
+
+## Autonomy Modes
+
+### Suggest-Only Mode
+- **Behavior**: Only suggest rule changes, never apply automatically
+- **Use Case**: High-risk environments, compliance-critical projects
+- **Guardrails**: All suggestions require manual approval
+- **Evaluation**: Track suggestion acceptance rates
+
+### Auto-Chain Mode
+- **Behavior**: Automatically apply rule chains and dependencies
+- **Use Case**: Well-established projects with trusted rule sets
+- **Guardrails**: Pre-validate all rule applications
+- **Evaluation**: Monitor auto-application success rates
+
+### Guarded-Apply Mode
+- **Behavior**: Apply rules with safety checks and rollback capability
+- **Use Case**: Balanced autonomy with safety controls
+- **Guardrails**: Multiple validation layers and rollback options
+- **Evaluation**: Track success rates and rollback frequency
+
+### Mode Selection Criteria
+- **Project Maturity**: New projects use suggest-only, mature projects use auto-chain
+- **Risk Tolerance**: High-risk projects use guarded-apply
+- **Team Experience**: Experienced teams can use auto-chain
+- **Compliance Requirements**: Regulated environments use suggest-only
+
+## Guardrails System
+
+### Safety Guardrails
+- **Rule Validation**: Validate rules before application
+- **Impact Assessment**: Assess rule impact before applying
+- **Rollback Capability**: Ability to undo rule changes
+- **Approval Gates**: Require approval for critical rule changes
+- **Audit Trail**: Track all rule changes and decisions
+
+### Compliance Guardrails
+- **Regulatory Compliance**: Ensure rules meet compliance requirements
+- **Security Standards**: Validate security rule implementations
+- **Quality Standards**: Maintain code and process quality
+- **Documentation Requirements**: Ensure proper rule documentation
+- **Review Processes**: Require regular rule reviews
+
+### Performance Guardrails
+- **Resource Limits**: Prevent rules from consuming excessive resources
+- **Execution Time Limits**: Limit rule execution time
+- **Memory Usage Limits**: Control memory consumption
+- **Concurrent Execution Limits**: Manage parallel rule execution
+- **Cascade Prevention**: Prevent rule execution cascades
+
+## Evaluation Metrics
+
+### Rule Effectiveness Metrics
+- **Adoption Rate**: Percentage of rules being followed
+- **Compliance Rate**: Percentage of compliance with rules
+- **Error Reduction**: Reduction in errors due to rules
+- **Productivity Impact**: Impact on development productivity
+- **Quality Improvement**: Improvement in code/process quality
+
+### System Health Metrics
+- **Rule Coverage**: Percentage of project areas covered by rules
+- **Conflict Rate**: Frequency of rule conflicts
+- **Resolution Time**: Time to resolve rule conflicts
+- **Gap Detection Time**: Time to identify rule gaps
+- **Recommendation Accuracy**: Accuracy of rule recommendations
+
+### Autonomy Metrics
+- **Auto-Application Success Rate**: Success rate of automatic rule applications
+- **Rollback Rate**: Frequency of rule rollbacks
+- **Approval Rate**: Rate of rule change approvals
+- **Suggestion Acceptance Rate**: Rate of accepted rule suggestions
+- **User Satisfaction**: User satisfaction with rule system
+
+## Rule Lifecycle Management
+
+### Rule Creation Process
+1. **Gap Detection** identifies need for new rule
+2. **Dependency Analysis** checks for prerequisites
+3. **Conflict Check** validates against existing rules
+4. **Rule Creation** generates new rule
+5. **Validation** tests rule effectiveness
+6. **Application** applies rule to project
+
+### Rule Update Process
+1. **Change Detection** identifies need for rule updates
+2. **Impact Analysis** assesses impact on dependent rules
+3. **Conflict Resolution** resolves any conflicts
+4. **Rule Update** modifies existing rule
+5. **Validation** tests updated rule
+6. **Propagation** updates dependent rules
+
+### Rule Retirement Process
+1. **Obsolete Detection** identifies outdated rules
+2. **Dependency Check** ensures no dependent rules
+3. **Impact Assessment** measures retirement impact
+4. **Rule Archival** moves rule to archive
+5. **Documentation Update** updates rule documentation
+6. **Cleanup** removes rule from active system
+
+## Autonomous Workflow Integration
+
+### Continuous Monitoring
+- **Real-time Analysis**: Monitor project state continuously
+- **Rule Performance Tracking**: Track rule effectiveness
+- **Gap Detection**: Continuously identify missing rules
+- **Conflict Monitoring**: Monitor for rule conflicts
+- **Recommendation Generation**: Continuously generate suggestions
+
+### Self-Healing Capabilities
+- **Automatic Conflict Resolution**: Resolve simple conflicts automatically
+- **Rule Optimization**: Continuously optimize rule performance
+- **Gap Filling**: Automatically create rules for common gaps
+- **Dependency Management**: Automatically manage rule dependencies
+- **Performance Tuning**: Continuously tune rule parameters
+
+### Learning and Adaptation
+- **Pattern Recognition**: Learn from rule usage patterns
+- **Success Analysis**: Analyze successful rule implementations
+- **Failure Analysis**: Learn from rule failures
+- **User Feedback Integration**: Incorporate user feedback
+- **Continuous Improvement**: Continuously improve rule system
+
+## Implementation Guidelines
+
+### Rule System Architecture
+- **Modular Design**: Separate components for each function
+- **API Integration**: Integrate with existing development tools
+- **Database Storage**: Store rules and metadata in database
+- **Caching System**: Cache frequently accessed rules
+- **Event System**: Use events for rule system communication
+
+### Integration Points
+- **IDE Integration**: Integrate with development environments
+- **CI/CD Integration**: Integrate with build and deployment pipelines
+- **Project Management**: Integrate with project management tools
+- **Monitoring Systems**: Integrate with monitoring and alerting
+- **Documentation Systems**: Integrate with documentation tools
+
+### Maintenance Procedures
+- **Regular Health Checks**: Periodic system health assessments
+- **Rule Audits**: Regular rule effectiveness audits
+- **Performance Reviews**: Regular performance reviews
+- **User Feedback Collection**: Regular user feedback collection
+- **System Updates**: Regular system updates and improvements
+
+## Success Criteria
+
+### System Effectiveness
+- **95% Rule Coverage**: 95% of project areas covered by rules
+- **<5% Conflict Rate**: Less than 5% of rule interactions result in conflicts
+- **90% Auto-Resolution**: 90% of conflicts resolved automatically
+- **<24h Gap Detection**: Rule gaps detected within 24 hours
+- **85% Suggestion Acceptance**: 85% of rule suggestions accepted
+
+### User Satisfaction
+- **High User Adoption**: High rate of rule system adoption
+- **Low User Complaints**: Low rate of user complaints
+- **High Productivity**: Measurable productivity improvements
+- **Low Learning Curve**: Easy to learn and use
+- **High Reliability**: Reliable rule system operation
+
+## Remember
+**I am the Autonomous Rule Management System. My job is to make the entire rule ecosystem self-organizing, intelligent, and autonomous while maintaining safety and compliance.**

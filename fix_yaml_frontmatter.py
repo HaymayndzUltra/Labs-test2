@@ -5,14 +5,9 @@ Script to fix malformed YAML frontmatter in .mdc files
 import os
 import re
 import glob
-from typing import List
 
-def fix_yaml_frontmatter(file_path: str) -> bool:
-    """
-    Fix YAML frontmatter in a single .mdc file.
-
-    Returns True when the file was modified, False otherwise.
-    """
+def fix_yaml_frontmatter(file_path):
+    """Fix YAML frontmatter in a single file"""
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
     
@@ -58,9 +53,9 @@ def fix_yaml_frontmatter(file_path: str) -> bool:
         print(f"OK: {file_path}")
         return False
 
-def main() -> None:
-    """Find and fix YAML frontmatter across all .mdc rule files."""
-    rule_files: List[str] = glob.glob('.cursor/rules/**/*.mdc', recursive=True)
+def main():
+    """Fix all .mdc files"""
+    rule_files = glob.glob('.cursor/rules/**/*.mdc', recursive=True)
     
     fixed_count = 0
     for file_path in rule_files:

@@ -1,138 +1,65 @@
 ---
-description: Next.js development best practices and component patterns
-globs: **/*.tsx,**/*.ts
+description: Backend Serverless Standards
+globs: **/*.js,**/*.ts
 alwaysApply: false
 ---
 
-# Next.js Development Rule
+
+# Nextjs Development Rule
 
 ## AI Persona
-When this rule is active, You are an expert **Next.js Developer** with expertise in App Router, SSR/SSG, and performance optimization.
+When this rule is active,  a **Senior Next.js Developer** with expertise in modern development practices, performance optimization, and best practices. You build scalable, maintainable applications.
 
-## Core Principles
-- Use App Router for new projects over Pages Router
-- Leverage Server Components by default, Client Components when needed
-- Optimize for Core Web Vitals and SEO
-- Follow Next.js best practices for routing and data fetching
+## Core Principle
+Next.js applications should leverage the framework's capabilities for optimal performance, SEO, and developer experience through proper routing, rendering strategies, and built-in optimizations.
 
-## Protocol for Next.js Development
+## Protocol for Development
 
-### **[STRICT] App Router Usage**
+**[STRICT] App Router Usage**
 1. **`[STRICT]` Use App Router**: Prefer app/ directory over pages/ for new projects
 2. **`[STRICT]` Server Components**: Use Server Components by default, Client Components when needed
 3. **`[STRICT]` Route Handlers**: Use route.ts files for API endpoints in app/ directory
-4. **`[GUIDELINE]` Layouts**: Use layout.tsx for shared UI across routes
 
-### **[STRICT] Performance and SEO**
+**[STRICT] Performance and SEO**
 1. **`[STRICT]` Image Optimization**: Use next/image for all images
 2. **`[STRICT]` Font Optimization**: Use next/font for font loading
 3. **`[STRICT]` Metadata API**: Use generateMetadata for dynamic SEO content
-4. **`[GUIDELINE]` Bundle Analysis**: Regularly analyze and optimize bundle size
-
-### **[STRICT] Data Fetching**
-1. **`[STRICT]` Server-Side**: Use async Server Components for server-side data fetching
-2. **`[STRICT]` Client-Side**: Use SWR or React Query for client-side data fetching
-3. **`[STRICT]` Caching**: Implement proper caching strategies
-4. **`[GUIDELINE]` Error Handling**: Implement comprehensive error boundaries
 
 ## Examples
 
 ### ✅ Correct Implementation
-\`\`\`tsx
-// app/users/page.tsx
-import { Metadata } from 'next';
-import Image from 'next/image';
+```python
+# Example will be added based on specific technology
+def process_data(items: List[Dict[str, Any]]) -> List[ProcessedItem]:
+"""Process a list of data items with proper type hints and error handling."""
+if not items:
+return []
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string;
-}
+processed_items = []
+for item in items:
+try:
+processed_item = ProcessedItem(
+id=item['id'],
+name=item.get('name', 'Unknown'),
+value=float(item.get('value', 0))
+)
+processed_items.append(processed_item)
+except (KeyError, ValueError, TypeError) as e:
+logger.warning(f"Failed to process item {item}: {e}")
+continue
 
-async function getUsers(): Promise<User[]> {
-  const res = await fetch('https://api.example.com/users', {
-    next: { revalidate: 3600 } // Cache for 1 hour
-  });
-  
-  if (!res.ok) {
-    throw new Error('Failed to fetch users');
-  }
-  
-  return res.json();
-}
-
-export const metadata: Metadata = {
-  title: 'Users',
-  description: 'List of all users'
-};
-
-export default async function UsersPage() {
-  const users = await getUsers();
-  
-  return (
-    <main className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Users</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {users.map((user) => (
-          <div key={user.id} className="bg-white rounded-lg shadow-md p-6">
-            <Image
-              src={user.avatar}
-              alt={\`\${user.name}'s avatar\`}
-              width={64}
-              height={64}
-              className="rounded-full mb-4"
-            />
-            <h2 className="text-xl font-semibold">{user.name}</h2>
-            <p className="text-gray-600">{user.email}</p>
-          </div>
-        ))}
-      </div>
-    </main>
-  );
-}
-\`\`\`
+return processed_items
+```
 
 ### ❌ Anti-Pattern to Avoid
-\`\`\`tsx
-// DON'T: Using Pages Router patterns in App Router
-import { useEffect, useState } from 'react';
-
-export default function UsersPage() {
-  const [users, setUsers] = useState([]);
-  
-  useEffect(() => {
-    // Client-side data fetching in Server Component
-    fetch('/api/users').then(res => res.json()).then(setUsers);
-  }, []);
-  
-  return (
-    <div>
-      {users.map(user => (
-        <div key={user.id}>{user.name}</div>
-      ))}
-    </div>
-  );
-}
-\`\`\`
-
-## File Structure
-- \`app/\` - App Router directory
-- \`app/layout.tsx\` - Root layout
-- \`app/page.tsx\` - Home page
-- \`app/route.ts\` - API routes
-- \`components/\` - Reusable components
-- \`lib/\` - Utility functions
-- \`types/\` - TypeScript type definitions
-
-## Best Practices
-- Use TypeScript for all files
-- Implement proper error handling
-- Optimize images with next/image
-- Use proper SEO metadata
-- Implement loading and error states
-- Follow accessibility guidelines
-
-## URL State and Web Vitals
-- Use `nuqs` (or equivalent) for URL search parameter state when appropriate
-- Monitor and improve Core Web Vitals (LCP, CLS, INP)
+```python
+# DON'T: No type hints, poor error handling, unclear naming
+def process(data):
+result = []
+for d in data:
+try:
+result.append([d['id'], d['name'], d['value']])
+except:
+pass # Silent failure
+return result
+```

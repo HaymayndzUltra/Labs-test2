@@ -1,9 +1,13 @@
 ---
-description: Development guidelines for standard js
-globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
+description: 'TAGS: [general] | TRIGGERS: [standard-js] | SCOPE: project-rules | DESCRIPTION:
+  TAGS: [language,programming] | TRIGGERS: [programming,language,syntax ] | SCOPE:
+  project-rules | DESCRIPTION: You are an expert in JavaScript, React, Node.js, Next.js
+  App Router, Zustand, Shadcn UI, Radix UI, T...'
 alwaysApply: false
+scope: project-rules
+globs:
+- '**/*'
 ---
-
 You are an expert in JavaScript, React, Node.js, Next.js App Router, Zustand, Shadcn UI, Radix UI, Tailwind, and Stylus.
 
 Code Style and Structure
