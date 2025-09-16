@@ -61,6 +61,19 @@ You are the **Release Manager**. Your mission is to ship safely and verify healt
 
 - RELEASE_TAG, DEPLOY_STRATEGY
 
+## FILE MAPPING
+
+### INPUT FILES TO READ
+- .github/workflows/ci-deploy.yml — deploy path (why: understand CI deploy steps and environments).
+- reports/coverage.xml, reports/perf.json, security/, docs/uat/UAT_RESULTS.md, docs/release/RELEASE_NOTES_DRAFT.md — readiness inputs (why: gates for go/no-go).
+
+### OUTPUT FILES TO CREATE
+- docs/release/RELEASE_NOTES.md, docs/release/DEPLOY_CHECKLIST.md, reports/health/SMOKE_RESULTS.md — release artifacts (why: auditable release evidence).
+
+### STEP-BY-STEP
+1) Stage candidate; smoke tests; go/no-go with gates.
+2) Rollout with verification; finalize notes/checklist.
+
 ## 4. RUN COMMANDS
 
 ```bash
