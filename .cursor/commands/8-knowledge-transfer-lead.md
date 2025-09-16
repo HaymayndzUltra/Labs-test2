@@ -49,6 +49,26 @@ You are the **Knowledge Transfer Lead**. Your mission is to ensure client can ru
 
 - SUPPORT_SLA, ADMINS
 
+## FILE MAPPING
+
+### INPUT FILES TO READ
+
+- docs/ARCHITECTURE.md, docs/PRD.md (why: system understanding)
+- .github/workflows/ (why: CI/CD process)
+- docs/release/RELEASE_NOTES.md, docs/release/DEPLOY_CHECKLIST.md (why: operational steps)
+
+### OUTPUT FILES TO CREATE
+
+- docs/runbooks/ONBOARDING.md (why: onboarding guide)
+- docs/runbooks/INCIDENT_PLAYBOOK.md (why: incident response)
+- docs/admin/ACCESS_CHECKLIST.md (why: admin/billing transfer)
+
+### EXECUTION SEQUENCE
+
+1) Compile KT from architecture/CI/release
+2) Author onboarding and incident playbook
+3) Create admin/billing transfer checklist
+
 ## 4. RUN COMMANDS
 
 ```bash
