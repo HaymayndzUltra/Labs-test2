@@ -75,7 +75,7 @@ alwaysApply: false
 - clean-architecture.mdc
 - cms.mdc
 - convex.mdc
-- cot.mdc
+- swift-cot.mdc
 - cross-platform-desktop-app.mdc
 - css.mdc
 - data-analyst.mdc
@@ -89,7 +89,7 @@ alwaysApply: false
 - fe-be-plan.mdc
 - feature-first.mdc
 - firebase.mdc
-- franework.mdc
+ 
 - function.mdc
 - game-development.mdc
 - ghost-cms.mdc
@@ -105,7 +105,7 @@ alwaysApply: false
 - jakarta-ee.mdc
 - livewire.mdc
 - machine-learning.mdc
-- manifest.mdc
+- manifest-backend.mdc
 - meta-prompt.mdc
 - microservices.mdc
 - mongodb.mdc
