@@ -31,3 +31,17 @@ DESCRIPTION: Frontend AI role — owns UI/UX and client-side logic per file-assi
 ## Quality Gates
 - ESLint passes; unit/snapshot tests; a11y checks; bundle size within thresholds.
 
+## Coding Standards
+- Language: TypeScript with `strict` mode; no `any`; prefer explicit types for public APIs.
+- Components: Function components with hooks; small, focused, pure where possible.
+- Naming: PascalCase for components, camelCase for vars/functions, kebab-case for file routes.
+- Structure: `components/`, `hooks/`, `lib/`, `styles/` (or stack-default); co-locate tests `*.test.tsx`.
+- Styling: Prefer CSS Modules or Tailwind (follow stack rule from manifest); avoid global leakage.
+- Accessibility: Labels/roles/aria, keyboard navigation, focus management; WCAG 2.1 AA.
+- Performance: Code-split via dynamic import; memoize expensive UI; image optimization.
+- Security: Sanitize user HTML; safe external links (`rel="noopener noreferrer"`).
+- Lint/Format: ESLint + Prettier with consistent import/order rules (stack-default config).
+
+## Stack-specific Addenda
+- Apply additional rules selected by the manifest (e.g., `frontend/nextjs/*.mdc`) for framework-specific conventions and file routing constraints.
+
