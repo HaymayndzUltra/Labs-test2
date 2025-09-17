@@ -1,174 +1,104 @@
-ANO ANG POSIBLENG IEDIT DITO PARA MAIALIGN SA ACTUAL PLAN
 
 
 
----
-title: "Roadmap Generator Integration Rule"
-description: "Integrates roadmap generator with existing auto-scaffold and AI role-based dev team system"
-tags: ["Roadmap", "Integration", "Planning", "AI-Team"]
-scope: "project-planning"
-version: "1.0.0"
----
-
-# Roadmap Generator Integration
-
-## Integration Points
-
-### 1. Input Integration
-- **PRD Input**: Connect to existing project requirements
-- **Tech Stack Input**: Use existing tech stack definitions
-- **Context Window**: Integrate with existing token management
-
-### 2. Phase Integration with Existing System
-
-#### Phase 1 - Requirements Ingestion
-- **Input**: PRD + Tech Stack (from existing system)
-- **Output**: Structured requirements for auto-scaffold
-- **Integration**: Feed into planner-autonomous-boilerplate.mdc
-
-#### Phase 2 - Development Planning
-- **Input**: Requirements from Phase 1
-- **Process**: Story point calculation + batching
-- **Output**: Development batches with AI role assignments
-- **Integration**: Use role-frame-generator.mdc for team assignment
-
-#### Phase 3 - Iterative Build
-- **Process**: Execute each batch using existing auto-scaffold
-- **Roles**: Assign specific AI roles per batch
-- **Integration**: Use modular architecture rules for each batch
-
-#### Phase 4 - Final Integration
-- **Process**: Merge all batches
-- **Documentation**: Use existing documentation rules
-- **Deployment**: Use existing infrastructure rules
-
-### 3. AI Role-Based Team Integration
-
-**Map roadmap phases to AI roles:**
-
-```yaml
-roadmap_phase_roles:
-  phase_1_requirements:
-    - role: "Requirements Analyst"
-      ai_specialist: "Clarification Specialist"
-      responsibilities: ["Parse PRD", "Validate tech stack", "Generate requirements"]
-  
-  phase_2_planning:
-    - role: "Project Planner"
-      ai_specialist: "Planner Specialist"
-      responsibilities: ["Calculate story points", "Create batches", "Assign roles"]
-  
-  phase_3_build:
-    - role: "Full-Stack Developer"
-      ai_specialist: "Auto-scaffold Specialist"
-      responsibilities: ["Execute batches", "Generate code", "Apply architecture rules"]
-  
-  phase_4_integration:
-    - role: "Integration Specialist"
-      ai_specialist: "Documentation Specialist"
-      responsibilities: ["Merge code", "Generate docs", "Prepare deployment"]
-```
-
-### 4. Implementation Strategy
-
-**Step 1: Create Roadmap Generator Module**
-```python
-# src/roadmap/
-├── generator.py          # Main roadmap generator
-├── phase_1_requirements.py
-├── phase_2_planning.py
-├── phase_3_build.py
-├── phase_4_integration.py
-└── integration/
-    ├── auto_scaffold_integration.py
-    ├── role_team_integration.py
-    └── modular_architecture_integration.py
-```
-
-**Step 2: Modify Existing Auto-scaffold**
-- Add roadmap generation as first step
-- Integrate story point calculation
-- Add batch processing capability
-
-**Step 3: Enhance AI Role System**
-- Add roadmap-specific roles
-- Create phase-based role assignments
-- Integrate with existing role-frame-generator.mdc
-
-### 5. Workflow Integration
-
-**Complete Integrated Workflow:**
-
-User Input (PRD + Tech Stack)
-↓
-Roadmap Generator (Phase 1-4)
-↓
-Auto-scaffold (per batch)
-↓
-AI Role Assignment (per phase)
-↓
-Modular Architecture (per component)
-↓
-Documentation (comprehensive)
-↓
-Deployment Ready
-
-
-### 6. Benefits of Integration
-
-**For your existing system:**
-- **Enhanced Planning**: More sophisticated project planning
-- **Better Resource Management**: Story point-based resource allocation
-- **Improved Scalability**: Batch processing for large projects
-- **Role Optimization**: Better AI role assignment per phase
-
-**For the roadmap generator:**
-- **Automated Execution**: Auto-scaffold handles actual code generation
-- **Role-based Implementation**: AI team handles specialized tasks
-- **Modular Architecture**: Ensures proper code organization
-- **Comprehensive Documentation**: Automatic documentation generation
-
-### 7. Implementation Example
-
-**Modified Auto-scaffold with Roadmap Integration:**
-
-```python
-# Enhanced planner-autonomous-boilerplate.mdc integration
-def generate_project_with_roadmap(input_data):
-    # Phase 1: Requirements Ingestion
-    requirements = roadmap_generator.phase_1_requirements(input_data)
-    
-    # Phase 2: Development Planning
-    batches = roadmap_generator.phase_2_planning(requirements)
-    
-    # Phase 3: Iterative Build (using existing auto-scaffold)
-    for batch in batches:
-        # Assign AI roles for this batch
-        roles = role_generator.assign_roles(batch)
-        
-        # Execute auto-scaffold for this batch
-        scaffold_result = auto_scaffold.generate(batch, roles)
-        
-        # Apply modular architecture
-        architecture_result = modular_architecture.apply(scaffold_result)
-    
-    # Phase 4: Final Integration
-    final_result = roadmap_generator.phase_4_integration(all_batches)
-    
-    return final_result
-```
-
-### 8. Next Steps
-
-**To implement this integration:**
-
-1. **Create the roadmap generator module** in your `src/` directory
-2. **Modify your existing auto-scaffold** to accept roadmap input
-3. **Enhance your role system** to handle roadmap phases
-4. **Test the integration** with a sample project
-5. **Document the new workflow** using your existing documentation rules
-
-**Would you like me to help you implement any specific part of this integration?**
 
 
 
+Create one comprehensive AI rule that:
+Manages the creation of all other AI developer team rules
+Plans and coordinates the entire AI team workflow
+Ensures alignment between all AI agents
+Manages file structure and what each AI should work on
+Connects everything together in a unified system
+Details
+Master AI Orchestrator Rule:
+1. Primary Function
+AI Team Creator: Automatically generates individual AI agent rules
+Project Planner: Creates comprehensive project plans and task breakdowns
+File Manager: Determines what files each AI agent should create/modify
+Coordinator: Ensures all AI agents work together seamlessly
+Quality Controller: Maintains standards across all AI agents
+2. Core Responsibilities
+Team Management:
+Analyze client requirements and determine needed AI agents
+Generate specific AI agent rules based on project needs
+Assign roles and responsibilities to each AI agent
+Create communication protocols between agents
+Project Planning:
+Break down client requirements into specific tasks
+Determine file structure and architecture
+Plan development workflow and dependencies
+Set quality standards and compliance requirements
+File Coordination:
+Define what files each AI agent should create
+Specify which files each AI agent should read/modify
+Ensure no conflicts between AI agents working on same files
+Maintain file organization and naming conventions
+3. Automated Rule Generation Process
+Step 1: Project Analysis
+Read client requirements and project brief
+Identify technology stack and compliance needs
+Determine project complexity and scope
+Step 2: AI Team Creation
+Generate specific AI agent rules based on project needs
+Create role-specific responsibilities and boundaries
+Define technical expertise areas for each agent
+Step 3: File Management Setup
+Create file structure plan
+Assign specific files to specific AI agents
+Define file dependencies and relationships
+Set up file sharing and collaboration protocols
+Step 4: Workflow Coordination
+Create task dependencies and sequencing
+Set up communication channels between agents
+Define quality checkpoints and reviews
+Establish progress tracking and reporting
+4. File Management System
+File Assignment Logic:
+Frontend AI: Handles all UI/UX files, components, styles
+Backend AI: Manages API files, database schemas, server code
+DevOps AI: Controls deployment files, CI/CD, infrastructure
+QA AI: Manages test files, validation scripts, quality checks
+Documentation AI: Handles README, docs, guides, comments
+File Coordination:
+Prevent multiple AI agents from modifying same files
+Ensure proper file dependencies and imports
+Maintain consistent coding standards across all files
+Track file changes and versions
+5. Integration and Alignment
+Cross-Agent Communication:
+Shared project status and progress updates
+File change notifications between agents
+Quality checkpoints and approval workflows
+Conflict resolution and coordination
+Quality Assurance:
+Consistent coding standards across all AI agents
+Proper file organization and naming
+Complete project structure and dependencies
+Compliance with industry standards
+Expected Outcome
+For You:
+One master rule that handles everything
+No need to manually create individual AI agent rules
+Automatic project planning and coordination
+Complete file management and organization
+For AI System:
+Self-managing AI team that creates itself
+Coordinated file management and development
+Aligned workflow across all AI agents
+Consistent quality and standards
+For Projects:
+Complete, organized file structure
+Properly coordinated development workflow
+No conflicts or overlaps between AI agents
+Professional, consistent project delivery
+
+
+project-root/
+├── src/
+│   ├── frontend/ (Frontend AI manages)
+│   ├── backend/ (Backend AI manages)
+│   ├── tests/ (QA AI manages)
+│   └── docs/ (Documentation AI manages)
+├── deployment/ (DevOps AI manages)
+└── .cursor/rules/ (Master AI Orchestrator manages)
