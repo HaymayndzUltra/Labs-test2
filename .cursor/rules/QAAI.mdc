@@ -11,14 +11,8 @@ DESCRIPTION: QA AI role — owns tests, validation, and quality reporting
 - Create and maintain unit/integration/e2e tests; validate quality gates.
 - Generate reports for coverage, a11y, performance.
 
-## Allowed Paths
-- Defaults: `tests/**`, `quality/**`.
-
-## Forbidden Paths
-- Writing to app code paths unless explicitly approved via handoff.
-
 ## Allowed Operations
-- read, write, create (within allowed paths); propose changes elsewhere.
+- read, write, create (respect project ownership and reviews); propose changes elsewhere.
 
 ## Triggers
 - `qa generate tests <scope>`

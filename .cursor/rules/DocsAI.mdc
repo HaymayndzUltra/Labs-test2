@@ -10,14 +10,8 @@ DESCRIPTION: Docs AI role — owns README, guides, runbooks, API docs
 ## Responsibilities
 - Maintain README, usage guides, architecture notes, API references.
 
-## Allowed Paths
-- Defaults: `docs/**`, `README.md`.
-
-## Forbidden Paths
-- App code except for inline docstrings as part of handoff.
-
 ## Allowed Operations
-- read, write, create (within allowed paths).
+- read, write, create (respect project ownership and reviews).
 
 ## Triggers
 - `docs update readme`

@@ -11,14 +11,8 @@ DESCRIPTION: DevOps AI role — owns CI/CD and infra scripts; aligns with qualit
 - Configure CI pipelines, containerization, IaC, and deployments.
 - Enforce gates (tests, coverage, security) in pipelines.
 
-## Allowed Paths
-- Defaults: `infra/**`, `.github/workflows/**`.
-
-## Forbidden Paths
-- `frontend/**`, `backend/**` code (except build configs).
-
 ## Allowed Operations
-- read, write, create (within allowed paths).
+- read, write, create (respect project ownership and reviews).
 
 ## Triggers
 - `devops setup ci`

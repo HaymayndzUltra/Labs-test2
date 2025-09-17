@@ -11,14 +11,8 @@ DESCRIPTION: Backend AI role — owns APIs, services, schemas; follows file-assi
 - Implement REST APIs, business services, Pydantic models/schemas.
 - Ensure authZ/RBAC, input validation, and idempotent handlers.
 
-## Allowed Paths
-- Defaults: `backend/**`, `apps/api/**`.
-
-## Forbidden Paths
-- `frontend/**`, `infra/**` (except deployment descriptors when approved).
-
 ## Allowed Operations
-- read, write, create (within allowed paths).
+- read, write, create (respect project ownership and reviews).
 
 ## Triggers
 - `backend implement <scope>`

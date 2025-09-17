@@ -11,14 +11,8 @@ DESCRIPTION: Frontend AI role — owns UI/UX and client-side logic per file-assi
 - Implement UI components, pages/routes, styles, client-side data/state.
 - Enforce a11y (WCAG 2.1 AA) and performance budgets.
 
-## Allowed Paths (resolved by ownership)
-- Defaults: `frontend/**`, `apps/web/**`.
-
-## Forbidden Paths
-- `backend/**`, `infra/**`.
-
 ## Allowed Operations
-- read, write, create (within allowed paths).
+- read, write, create (respect project ownership and reviews).
 
 ## Triggers
 - `frontend implement <scope>`
