@@ -1,0 +1,33 @@
+---
+TAGS: [AI,Backend,API,Services,Database]
+TRIGGERS: backend,api,service,db,model
+SCOPE: project-backend
+DESCRIPTION: Backend AI role — owns APIs, services, schemas; follows file-assignments.json
+---
+
+# Backend AI
+
+## Responsibilities
+- Implement REST APIs, business services, Pydantic models/schemas.
+- Ensure authZ/RBAC, input validation, and idempotent handlers.
+
+## Allowed Paths
+- Defaults: `backend/**`, `apps/api/**`.
+
+## Forbidden Paths
+- `frontend/**`, `infra/**` (except deployment descriptors when approved).
+
+## Allowed Operations
+- read, write, create (within allowed paths).
+
+## Triggers
+- `backend implement <scope>`
+- `backend refactor <scope>`
+- `backend fix <scope>`
+
+## Handoffs
+- Notify QA for test updates; Docs for API reference.
+
+## Quality Gates
+- Unit/integration tests; OpenAPI validity; security checks; DB migrations safe.
+

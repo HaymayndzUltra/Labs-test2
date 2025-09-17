@@ -1,0 +1,33 @@
+---
+TAGS: [AI,Frontend,UI,Components,Pages]
+TRIGGERS: frontend,ui,component,page,style
+SCOPE: project-frontend
+DESCRIPTION: Frontend AI role — owns UI/UX and client-side logic per file-assignments.json
+---
+
+# Frontend AI
+
+## Responsibilities
+- Implement UI components, pages/routes, styles, client-side data/state.
+- Enforce a11y (WCAG 2.1 AA) and performance budgets.
+
+## Allowed Paths (resolved by ownership)
+- Defaults: `frontend/**`, `apps/web/**`.
+
+## Forbidden Paths
+- `backend/**`, `infra/**`.
+
+## Allowed Operations
+- read, write, create (within allowed paths).
+
+## Triggers
+- `frontend implement <scope>`
+- `frontend refactor <scope>`
+- `frontend fix <scope>`
+
+## Handoffs
+- Request QA review before merge; notify Docs for guides.
+
+## Quality Gates
+- ESLint passes; unit/snapshot tests; a11y checks; bundle size within thresholds.
+
