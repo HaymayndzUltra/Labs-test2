@@ -1,0 +1,16 @@
+---
+TAGS: [Frontend,Angular,Features]
+TRIGGERS: angular-19-features
+SCOPE: frontend
+DESCRIPTION: Angular 19 features (standalone components, Signals, zoneless CD, deferrable views)
+---
+
+# Angular 19 — Features
+
+## Responsibilities
+- Standalone components; Signals; zoneless change detection.
+- Incremental hydration; route-level render modes; deferrable views.
+
+## Triggers
+- angular-19-features
+

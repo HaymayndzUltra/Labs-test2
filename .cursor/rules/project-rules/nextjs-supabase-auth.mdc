@@ -1,0 +1,88 @@
+---
+TAGS: [Frontend,Next.js,Supabase,Auth]
+TRIGGERS: nextjs-supabase, supabase-auth
+SCOPE: frontend
+DESCRIPTION: Setup and usage of Supabase Auth in Next.js using official helpers and server/client patterns
+---
+
+# Next.js + Supabase Auth
+
+## Responsibilities
+- Use official packages (`@supabase/auth-helpers-nextjs`, `@supabase/supabase-js`).
+- Initialize Supabase correctly for Server and Client Components.
+- Protect routes via middleware; handle session via cookies.
+- Provide minimal error handling and env configuration.
+
+## Triggers
+- nextjs-supabase
+- supabase-auth
+
+## Packages (excerpt)
+```json
+{
+  "dependencies": {
+    "next": "^14",
+    "@supabase/supabase-js": "^2",
+    "@supabase/auth-helpers-nextjs": "^0.8.0"
+  }
+}
+```
+
+## Env
+```
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+```
+
+## Middleware (sketch)
+```ts
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next();
+  const supabase = createMiddlewareClient({ req, res });
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session && req.nextUrl.pathname.startsWith('/protected')) {
+    const redirectUrl = req.nextUrl.clone();
+    redirectUrl.pathname = '/auth/login';
+    redirectUrl.searchParams.set('redirectTo', req.nextUrl.pathname);
+    return NextResponse.redirect(redirectUrl);
+  }
+  return res;
+}
+```
+
+## Server Component (sketch)
+```ts
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+
+export default async function ProtectedPage() {
+  const supabase = createServerComponentClient({ cookies });
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) redirect('/auth/login');
+}
+```
+
+## Client Component (sign-in sketch)
+```tsx
+'use client';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useRouter } from 'next/navigation';
+
+export function AuthForm() {
+  const router = useRouter();
+  const supabase = createClientComponentClient();
+  async function signIn(email: string, password: string) {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (!error) { router.refresh(); router.push('/protected'); }
+  }
+}
+```
+
+## Do / Don’t
+- Do use built-in methods; Do not store tokens in localStorage; Do not hand-roll auth flows.
+

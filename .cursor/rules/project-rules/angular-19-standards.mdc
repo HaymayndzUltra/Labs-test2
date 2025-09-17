@@ -1,0 +1,17 @@
+---
+TAGS: [Frontend,Angular,TypeScript,Standards]
+TRIGGERS: angular-standards
+SCOPE: frontend
+DESCRIPTION: Angular 19 coding standards (structure, typing, performance, testing)
+---
+
+# Angular 19 — Standards
+
+## Responsibilities
+- Feature-first structure; core/shared separation; strict TS.
+- Signals for local state; OnPush; lazy routes; trackBy.
+- Testing with TestBed; specs co-located.
+
+## Triggers
+- angular-standards
+

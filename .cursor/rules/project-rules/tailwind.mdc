@@ -1,0 +1,17 @@
+---
+TAGS: [Styling,Tailwind,CSS]
+TRIGGERS: tailwind
+SCOPE: shared
+DESCRIPTION: Tailwind v4 usage guidelines (utilities-first, variants, responsive)
+---
+
+# Tailwind CSS — Minimal Usage
+
+## Responsibilities
+- Prefer utilities; keep custom CSS minimal.
+- Organize classes (layout → spacing → color → typography).
+- Use responsive/state variants; container queries where needed.
+
+## Triggers
+- tailwind
+
