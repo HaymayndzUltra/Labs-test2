@@ -1,4 +1,19 @@
 ---
+TAGS: [Observability,Tracing,Metrics,Logs]
+TRIGGERS: observability
+SCOPE: shared
+DESCRIPTION: Minimal observability guidelines (traces/metrics/logs)
+---
+
+# Observability
+
+## Responsibilities
+- Structured logs; trace IDs; basic metrics; minimal tracing hooks.
+
+## Triggers
+- observability
+
+---
 description: Development guidelines for observability
 globs: **/*.go,**/*.py,**/*.ts,**/*.js,**/*.yaml,**/*.yml
 alwaysApply: false

@@ -1,0 +1,16 @@
+---
+TAGS: [Compliance,HIPAA]
+TRIGGERS: hipaa
+SCOPE: compliance
+DESCRIPTION: HIPAA safeguards checklist (tech/admin)
+---
+
+# HIPAA Minimal
+
+## Responsibilities
+- Encrypt PHI at rest (AES-256) and in transit (TLS 1.2+); audit access.
+- 15-minute session timeout; RBAC; no PHI in logs.
+
+## Triggers
+- hipaa
+

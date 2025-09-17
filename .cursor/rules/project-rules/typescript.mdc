@@ -1,4 +1,19 @@
 ---
+TAGS: [TypeScript]
+TRIGGERS: typescript
+SCOPE: shared
+DESCRIPTION: TypeScript strict usage
+---
+
+# TypeScript Strict
+
+## Responsibilities
+- Enable strict; no any; explicit types for public APIs.
+
+## Triggers
+- typescript
+
+---
 description: TypeScript development with strict typing and modern features
 globs: **/*.ts,**/*.tsx
 alwaysApply: false

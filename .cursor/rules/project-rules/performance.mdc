@@ -1,4 +1,19 @@
 ---
+TAGS: [Performance]
+TRIGGERS: performance
+SCOPE: shared
+DESCRIPTION: Performance guidelines
+---
+
+# Performance
+
+## Responsibilities
+- Budgets, profiling, caching; avoid premature optimization.
+
+## Triggers
+- performance
+
+---
 description: Development guidelines for performance
 globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
 alwaysApply: false

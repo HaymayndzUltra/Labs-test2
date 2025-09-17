@@ -1,4 +1,19 @@
 ---
+TAGS: [Backend,REST]
+TRIGGERS: rest-api
+SCOPE: backend
+DESCRIPTION: REST API conventions
+---
+
+# REST API
+
+## Responsibilities
+- Clear resources, verbs, status codes; pagination; errors; OpenAPI.
+
+## Triggers
+- rest-api
+
+---
 description: Development guidelines for rest api
 globs: **/*.py,**/*.ts,**/*.js,**/*.go
 alwaysApply: false

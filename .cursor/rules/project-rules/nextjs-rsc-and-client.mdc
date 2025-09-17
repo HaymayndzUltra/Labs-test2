@@ -1,4 +1,19 @@
 ---
+TAGS: [Frontend,Next.js,RSC]
+TRIGGERS: nextjs-rsc-and-client
+SCOPE: frontend
+DESCRIPTION: Guidance for React Server Components vs Client Components in Next.js
+---
+
+# RSC vs Client
+
+## Responsibilities
+- Prefer RSC for data-heavy UI; use Client components for interactivity/state.
+
+## Triggers
+- nextjs-rsc-and-client
+
+---
 TAGS: [Test]
 TRIGGERS: test
 SCOPE: project

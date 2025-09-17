@@ -1,4 +1,24 @@
 ---
+TAGS: [Frontend,Next.js,React]
+TRIGGERS: nextjs
+SCOPE: frontend
+DESCRIPTION: Next.js baseline conventions (App Router, routing, data, env)
+---
+
+# Next.js Baseline
+
+## Responsibilities
+- Use App Router; colocate components; choose server/client components appropriately.
+- Routing with file-based segments; loading/error UIs per route.
+- Data fetching via fetch/SWR on client; caching/revalidation per route.
+
+## Triggers
+- nextjs
+
+## Quality Gates
+- ESLint ok; a11y checks; bundle size within budget.
+
+---
 description: Backend Serverless Standards
 globs: **/*.js,**/*.ts
 alwaysApply: false

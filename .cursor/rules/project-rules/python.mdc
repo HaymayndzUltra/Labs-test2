@@ -1,4 +1,19 @@
 ---
+TAGS: [Python]
+TRIGGERS: python
+SCOPE: shared
+DESCRIPTION: Python coding standards
+---
+
+# Python Standards
+
+## Responsibilities
+- PEP8, type hints, docstrings; early returns; logging.
+
+## Triggers
+- python
+
+---
 description: Python development best practices and modern coding patterns
 globs: **/*.py,**/*.pyi
 alwaysApply: false

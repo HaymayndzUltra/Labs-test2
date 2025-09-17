@@ -1,4 +1,19 @@
 ---
+TAGS: [OpenAPI,Spec]
+TRIGGERS: open-api
+SCOPE: backend
+DESCRIPTION: OpenAPI spec hygiene and generation
+---
+
+# OpenAPI
+
+## Responsibilities
+- Keep spec in sync; generate docs; validate breaking changes.
+
+## Triggers
+- open-api
+
+---
 description: Development guidelines for open api
 globs: **/openapi.yaml,**/openapi.yml,**/openapi.json,**/swagger.yaml,**/swagger.yml
 alwaysApply: false
