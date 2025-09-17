@@ -3,6 +3,7 @@ TAGS: [Frontend,Angular,TypeScript,Standards]
 TRIGGERS: angular-standards
 SCOPE: frontend
 DESCRIPTION: Angular 19 coding standards (structure, typing, performance, testing)
+globs: '**/*.{ts,html}'
 ---
 
 # Angular 19 — Standards
