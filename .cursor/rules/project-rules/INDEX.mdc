@@ -58,9 +58,11 @@ alwaysApply: false
 - INDEX.mdc
 - azure.mdc
 - terraform.mdc
+ - deployment.mdc
 
 ## utilities
 - INDEX.mdc
+ - backend-development.mdc
 - al.mdc
 - alpine-js.mdc
 - api.mdc
@@ -79,6 +81,7 @@ alwaysApply: false
 - cross-platform-desktop-app.mdc
 - css.mdc
 - data-analyst.mdc
+ - database.mdc
 - deep-learning.mdc
 - elixir.mdc
 - enterprise-next-nest-plan.mdc
@@ -89,6 +92,7 @@ alwaysApply: false
 - fe-be-plan.mdc
 - feature-first.mdc
 - firebase.mdc
+ - project-setup.mdc
  
 - function.mdc
 - game-development.mdc
@@ -111,6 +115,7 @@ alwaysApply: false
 - mongodb.mdc
 - mpsc.mdc
 - nethttp.mdc
+ - review/behavior.mdc
 - node.mdc
 - nodejs.mdc
 - observability.mdc
@@ -129,6 +134,7 @@ alwaysApply: false
 - reflection.mdc
 - responsive-design.mdc
 - rest-api.mdc
+ - styling.mdc
 - robocorp.mdc
 - rspec.mdc
 - salesforce.mdc
@@ -139,6 +145,7 @@ alwaysApply: false
 - standard-js.mdc
 - supabase.mdc
 - tailwind.mdc
+- testing.mdc
 - threejs.mdc
 - timing-optimization.mdc
 - trajectory-analysis.mdc
@@ -150,6 +157,8 @@ alwaysApply: false
 - vite.mdc
 - vivado.mdc
 - web-scraping.mdc
+ - web-development.mdc
+ - web-styling.mdc
 - web3js.mdc
 - webshop.mdc
 - woocommerce.mdc

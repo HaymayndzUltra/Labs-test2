@@ -19,7 +19,7 @@ Scanned files: 213
 | autohotkey.mdc | unknown | utilities | autohotkey.mdc | utilities | yes | no |
 | axi.mdc | unknown | utilities | axi.mdc | utilities | yes | no |
 | azure.mdc | python | infrastructure | azure.mdc | infrastructure | yes | no |
-| backend-development.mdc | cpp | (not in index) | backend-development.mdc | languages | yes | yes |
+| backend-development.mdc | cpp | utilities | backend-development.mdc | utilities | yes | no |
 | best-practices.mdc | expo | utilities | best-practices.mdc | utilities | yes | no |
 | blockchain.mdc | rust | utilities | blockchain.mdc | utilities | yes | no |
 | browser-api.mdc | typescript | utilities | browser-api.mdc | utilities | yes | no |
@@ -29,9 +29,9 @@ Scanned files: 213
 | cpp.mdc | cpp | languages | cpp.mdc | languages | yes | no |
 | cybersecurity.mdc | python | compliance | cybersecurity.mdc | compliance | yes | no |
 | data-analyst.mdc | python | utilities | data-analyst.mdc | utilities | yes | no |
-| database.mdc | javascript | (not in index) | database.mdc | languages | yes | yes |
+| database.mdc | javascript | utilities | database.mdc | utilities | yes | no |
 | deep-learning.mdc | python | utilities | deep-learning.mdc | utilities | yes | no |
-| deployment.mdc | expo | (not in index) | deployment.mdc | frameworks | yes | yes |
+| deployment.mdc | expo | infrastructure | deployment.mdc | infrastructure | yes | no |
 | django.mdc | python | frameworks | django.mdc | frameworks | yes | no |
 | elixir.mdc | unknown | utilities | elixir.mdc | utilities | yes | no |
 | enterprise.mdc | python | utilities | enterprise.mdc | utilities | yes | no |
@@ -80,7 +80,7 @@ Scanned files: 213
 | php.mdc | laravel | languages | php.mdc | languages | yes | no |
 | pixijs.mdc | ionic | utilities | pixijs.mdc | utilities | yes | no |
 | popular.mdc | react | utilities | popular.mdc | utilities | yes | no |
-| project-setup.mdc | python | (not in index) | project-setup.mdc | languages | yes | yes |
+| project-setup.mdc | python | utilities | project-setup.mdc | utilities | yes | no |
 | python.mdc | python | languages | python.mdc | languages | yes | no |
 | rails.mdc | rails | frameworks | rails.mdc | frameworks | yes | no |
 | react-native.mdc | react | frameworks | react-native.mdc | frameworks | yes | no |
@@ -101,12 +101,12 @@ Scanned files: 213
 | sox-compliance.mdc | sox-compliance | compliance | sox-compliance.mdc | compliance | yes | no |
 | spring.mdc | spring | frameworks | spring.mdc | frameworks | yes | no |
 | standard-js.mdc | react | utilities | standard-js.mdc | utilities | yes | no |
-| styling.mdc | react | (not in index) | styling.mdc | frameworks | yes | yes |
+| styling.mdc | react | utilities | styling.mdc | utilities | yes | no |
 | svelte.mdc | react | frameworks | svelte.mdc | frameworks | yes | no |
 | sveltekit.mdc | react | frameworks | sveltekit.mdc | frameworks | yes | no |
 | swift.mdc | swift | languages | swift.mdc | languages | yes | no |
 | terraform.mdc | terraform | infrastructure | terraform.mdc | infrastructure | yes | no |
-| testing.mdc | react | (not in index) | testing.mdc | frameworks | yes | yes |
+| testing.mdc | react | utilities | testing.mdc | utilities | yes | no |
 | threejs.mdc | react | utilities | threejs.mdc | utilities | yes | no |
 | timing-optimization.mdc | unknown | utilities | timing-optimization.mdc | utilities | yes | no |
 | tutorials.mdc | golang | utilities | tutorials.mdc | utilities | yes | no |
@@ -211,9 +211,9 @@ Scanned files: 213
 | vite.mdc | laravel | utilities | vite.mdc | utilities | yes | no |
 | vivado.mdc | unknown | utilities | vivado.mdc | utilities | yes | no |
 | vue.mdc | react | frameworks | vue.mdc | frameworks | yes | no |
-| web-development.mdc | python | (not in index) | web-development.mdc | languages | yes | yes |
+| web-development.mdc | python | utilities | web-development.mdc | utilities | yes | no |
 | web-scraping.mdc | python | utilities | web-scraping.mdc | utilities | yes | no |
-| web-styling.mdc | expo | (not in index) | web-styling.mdc | frameworks | yes | yes |
+| web-styling.mdc | expo | utilities | web-styling.mdc | utilities | yes | no |
 | web3js.mdc | rust | utilities | web3js.mdc | utilities | yes | no |
 | webshop.mdc | lua | utilities | webshop.mdc | utilities | yes | no |
 | woocommerce.mdc | wordpress | utilities | woocommerce.mdc | utilities | yes | no |
@@ -222,66 +222,10 @@ Scanned files: 213
 
 ## Detailed Changes (only files needing changes)
 
-### backend-development.mdc
-
-- Current State: index_category=(not in index), detected_topic=cpp, frontmatter_ok=yes
-- Proposed Changes: new filename=backend-development.mdc, proposed_category=languages
-- Reasoning: categorization/rename alignment based on detected topic and index
-- Content Modifications: none planned (rename and frontmatter normalization only)
-
-### database.mdc
-
-- Current State: index_category=(not in index), detected_topic=javascript, frontmatter_ok=yes
-- Proposed Changes: new filename=database.mdc, proposed_category=languages
-- Reasoning: categorization/rename alignment based on detected topic and index
-- Content Modifications: none planned (rename and frontmatter normalization only)
-
-### deployment.mdc
-
-- Current State: index_category=(not in index), detected_topic=expo, frontmatter_ok=yes
-- Proposed Changes: new filename=deployment.mdc, proposed_category=frameworks
-- Reasoning: categorization/rename alignment based on detected topic and index
-- Content Modifications: none planned (rename and frontmatter normalization only)
-
-### project-setup.mdc
-
-- Current State: index_category=(not in index), detected_topic=python, frontmatter_ok=yes
-- Proposed Changes: new filename=project-setup.mdc, proposed_category=languages
-- Reasoning: categorization/rename alignment based on detected topic and index
-- Content Modifications: none planned (rename and frontmatter normalization only)
-
 ### review/behavior.mdc
 
 - Current State: index_category=(not in index), detected_topic=unknown, frontmatter_ok=yes
 - Proposed Changes: new filename=review/behavior.mdc, proposed_category=utilities
-- Reasoning: categorization/rename alignment based on detected topic and index
-- Content Modifications: none planned (rename and frontmatter normalization only)
-
-### styling.mdc
-
-- Current State: index_category=(not in index), detected_topic=react, frontmatter_ok=yes
-- Proposed Changes: new filename=styling.mdc, proposed_category=frameworks
-- Reasoning: categorization/rename alignment based on detected topic and index
-- Content Modifications: none planned (rename and frontmatter normalization only)
-
-### testing.mdc
-
-- Current State: index_category=(not in index), detected_topic=react, frontmatter_ok=yes
-- Proposed Changes: new filename=testing.mdc, proposed_category=frameworks
-- Reasoning: categorization/rename alignment based on detected topic and index
-- Content Modifications: none planned (rename and frontmatter normalization only)
-
-### web-development.mdc
-
-- Current State: index_category=(not in index), detected_topic=python, frontmatter_ok=yes
-- Proposed Changes: new filename=web-development.mdc, proposed_category=languages
-- Reasoning: categorization/rename alignment based on detected topic and index
-- Content Modifications: none planned (rename and frontmatter normalization only)
-
-### web-styling.mdc
-
-- Current State: index_category=(not in index), detected_topic=expo, frontmatter_ok=yes
-- Proposed Changes: new filename=web-styling.mdc, proposed_category=frameworks
 - Reasoning: categorization/rename alignment based on detected topic and index
 - Content Modifications: none planned (rename and frontmatter normalization only)
 
