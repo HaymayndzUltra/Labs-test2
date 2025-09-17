@@ -3,7 +3,7 @@ TAGS: [Frontend,Next.js,Supabase,Auth]
 TRIGGERS: nextjs-supabase, supabase-auth
 SCOPE: frontend
 DESCRIPTION: Setup and usage of Supabase Auth in Next.js using official helpers and server/client patterns
-globs: '**/*.{ts,tsx,js,jsx}'
+globs: frontend/**/*.tsx,frontend/**/*.ts,**/*.tsx,**/*.ts
 ---
 
 # Next.js + Supabase Auth
