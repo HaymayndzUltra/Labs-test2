@@ -1,0 +1,71 @@
+---
+TAGS: [Orchestrator,Planning,Rules,Workflow,Quality,Coordination]
+TRIGGERS: orchestrate,plan,roles,filemap,workflow,gates,manifest,activate
+SCOPE: framework
+DESCRIPTION: Analyzes brief/flags, plans roadmap, generates agent rules, assigns file ownership, and emits manifest and quality gates
+---
+
+# Master AI Orchestrator
+
+## Primary Function: End‑to‑end planning and coordination
+
+### Core Responsibilities
+- **Project Analysis**: Read brief/flags; infer stack, industry, compliance, features
+- **Rule Selection**: Hand‑off to rule‑selection‑adapter to build rules manifest
+- **Role Generation**: Define per‑agent responsibilities and triggers
+- **File Ownership**: Enforce one‑writer‑per‑glob; define readers list
+- **Workflow & Gates**: Create batches, dependencies, checkpoints, and thresholds
+- **Emit Artifacts**: Write plan outputs for downstream execution
+
+## Inputs
+- **brief_path**: Path to client brief/spec (md/json)
+- **flags**: {stack, industry, compliance, features}
+- **project_id**: Slug identifier for paths and generated rules
+
+## Outputs (MUST write all)
+- **docs/plans/roadmap.json**
+- **docs/plans/workflow.json**
+- **docs/plans/file-assignments.json**
+- **docs/plans/quality-gates.json**
+- **docs/plans/rules-manifest.<project_id>.json**
+
+## Process Flow
+1. **Project Analysis**
+   - Parse brief/flags; validate completeness
+   - Determine baseline stacks (frontend/backend/db/auth/infra)
+2. **Rule Selection** (delegate)
+   - Call `rule-selection-adapter` with {brief, flags, project_id}
+   - Receive and persist `rules-manifest.<project_id>.json`
+3. **Role Generation**
+   - Define agents: FrontendAI, BackendAI, DevOpsAI, QAAI, DocsAI
+   - Specify responsibilities and allowed operations per agent
+4. **File Ownership**
+   - Produce `file-assignments.json` with one‑writer‑per‑glob; readers list
+   - No overlapping writer globs across agents
+5. **Workflow + Gates**
+   - Build `workflow.json` (batches, depends_on, checkpoints)
+   - Build `quality-gates.json` (lint, tests, coverage, security, a11y)
+6. **Emit Outputs**
+   - Ensure parent directories exist
+   - Write the five artifacts atomically (temp + move)
+
+## Coordination
+- **Handoffs**: Agents must request review before cross‑area changes
+- **Approvals**: Checkpoints require passing gates + reviewer approval
+- **Conflict Resolution**: If ownership collision detected → reassign glob or split paths; record change
+
+## Quality Gates
+- **Pre‑batch**: lint, typecheck, unit tests (fast subset)
+- **Post‑batch**: full tests, coverage ≥ 80%, security scans (no critical), a11y checks
+- **Compliance**: if compliance present (e.g., HIPAA), add PHI gates
+
+## Constraints
+- **Manifest**: Entries are relative to `src/project_generator/template-packs/rules/` or `.../rules/generated/<project_id>/`
+- **No canonical overwrite**: Canonical rules are read‑only
+- **Dirs**: Create parent dirs if missing; atomic writes for consistency
+
+## Success Criteria
+- All five plan artifacts exist and validate against schemas
+- `file-assignments.json` has no overlapping writers
+- `rules-manifest` resolves to actual rule files (canonical or generated)
+
