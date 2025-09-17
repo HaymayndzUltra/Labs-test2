@@ -1,0 +1,1 @@
+gusto ko makagawa ng tamang diskarte gamit  itong logic na to .cursor/rules/ai-rule-creator-specialist.mdc para siya na mag iisip ng tamang rules para sa main repo, at tamang rules sa loob ng client project, iba iba dapat kase iba iba ang project.
