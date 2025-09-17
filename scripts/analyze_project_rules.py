@@ -135,7 +135,10 @@ def main() -> None:
         fm, body = parse_frontmatter(text)
         base = p.name
         base_no_ext = base[:-4]
-        index_cat = index_map.get(base, "(not in index)")
+        # Prefer base filename match; if not found, try relative path (handles nested entries like review/behavior.mdc)
+        index_cat = index_map.get(base)
+        if not index_cat:
+            index_cat = index_map.get(rel, "(not in index)")
         detected = detect_topic(text)
         proposed_base = RENAMES.get(base_no_ext, base_no_ext)
         proposed_category = index_cat

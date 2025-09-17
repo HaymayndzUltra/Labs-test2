@@ -90,7 +90,7 @@ Scanned files: 213
 | remix.mdc | react | frameworks | remix.mdc | frameworks | yes | no |
 | responsive-design.mdc | accessibility | utilities | responsive-design.mdc | utilities | yes | no |
 | rest-api.mdc | python | utilities | rest-api.mdc | utilities | yes | no |
-| review/behavior.mdc | unknown | (not in index) | review/behavior.mdc | utilities | yes | yes |
+| review/behavior.mdc | unknown | utilities | review/behavior.mdc | utilities | yes | no |
 | robocorp.mdc | python | utilities | robocorp.mdc | utilities | yes | no |
 | rust.mdc | rust | languages | rust.mdc | languages | yes | no |
 | salesforce.mdc | javascript | utilities | salesforce.mdc | utilities | yes | no |
@@ -221,11 +221,4 @@ Scanned files: 213
 | zod.mdc | react | utilities | zod.mdc | utilities | yes | no |
 
 ## Detailed Changes (only files needing changes)
-
-### review/behavior.mdc
-
-- Current State: index_category=(not in index), detected_topic=unknown, frontmatter_ok=yes
-- Proposed Changes: new filename=review/behavior.mdc, proposed_category=utilities
-- Reasoning: categorization/rename alignment based on detected topic and index
-- Content Modifications: none planned (rename and frontmatter normalization only)
 
