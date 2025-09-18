@@ -55,8 +55,6 @@ __pycache__/
 *.pyc
 _gen_test/
 gen_exec/
-<<<<<<< HEAD
-=======
 .venv/
 .env
 node_modules/
@@ -64,4 +62,3 @@ dist/
 build/
 coverage/
 *.log
->>>>>>> c9e6f9a (chore(git): ignore build/generated artifacts)
