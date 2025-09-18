@@ -1,5 +1,10 @@
 # Client Project Generator
 
+[![CI Status](https://github.com/your-org/client-project-generator/workflows/CI/badge.svg)](https://github.com/your-org/client-project-generator/actions)
+[![Workflow Documentation](https://img.shields.io/badge/docs-workflow-blue)](WORKFLOW_GUIDE.md)
+[![Quick Reference](https://img.shields.io/badge/quick-reference-green)](WORKFLOW_QUICK_REFERENCE.md)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 A comprehensive, industry-aware project generator that creates production-ready applications with built-in compliance, CI/CD pipelines, and AI Governor Framework integration.
 
 ## 🚀 Features
@@ -168,6 +173,20 @@ chmod +x scripts/generate_client_project.py
 
 ## 🔧 Development Workflow
 
+The Client Project Generator follows a structured 6-phase workflow:
+
+### Phase Overview
+
+1. **Bootstrap** (`/0-bootstrap-project`) - Project initialization and scaffold generation
+2. **Plan** (`/1-create-prd`) - Generate PRD and planning artifacts  
+3. **Tasks** (`/2-generate-tasks`) - Build comprehensive task management
+4. **Sync** (`/sync-tasks`) - Keep tasks synchronized with code changes
+5. **Execute** (`/3-process-tasks`) - Execute tasks in organized lanes
+6. **Quality** (`/4-quality-control`) - Ensure code quality and compliance
+7. **Review** (`/5-implementation-retrospective`) - Review outcomes and improve
+
+### Quick Start
+
 After generating a project:
 
 1. **Navigate to project**:
@@ -191,6 +210,11 @@ After generating a project:
    - `make build` - Build for production
    - `make deploy` - Deploy application
    - `make help` - Show all commands
+
+### Workflow Documentation
+
+- **[Complete Workflow Guide](WORKFLOW_GUIDE.md)** - Detailed documentation
+- **[Quick Reference](WORKFLOW_QUICK_REFERENCE.md)** - Command cheat sheet
 
 ## 🤖 AI Governor Integration
 
@@ -276,6 +300,8 @@ healthcare:
 
 ## 📖 Additional Documentation
 
+- [**Workflow Guide**](WORKFLOW_GUIDE.md) - Complete workflow documentation
+- [**Workflow Quick Reference**](WORKFLOW_QUICK_REFERENCE.md) - Quick command reference
 - [Architecture Guide](docs/ARCHITECTURE.md)
 - [Compliance Guide](docs/COMPLIANCE.md)
 - [Deployment Guide](docs/DEPLOYMENT.md)

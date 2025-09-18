@@ -1,0 +1,7 @@
+# Default owners
+* @your-org/maintainers
+
+# Example granular ownerships (edit as needed)
+# /backend/ @your-org/backend
+# /frontend/ @your-org/frontend
+# /.github/ @your-org/devops

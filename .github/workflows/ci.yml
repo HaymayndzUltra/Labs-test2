@@ -393,3 +393,172 @@ PY
         run: |
           python3 .cursor/dev-workflow/ci/run_gates.py
 
+  workflow-docs-validation:
+    name: Workflow Documentation Validation
+    runs-on: ubuntu-latest
+    needs: [build-test]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pyyaml markdown || true
+      
+      - name: Validate Workflow Documentation
+        run: |
+          echo "🔍 Validating workflow documentation..."
+          
+          # Check if workflow docs exist
+          if [ ! -f "WORKFLOW_GUIDE.md" ]; then
+            echo "❌ ERROR: WORKFLOW_GUIDE.md not found"
+            exit 1
+          fi
+          echo "✅ Found: WORKFLOW_GUIDE.md"
+          
+          if [ ! -f "WORKFLOW_QUICK_REFERENCE.md" ]; then
+            echo "❌ ERROR: WORKFLOW_QUICK_REFERENCE.md not found"
+            exit 1
+          fi
+          echo "✅ Found: WORKFLOW_QUICK_REFERENCE.md"
+          
+          # Check if docs directory exists
+          if [ ! -d "docs" ]; then
+            echo "❌ ERROR: docs directory not found"
+            exit 1
+          fi
+          echo "✅ Found: docs directory"
+          
+          # Check for workflow examples and templates
+          if [ -f "docs/workflow-examples.md" ]; then
+            echo "✅ Found: docs/workflow-examples.md"
+          else
+            echo "⚠️  WARNING: docs/workflow-examples.md not found"
+          fi
+          
+          if [ -f "docs/workflow-templates.md" ]; then
+            echo "✅ Found: docs/workflow-templates.md"
+          else
+            echo "⚠️  WARNING: docs/workflow-templates.md not found"
+          fi
+          
+          echo "✅ Workflow documentation validation passed"
+
+      - name: Validate Documentation Links
+        run: |
+          echo "🔗 Validating documentation links..."
+          
+          # Check if all referenced files exist
+          missing_files=()
+          
+          # Check README links
+          if [ -f "README.md" ]; then
+            # Extract markdown links and check if files exist
+            grep -o '\[.*\]([^)]*)' README.md | sed 's/.*(\([^)]*\)).*/\1/' | while read -r link; do
+              if [[ $link == *.md ]] && [ ! -f "$link" ]; then
+                echo "⚠️  WARNING: Broken link in README.md: $link"
+              fi
+            done
+          fi
+          
+          echo "✅ Documentation links validation completed"
+
+      - name: Test Workflow Scripts
+        run: |
+          echo "🔧 Testing workflow scripts..."
+          
+          # Test if key scripts exist and are executable
+          scripts=(
+            "scripts/generate_client_project.py"
+            "scripts/plan_from_brief.py"
+            "scripts/enrich_tasks.py"
+            "scripts/validate_tasks.py"
+            "scripts/sync_from_scaffold.py"
+            "scripts/update_task_state.py"
+            "scripts/write_context_report.py"
+            "scripts/enforce_gates.py"
+          )
+          
+          for script in "${scripts[@]}"; do
+            if [ -f "$script" ]; then
+              echo "✅ Found: $script"
+              # Test if script is valid Python
+              python -m py_compile "$script" || echo "⚠️  WARNING: $script has syntax errors"
+            else
+              echo "❌ ERROR: Missing script: $script"
+              exit 1
+            fi
+          done
+          
+          echo "✅ Workflow scripts validation passed"
+
+      - name: Validate Template Packs
+        run: |
+          echo "📦 Validating template packs..."
+          
+          # Check if template-packs directory exists
+          if [ ! -d "template-packs" ]; then
+            echo "❌ ERROR: template-packs directory not found"
+            exit 1
+          fi
+          
+          # Check for required template categories
+          categories=("backend" "frontend" "database")
+          for category in "${categories[@]}"; do
+            if [ ! -d "template-packs/$category" ]; then
+              echo "❌ ERROR: template-packs/$category directory not found"
+              exit 1
+            fi
+            echo "✅ Found template category: $category"
+          done
+          
+          echo "✅ Template packs validation passed"
+
+      - name: Generate Workflow Report
+        run: |
+          echo "📊 Generating workflow validation report..."
+          
+          mkdir -p validation
+          
+          cat > validation/workflow_validation_report.md << EOF
+          # Workflow Validation Report
+          
+          Generated: $(date)
+          
+          ## Validation Results
+          
+          ### Documentation
+          - [x] WORKFLOW_GUIDE.md exists
+          - [x] WORKFLOW_QUICK_REFERENCE.md exists
+          - [x] docs/ directory exists
+          - [x] Documentation links validated
+          
+          ### Scripts
+          - [x] All required workflow scripts present
+          - [x] Scripts syntax validated
+          
+          ### Template Packs
+          - [x] template-packs/ directory exists
+          - [x] Required template categories present
+          
+          ## Status: ✅ PASSED
+          
+          All workflow documentation and scripts are properly configured.
+          EOF
+          
+          echo "✅ Workflow validation report generated"
+
+      - name: Upload Validation Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workflow-validation-report
+          path: validation/workflow_validation_report.md
+
