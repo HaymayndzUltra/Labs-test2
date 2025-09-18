@@ -1,9 +1,7 @@
-name: CI
+name: CI (simple)
 
 on:
-  pull_request:
-  push:
-    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build-and-test:
@@ -30,4 +28,7 @@ jobs:
       - name: Enforce Gates
         run: |
           python scripts/enforce_gates.py || exit 1
+
+# Note: This simple CI is workflow_dispatch-only to avoid overlap with existing modular pipelines
+# (.github/workflows/ci-*.yml). Prefer the modular set for full multi-stack coverage.
 

@@ -54,7 +54,9 @@ Compliance mapping:
 Repo Hardening:
 - PR Template: `.github/pull_request_template.md` (tasks/tests/gates/docs checklist)
 - CODEOWNERS: `CODEOWNERS` for review routing
-- CI: `.github/workflows/ci.yml` (lint/test then `scripts/enforce_gates.py`)
+- CI:
+  - Modular: `.github/workflows/ci-*.yml` (preferred multi-stack)
+  - Simple: `.github/workflows/ci.yml` (manual `workflow_dispatch` to avoid overlap)
 
 Isolation defaults:
 - If a root `.cursor` exists, default output root is `../_generated` and nested rule sets are off by default.
