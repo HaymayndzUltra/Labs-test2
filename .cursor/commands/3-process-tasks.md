@@ -9,7 +9,15 @@ Safety:
 
 Step 1 — Load tasks.json, select lane
 ```bash
-jq '.' tasks.json >/dev/null 2>&1 || (echo "[ERR] tasks.json invalid" && exit 2)
+python - << 'PY'
+import json,sys
+try:
+    json.load(open('tasks.json','r',encoding='utf-8'))
+    print('[OK] tasks.json is valid JSON')
+except Exception as e:
+    print(f'[ERR] tasks.json invalid: {e}')
+    sys.exit(2)
+PY
 ```
 [HALT] Choose lane (backend|frontend|devops/qa) and target parent task.
 
