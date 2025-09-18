@@ -7,36 +7,40 @@ PostgreSQL database configuration for {{PROJECT_NAME}}.
 ### Using Docker Compose
 
 1. Start the database:
-```bash
-docker-compose up -d
-```
+
+   ```bash
+   docker-compose up -d
+   ```
 
 2. Access the database:
-```bash
-# Using psql
-docker exec -it {{PROJECT_NAME}}_postgres psql -U postgres -d {{PROJECT_NAME}}
 
-# Using pgAdmin
-# Open http://localhost:5050
-# Email: admin@{{PROJECT_NAME}}.com
-# Password: admin
-```
+   ```bash
+   # Using psql
+   docker exec -it {{PROJECT_NAME}}_postgres psql -U postgres -d {{PROJECT_NAME}}
+
+   # Using pgAdmin
+   # Open http://localhost:5050
+   # Email: admin@{{PROJECT_NAME}}.com
+   # Password: admin
+   ```
 
 ### Manual Setup
 
 1. Install PostgreSQL 15+
 
 2. Create database and user:
-```sql
-CREATE DATABASE {{PROJECT_NAME}};
-CREATE USER {{PROJECT_NAME}}_user WITH ENCRYPTED PASSWORD 'your_password';
-GRANT ALL PRIVILEGES ON DATABASE {{PROJECT_NAME}} TO {{PROJECT_NAME}}_user;
-```
+
+   ```sql
+   CREATE DATABASE {{PROJECT_NAME}};
+   CREATE USER {{PROJECT_NAME}}_user WITH ENCRYPTED PASSWORD 'your_password';
+   GRANT ALL PRIVILEGES ON DATABASE {{PROJECT_NAME}} TO {{PROJECT_NAME}}_user;
+   ```
 
 3. Run initialization script:
-```bash
-psql -U postgres -d {{PROJECT_NAME}} -f init.sql
-```
+
+   ```bash
+   psql -U postgres -d {{PROJECT_NAME}} -f init.sql
+   ```
 
 ## Database Schema
 
@@ -133,6 +137,7 @@ ORDER BY idx_scan;
 ### {{COMPLIANCE}} Compliance
 
 Additional security measures for {{COMPLIANCE}}:
+
 - Encryption at rest
 - Audit logging enabled
 - Access control implementation
