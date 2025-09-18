@@ -334,3 +334,4 @@ globs: ["**/*.py", "!**/__pycache__/**/*"]  # Python files excluding cache
 This glob pattern system allows for precise rule application, ensuring that domain-specific rules only apply to relevant files while maintaining system performance and clarity.
 
 
+
