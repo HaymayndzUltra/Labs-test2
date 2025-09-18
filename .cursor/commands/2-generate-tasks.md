@@ -20,9 +20,11 @@ python scripts/enrich_tasks.py --input tasks.json --output tasks.json
 ```
 [HALT] Review enrichment results printed by the script.
 
-Step 3 — Validate DAG
-- Ensure no cycles; blocked_by refers to existing ids; per-lane concurrency cap observed at execution time.
-[HALT] Confirm DAG validity.
+Step 3 — Validate DAG & references
+```bash
+python scripts/validate_tasks.py --input tasks.json || exit 2
+```
+[HALT] Fix validation errors if any.
 
 Artifacts:
 - tasks.json
