@@ -21,7 +21,15 @@ PY
 ```
 [HALT] Choose lane (backend|frontend|devops/qa) and target parent task.
 
-Step 2 — Mark selected parent task as in_progress (confirm)
+Step 2 — Suggest execution order for the lane (cap=3)
+```bash
+# Example: export LANE=backend
+: ${LANE:=backend}
+python scripts/lane_executor.py --lane "$LANE" --cap 3 --input tasks.json | cat
+```
+[HALT] Review suggested order. Proceed to mark the selected parent task in_progress?
+
+Step 3 — Mark selected parent task as in_progress (confirm)
 ```bash
 # Example: export TID=BE-API-KPI; adjust per target task
 : ${TID:=}
@@ -31,7 +39,7 @@ if [ -n "$TID" ]; then
 fi
 ```
 
-Step 3 — Run lane tasks (example snippets)
+Step 4 — Run lane tasks (example snippets)
 ```bash
 # Backend examples
 make -n test || true
@@ -44,7 +52,7 @@ npm run -s test || true
 ```
 [HALT] Ready to mark the task as completed?
 
-Step 4 — Mark task as completed (confirm) and persist progress
+Step 5 — Mark task as completed (confirm) and persist progress
 ```bash
 if [ -n "$TID" ]; then
   echo "About to set $TID -> completed (y/n)?"; read -r ans; [ "$ans" = "y" ] && \
@@ -57,8 +65,9 @@ cp -f tasks.json ".cursor/ai-governor/run-history/tasks-$DATE_TAG.json" || true
 [HALT] Decide next parent task or proceed to /4-quality-control.
 
 Artifacts:
+- Suggested order: `.cursor/ai-governor/run-history/plan-*.json`
 - Updated tasks.json
-- .cursor/ai-governor/run-history/tasks-*.json
+- `.cursor/ai-governor/run-history/tasks-*.json`
 
 Next:
 - /4-quality-control
