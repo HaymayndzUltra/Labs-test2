@@ -14,11 +14,6 @@ globs: backend/**/*.py,scripts/**/*.py
 ## Triggers
 - python
 
----
-description: Python development best practices and modern coding patterns
-globs: **/*.py,**/*.pyi
-alwaysApply: false
----
 
 # Python Development Rule
 

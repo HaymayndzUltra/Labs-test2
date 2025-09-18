@@ -14,11 +14,6 @@ globs: **/openapi.yml,**/openapi.yaml,**/openapi.json,**/swagger.yaml,**/swagger
 ## Triggers
 - open-api
 
----
-description: Development guidelines for open api
-globs: **/openapi.yaml,**/openapi.yml,**/openapi.json,**/swagger.yaml,**/swagger.yml
-alwaysApply: false
----
 
 # CONTEXT
 

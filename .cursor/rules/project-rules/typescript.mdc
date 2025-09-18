@@ -14,11 +14,6 @@ globs: frontend/**/*.ts,frontend/**/*.tsx,lib/**/*.ts,lib/**/*.tsx,scripts/**/*.
 ## Triggers
 - typescript
 
----
-description: TypeScript development with strict typing and modern features
-globs: **/*.ts,**/*.tsx
-alwaysApply: false
----
 
 # TypeScript Development Rule
 

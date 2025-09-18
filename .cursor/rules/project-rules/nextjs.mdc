@@ -19,11 +19,6 @@ globs: frontend/**/*.tsx,frontend/**/*.ts,app/**/*.tsx,app/**/*.ts,components/**
 ## Quality Gates
 - ESLint ok; a11y checks; bundle size within budget.
 
----
-description: Backend Serverless Standards
-globs: **/*.js,**/*.ts
-alwaysApply: false
----
 
 
 # Nextjs Development Rule

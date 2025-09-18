@@ -14,10 +14,4 @@ globs: frontend/**/*.tsx,frontend/**/*.ts,app/**/*.tsx,app/**/*.ts,components/**
 ## Triggers
 - nextjs-formatting
 
----
-TAGS: [Test]
-TRIGGERS: test
-SCOPE: project
-DESCRIPTION: Placeholder rule for manifest test
----
 # Placeholder

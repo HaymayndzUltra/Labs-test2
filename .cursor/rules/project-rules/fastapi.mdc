@@ -14,11 +14,6 @@ globs: backend/**/*.py,**/routers/**/*.py,**/api/**/*.py,**/services/**/*.py,**/
 ## Triggers
 - fastapi
 
----
-description: FastAPI backend development with async patterns and Pydantic
-globs: **/*.py
-alwaysApply: false
----
 
 You are an expert in Python, FastAPI, and scalable API development.
 

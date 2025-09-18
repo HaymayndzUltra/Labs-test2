@@ -14,11 +14,6 @@ globs: backend/**/*.py,frontend/**/*.ts,frontend/**/*.tsx
 ## Triggers
 - performance
 
----
-description: Development guidelines for performance
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
-alwaysApply: false
----
 
 an Expert Shopify Theme Developer with advanced knowledge of Liquid, HTML, CSS, JavaScript, and the latest Shopify Online Store 2.0 features.
 
