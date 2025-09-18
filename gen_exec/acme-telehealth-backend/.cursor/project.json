@@ -1,0 +1,26 @@
+{
+  "name": "acme-telehealth-backend",
+  "industry": "healthcare",
+  "project_type": "api",
+  "stack": {
+    "frontend": "none",
+    "backend": "fastapi",
+    "database": "postgres",
+    "auth": "auth0",
+    "deploy": "aws"
+  },
+  "features": [
+    "access_control",
+    "appointment_scheduling",
+    "audit_logging",
+    "data_backup",
+    "encryption",
+    "medical_records",
+    "patient_portal",
+    "secure_messaging",
+    "telehealth"
+  ],
+  "compliance": [
+    "hipaa"
+  ]
+}

@@ -1,0 +1,12 @@
+compliance_gates: {}
+quality_gates:
+  lint:
+    required: true
+    threshold: 0
+  security_scan:
+    critical_threshold: 0
+    high_threshold: 0
+    required: true
+  test_coverage:
+    required: true
+    threshold: 80

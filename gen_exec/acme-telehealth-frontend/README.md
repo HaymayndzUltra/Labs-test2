@@ -1,0 +1,51 @@
+# acme-telehealth-frontend
+
+## Overview
+Healthcare web application built with modern technologies.
+
+## Technology Stack
+- **Frontend**: nextjs
+- **Backend**: N/A
+- **Database**: N/A
+- **Authentication**: auth0
+- **Deployment**: aws
+
+## Features
+- access_control
+- appointment_scheduling
+- audit_logging
+- data_backup
+- encryption
+- medical_records
+- patient_portal
+- secure_messaging
+- telehealth
+
+## Compliance
+- NONE
+
+## Quick Start
+
+1. Install dependencies:
+   ```bash
+   make setup
+   ```
+
+2. Start development environment:
+   ```bash
+   make dev
+   ```
+
+3. Run tests:
+   ```bash
+   make test
+   ```
+
+## Documentation
+- [Development Guide](docs/DEVELOPMENT.md)
+- [API Documentation](docs/API.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
+
+
+## License
+Proprietary - All rights reserved

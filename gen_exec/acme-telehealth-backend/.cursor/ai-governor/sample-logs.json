@@ -1,0 +1,14 @@
+{
+  "decisions": [
+    {
+      "action": "load_rules",
+      "rules_loaded": 2,
+      "timestamp": "T+0"
+    },
+    {
+      "action": "route",
+      "target": "backend",
+      "timestamp": "T+1"
+    }
+  ]
+}

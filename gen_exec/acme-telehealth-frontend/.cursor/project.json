@@ -1,0 +1,24 @@
+{
+  "name": "acme-telehealth-frontend",
+  "industry": "healthcare",
+  "project_type": "web",
+  "stack": {
+    "frontend": "nextjs",
+    "backend": "none",
+    "database": "none",
+    "auth": "auth0",
+    "deploy": "aws"
+  },
+  "features": [
+    "access_control",
+    "appointment_scheduling",
+    "audit_logging",
+    "data_backup",
+    "encryption",
+    "medical_records",
+    "patient_portal",
+    "secure_messaging",
+    "telehealth"
+  ],
+  "compliance": []
+}
