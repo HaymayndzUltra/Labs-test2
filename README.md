@@ -177,13 +177,13 @@ The Client Project Generator follows a structured 6-phase workflow:
 
 ### Phase Overview
 
-1. **Bootstrap** (`/0-bootstrap-project`) - Project initialization and scaffold generation
-2. **Plan** (`/1-create-prd`) - Generate PRD and planning artifacts  
-3. **Tasks** (`/2-generate-tasks`) - Build comprehensive task management
-4. **Sync** (`/sync-tasks`) - Keep tasks synchronized with code changes
-5. **Execute** (`/3-process-tasks`) - Execute tasks in organized lanes
-6. **Quality** (`/4-quality-control`) - Ensure code quality and compliance
-7. **Review** (`/5-implementation-retrospective`) - Review outcomes and improve
+1. **Bootstrap** (`/0-bootstrap-project`) - Fast, portable bootstrap with dry-run-first and HALT checkpoints. Supports brief-first and scaffold-first starts. **Never deploy.**
+2. **Plan** (`/1-create-prd`) - Generate PRD and planning artifacts from brief. **Never deploy.**
+3. **Tasks** (`/2-generate-tasks`) - Convert plan tasks into actionable tasks.json, add personas/acceptance, validate DAG. **Never deploy.**
+4. **Sync** (`/sync-tasks`) - Scan repo (routes/pages/migrations/tests) and reconcile tasks.json with actual code. **Idempotent, never deploy.**
+5. **Execute** (`/3-process-tasks`) - Execute tasks per lane (backend/frontend/devops) with HALTs, update state, record run history. **Never deploy.**
+6. **Quality** (`/4-quality-control`) - Validate completed scope, run tests/coverage/lints, enforce numeric gates. **Never deploy.**
+7. **Review** (`/5-implementation-retrospective`) - Summarize outcomes, capture learnings, propose rule/process improvements. **Never deploy.**
 
 ### Quick Start
 

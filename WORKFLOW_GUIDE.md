@@ -31,13 +31,14 @@ The Client Project Generator follows a structured 6-phase workflow designed to c
 
 ### Phase 0: Bootstrap Project (`/0-bootstrap-project`)
 
-**Purpose**: Project initialization and scaffold generation
+**Purpose**: Fast, portable bootstrap for any repo using dry-run-first and HALT checkpoints. Supports brief-first and scaffold-first starts. **Never deploy.**
 
 **What it does**:
-- Analyzes the project brief (dry-run mode)
-- Selects appropriate isolation strategy
-- Generates project scaffold with templates
-- Applies optional quality gates
+- Analyzes the project brief (dry-run mode) with HALT checkpoints
+- Selects appropriate isolation strategy and output root
+- Generates project scaffold with templates (brief-first or scaffold-first)
+- Applies optional quality gates and context reports
+- **Never deploys** - all operations are local development only
 
 **Usage**:
 ```bash
@@ -98,10 +99,13 @@ python scripts/validate_tasks.py --tasks enriched_tasks.json
 
 ### Phase 3: Sync Tasks (`/sync-tasks`)
 
-**Purpose**: Keep tasks synchronized with code changes
+**Purpose**: Scan repo (routes/pages/migrations/tests) and reconcile tasks.json with actual code. **Idempotent, never deploy.**
 
 **What it does**:
-- Diffs scaffold against current tasks
+- Scans repository structure for implemented features
+- Identifies missing or completed tasks based on code
+- Updates task states to match actual implementation
+- **Idempotent** - safe to run multiple times
 - Previews changes before applying
 - Updates task definitions based on code changes
 
@@ -119,12 +123,13 @@ python scripts/sync_from_scaffold.py \
 
 ### Phase 4: Process Tasks (`/3-process-tasks`)
 
-**Purpose**: Execute tasks in organized lanes
+**Purpose**: Execute tasks.json per lane with HALTs, update state, record run history. **Never deploy.**
 
 **What it does**:
-- Executes tasks lane-by-lane (Frontend/Backend)
-- Confirms state changes and updates
-- Persists run history and progress
+- Executes tasks lane-by-lane (backend/frontend/devops) with HALT checkpoints
+- Updates task states (pending → in_progress → completed)
+- Records run history for audit and tracking
+- **Never deploys** - only local build/test/lint operations
 
 **Usage**:
 ```bash
