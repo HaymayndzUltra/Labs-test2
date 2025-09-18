@@ -1,0 +1,432 @@
+---
+title: "AI Project Modular Architecture"
+description: "Mandatory modular architecture for all AI projects with clear layer separation and dependency management"
+tags: ["AI", "Architecture", "Modular", "Layers", "Dependencies"]
+scope: "ai-projects"
+priority: "high"
+enforcement: "mandatory"
+version: "1.0"
+created: "2024-01-15"
+updated: "2024-01-15"
+---
+
+# AI Project Modular Architecture Rule
+
+## Rule Overview
+
+**MANDATORY**: All AI projects MUST follow a strict modular architecture with four distinct layers: Data Layer, Model Layer, Service Layer, and Infrastructure Layer. Each layer must have clear separation of concerns, defined interfaces, and proper dependency management.
+
+## Architecture Requirements
+
+### 1. Data Layer (Data Management)
+
+#### Purpose
+Handle all data-related operations including ingestion, preprocessing, validation, and storage.
+
+#### Required Components
+- **Data Ingestion Module**
+  - File readers (CSV, JSON, Parquet, etc.)
+  - Database connectors
+  - API data fetchers
+  - Real-time stream processors
+  - Batch data loaders
+
+- **Data Preprocessing Module**
+  - Data cleaning functions
+  - Feature engineering pipelines
+  - Data transformation utilities
+  - Data normalization/standardization
+  - Data augmentation (for ML projects)
+
+- **Data Validation Module**
+  - Schema validation
+  - Data quality checks
+  - Anomaly detection
+  - Data integrity verification
+  - Data drift monitoring
+
+- **Data Storage Module**
+  - Raw data storage
+  - Processed data storage
+  - Feature store integration
+  - Data versioning
+  - Data lineage tracking
+
+#### Directory Structure
+```
+src/data/
+├── ingestion/
+│   ├── file_readers.py
+│   ├── database_connectors.py
+│   ├── api_fetchers.py
+│   └── stream_processors.py
+├── preprocessing/
+│   ├── cleaning.py
+│   ├── feature_engineering.py
+│   ├── transformations.py
+│   └── augmentation.py
+├── validation/
+│   ├── schema_validators.py
+│   ├── quality_checks.py
+│   └── drift_monitors.py
+├── storage/
+│   ├── raw_storage.py
+│   ├── processed_storage.py
+│   └── feature_store.py
+└── __init__.py
+```
+
+#### Dependencies
+- **Can import from**: None (base layer)
+- **Can be imported by**: Model Layer, Service Layer
+- **External dependencies**: pandas, numpy, pydantic, great-expectations
+
+### 2. Model Layer (AI/ML Core)
+
+#### Purpose
+Handle all machine learning operations including training, evaluation, inference, and model management.
+
+#### Required Components
+- **Training Module**
+  - Model training pipelines
+  - Hyperparameter optimization
+  - Cross-validation utilities
+  - Training monitoring
+  - Experiment tracking
+
+- **Evaluation Module**
+  - Model evaluation metrics
+  - Performance analysis
+  - A/B testing framework
+  - Model comparison utilities
+  - Statistical significance testing
+
+- **Inference Module**
+  - Model prediction interfaces
+  - Batch inference pipelines
+  - Real-time inference APIs
+  - Model serving utilities
+  - Prediction post-processing
+
+- **Model Management Module**
+  - Model versioning
+  - Model registry
+  - Model deployment utilities
+  - Model monitoring
+  - Model rollback mechanisms
+
+#### Directory Structure
+```
+src/models/
+├── training/
+│   ├── trainers.py
+│   ├── hyperparameter_optimization.py
+│   ├── cross_validation.py
+│   └── experiment_tracking.py
+├── evaluation/
+│   ├── metrics.py
+│   ├── performance_analysis.py
+│   ├── ab_testing.py
+│   └── model_comparison.py
+├── inference/
+│   ├── predictors.py
+│   ├── batch_inference.py
+│   ├── real_time_inference.py
+│   └── post_processing.py
+├── management/
+│   ├── versioning.py
+│   ├── registry.py
+│   ├── deployment.py
+│   └── monitoring.py
+└── __init__.py
+```
+
+#### Dependencies
+- **Can import from**: Data Layer
+- **Can be imported by**: Service Layer
+- **External dependencies**: scikit-learn, tensorflow/pytorch, mlflow, optuna
+
+### 3. Service Layer (API & Business Logic)
+
+#### Purpose
+Provide APIs, business logic, and orchestration services that connect the model layer to external systems.
+
+#### Required Components
+- **API Module**
+  - REST API endpoints
+  - GraphQL interfaces
+  - WebSocket connections
+  - API documentation
+  - Request/response validation
+
+- **Business Logic Module**
+  - Use case implementations
+  - Workflow orchestration
+  - Business rule engines
+  - Decision trees
+  - Process automation
+
+- **Integration Module**
+  - External service connectors
+  - Third-party API integrations
+  - Message queue handlers
+  - Event processors
+  - Webhook handlers
+
+- **Authentication & Authorization Module**
+  - User authentication
+  - Role-based access control
+  - API key management
+  - Session management
+  - Security policies
+
+#### Directory Structure
+```
+src/services/
+├── api/
+│   ├── rest_endpoints.py
+│   ├── graphql_schema.py
+│   ├── websocket_handlers.py
+│   └── validation.py
+├── business_logic/
+│   ├── use_cases.py
+│   ├── workflows.py
+│   ├── rules_engine.py
+│   └── automation.py
+├── integration/
+│   ├── external_connectors.py
+│   ├── message_queues.py
+│   ├── event_processors.py
+│   └── webhook_handlers.py
+├── auth/
+│   ├── authentication.py
+│   ├── authorization.py
+│   ├── session_management.py
+│   └── security.py
+└── __init__.py
+```
+
+#### Dependencies
+- **Can import from**: Data Layer, Model Layer
+- **Can be imported by**: Infrastructure Layer
+- **External dependencies**: fastapi/flask, pydantic, sqlalchemy, redis
+
+### 4. Infrastructure Layer (Deployment & Operations)
+
+#### Purpose
+Handle deployment, monitoring, logging, and operational concerns of the AI system.
+
+#### Required Components
+- **Deployment Module**
+  - Container orchestration
+  - Service discovery
+  - Load balancing
+  - Auto-scaling
+  - Blue-green deployments
+
+- **Monitoring Module**
+  - System metrics collection
+  - Application performance monitoring
+  - Model performance tracking
+  - Alert management
+  - Dashboard creation
+
+- **Logging Module**
+  - Structured logging
+  - Log aggregation
+  - Log analysis
+  - Audit trails
+  - Error tracking
+
+- **Configuration Module**
+  - Environment management
+  - Secret management
+  - Configuration validation
+  - Feature flags
+  - Runtime configuration
+
+#### Directory Structure
+```
+src/infrastructure/
+├── deployment/
+│   ├── containerization.py
+│   ├── orchestration.py
+│   ├── service_discovery.py
+│   └── scaling.py
+├── monitoring/
+│   ├── metrics_collection.py
+│   ├── performance_monitoring.py
+│   ├── alerting.py
+│   └── dashboards.py
+├── logging/
+│   ├── structured_logging.py
+│   ├── log_aggregation.py
+│   ├── error_tracking.py
+│   └── audit_trails.py
+├── configuration/
+│   ├── env_management.py
+│   ├── secret_management.py
+│   ├── config_validation.py
+│   └── feature_flags.py
+└── __init__.py
+```
+
+#### Dependencies
+- **Can import from**: All other layers
+- **Can be imported by**: None (top layer)
+- **External dependencies**: docker, kubernetes, prometheus, grafana, elasticsearch
+
+## Dependency Management Rules
+
+### 1. Layer Dependencies
+- **Data Layer**: No dependencies on other layers
+- **Model Layer**: Can only depend on Data Layer
+- **Service Layer**: Can depend on Data Layer and Model Layer
+- **Infrastructure Layer**: Can depend on all layers
+
+### 2. Import Restrictions
+```python
+# Data Layer - No internal layer imports
+# Model Layer - Can import from data layer only
+from src.data import DataProcessor
+
+# Service Layer - Can import from data and model layers
+from src.data import DataProcessor
+from src.models import ModelPredictor
+
+# Infrastructure Layer - Can import from any layer
+from src.data import DataProcessor
+from src.models import ModelPredictor
+from src.services import APIService
+```
+
+### 3. Interface Contracts
+Each layer must define clear interfaces:
+- **Data Layer**: DataProcessor, DataValidator, DataStorage
+- **Model Layer**: ModelTrainer, ModelEvaluator, ModelPredictor
+- **Service Layer**: APIService, BusinessLogic, IntegrationService
+- **Infrastructure Layer**: DeploymentManager, MonitoringService, LoggingService
+
+## Implementation Standards
+
+### 1. Code Organization
+- Each layer must be in its own package
+- Clear `__init__.py` files with proper exports
+- Consistent naming conventions across layers
+- Type hints for all public interfaces
+
+### 2. Error Handling
+- Layer-specific exception classes
+- Proper error propagation between layers
+- Centralized error logging
+- Graceful degradation strategies
+
+### 3. Testing Requirements
+- Unit tests for each layer
+- Integration tests between layers
+- Mock external dependencies
+- Test coverage minimum 80%
+
+### 4. Documentation
+- API documentation for each layer
+- Architecture diagrams
+- Dependency graphs
+- Deployment guides
+
+## Validation Rules
+
+### 1. Pre-commit Checks
+- Import dependency validation
+- Layer boundary enforcement
+- Interface contract compliance
+- Code quality standards
+
+### 2. CI/CD Pipeline
+- Layer-specific testing
+- Integration testing
+- Deployment validation
+- Performance monitoring
+
+### 3. Runtime Validation
+- Dependency injection validation
+- Interface contract verification
+- Performance metrics collection
+- Error rate monitoring
+
+## Exceptions and Overrides
+
+### 1. Emergency Overrides
+- Critical bug fixes can temporarily bypass layer restrictions
+- Must be documented and reviewed within 24 hours
+- Must be refactored to proper architecture within 1 week
+
+### 2. Legacy Integration
+- Existing code can be gradually migrated
+- Must follow migration plan with timeline
+- New features must follow architecture rules
+
+### 3. Performance Exceptions
+- Performance-critical code can have direct layer access
+- Must be documented with performance justification
+- Must include performance monitoring
+
+## Enforcement Mechanisms
+
+### 1. Static Analysis
+- Import analysis tools
+- Dependency graph validation
+- Code structure verification
+- Interface contract checking
+
+### 2. Runtime Monitoring
+- Dependency injection monitoring
+- Layer interaction tracking
+- Performance impact measurement
+- Error rate analysis
+
+### 3. Code Reviews
+- Architecture compliance review
+- Dependency validation
+- Interface contract verification
+- Performance impact assessment
+
+## Success Metrics
+
+### 1. Architecture Compliance
+- 100% layer boundary compliance
+- 95% interface contract adherence
+- 90% dependency rule compliance
+- 85% test coverage per layer
+
+### 2. Performance Metrics
+- <100ms inter-layer communication
+- <5% performance overhead from architecture
+- 99.9% service availability
+- <1% error rate between layers
+
+### 3. Maintainability Metrics
+- <2 hours average time to add new features
+- <1 day average time to fix bugs
+- 90% developer satisfaction with architecture
+- <10% code duplication across layers
+
+## Migration Guide
+
+### 1. Existing Projects
+1. **Audit Current Structure**: Analyze existing code organization
+2. **Create Layer Packages**: Set up proper directory structure
+3. **Move Code Gradually**: Migrate code to appropriate layers
+4. **Update Dependencies**: Fix import statements
+5. **Add Interfaces**: Define clear layer interfaces
+6. **Test Thoroughly**: Ensure all functionality works
+
+### 2. New Projects
+1. **Start with Architecture**: Set up layer structure first
+2. **Define Interfaces**: Create clear contracts between layers
+3. **Implement Incrementally**: Build one layer at a time
+4. **Test Continuously**: Validate architecture as you build
+5. **Document Everything**: Maintain architecture documentation
+
+## Remember
+
+**This architecture is MANDATORY for all AI projects. It ensures maintainability, scalability, and clear separation of concerns. Any deviation must be approved and documented.**

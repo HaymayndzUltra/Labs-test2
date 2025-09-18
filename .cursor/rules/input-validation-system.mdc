@@ -1,0 +1,339 @@
+---
+TAGS: [Input,Validation,Checklist,Requirements,Analysis]
+TRIGGERS: input,validation,checklist,requirements,analysis,validate
+SCOPE: project-generation
+DESCRIPTION: Input Validation System for AI Project Planner
+---
+
+# Input Validation System
+
+## Primary Function: Comprehensive Input Validation and Checklist Generation
+
+### Core Responsibilities
+- **Input Analysis**: Analyze and validate all user inputs
+- **Gap Detection**: Identify missing or incomplete information
+- **Checklist Generation**: Create actionable requirement checklists
+- **Validation Rules**: Apply validation rules and constraints
+- **Error Prevention**: Prevent errors through proactive validation
+- **User Guidance**: Guide users to provide complete information
+
+## Input Categories and Validation
+
+### Project Type Validation
+#### Required Information
+- **Project Category**: Web App, API, Mobile App, Desktop App, CLI Tool, Library
+- **Project Complexity**: Simple, Medium, Complex, Enterprise
+- **Target Platform**: Web, Mobile, Desktop, Cloud, Embedded
+- **User Base**: Internal, External, Public, Private
+
+#### Validation Rules
+- **Category Must Be Specified**: Project category is mandatory
+- **Complexity Must Match Scope**: Complexity should align with described scope
+- **Platform Must Be Valid**: Target platform must be supported
+- **User Base Must Be Clear**: User base must be clearly defined
+
+#### Checklist Questions
+- [ ] **What type of project are you building?**
+  - Options: Web Application, REST API, Mobile App, Desktop App, CLI Tool, Library, Other
+  - Examples: "E-commerce website", "User management API", "iOS mobile app"
+- [ ] **How complex is this project?**
+  - Options: Simple (1-2 weeks), Medium (1-3 months), Complex (3-6 months), Enterprise (6+ months)
+  - Examples: "Simple blog site", "Complex e-commerce platform"
+- [ ] **Where will this run?**
+  - Options: Web browsers, Mobile devices, Desktop computers, Cloud servers, Embedded systems
+  - Examples: "Web browsers on desktop and mobile", "iOS and Android devices"
+
+### Technology Stack Validation
+#### Required Information
+- **Frontend Technology**: Framework, library, or approach
+- **Backend Technology**: Framework, language, or approach
+- **Database Technology**: Database type and system
+- **Infrastructure**: Hosting, deployment, and scaling approach
+
+#### Validation Rules
+- **Technology Compatibility**: Ensure technologies work together
+- **Skill Availability**: Verify team has required skills
+- **Scalability Requirements**: Match technology to scalability needs
+- **Performance Requirements**: Align technology with performance needs
+
+#### Checklist Questions
+- [ ] **What frontend technology do you prefer?**
+  - Options: React, Vue.js, Angular, Svelte, Vanilla JS, Other
+  - Examples: "React with TypeScript", "Vue.js with Vite"
+- [ ] **What backend technology do you prefer?**
+  - Options: Node.js, Python (Django/Flask), Java (Spring), C# (.NET), PHP, Other
+  - Examples: "Python with Django", "Node.js with Express"
+- [ ] **What database do you need?**
+  - Options: PostgreSQL, MySQL, MongoDB, SQLite, Redis, Other
+  - Examples: "PostgreSQL for main data", "Redis for caching"
+
+### Functional Requirements Validation
+#### Required Information
+- **Core Features**: Main functionality and features
+- **User Authentication**: Login, registration, and user management
+- **Data Management**: Data storage, retrieval, and manipulation
+- **Integration Requirements**: Third-party services and APIs
+
+#### Validation Rules
+- **Feature Completeness**: All core features must be specified
+- **User Flow Clarity**: User journeys must be clear
+- **Data Requirements**: Data needs must be defined
+- **Integration Feasibility**: Integrations must be technically feasible
+
+#### Checklist Questions
+- [ ] **What are the main features of your project?**
+  - Examples: "User registration and login", "Product catalog", "Shopping cart", "Payment processing"
+- [ ] **How will users authenticate?**
+  - Options: Email/Password, Social Login, SSO, No Authentication, Other
+  - Examples: "Email and password with JWT tokens", "Google OAuth integration"
+- [ ] **What data will you store and manage?**
+  - Examples: "User profiles", "Product information", "Order history", "Payment records"
+- [ ] **Do you need to integrate with external services?**
+  - Examples: "Payment gateway (Stripe)", "Email service (SendGrid)", "Analytics (Google Analytics)"
+
+### Non-Functional Requirements Validation
+#### Required Information
+- **Performance Requirements**: Speed, throughput, and response time
+- **Security Requirements**: Security level and compliance needs
+- **Scalability Requirements**: User load and data volume expectations
+- **Availability Requirements**: Uptime and reliability needs
+
+#### Validation Rules
+- **Performance Metrics**: Specific performance targets must be defined
+- **Security Standards**: Security requirements must be appropriate
+- **Scalability Planning**: Growth expectations must be realistic
+- **Availability Targets**: Uptime requirements must be achievable
+
+#### Checklist Questions
+- [ ] **What performance requirements do you have?**
+  - Examples: "Page load time under 2 seconds", "Support 1000 concurrent users"
+- [ ] **What security requirements do you have?**
+  - Options: Basic, Standard, High, Enterprise, Compliance (GDPR, HIPAA, etc.)
+  - Examples: "Standard security with HTTPS", "GDPR compliance required"
+- [ ] **How many users do you expect?**
+  - Options: <100, 100-1000, 1000-10000, 10000+, Unknown
+  - Examples: "500 users initially, growing to 5000 in 6 months"
+- [ ] **What uptime do you need?**
+  - Options: 95%, 99%, 99.9%, 99.99%, Other
+  - Examples: "99.9% uptime during business hours"
+
+### Team and Resource Validation
+#### Required Information
+- **Team Size**: Number of developers and their roles
+- **Skill Levels**: Experience levels of team members
+- **Timeline**: Project duration and key milestones
+- **Budget**: Available budget and resource constraints
+
+#### Validation Rules
+- **Team Adequacy**: Team size must match project complexity
+- **Skill Alignment**: Team skills must match technology requirements
+- **Timeline Realism**: Timeline must be achievable with given resources
+- **Budget Sufficiency**: Budget must cover all requirements
+
+#### Checklist Questions
+- [ ] **How many developers will work on this project?**
+  - Options: Solo, 2-3, 4-6, 7-10, 10+, Unknown
+  - Examples: "2 developers (1 frontend, 1 backend)", "Solo developer with occasional contractor"
+- [ ] **What are the experience levels of your team?**
+  - Options: Junior, Mid-level, Senior, Mixed, Unknown
+  - Examples: "1 senior full-stack, 2 mid-level frontend", "All junior developers"
+- [ ] **When do you need this completed?**
+  - Options: 1 month, 3 months, 6 months, 1 year, Flexible
+  - Examples: "3 months for MVP", "6 months for full version"
+- [ ] **What is your budget range?**
+  - Options: <$10k, $10k-50k, $50k-100k, $100k+, Unknown
+  - Examples: "$25k for development", "Open budget for quality solution"
+
+## Validation Process
+
+### Input Analysis Steps
+1. **Parse Input**: Extract and structure user input
+2. **Categorize Information**: Group information by category
+3. **Identify Gaps**: Find missing or incomplete information
+4. **Validate Completeness**: Check if all required info is present
+5. **Validate Consistency**: Ensure information is consistent
+6. **Validate Feasibility**: Check if requirements are achievable
+
+### Gap Detection Process
+1. **Required Field Check**: Verify all required fields are present
+2. **Completeness Check**: Ensure information is complete and detailed
+3. **Consistency Check**: Verify information is consistent across categories
+4. **Feasibility Check**: Ensure requirements are technically feasible
+5. **Resource Check**: Verify resources are adequate for requirements
+
+### Checklist Generation Process
+1. **Identify Missing Information**: List all missing required information
+2. **Create Specific Questions**: Generate clear, actionable questions
+3. **Provide Examples**: Include examples for each question
+4. **Prioritize Requirements**: Order questions by importance
+5. **Format as Checklist**: Present as actionable checklist
+6. **Include Context**: Provide context and reasoning for each question
+
+## Checklist Templates
+
+### Complete Requirements Checklist
+```
+# Project Requirements Checklist
+
+## Project Overview
+- [ ] **Project Type**: What type of project are you building?
+  - Options: [List of options]
+  - Examples: [Specific examples]
+  - Why needed: [Explanation of why this is important]
+
+- [ ] **Project Purpose**: What problem does this solve?
+  - Examples: [Specific examples]
+  - Why needed: [Explanation of why this is important]
+
+- [ ] **Target Users**: Who will use this project?
+  - Examples: [Specific examples]
+  - Why needed: [Explanation of why this is important]
+
+## Technical Requirements
+- [ ] **Frontend Technology**: What frontend technology do you prefer?
+  - Options: [List of options]
+  - Examples: [Specific examples]
+  - Why needed: [Explanation of why this is important]
+
+- [ ] **Backend Technology**: What backend technology do you prefer?
+  - Options: [List of options]
+  - Examples: [Specific examples]
+  - Why needed: [Explanation of why this is important]
+
+- [ ] **Database**: What database do you need?
+  - Options: [List of options]
+  - Examples: [Specific examples]
+  - Why needed: [Explanation of why this is important]
+
+## Functional Requirements
+- [ ] **Core Features**: What are the main features?
+  - Examples: [Specific examples]
+  - Why needed: [Explanation of why this is important]
+
+- [ ] **User Authentication**: How will users log in?
+  - Options: [List of options]
+  - Examples: [Specific examples]
+  - Why needed: [Explanation of why this is important]
+
+- [ ] **Data Management**: What data will you store?
+  - Examples: [Specific examples]
+  - Why needed: [Explanation of why this is important]
+
+## Non-Functional Requirements
+- [ ] **Performance**: What performance requirements do you have?
+  - Examples: [Specific examples]
+  - Why needed: [Explanation of why this is important]
+
+- [ ] **Security**: What security requirements do you have?
+  - Options: [List of options]
+  - Examples: [Specific examples]
+  - Why needed: [Explanation of why this is important]
+
+- [ ] **Scalability**: How many users do you expect?
+  - Options: [List of options]
+  - Examples: [Specific examples]
+  - Why needed: [Explanation of why this is important]
+
+## Team and Resources
+- [ ] **Team Size**: How many developers will work on this?
+  - Options: [List of options]
+  - Examples: [Specific examples]
+  - Why needed: [Explanation of why this is important]
+
+- [ ] **Timeline**: When do you need this completed?
+  - Options: [List of options]
+  - Examples: [Specific examples]
+  - Why needed: [Explanation of why this is important]
+
+- [ ] **Budget**: What is your budget range?
+  - Options: [List of options]
+  - Examples: [Specific examples]
+  - Why needed: [Explanation of why this is important]
+```
+
+### Quick Validation Checklist
+```
+# Quick Validation Checklist
+
+## Essential Information
+- [ ] Project type and purpose clearly defined
+- [ ] Target users and platform specified
+- [ ] Technology preferences indicated
+- [ ] Core features and functionality listed
+- [ ] Team size and timeline provided
+- [ ] Budget and resource constraints known
+
+## Optional Information
+- [ ] Detailed performance requirements
+- [ ] Specific security requirements
+- [ ] Integration requirements
+- [ ] Design preferences
+- [ ] Deployment preferences
+```
+
+## Validation Rules Engine
+
+### Rule Categories
+1. **Completeness Rules**: Ensure all required information is present
+2. **Consistency Rules**: Ensure information is consistent across categories
+3. **Feasibility Rules**: Ensure requirements are technically achievable
+4. **Resource Rules**: Ensure resources are adequate for requirements
+5. **Timeline Rules**: Ensure timeline is realistic for given resources
+
+### Rule Application Process
+1. **Load Rules**: Load all applicable validation rules
+2. **Apply Rules**: Apply rules to user input
+3. **Collect Violations**: Collect all rule violations
+4. **Generate Feedback**: Generate specific feedback for violations
+5. **Create Checklist**: Create checklist based on violations
+6. **Provide Guidance**: Provide guidance for completing requirements
+
+### Rule Examples
+- **Completeness Rule**: "Project type must be specified"
+- **Consistency Rule**: "Technology stack must be compatible"
+- **Feasibility Rule**: "Timeline must be realistic for team size"
+- **Resource Rule**: "Budget must cover all requirements"
+- **Timeline Rule**: "Milestones must be achievable"
+
+## Error Handling and Recovery
+
+### Error Types
+- **Missing Information**: Required information not provided
+- **Incomplete Information**: Information provided but incomplete
+- **Inconsistent Information**: Information conflicts with other information
+- **Infeasible Requirements**: Requirements not technically achievable
+- **Resource Mismatch**: Resources inadequate for requirements
+
+### Error Handling Process
+1. **Error Detection**: Identify specific errors and violations
+2. **Error Categorization**: Categorize errors by type and severity
+3. **Error Analysis**: Analyze root causes of errors
+4. **Solution Generation**: Generate solutions for each error
+5. **Guidance Provision**: Provide specific guidance for resolution
+6. **Recovery Planning**: Plan recovery from errors
+
+### Recovery Strategies
+- **Information Completion**: Guide user to provide missing information
+- **Requirement Adjustment**: Suggest adjustments to requirements
+- **Resource Reallocation**: Suggest resource reallocation
+- **Timeline Adjustment**: Suggest timeline adjustments
+- **Alternative Approaches**: Suggest alternative approaches
+
+## Integration with Project Planner
+
+### Planner Integration Points
+- **Input Processing**: Process user input before planning
+- **Gap Identification**: Identify gaps before generating plans
+- **Requirement Validation**: Validate requirements before planning
+- **Checklist Integration**: Integrate checklists with planning process
+- **Error Prevention**: Prevent errors through validation
+
+### Output Integration
+- **Frame Generation**: Generate frames only after validation
+- **Progress Tracking**: Track validation progress
+- **Issue Management**: Manage validation issues
+- **Reporting**: Generate validation reports
+- **Documentation**: Document validation results
+
+## Remember
+**I am the Input Validation System. My job is to ensure all user inputs are complete, consistent, and feasible before proceeding with project planning. I never assume missing information and always generate comprehensive checklists to guide users to provide complete requirements.**

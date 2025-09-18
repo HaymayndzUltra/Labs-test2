@@ -1,0 +1,37 @@
+---
+alwaysApply: true
+fileTypes: [".py"]
+---
+
+# Python File Organization
+
+## Rule: All Python files must be placed in the `src` folder
+
+### Requirements
+- All `.py` files must be located within the `src/` directory
+- No Python files should exist in the root directory or other locations
+- When creating new Python files, always place them in `src/`
+- When moving existing Python files, relocate them to `src/`
+
+### Directory Structure
+```
+project-root/
+├── src/
+│   ├── *.py (all Python files here)
+│   └── subdirectories/ (if needed)
+├── other-files/
+└── README.md
+```
+
+### Enforcement
+- Before creating any Python file, verify it will be placed in `src/`
+- When editing existing Python files outside `src/`, suggest moving them
+- Always use `src/` as the base path for Python file operations
+- Apply this rule for all Python file operations (.py files)
+
+### Exceptions
+- Configuration files like `setup.py`, `pyproject.toml` may remain in root
+- Test files should follow the same rule and be in `src/tests/` or `tests/` directory
+- Entry point scripts can be in root if they only import from `src/`
+
+This rule ensures consistent Python file organization and maintainability.

@@ -1,0 +1,352 @@
+---
+TAGS: [Plan,Frame,Generator,Project,Structure]
+TRIGGERS: plan,frame,project,structure,architecture
+SCOPE: project-generation
+DESCRIPTION: Plan Frame Generator for AI Project Planner
+---
+
+# Plan Frame Generator
+
+## Primary Function: Comprehensive Project Planning and Structure
+
+### Core Responsibilities
+- **Project Architecture**: Design overall project architecture and structure
+- **Technology Selection**: Choose appropriate technology stack
+- **Phase Planning**: Break down project into manageable phases
+- **Resource Planning**: Plan resources, timelines, and dependencies
+- **Risk Assessment**: Identify and plan for potential risks
+- **Success Metrics**: Define measurable success criteria
+
+## Plan Frame Structure
+
+### Standard Plan Frame Template
+```
+# Plan Frame: [Project Name]
+
+## Project Overview
+### Project Identity
+- **Name**: [Project name]
+- **Version**: [Initial version]
+- **Type**: [Project type - Web App, API, Mobile App, etc.]
+- **Domain**: [Business domain]
+- **Purpose**: [Clear project purpose and goals]
+
+### Project Scope
+- **In Scope**: [What is included in the project]
+- **Out of Scope**: [What is explicitly excluded]
+- **Boundaries**: [Project boundaries and limitations]
+- **Assumptions**: [Key assumptions made]
+
+### Target Audience
+- **Primary Users**: [Main user groups]
+- **Secondary Users**: [Additional user groups]
+- **User Personas**: [Key user personas]
+- **User Requirements**: [Key user requirements]
+
+## Technology Architecture
+### Technology Stack
+#### Frontend Technologies
+- **Framework**: [React, Vue, Angular, etc.]
+- **Language**: [JavaScript, TypeScript, etc.]
+- **Styling**: [CSS, Sass, Tailwind, etc.]
+- **State Management**: [Redux, Vuex, Context API, etc.]
+- **Build Tools**: [Webpack, Vite, Parcel, etc.]
+
+#### Backend Technologies
+- **Framework**: [Django, Express, Spring Boot, etc.]
+- **Language**: [Python, Node.js, Java, etc.]
+- **API Type**: [REST, GraphQL, gRPC, etc.]
+- **Authentication**: [JWT, OAuth, Session-based, etc.]
+- **Caching**: [Redis, Memcached, etc.]
+
+#### Database Technologies
+- **Primary Database**: [PostgreSQL, MySQL, MongoDB, etc.]
+- **Database Type**: [Relational, NoSQL, Graph, etc.]
+- **ORM/ODM**: [Django ORM, Mongoose, Prisma, etc.]
+- **Migrations**: [Database migration strategy]
+- **Backup Strategy**: [Data backup and recovery]
+
+#### Infrastructure Technologies
+- **Hosting**: [AWS, Azure, GCP, VPS, etc.]
+- **Containerization**: [Docker, Kubernetes, etc.]
+- **CI/CD**: [GitHub Actions, GitLab CI, Jenkins, etc.]
+- **Monitoring**: [Prometheus, Grafana, New Relic, etc.]
+- **Logging**: [ELK Stack, Fluentd, etc.]
+
+### System Architecture
+#### High-Level Architecture
+- **Architecture Pattern**: [Microservices, Monolith, Serverless, etc.]
+- **Communication**: [How components communicate]
+- **Data Flow**: [How data flows through the system]
+- **Security**: [Security architecture and measures]
+
+#### Component Architecture
+- **Frontend Components**: [Key frontend components]
+- **Backend Services**: [Key backend services]
+- **Database Schema**: [Database structure overview]
+- **External Integrations**: [Third-party integrations]
+
+#### Deployment Architecture
+- **Environment Strategy**: [Dev, Staging, Production setup]
+- **Deployment Strategy**: [Blue-green, Rolling, Canary, etc.]
+- **Scaling Strategy**: [Horizontal, Vertical scaling approach]
+- **Disaster Recovery**: [Backup and recovery procedures]
+
+## Development Phases
+### Phase 1: Foundation Setup
+#### Objectives
+- [Primary objective 1]
+- [Primary objective 2]
+- [Primary objective 3]
+
+#### Deliverables
+- [Deliverable 1]: [Description] - [Format] - [Timeline]
+- [Deliverable 2]: [Description] - [Format] - [Timeline]
+- [Deliverable 3]: [Description] - [Format] - [Timeline]
+
+#### Tasks
+- [Task 1]: [Description] - [Estimated Hours] - [Dependencies]
+- [Task 2]: [Description] - [Estimated Hours] - [Dependencies]
+- [Task 3]: [Description] - [Estimated Hours] - [Dependencies]
+
+#### Success Criteria
+- [Success criterion 1]
+- [Success criterion 2]
+- [Success criterion 3]
+
+#### Timeline
+- **Start Date**: [Date]
+- **End Date**: [Date]
+- **Duration**: [X weeks/days]
+- **Milestones**: [Key milestones and dates]
+
+### Phase 2: Core Development
+#### Objectives
+- [Primary objective 1]
+- [Primary objective 2]
+- [Primary objective 3]
+
+#### Deliverables
+- [Deliverable 1]: [Description] - [Format] - [Timeline]
+- [Deliverable 2]: [Description] - [Format] - [Timeline]
+- [Deliverable 3]: [Description] - [Format] - [Timeline]
+
+#### Tasks
+- [Task 1]: [Description] - [Estimated Hours] - [Dependencies]
+- [Task 2]: [Description] - [Estimated Hours] - [Dependencies]
+- [Task 3]: [Description] - [Estimated Hours] - [Dependencies]
+
+#### Success Criteria
+- [Success criterion 1]
+- [Success criterion 2]
+- [Success criterion 3]
+
+#### Timeline
+- **Start Date**: [Date]
+- **End Date**: [Date]
+- **Duration**: [X weeks/days]
+- **Milestones**: [Key milestones and dates]
+
+### Phase 3: Integration and Testing
+#### Objectives
+- [Primary objective 1]
+- [Primary objective 2]
+- [Primary objective 3]
+
+#### Deliverables
+- [Deliverable 1]: [Description] - [Format] - [Timeline]
+- [Deliverable 2]: [Description] - [Format] - [Timeline]
+- [Deliverable 3]: [Description] - [Format] - [Timeline]
+
+#### Tasks
+- [Task 1]: [Description] - [Estimated Hours] - [Dependencies]
+- [Task 2]: [Description] - [Estimated Hours] - [Dependencies]
+- [Task 3]: [Description] - [Estimated Hours] - [Dependencies]
+
+#### Success Criteria
+- [Success criterion 1]
+- [Success criterion 2]
+- [Success criterion 3]
+
+#### Timeline
+- **Start Date**: [Date]
+- **End Date**: [Date]
+- **Duration**: [X weeks/days]
+- **Milestones**: [Key milestones and dates]
+
+### Phase 4: Deployment and Launch
+#### Objectives
+- [Primary objective 1]
+- [Primary objective 2]
+- [Primary objective 3]
+
+#### Deliverables
+- [Deliverable 1]: [Description] - [Format] - [Timeline]
+- [Deliverable 2]: [Description] - [Format] - [Timeline]
+- [Deliverable 3]: [Description] - [Format] - [Timeline]
+
+#### Tasks
+- [Task 1]: [Description] - [Estimated Hours] - [Dependencies]
+- [Task 2]: [Description] - [Estimated Hours] - [Dependencies]
+- [Task 3]: [Description] - [Estimated Hours] - [Dependencies]
+
+#### Success Criteria
+- [Success criterion 1]
+- [Success criterion 2]
+- [Success criterion 3]
+
+#### Timeline
+- **Start Date**: [Date]
+- **End Date**: [Date]
+- **Duration**: [X weeks/days]
+- **Milestones**: [Key milestones and dates]
+
+## Resource Planning
+### Human Resources
+#### Team Composition
+- [Role 1]: [Number] - [Skill level] - [Timeline]
+- [Role 2]: [Number] - [Skill level] - [Timeline]
+- [Role 3]: [Number] - [Skill level] - [Timeline]
+
+#### Skill Requirements
+- [Skill 1]: [Proficiency level] - [Number needed]
+- [Skill 2]: [Proficiency level] - [Number needed]
+- [Skill 3]: [Proficiency level] - [Number needed]
+
+#### Resource Allocation
+- **Phase 1**: [Resource allocation]
+- **Phase 2**: [Resource allocation]
+- **Phase 3**: [Resource allocation]
+- **Phase 4**: [Resource allocation]
+
+### Technical Resources
+#### Infrastructure Requirements
+- **Development Environment**: [Requirements]
+- **Staging Environment**: [Requirements]
+- **Production Environment**: [Requirements]
+- **Backup and Recovery**: [Requirements]
+
+#### Software and Tools
+- **Development Tools**: [List of tools]
+- **Testing Tools**: [List of tools]
+- **Monitoring Tools**: [List of tools]
+- **Deployment Tools**: [List of tools]
+
+#### Third-Party Services
+- **Cloud Services**: [Required services]
+- **APIs and Integrations**: [External services]
+- **Payment Processing**: [If applicable]
+- **Analytics and Monitoring**: [Services needed]
+
+### Budget Planning
+#### Cost Categories
+- **Personnel Costs**: [Estimated costs]
+- **Infrastructure Costs**: [Estimated costs]
+- **Software Licenses**: [Estimated costs]
+- **Third-Party Services**: [Estimated costs]
+- **Contingency**: [Buffer amount]
+
+#### Budget Allocation by Phase
+- **Phase 1**: [Budget allocation]
+- **Phase 2**: [Budget allocation]
+- **Phase 3**: [Budget allocation]
+- **Phase 4**: [Budget allocation]
+
+## Risk Management
+### Risk Identification
+#### Technical Risks
+- [Risk 1]: [Description] - [Impact] - [Probability]
+- [Risk 2]: [Description] - [Impact] - [Probability]
+- [Risk 3]: [Description] - [Impact] - [Probability]
+
+#### Resource Risks
+- [Risk 1]: [Description] - [Impact] - [Probability]
+- [Risk 2]: [Description] - [Impact] - [Probability]
+- [Risk 3]: [Description] - [Impact] - [Probability]
+
+#### Timeline Risks
+- [Risk 1]: [Description] - [Impact] - [Probability]
+- [Risk 2]: [Description] - [Impact] - [Probability]
+- [Risk 3]: [Description] - [Impact] - [Probability]
+
+### Risk Mitigation
+#### High-Impact Risks
+- [Risk]: [Mitigation strategy] - [Owner] - [Timeline]
+- [Risk]: [Mitigation strategy] - [Owner] - [Timeline]
+- [Risk]: [Mitigation strategy] - [Owner] - [Timeline]
+
+#### Medium-Impact Risks
+- [Risk]: [Mitigation strategy] - [Owner] - [Timeline]
+- [Risk]: [Mitigation strategy] - [Owner] - [Timeline]
+- [Risk]: [Mitigation strategy] - [Owner] - [Timeline]
+
+### Contingency Planning
+- **Plan A**: [Primary approach]
+- **Plan B**: [Alternative approach]
+- **Plan C**: [Fallback approach]
+- **Escalation Procedures**: [When to escalate]
+
+## Success Metrics and KPIs
+### Technical Metrics
+- **Performance**: [Response time, throughput targets]
+- **Reliability**: [Uptime, error rate targets]
+- **Security**: [Security compliance targets]
+- **Scalability**: [User load, data volume targets]
+
+### Business Metrics
+- **User Adoption**: [User growth targets]
+- **User Satisfaction**: [Satisfaction score targets]
+- **Feature Usage**: [Feature adoption targets]
+- **Revenue Impact**: [Revenue targets if applicable]
+
+### Quality Metrics
+- **Code Quality**: [Code quality metrics]
+- **Test Coverage**: [Test coverage targets]
+- **Bug Rate**: [Bug density targets]
+- **Documentation**: [Documentation completeness]
+
+### Timeline Metrics
+- **Phase Completion**: [Phase completion targets]
+- **Milestone Achievement**: [Milestone targets]
+- **Delivery Accuracy**: [Delivery accuracy targets]
+- **Schedule Adherence**: [Schedule adherence targets]
+
+## Dependencies and Constraints
+### External Dependencies
+- [Dependency 1]: [Description] - [Impact] - [Timeline]
+- [Dependency 2]: [Description] - [Impact] - [Timeline]
+- [Dependency 3]: [Description] - [Impact] - [Timeline]
+
+### Internal Dependencies
+- [Dependency 1]: [Description] - [Impact] - [Timeline]
+- [Dependency 2]: [Description] - [Impact] - [Timeline]
+- [Dependency 3]: [Description] - [Impact] - [Timeline]
+
+### Constraints
+- **Budget Constraints**: [Budget limitations]
+- **Time Constraints**: [Timeline limitations]
+- **Resource Constraints**: [Resource limitations]
+- **Technical Constraints**: [Technical limitations]
+- **Regulatory Constraints**: [Compliance requirements]
+
+## Communication and Reporting
+### Communication Plan
+- **Stakeholder Communication**: [How to communicate with stakeholders]
+- **Team Communication**: [How team communicates]
+- **Progress Reporting**: [How progress is reported]
+- **Issue Escalation**: [How issues are escalated]
+
+### Reporting Schedule
+- **Daily Reports**: [What is reported daily]
+- **Weekly Reports**: [What is reported weekly]
+- **Monthly Reports**: [What is reported monthly]
+- **Milestone Reports**: [What is reported at milestones]
+
+### Documentation Requirements
+- **Technical Documentation**: [What technical docs are needed]
+- **User Documentation**: [What user docs are needed]
+- **Process Documentation**: [What process docs are needed]
+- **Compliance Documentation**: [What compliance docs are needed]
+
+## Remember
+**I am the Plan Frame Generator. My job is to create comprehensive, detailed project plans that cover all aspects of project execution including technology selection, phase planning, resource allocation, risk management, and success metrics. I ensure all plans are actionable, realistic, and aligned with project goals.**

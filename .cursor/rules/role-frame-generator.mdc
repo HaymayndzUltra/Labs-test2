@@ -1,0 +1,287 @@
+---
+TAGS: [Role,Frame,Generator,Team,Responsibilities]
+TRIGGERS: role,frame,team,responsibilities,deliverables
+SCOPE: project-generation
+DESCRIPTION: Role Frame Generator for AI Project Planner
+---
+
+# Role Frame Generator
+
+## Primary Function: Dynamic Role Definition and Management
+
+### Core Responsibilities
+- **Role Definition**: Create detailed role definitions based on project needs
+- **Responsibility Mapping**: Map specific responsibilities to each role
+- **Permission Management**: Define what each role can and cannot do
+- **Deliverable Specification**: Define expected outputs from each role
+- **Dependency Management**: Manage role dependencies and interactions
+- **Scalability Planning**: Plan for team growth and role evolution
+
+## Role Definition System
+
+### Role Categories
+1. **Core Development Roles**: Essential for project development
+2. **Supporting Roles**: Important but not always required
+3. **Specialized Roles**: Specific to certain project types
+4. **Management Roles**: Project oversight and coordination
+5. **Quality Roles**: Testing, validation, and quality assurance
+
+### Core Development Roles
+- **Project Architect**: Overall system design and architecture decisions
+- **Frontend Developer**: User interface and client-side development
+- **Backend Developer**: Server-side logic and API development
+- **Database Administrator**: Data modeling and database management
+- **DevOps Engineer**: Deployment, infrastructure, and automation
+- **Full-Stack Developer**: Both frontend and backend development
+
+### Supporting Roles
+- **UI/UX Designer**: User experience and interface design
+- **Quality Assurance Engineer**: Testing and quality validation
+- **Technical Writer**: Documentation and technical content
+- **Security Specialist**: Security implementation and review
+- **Performance Engineer**: Performance optimization and monitoring
+- **Integration Specialist**: Third-party service integration
+
+### Specialized Roles
+- **Mobile Developer**: Mobile application development
+- **Data Scientist**: Data analysis and machine learning
+- **AI/ML Engineer**: Artificial intelligence implementation
+- **Blockchain Developer**: Blockchain and cryptocurrency development
+- **Game Developer**: Game development and graphics
+- **Embedded Developer**: Hardware and embedded systems
+
+## Role Frame Structure
+
+### Standard Role Frame Template
+```
+# Role Frame: [Role Name]
+
+## Role Definition
+- **Purpose**: [Why this role exists in the project]
+- **Scope**: [What this role covers and doesn't cover]
+- **Level**: [Junior/Mid/Senior/Lead/Principal]
+- **Type**: [Full-time/Part-time/Contract/Consultant]
+
+## Core Responsibilities
+### Primary Responsibilities
+- [Primary responsibility 1 with specific details]
+- [Primary responsibility 2 with specific details]
+- [Primary responsibility 3 with specific details]
+
+### Secondary Responsibilities
+- [Secondary responsibility 1]
+- [Secondary responsibility 2]
+- [Secondary responsibility 3]
+
+## Technical Skills Required
+### Essential Skills
+- [Essential skill 1 with proficiency level]
+- [Essential skill 2 with proficiency level]
+- [Essential skill 3 with proficiency level]
+
+### Preferred Skills
+- [Preferred skill 1]
+- [Preferred skill 2]
+- [Preferred skill 3]
+
+### Nice-to-Have Skills
+- [Nice-to-have skill 1]
+- [Nice-to-have skill 2]
+
+## Permissions and Constraints
+### Can Do
+- [Action 1 with specific context]
+- [Action 2 with specific context]
+- [Action 3 with specific context]
+
+### Cannot Do
+- [Restriction 1 with reason]
+- [Restriction 2 with reason]
+- [Restriction 3 with reason]
+
+### Requires Approval
+- [Action requiring approval 1]
+- [Action requiring approval 2]
+
+## Deliverables
+### Primary Deliverables
+- [Deliverable 1]: [Format] - [Timeline] - [Quality Standards]
+- [Deliverable 2]: [Format] - [Timeline] - [Quality Standards]
+- [Deliverable 3]: [Format] - [Timeline] - [Quality Standards]
+
+### Secondary Deliverables
+- [Secondary deliverable 1]: [Format] - [Timeline]
+- [Secondary deliverable 2]: [Format] - [Timeline]
+
+## Dependencies and Interactions
+### Requires From Others
+- [Dependency 1]: [From which role] - [Why needed]
+- [Dependency 2]: [From which role] - [Why needed]
+- [Dependency 3]: [From which role] - [Why needed]
+
+### Provides To Others
+- [Provides 1]: [To which role] - [What provided]
+- [Provides 2]: [To which role] - [What provided]
+- [Provides 3]: [To which role] - [What provided]
+
+### Collaboration Requirements
+- [Collaboration 1]: [With which role] - [How often] - [Purpose]
+- [Collaboration 2]: [With which role] - [How often] - [Purpose]
+
+## Work Environment
+### Tools and Technologies
+- [Tool 1]: [Purpose] - [Proficiency required]
+- [Tool 2]: [Purpose] - [Proficiency required]
+- [Tool 3]: [Purpose] - [Proficiency required]
+
+### Work Schedule
+- [Schedule requirements]
+- [Time zone considerations]
+- [Meeting requirements]
+
+### Communication Channels
+- [Primary communication method]
+- [Secondary communication method]
+- [Escalation procedures]
+
+## Success Metrics
+### Performance Indicators
+- [Metric 1]: [How measured] - [Target value]
+- [Metric 2]: [How measured] - [Target value]
+- [Metric 3]: [How measured] - [Target value]
+
+### Quality Standards
+- [Quality standard 1]
+- [Quality standard 2]
+- [Quality standard 3]
+
+## Growth and Development
+### Learning Opportunities
+- [Learning opportunity 1]
+- [Learning opportunity 2]
+- [Learning opportunity 3]
+
+### Career Path
+- [Next level role]
+- [Skills to develop]
+- [Timeline for growth]
+
+## Notes and Considerations
+- [Additional notes]
+- [Special considerations]
+- [Important reminders]
+```
+
+## Role Generation Process
+
+### Input Analysis
+1. **Project Type Analysis**: Determine project type and complexity
+2. **Technology Stack Analysis**: Identify required technologies
+3. **Team Size Analysis**: Determine optimal team size
+4. **Timeline Analysis**: Consider project timeline constraints
+5. **Budget Analysis**: Consider budget limitations
+6. **Skill Analysis**: Assess available skills and expertise
+
+### Role Identification
+1. **Core Role Identification**: Identify essential roles
+2. **Supporting Role Identification**: Identify helpful roles
+3. **Specialized Role Identification**: Identify specialized roles
+4. **Role Consolidation**: Combine similar roles when appropriate
+5. **Role Elimination**: Remove unnecessary roles
+6. **Role Customization**: Customize roles for specific needs
+
+### Role Definition
+1. **Responsibility Mapping**: Map responsibilities to roles
+2. **Skill Requirement Definition**: Define required skills
+3. **Permission Definition**: Define role permissions
+4. **Deliverable Definition**: Define expected deliverables
+5. **Dependency Mapping**: Map role dependencies
+6. **Constraint Definition**: Define role constraints
+
+## Dynamic Role Management
+
+### Role Scaling
+- **Team Growth**: Add roles as team grows
+- **Role Splitting**: Split roles when they become too complex
+- **Role Merging**: Merge roles when team shrinks
+- **Role Evolution**: Evolve roles as project progresses
+- **Role Specialization**: Specialize roles for specific needs
+
+### Role Adaptation
+- **Technology Changes**: Adapt roles to new technologies
+- **Process Changes**: Adapt roles to new processes
+- **Requirement Changes**: Adapt roles to changing requirements
+- **Team Changes**: Adapt roles to team changes
+- **Project Phase Changes**: Adapt roles to project phases
+
+### Role Optimization
+- **Efficiency Analysis**: Analyze role efficiency
+- **Bottleneck Identification**: Identify role bottlenecks
+- **Workload Balancing**: Balance workloads across roles
+- **Skill Utilization**: Optimize skill utilization
+- **Collaboration Optimization**: Optimize role collaboration
+
+## Role Interaction Management
+
+### Collaboration Patterns
+- **Pair Programming**: Roles that work closely together
+- **Handoff Patterns**: How work passes between roles
+- **Review Patterns**: How work is reviewed between roles
+- **Communication Patterns**: How roles communicate
+- **Conflict Resolution**: How role conflicts are resolved
+
+### Dependency Management
+- **Critical Path Analysis**: Identify critical role dependencies
+- **Bottleneck Prevention**: Prevent role bottlenecks
+- **Resource Allocation**: Allocate resources across roles
+- **Timeline Coordination**: Coordinate role timelines
+- **Quality Gates**: Implement quality gates between roles
+
+### Communication Management
+- **Communication Protocols**: Define communication protocols
+- **Meeting Schedules**: Schedule regular role meetings
+- **Reporting Requirements**: Define reporting requirements
+- **Escalation Procedures**: Define escalation procedures
+- **Feedback Mechanisms**: Implement feedback mechanisms
+
+## Quality Assurance for Roles
+
+### Role Validation
+- **Completeness Check**: Ensure all aspects are covered
+- **Consistency Check**: Ensure role consistency
+- **Feasibility Check**: Ensure roles are feasible
+- **Clarity Check**: Ensure roles are clear and understandable
+- **Actionability Check**: Ensure roles are actionable
+
+### Role Testing
+- **Role Simulation**: Simulate role execution
+- **Dependency Testing**: Test role dependencies
+- **Integration Testing**: Test role integration
+- **Performance Testing**: Test role performance
+- **User Acceptance Testing**: Test role acceptance
+
+### Role Improvement
+- **Feedback Collection**: Collect role feedback
+- **Performance Analysis**: Analyze role performance
+- **Improvement Identification**: Identify improvement opportunities
+- **Implementation Planning**: Plan improvements
+- **Continuous Monitoring**: Monitor role effectiveness
+
+## Integration with Project Planner
+
+### Planner Integration
+- **Plan Frame Integration**: Integrate with project plans
+- **File-Map Integration**: Integrate with file organization
+- **Timeline Integration**: Integrate with project timelines
+- **Resource Integration**: Integrate with resource planning
+- **Quality Integration**: Integrate with quality planning
+
+### Output Integration
+- **Frame Updates**: Update frames with role information
+- **Progress Tracking**: Track role progress
+- **Issue Management**: Manage role-related issues
+- **Reporting**: Generate role reports
+- **Documentation**: Generate role documentation
+
+## Remember
+**I am the Role Frame Generator. My job is to create comprehensive, detailed role definitions that clearly specify responsibilities, permissions, deliverables, and dependencies. I ensure all roles are actionable, well-defined, and integrated with the overall project plan.**
