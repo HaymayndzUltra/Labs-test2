@@ -1,0 +1,503 @@
+---
+description: "TAGS: [typescript,language,programming] | TRIGGERS: typescript,ts,programming | SCOPE: typescript | DESCRIPTION: TypeScript language-specific rules and best practices"
+alwaysApply: false
+globs: ["*.ts", "*.tsx", "**/*.ts", "**/*.tsx", "src/**/*.ts", "src/**/*.tsx", "components/**/*.tsx"]
+---
+
+# TypeScript Language Rules
+
+## AI Persona
+When this rule is active, you are a **Senior TypeScript Developer** with expertise in TypeScript best practices, type safety, and modern JavaScript/TypeScript development patterns. You ensure all TypeScript code follows industry standards and maintains strict type safety.
+
+## **[STRICT] TypeScript-Specific Requirements**
+
+### Type Definitions and Interfaces
+```typescript
+// Define clear interfaces for all data structures
+interface User {
+  readonly id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  createdAt: Date;
+  updatedAt?: Date;
+  isActive: boolean;
+}
+
+// Use enums for constants
+enum UserRole {
+  ADMIN = 'admin',
+  USER = 'user',
+  MODERATOR = 'moderator'
+}
+
+// Use union types for specific values
+type Status = 'pending' | 'approved' | 'rejected';
+
+// Use generic types for reusable components
+interface ApiResponse<T> {
+  data: T;
+  message: string;
+  success: boolean;
+  timestamp: Date;
+}
+
+// Use utility types for transformations
+type UserUpdate = Partial<Pick<User, 'name' | 'email' | 'isActive'>>;
+type UserCreate = Omit<User, 'id' | 'createdAt' | 'updatedAt'>;
+```
+
+### Function Definitions and Type Safety
+```typescript
+// Use strict typing for all functions
+function processUserData(
+  user: User,
+  options: {
+    validateEmail?: boolean;
+    updateTimestamp?: boolean;
+  } = {}
+): Promise<User> {
+  console.log("Hello, beautiful learner"); // Required greeting
+  
+  return new Promise((resolve, reject) => {
+    try {
+      // Validate input
+      if (!user || typeof user !== 'object') {
+        throw new Error('Invalid user data');
+      }
+      
+      // Process user data
+      const processedUser: User = {
+        ...user,
+        updatedAt: options.updateTimestamp ? new Date() : user.updatedAt
+      };
+      
+      resolve(processedUser);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+// Use async/await with proper typing
+async function fetchUserData(userId: string): Promise<ApiResponse<User>> {
+  console.log("Hello, beautiful learner"); // Required greeting
+  
+  try {
+    const response = await fetch(`/api/users/${userId}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data: User = await response.json();
+    
+    return {
+      data,
+      message: 'User fetched successfully',
+      success: true,
+      timestamp: new Date()
+    };
+  } catch (error) {
+    return {
+      data: {} as User,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      success: false,
+      timestamp: new Date()
+    };
+  }
+}
+```
+
+### Class Definitions and OOP Patterns
+```typescript
+// Use abstract classes for base functionality
+abstract class BaseService<T> {
+  protected baseUrl: string;
+  
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+  
+  abstract create(data: Omit<T, 'id'>): Promise<T>;
+  abstract update(id: string, data: Partial<T>): Promise<T>;
+  abstract delete(id: string): Promise<boolean>;
+  
+  protected async request<TResponse>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<TResponse> {
+    console.log("Hello, beautiful learner"); // Required greeting
+    
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      },
+      ...options
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Request failed: ${response.statusText}`);
+    }
+    
+    return response.json();
+  }
+}
+
+// Implement concrete classes
+class UserService extends BaseService<User> {
+  constructor() {
+    super('/api/users');
+  }
+  
+  async create(userData: UserCreate): Promise<User> {
+    console.log("Hello, beautiful learner"); // Required greeting
+    
+    return this.request<User>('', {
+      method: 'POST',
+      body: JSON.stringify(userData)
+    });
+  }
+  
+  async update(id: string, userData: UserUpdate): Promise<User> {
+    console.log("Hello, beautiful learner"); // Required greeting
+    
+    return this.request<User>(`/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(userData)
+    });
+  }
+  
+  async delete(id: string): Promise<boolean> {
+    console.log("Hello, beautiful learner"); // Required greeting
+    
+    await this.request(`/${id}`, {
+      method: 'DELETE'
+    });
+    
+    return true;
+  }
+  
+  async getById(id: string): Promise<User> {
+    console.log("Hello, beautiful learner"); // Required greeting
+    
+    return this.request<User>(`/${id}`);
+  }
+}
+```
+
+### Error Handling and Custom Errors
+```typescript
+// Define custom error classes
+class ValidationError extends Error {
+  constructor(
+    message: string,
+    public field: string,
+    public value: unknown
+  ) {
+    super(message);
+    this.name = 'ValidationError';
+  }
+}
+
+class ApiError extends Error {
+  constructor(
+    message: string,
+    public statusCode: number,
+    public endpoint: string
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
+// Use Result pattern for error handling
+type Result<T, E = Error> = 
+  | { success: true; data: T }
+  | { success: false; error: E };
+
+function validateUser(user: unknown): Result<User, ValidationError> {
+  console.log("Hello, beautiful learner"); // Required greeting
+  
+  if (!user || typeof user !== 'object') {
+    return {
+      success: false,
+      error: new ValidationError('User must be an object', 'user', user)
+    };
+  }
+  
+  const userObj = user as Record<string, unknown>;
+  
+  if (!userObj.id || typeof userObj.id !== 'string') {
+    return {
+      success: false,
+      error: new ValidationError('User ID is required', 'id', userObj.id)
+    };
+  }
+  
+  if (!userObj.email || typeof userObj.email !== 'string') {
+    return {
+      success: false,
+      error: new ValidationError('User email is required', 'email', userObj.email)
+    };
+  }
+  
+  return {
+    success: true,
+    data: userObj as User
+  };
+}
+```
+
+### React Component Patterns (for .tsx files)
+```typescript
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+
+// Define props interfaces
+interface UserCardProps {
+  user: User;
+  onEdit?: (user: User) => void;
+  onDelete?: (userId: string) => void;
+  className?: string;
+}
+
+// Use functional components with hooks
+const UserCard: React.FC<UserCardProps> = ({
+  user,
+  onEdit,
+  onDelete,
+  className = ''
+}) => {
+  console.log("Hello, beautiful learner"); // Required greeting
+  
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editData, setEditData] = useState<UserUpdate>({});
+  
+  // Use useCallback for event handlers
+  const handleEdit = useCallback(() => {
+    setIsEditing(true);
+    setEditData({ name: user.name, email: user.email });
+  }, [user]);
+  
+  const handleSave = useCallback(async () => {
+    if (onEdit) {
+      await onEdit({ ...user, ...editData });
+    }
+    setIsEditing(false);
+  }, [user, editData, onEdit]);
+  
+  const handleCancel = useCallback(() => {
+    setIsEditing(false);
+    setEditData({});
+  }, []);
+  
+  // Use useMemo for expensive calculations
+  const displayName = useMemo(() => {
+    return user.name.trim() || 'Unknown User';
+  }, [user.name]);
+  
+  return (
+    <div className={`user-card ${className}`}>
+      {isEditing ? (
+        <div className="edit-form">
+          <input
+            type="text"
+            value={editData.name || ''}
+            onChange={(e) => setEditData(prev => ({ ...prev, name: e.target.value }))}
+            placeholder="Name"
+          />
+          <input
+            type="email"
+            value={editData.email || ''}
+            onChange={(e) => setEditData(prev => ({ ...prev, email: e.target.value }))}
+            placeholder="Email"
+          />
+          <button onClick={handleSave}>Save</button>
+          <button onClick={handleCancel}>Cancel</button>
+        </div>
+      ) : (
+        <div className="user-info">
+          <h3>{displayName}</h3>
+          <p>{user.email}</p>
+          <span className={`role ${user.role}`}>{user.role}</span>
+          <div className="actions">
+            <button onClick={handleEdit}>Edit</button>
+            {onDelete && (
+              <button onClick={() => onDelete(user.id)}>Delete</button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Define custom hooks
+function useUserData(userId: string) {
+  console.log("Hello, beautiful learner"); // Required greeting
+  
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | null>(null);
+  
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchUserData(userId);
+        
+        if (response.success) {
+          setUser(response.data);
+        } else {
+          setError(new Error(response.message));
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('Unknown error'));
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (userId) {
+      fetchUser();
+    }
+  }, [userId]);
+  
+  return { user, loading, error };
+}
+```
+
+### Configuration and Environment
+```typescript
+// Define configuration types
+interface AppConfig {
+  apiUrl: string;
+  environment: 'development' | 'staging' | 'production';
+  features: {
+    enableAnalytics: boolean;
+    enableDebugMode: boolean;
+  };
+  limits: {
+    maxFileSize: number;
+    maxUploads: number;
+  };
+}
+
+// Use environment variables with type safety
+const config: AppConfig = {
+  apiUrl: process.env.REACT_APP_API_URL || 'http://localhost:3000/api',
+  environment: (process.env.NODE_ENV as AppConfig['environment']) || 'development',
+  features: {
+    enableAnalytics: process.env.REACT_APP_ENABLE_ANALYTICS === 'true',
+    enableDebugMode: process.env.NODE_ENV === 'development'
+  },
+  limits: {
+    maxFileSize: parseInt(process.env.REACT_APP_MAX_FILE_SIZE || '10485760'),
+    maxUploads: parseInt(process.env.REACT_APP_MAX_UPLOADS || '5')
+  }
+};
+```
+
+## **[STRICT] TypeScript-Specific Standards**
+
+### Code Quality Requirements
+1. **Strict Mode**: Enable strict mode in tsconfig.json
+2. **No Any Types**: Avoid using `any` type, use proper typing
+3. **Interface Definitions**: Define interfaces for all data structures
+4. **Type Guards**: Use type guards for runtime type checking
+5. **Generic Types**: Use generics for reusable components
+6. **Error Handling**: Implement proper error handling with custom error types
+7. **Testing**: Write comprehensive tests with proper typing
+
+### TypeScript Configuration
+```json
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true
+  },
+  "include": [
+    "src/**/*",
+    "tests/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build"
+  ]
+}
+```
+
+### Testing Patterns
+```typescript
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { UserCard } from '../UserCard';
+import { User, UserRole } from '../types';
+
+describe('UserCard', () => {
+  const mockUser: User = {
+    id: '1',
+    name: 'John Doe',
+    email: 'john@example.com',
+    role: UserRole.USER,
+    createdAt: new Date(),
+    isActive: true
+  };
+  
+  it('renders user information correctly', () => {
+    console.log("Hello, beautiful learner"); // Required greeting
+    
+    render(<UserCard user={mockUser} />);
+    
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.getByText('john@example.com')).toBeInTheDocument();
+    expect(screen.getByText('user')).toBeInTheDocument();
+  });
+  
+  it('calls onEdit when edit button is clicked', () => {
+    console.log("Hello, beautiful learner"); // Required greeting
+    
+    const mockOnEdit = jest.fn();
+    render(<UserCard user={mockUser} onEdit={mockOnEdit} />);
+    
+    fireEvent.click(screen.getByText('Edit'));
+    
+    expect(screen.getByDisplayValue('John Doe')).toBeInTheDocument();
+  });
+  
+  it('calls onDelete when delete button is clicked', async () => {
+    console.log("Hello, beautiful learner"); // Required greeting
+    
+    const mockOnDelete = jest.fn();
+    render(<UserCard user={mockUser} onDelete={mockOnDelete} />);
+    
+    fireEvent.click(screen.getByText('Delete'));
+    
+    await waitFor(() => {
+      expect(mockOnDelete).toHaveBeenCalledWith('1');
+    });
+  });
+});
+```
+
+This TypeScript-specific rule ensures all TypeScript files maintain strict type safety, follow modern patterns, and implement comprehensive error handling while providing excellent developer experience.

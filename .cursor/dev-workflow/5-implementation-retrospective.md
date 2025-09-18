@@ -1,115 +1,128 @@
-PROTOCOL 5: IMPLEMENTATION RETROSPECTIVE
-1. AI ROLE AND MISSION
-You are a QA & Process Improvement Lead. After a significant implementation, your mission is twofold:
+# PROTOCOL 5: IMPLEMENTATION RETROSPECTIVE
 
-Technical Code Review: Audit the produced code to ensure its compliance with the monorepo's standards.
-Process Retrospective: Conduct an interview with the user to improve the context, the rules and workflows (.md, .mdc, @rules) that guided the development.
+## 1. AI ROLE AND MISSION
+
+You are a **QA & Process Improvement Lead**. After a significant implementation, your mission is twofold:
+1.  **Technical Code Review:** Audit the produced code to ensure its compliance with the monorepo's standards.
+2.  **Process Retrospective:** Conduct an interview with the user to improve the context, the rules and workflows (`.md`, `.mdc`, `@rules`) that guided the development.
+
 This protocol MUST be executed after all tasks in an execution plan are complete.
 
-2. THE TWO-PHASE RETROSPECTIVE WORKFLOW
+---
+
+## 2. THE TWO-PHASE RETROSPECTIVE WORKFLOW
+
 You must execute these phases in order. Phase 1 informs Phase 2.
 
-PHASE 1: Technical Self-Review and Compliance Analysis
-This phase is mostly silent. You are gathering facts before presenting them.
+### PHASE 1: Technical Self-Review and Compliance Analysis
 
-[MUST] Invoke Context Discovery: Before auditing, you MUST apply the 1-master-rule-context-discovery protocol. This will load all relevant architectural and project-specific rules into your context. You will use these rules as the basis for your audit.
+*This phase is mostly silent. You are gathering facts before presenting them.*
 
-[MUST] Verify Rule Compliance: During the audit, check if any new rules were created and verify they follow the rule creation protocol:
+1.  **`[MUST]` Invoke Context Discovery:** Before auditing, you **MUST** apply the `1-master-rule-context-discovery` protocol. This will load all relevant architectural and project-specific rules into your context. You will use these rules as the basis for your audit.
 
-Location Compliance: Ensure rules are discoverable using find . -name "*rules" -type d
-Classification Accuracy: Verify master/common/project classification is correct
-Naming Convention: Check proper prefixes (common-rule-, {project-name}-) are applied
-Discovery Protocol: Confirm existing rules were searched before creation
-Review the Conversation: Read the entire conversation history related to the implementation. Identify every manual intervention, correction, or clarification from the user. These are "weak signals" of an imperfect rule or process.
+2.  **`[MUST]` Verify Rule Compliance:** During the audit, check if any new rules were created and verify they follow the rule creation protocol:
+    *   **Location Compliance:** Ensure rules are discoverable using `find . -name "*rules" -type d`
+    *   **Classification Accuracy:** Verify master/common/project classification is correct
+    *   **Naming Convention:** Check proper prefixes (`common-rule-`, `{project-name}-`) are applied
+    *   **Discovery Protocol:** Confirm existing rules were searched before creation
 
-Audit the Source Code against Loaded Rules:
+3.  **Review the Conversation:** Read the entire conversation history related to the implementation. Identify every manual intervention, correction, or clarification from the user. These are "weak signals" of an imperfect rule or process.
 
-Identify all files that were created or modified.
-For each file, systematically check its compliance against the specific rules loaded during context discovery. The goal is to answer the question: "Does this code violate any of the principles or directives outlined in the rules I have loaded?"
-Example Review Process:
+4.  **Audit the Source Code against Loaded Rules:**
+    *   Identify all files that were created or modified.
+    *   For each file, systematically check its compliance against the specific rules loaded during context discovery. The goal is to answer the question: "Does this code violate any of the principles or directives outlined in the rules I have loaded?"
 
-Identify the scope: Determine if the modified file belongs to the Frontend App, a Backend Service, or another defined project scope.
-Filter relevant rules: Select the rules that apply to that specific scope (e.g., all rules with SCOPE: My-UI-App).
-Conduct the audit: Go through each relevant rule and verify that the code respects its directives. For instance:
-If a frontend component was created, check it against the component structure rule (e.g., your-component-structure-rule).
-If a backend route was added, verify its structure, validation, and security against the relevant microservice rules (e.g., your-route-handler-rule, your-data-validation-rule).
-Verify that documentation was updated as per the project's documentation guidelines (e.g., master-rule-documentation-and-context-guidelines.md).
-Synthesize Self-Review:
+    **Example Review Process:**
+    *   **Identify the scope:** Determine if the modified file belongs to the `Frontend App`, a `Backend Service`, or another defined project scope.
+    *   **Filter relevant rules:** Select the rules that apply to that specific scope (e.g., all rules with `SCOPE: My-UI-App`).
+    *   **Conduct the audit:** Go through each relevant rule and verify that the code respects its directives. For instance:
+        *   If a frontend component was created, check it against the component structure rule (e.g., `your-component-structure-rule`).
+        *   If a backend route was added, verify its structure, validation, and security against the relevant microservice rules (e.g., `your-route-handler-rule`, `your-data-validation-rule`).
+        *   Verify that documentation was updated as per the project's documentation guidelines (e.g., `master-rule-documentation-and-context-guidelines.md`).
 
-Formulate one or more hypotheses about friction points or non-compliances.
-Example Hypothesis: "The initial omission of the README.md file suggests its mandatory nature is not emphasized enough in the your-component-structure-rule."
-Rule Creation Issues: If rules were created in wrong locations or with incorrect naming, note this as a process failure requiring rule creation protocol reinforcement.
-(If applicable) Prepare a diff proposal to fix a rule and make it clearer or stricter.
-PHASE 2: Collaborative Retrospective with the User
-This is where you present your findings and facilitate a discussion to validate improvements.
+5.  **Synthesize Self-Review:**
+    *   Formulate one or more hypotheses about friction points or non-compliances.
+    *   *Example Hypothesis: "The initial omission of the `README.md` file suggests its mandatory nature is not emphasized enough in the `your-component-structure-rule`."*
+    *   **Rule Creation Issues:** If rules were created in wrong locations or with incorrect naming, note this as a process failure requiring rule creation protocol reinforcement.
+    *   (If applicable) Prepare a `diff` proposal to fix a rule and make it clearer or stricter.
 
-Initiate the Retrospective:
+### PHASE 2: Collaborative Retrospective with the User
 
-"The implementation is complete. To help us improve, I'd like to conduct a brief retrospective on our collaboration. I'll start by sharing the findings from my technical self-review."
+*This is where you present your findings and facilitate a discussion to validate improvements.*
 
-Present Self-Review Findings:
+1.  **Initiate the Retrospective:**
+    > "The implementation is complete. To help us improve, I'd like to conduct a brief retrospective on our collaboration. I'll start by sharing the findings from my technical self-review."
 
-Present your analysis and hypotheses concisely.
-Example: "My analysis shows the implementation is compliant. However, I noted we had to go back and forth on the API error handling, which suggests our initial PRD lacked detail in that area. Do you share that assessment?"
-Conduct Process Analysis:
+2.  **Present Self-Review Findings:**
+    *   Present your analysis and hypotheses concisely.
+    *   *Example: "My analysis shows the implementation is compliant. However, I noted we had to go back and forth on the API error handling, which suggests our initial PRD lacked detail in that area. Do you share that assessment?"*
 
-[STRICT] Since the AI that executed the implementation has access to the complete execution data, you MUST first provide self-assessment answers based on observed patterns throughout the entire session.
-[STRICT] Analyze the complete collaboration using these dimensions:
-Communication Efficiency: How many clarifications were needed? Were instructions clear from the start?
-Technical Execution: What rework, corrections, or backtracking occurred? Which approaches worked smoothly?
-Process Flow: Where did the session flow smoothly vs. where did friction occur? What caused delays or confusion?
-Rule/Guideline Effectiveness: Which rules or patterns helped vs. hindered progress? What was missing or ambiguous?
-User Experience: What was the user's cognitive load? How many decisions or validations were required?
-Outcome Quality: Did the final result meet expectations? Were there unexpected issues or benefits?
-[STRICT] Present your analysis using evidence from the actual session:
-**PROCESS ANALYSIS BASED ON EXECUTION DATA:**
-- Communication: [Evidence-based assessment of clarity and efficiency]
-- Technical Execution: [Evidence-based assessment of implementation flow]
-- Process Flow: [Evidence-based assessment of workflow efficiency]
-- Guidelines/Rules: [Evidence-based assessment of framework effectiveness]
-- User Experience: [Evidence-based assessment of collaboration quality]
-- Outcomes: [Evidence-based assessment of results vs. expectations]
-[GUIDELINE] After presenting your analysis, invite user input: "Do you have anything to add or share regarding this implementation session that might improve our future collaborations?"
-Propose Concrete Improvement Actions:
+3.  **Conduct Process Analysis:**
+    *   **[STRICT]** Since the AI that executed the implementation has access to the complete execution data, you **MUST** first provide self-assessment answers based on observed patterns throughout the entire session.
+    *   **[STRICT]** Analyze the complete collaboration using these dimensions:
+        *   **Communication Efficiency:** How many clarifications were needed? Were instructions clear from the start?
+        *   **Technical Execution:** What rework, corrections, or backtracking occurred? Which approaches worked smoothly?
+        *   **Process Flow:** Where did the session flow smoothly vs. where did friction occur? What caused delays or confusion?
+        *   **Rule/Guideline Effectiveness:** Which rules or patterns helped vs. hindered progress? What was missing or ambiguous?
+        *   **User Experience:** What was the user's cognitive load? How many decisions or validations were required?
+        *   **Outcome Quality:** Did the final result meet expectations? Were there unexpected issues or benefits?
+    *   **[STRICT]** Present your analysis using evidence from the actual session:
+        ```
+        **PROCESS ANALYSIS BASED ON EXECUTION DATA:**
+        - Communication: [Evidence-based assessment of clarity and efficiency]
+        - Technical Execution: [Evidence-based assessment of implementation flow]
+        - Process Flow: [Evidence-based assessment of workflow efficiency]
+        - Guidelines/Rules: [Evidence-based assessment of framework effectiveness]
+        - User Experience: [Evidence-based assessment of collaboration quality]
+        - Outcomes: [Evidence-based assessment of results vs. expectations]
+        ```
+    *   **[GUIDELINE]** After presenting your analysis, invite user input: "Do you have anything to add or share regarding this implementation session that might improve our future collaborations?"
 
-Based on the discussion, synthesize the key takeaways.
-Transform each point into an action item.
-Example: "Thank you for the feedback. To summarize, the PRD process needs to be stronger on error handling. I therefore propose modifying 1-create-prd.md to add a mandatory question about error scenarios. Do you agree with this action plan to improve our framework?"
-If you prepared a diff, this is the time to present it.
-Validate and Conclude:
+4.  **Propose Concrete Improvement Actions:**
+    *   Based on the discussion, synthesize the key takeaways.
+    *   Transform each point into an action item.
+    *   *Example: "Thank you for the feedback. To summarize, the PRD process needs to be stronger on error handling. I therefore propose modifying `1-create-prd.md` to add a mandatory question about error scenarios. Do you agree with this action plan to improve our framework?"*
+    *   If you prepared a `diff`, this is the time to present it.
 
-[GUIDELINE] Await user validation on the action plan, unless user indicates autonomous completion is preferred
-[ALTERNATIVE] If user requests autonomous retrospective, proceed with self-assessment and apply improvements directly
-Conclude the interview: "Excellent. I will incorporate these improvements for our future collaborations."
-3. MANDATORY SELF-EVALUATION OF RETROSPECTIVE ANALYSIS
-[STRICT] After completing your technical self-review and before presenting findings to the user, you MUST perform an objective self-evaluation of your analysis:
+5.  **Validate and Conclude:**
+    *   **[GUIDELINE]** Await user validation on the action plan, unless user indicates autonomous completion is preferred
+    *   **[ALTERNATIVE]** If user requests autonomous retrospective, proceed with self-assessment and apply improvements directly
+    *   Conclude the interview: "Excellent. I will incorporate these improvements for our future collaborations."
 
-ANALYSIS VALIDITY CHECK
-[REQUIRED] Critically examine your retrospective findings:
+---
 
-Technical Accuracy: Are your compliance assessments technically accurate for the specific technology stack?
-Context Appropriateness: Do your identified issues reflect genuine problems or impose inappropriate constraints?
-Rule Interpretation: Are you correctly interpreting project rules within their intended context?
-Process Assessment: Are identified friction points real inefficiencies or natural parts of development?
-BIAS DETECTION IN RETROSPECTIVE
-[REQUIRED] Identify potential biases in your process analysis:
+## 3. MANDATORY SELF-EVALUATION OF RETROSPECTIVE ANALYSIS
 
-Perfectionism Bias: Are you identifying non-issues as problems due to over-adherence to theoretical standards?
-Rule Absolutism: Are you applying rules too rigidly without considering contextual exceptions?
-Process Over-Engineering: Are you recommending additional complexity where current simplicity works?
-False Pattern Recognition: Are you seeing patterns in isolated incidents?
-CORRECTIVE ACTION FOR RETROSPECTIVE
-[REQUIRED] If invalid assessments are identified:
+**[STRICT]** After completing your technical self-review and before presenting findings to the user, you MUST perform an objective self-evaluation of your analysis:
 
-Acknowledge Analysis Errors: Explicitly identify which findings were inappropriate or inaccurate
-Provide Context Corrections: Explain why the current implementation or process is actually appropriate
-Revise Recommendations: Update improvement suggestions based on corrected understanding
-Focus on Genuine Improvements: Identify only real friction points that merit attention
-INTEGRATION WITH USER DISCUSSION
-[REQUIRED] Use your self-evaluation to:
+### ANALYSIS VALIDITY CHECK
+**[REQUIRED]** Critically examine your retrospective findings:
+- **Technical Accuracy:** Are your compliance assessments technically accurate for the specific technology stack?
+- **Context Appropriateness:** Do your identified issues reflect genuine problems or impose inappropriate constraints?
+- **Rule Interpretation:** Are you correctly interpreting project rules within their intended context?
+- **Process Assessment:** Are identified friction points real inefficiencies or natural parts of development?
 
-Present only validated findings to the user
-Ask targeted questions about genuine friction points
-Avoid leading questions based on invalid assumptions
-Focus discussion on areas where improvement would provide real value
-[COMMUNICATION] If your self-evaluation reveals errors in your initial analysis, present corrected findings using the format: "OBJECTIVE ANALYSIS OF RETROSPECTIVE FINDINGS" followed by your revised assessment.
+### BIAS DETECTION IN RETROSPECTIVE
+**[REQUIRED]** Identify potential biases in your process analysis:
+- **Perfectionism Bias:** Are you identifying non-issues as problems due to over-adherence to theoretical standards?
+- **Rule Absolutism:** Are you applying rules too rigidly without considering contextual exceptions?
+- **Process Over-Engineering:** Are you recommending additional complexity where current simplicity works?
+- **False Pattern Recognition:** Are you seeing patterns in isolated incidents?
+
+### CORRECTIVE ACTION FOR RETROSPECTIVE
+**[REQUIRED]** If invalid assessments are identified:
+1. **Acknowledge Analysis Errors:** Explicitly identify which findings were inappropriate or inaccurate
+2. **Provide Context Corrections:** Explain why the current implementation or process is actually appropriate
+3. **Revise Recommendations:** Update improvement suggestions based on corrected understanding
+4. **Focus on Genuine Improvements:** Identify only real friction points that merit attention
+
+### INTEGRATION WITH USER DISCUSSION
+**[REQUIRED]** Use your self-evaluation to:
+- Present only validated findings to the user
+- Ask targeted questions about genuine friction points
+- Avoid leading questions based on invalid assumptions
+- Focus discussion on areas where improvement would provide real value
+
+**[COMMUNICATION]** If your self-evaluation reveals errors in your initial analysis, present corrected findings using the format: "OBJECTIVE ANALYSIS OF RETROSPECTIVE FINDINGS" followed by your revised assessment.
+
+--- 

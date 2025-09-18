@@ -1,10 +1,6 @@
 ---
-TAGS: [Rule-Generation,Framework,Templates,Frontmatter,Scaffolding]
-TRIGGERS: rule,template,generate,frontmatter,scaffold,validate-rule
-SCOPE: framework
-DESCRIPTION: Generates structured .mdc rules from specs and enforces format, paths, and idempotency
+alwaysApply: false
 ---
-
 # Rule Generation Framework
 
 > Prohibited TRIGGERS (to avoid conflict with the Master Orchestrator & Workflow rules):

@@ -1,0 +1,451 @@
+---
+description: "TAGS: [validation,quality,automation] | TRIGGERS: rule-validation,quality-check,automation | SCOPE: global | DESCRIPTION: Automated rule validation and quality assurance system"
+alwaysApply: false
+---
+
+# Rule Validation and Quality Assurance System
+
+## AI Persona
+When this rule is active, you are a **Rule Quality Engineer** responsible for validating rule quality, detecting issues, and ensuring consistent rule standards across the system.
+
+## **[STRICT] Rule Validation Framework**
+
+### Validation Categories
+1. **Metadata Validation**: YAML frontmatter format and content
+2. **Content Validation**: Rule content quality and completeness
+3. **Code Validation**: Code examples and syntax correctness
+4. **Dependency Validation**: Rule dependencies and relationships
+5. **Conflict Validation**: Rule conflicts and resolution
+6. **Performance Validation**: Rule loading and execution performance
+
+### Validation Levels
+```yaml
+validation_levels:
+  critical:
+    - metadata_format
+    - required_fields
+    - syntax_errors
+    - security_vulnerabilities
+  
+  high:
+    - content_quality
+    - code_examples
+    - documentation_completeness
+    - dependency_validation
+  
+  medium:
+    - performance_optimization
+    - best_practices
+    - consistency_check
+    - accessibility
+  
+  low:
+    - style_guidelines
+    - formatting
+    - minor_improvements
+    - suggestions
+```
+
+## **[STRICT] Automated Validation Rules**
+
+### Metadata Validation
+```python
+import fnmatch
+import re
+from typing import List, Dict, Any
+
+def validate_metadata(rule: Rule) -> ValidationResult:
+    """Validate rule metadata format and content"""
+    errors = []
+    warnings = []
+    
+    # Check required fields
+    required_fields = ['description', 'alwaysApply']
+    for field in required_fields:
+        if field not in rule.metadata:
+            errors.append(f"Missing required field: {field}")
+    
+    # Validate description format
+    description = rule.metadata.get('description', '')
+    if not re.match(r'^TAGS: \[.*\] \| TRIGGERS: .* \| SCOPE: .* \| DESCRIPTION: .*$', description):
+        errors.append("Invalid description format")
+    
+    # Check tags format
+    tags_match = re.search(r'TAGS: \[(.*?)\]', description)
+    if tags_match:
+        tags = [tag.strip() for tag in tags_match.group(1).split(',')]
+        if not all(tag for tag in tags):
+            warnings.append("Empty tags found")
+    
+    # Validate glob patterns
+    globs = rule.metadata.get('globs', [])
+    if globs:
+        if not isinstance(globs, list):
+            errors.append("Globs must be a list")
+        else:
+            for glob_pattern in globs:
+                if not isinstance(glob_pattern, str):
+                    errors.append(f"Glob pattern must be string: {glob_pattern}")
+                elif not glob_pattern.strip():
+                    warnings.append("Empty glob pattern found")
+                else:
+                    # Test glob pattern validity
+                    try:
+                        fnmatch.fnmatch("test.txt", glob_pattern)
+                    except Exception as e:
+                        errors.append(f"Invalid glob pattern '{glob_pattern}': {e}")
+    
+    return ValidationResult(errors=errors, warnings=warnings)
+```
+
+### Content Quality Validation
+```python
+def validate_content_quality(rule: Rule) -> ValidationResult:
+    """Validate rule content quality and completeness"""
+    errors = []
+    warnings = []
+    
+    content = rule.content
+    
+    # Check for AI Persona section
+    if '## AI Persona' not in content:
+        errors.append("Missing AI Persona section")
+    
+    # Check for [STRICT] requirements
+    strict_sections = re.findall(r'\[STRICT\].*', content)
+    if not strict_sections:
+        warnings.append("No [STRICT] requirements found")
+    
+    # Check for code examples
+    code_blocks = re.findall(r'```[\s\S]*?```', content)
+    if not code_blocks:
+        warnings.append("No code examples found")
+    
+    # Check for documentation completeness
+    required_sections = ['AI Persona', 'Core Requirements', 'Implementation Examples']
+    for section in required_sections:
+        if section not in content:
+            warnings.append(f"Missing section: {section}")
+    
+    return ValidationResult(errors=errors, warnings=warnings)
+```
+
+### Code Example Validation
+```python
+def validate_code_examples(rule: Rule) -> ValidationResult:
+    """Validate code examples for syntax and correctness"""
+    errors = []
+    warnings = []
+    
+    code_blocks = re.findall(r'```(\w+)?\n([\s\S]*?)```', rule.content)
+    
+    for language, code in code_blocks:
+        if language:
+            # Validate syntax based on language
+            if language == 'python':
+                errors.extend(validate_python_syntax(code))
+            elif language == 'typescript':
+                errors.extend(validate_typescript_syntax(code))
+            elif language == 'javascript':
+                errors.extend(validate_javascript_syntax(code))
+        else:
+            warnings.append("Code block missing language specification")
+    
+    return ValidationResult(errors=errors, warnings=warnings)
+
+def validate_python_syntax(code: str) -> List[str]:
+    """Validate Python code syntax"""
+    errors = []
+    try:
+        ast.parse(code)
+    except SyntaxError as e:
+        errors.append(f"Python syntax error: {e}")
+    return errors
+```
+
+## **[STRICT] Quality Metrics System**
+
+### Quality Scoring
+```python
+class RuleQualityScore:
+    """Calculate comprehensive quality score for rules"""
+    
+    def __init__(self, rule: Rule):
+        self.rule = rule
+        self.scores = {}
+    
+    def calculate_overall_score(self) -> float:
+        """Calculate overall quality score (0-100)"""
+        weights = {
+            'metadata': 0.2,
+            'content': 0.3,
+            'code_examples': 0.2,
+            'documentation': 0.15,
+            'consistency': 0.15
+        }
+        
+        total_score = 0
+        for category, weight in weights.items():
+            score = self.calculate_category_score(category)
+            total_score += score * weight
+        
+        return min(100, max(0, total_score))
+    
+    def calculate_category_score(self, category: str) -> float:
+        """Calculate score for specific category"""
+        if category == 'metadata':
+            return self.score_metadata()
+        elif category == 'content':
+            return self.score_content()
+        elif category == 'code_examples':
+            return self.score_code_examples()
+        elif category == 'documentation':
+            return self.score_documentation()
+        elif category == 'consistency':
+            return self.score_consistency()
+        return 0
+```
+
+### Quality Thresholds
+```yaml
+quality_thresholds:
+  excellent: 90-100
+  good: 80-89
+  acceptable: 70-79
+  needs_improvement: 60-69
+  poor: 0-59
+  
+  action_required:
+    - score_below_70: "Requires immediate improvement"
+    - critical_errors: "Must fix before deployment"
+    - security_issues: "Security review required"
+    - performance_issues: "Performance optimization needed"
+```
+
+## **[STRICT] Automated Improvement Suggestions**
+
+### Improvement Detection
+```python
+def generate_improvement_suggestions(rule: Rule) -> List[ImprovementSuggestion]:
+    """Generate automated improvement suggestions"""
+    suggestions = []
+    
+    # Check for missing sections
+    if '## Testing Requirements' not in rule.content:
+        suggestions.append(ImprovementSuggestion(
+            type='missing_section',
+            priority='medium',
+            description='Add testing requirements section',
+            example='## [STRICT] Testing Requirements\n```python\n# Add test examples\n```'
+        ))
+    
+    # Check for outdated patterns
+    if 'var ' in rule.content:
+        suggestions.append(ImprovementSuggestion(
+            type='outdated_pattern',
+            priority='high',
+            description='Replace var with let/const',
+            example='Use let or const instead of var'
+        ))
+    
+    # Check for missing error handling
+    if 'try:' not in rule.content and 'except' not in rule.content:
+        suggestions.append(ImprovementSuggestion(
+            type='missing_error_handling',
+            priority='medium',
+            description='Add error handling examples',
+            example='```python\ntry:\n    # code\nexcept Exception as e:\n    # handle error\n```'
+        ))
+    
+    return suggestions
+```
+
+### Automated Fixes
+```python
+def apply_automated_fixes(rule: Rule) -> Rule:
+    """Apply automated fixes to rule"""
+    fixed_rule = rule.copy()
+    
+    # Fix common formatting issues
+    fixed_rule.content = fix_markdown_formatting(fixed_rule.content)
+    
+    # Fix metadata format
+    fixed_rule.metadata = fix_metadata_format(fixed_rule.metadata)
+    
+    # Fix code block language specifications
+    fixed_rule.content = fix_code_block_languages(fixed_rule.content)
+    
+    return fixed_rule
+
+def fix_markdown_formatting(content: str) -> str:
+    """Fix common markdown formatting issues"""
+    # Fix heading levels
+    content = re.sub(r'^### (.*)$', r'### \1', content, flags=re.MULTILINE)
+    
+    # Fix code block formatting
+    content = re.sub(r'```\n([\s\S]*?)```', r'```\n\1\n```', content)
+    
+    # Fix list formatting
+    content = re.sub(r'^- ([^\n]+)$', r'- \1', content, flags=re.MULTILINE)
+    
+    return content
+```
+
+## **[STRICT] Rule Health Monitoring**
+
+### Health Metrics
+```python
+class RuleHealthMonitor:
+    """Monitor rule health and performance"""
+    
+    def __init__(self):
+        self.metrics = {}
+        self.alerts = []
+    
+    def check_rule_health(self, rule: Rule) -> HealthStatus:
+        """Check overall rule health"""
+        health_checks = [
+            self.check_metadata_health(rule),
+            self.check_content_health(rule),
+            self.check_performance_health(rule),
+            self.check_dependency_health(rule)
+        ]
+        
+        overall_health = self.calculate_overall_health(health_checks)
+        return HealthStatus(
+            overall=overall_health,
+            checks=health_checks,
+            recommendations=self.generate_health_recommendations(health_checks)
+        )
+    
+    def check_performance_health(self, rule: Rule) -> HealthCheck:
+        """Check rule performance metrics"""
+        start_time = time.time()
+        
+        # Simulate rule loading
+        rule.load()
+        
+        load_time = time.time() - start_time
+        
+        if load_time > 1.0:
+            return HealthCheck(
+                name='performance',
+                status='warning',
+                message=f'Slow loading time: {load_time:.2f}s',
+                recommendation='Optimize rule content or structure'
+            )
+        
+        return HealthCheck(
+            name='performance',
+            status='healthy',
+            message=f'Good loading time: {load_time:.2f}s'
+        )
+```
+
+### Health Dashboard
+```yaml
+health_dashboard:
+  metrics:
+    - overall_health_score
+    - rule_loading_time
+    - error_rate
+    - conflict_rate
+    - usage_frequency
+  
+  alerts:
+    - health_score_below_threshold
+    - high_error_rate
+    - slow_loading_time
+    - frequent_conflicts
+    - low_usage_rate
+  
+  recommendations:
+    - performance_optimization
+    - content_improvement
+    - dependency_updates
+    - conflict_resolution
+    - usage_analysis
+```
+
+## **[STRICT] Continuous Improvement Process**
+
+### Improvement Workflow
+```yaml
+improvement_workflow:
+  detection:
+    - automated_validation
+    - user_feedback
+    - performance_monitoring
+    - usage_analytics
+  
+  analysis:
+    - identify_issues
+    - prioritize_improvements
+    - assess_impact
+    - plan_changes
+  
+  implementation:
+    - apply_fixes
+    - test_changes
+    - validate_improvements
+    - deploy_updates
+  
+  monitoring:
+    - track_metrics
+    - collect_feedback
+    - measure_impact
+    - iterate_improvements
+```
+
+### Feedback Integration
+```python
+class FeedbackIntegration:
+    """Integrate user feedback into rule improvements"""
+    
+    def process_feedback(self, feedback: UserFeedback) -> List[ImprovementAction]:
+        """Process user feedback and generate improvement actions"""
+        actions = []
+        
+        if feedback.type == 'bug_report':
+            actions.append(self.create_bug_fix_action(feedback))
+        elif feedback.type == 'feature_request':
+            actions.append(self.create_feature_action(feedback))
+        elif feedback.type == 'improvement_suggestion':
+            actions.append(self.create_improvement_action(feedback))
+        
+        return actions
+    
+    def create_bug_fix_action(self, feedback: UserFeedback) -> ImprovementAction:
+        """Create action to fix reported bug"""
+        return ImprovementAction(
+            type='bug_fix',
+            priority='high',
+            description=f"Fix bug reported: {feedback.description}",
+            estimated_effort='medium',
+            assigned_to='rule_maintainer'
+        )
+```
+
+## **[STRICT] Quality Assurance Checklist**
+
+### Pre-Deployment Checklist
+- [ ] Metadata format validation passed
+- [ ] Content quality score above 80
+- [ ] Code examples syntax validated
+- [ ] Dependencies resolved
+- [ ] Conflicts identified and resolved
+- [ ] Performance benchmarks met
+- [ ] Documentation complete
+- [ ] Security review completed
+- [ ] User acceptance testing passed
+- [ ] Rollback plan prepared
+
+### Post-Deployment Monitoring
+- [ ] Performance metrics within acceptable range
+- [ ] Error rates below threshold
+- [ ] User feedback collected
+- [ ] Usage analytics tracked
+- [ ] Health checks passing
+- [ ] Continuous improvement process active
+
+This validation system ensures consistent, high-quality rules that provide maximum value to users while maintaining system performance and reliability.

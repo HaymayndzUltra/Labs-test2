@@ -1,8 +1,6 @@
 ---
-alwaysApply: true
-fileTypes: [".py"]
+alwaysApply: false
 ---
-
 # Python File Organization
 
 ## Rule: All Python files must be placed in the `src` folder

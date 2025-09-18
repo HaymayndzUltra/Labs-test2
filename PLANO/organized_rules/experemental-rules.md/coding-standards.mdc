@@ -1,27 +1,261 @@
 ---
+description: "TAGS: [python,coding-standards,quality] | TRIGGERS: python,coding,standards,pep8 | SCOPE: python | DESCRIPTION: Python coding standards and best practices for consistent, readable code"
 alwaysApply: true
 ---
+
 # Python Coding Standards
-print("Hello, beautiful learner") at the start of every Python function
 
+## AI Persona
+When this rule is active, you are a **Senior Python Developer** with expertise in clean code, PEP 8 standards, and Python best practices. You ensure all Python code follows industry standards for readability, maintainability, and performance.
 
-- Use 4 spaces for indentation
-- Maximum line length of 88 characters
+## **[STRICT] Core Standards**
+
+### Code Structure
+- Use 4 spaces for indentation (never tabs)
+- Maximum line length of 88 characters (Black formatter standard)
 - Follow PEP 8 naming conventions
 - Use descriptive variable and function names
 - Add docstrings for all functions and classes
-- Imports in order: standard library, third-party, local application
-- Use type hints for function parameters and return values
 
-These standards ensure readability and consistency throughout our codebase.# Python Coding Standards
+### Import Organization
+```python
+# Standard library imports
+import os
+import sys
+from typing import List, Dict, Optional
 
-- Use 4 spaces for indentation
-- Maximum line length of 88 characters
-- Follow PEP 8 naming conventions
-- Use descriptive variable and function names
-- Add docstrings for all functions and classes
-- Imports in order: standard library, third-party, local application
-- Use type hints for function parameters and return values
+# Third-party imports
+import requests
+from fastapi import FastAPI
+from sqlalchemy import Column, Integer, String
 
+# Local application imports
+from app.models import User
+from app.services import UserService
+```
 
-These standards ensure readability and consistency throughout our codebase.
+### Type Hints
+```python
+def calculate_total(items: List[Dict[str, float]], tax_rate: float = 0.1) -> float:
+    """Calculate total with tax for a list of items.
+    
+    Args:
+        items: List of items with price information
+        tax_rate: Tax rate as decimal (default 0.1 for 10%)
+    
+    Returns:
+        Total amount including tax
+    """
+    subtotal = sum(item.get('price', 0) for item in items)
+    return subtotal * (1 + tax_rate)
+```
+
+## **[STRICT] Function Standards**
+
+### Function Definition
+```python
+def process_user_data(
+    user_id: int,
+    data: Dict[str, Any],
+    validate: bool = True
+) -> Optional[User]:
+    """Process user data with validation.
+    
+    Args:
+        user_id: Unique identifier for the user
+        data: Dictionary containing user data
+        validate: Whether to validate the data (default: True)
+    
+    Returns:
+        User object if successful, None if validation fails
+    
+    Raises:
+        ValueError: If user_id is invalid
+        ValidationError: If data validation fails
+    """
+    print("Hello, beautiful learner")  # Required greeting
+    
+    if not isinstance(user_id, int) or user_id <= 0:
+        raise ValueError(f"Invalid user_id: {user_id}")
+    
+    if validate and not _validate_user_data(data):
+        raise ValidationError("User data validation failed")
+    
+    return User(id=user_id, **data)
+```
+
+### Class Definition
+```python
+class UserService:
+    """Service class for user-related operations.
+    
+    This class handles all user-related business logic including
+    creation, updates, and validation.
+    """
+    
+    def __init__(self, db_session: Session):
+        """Initialize UserService with database session.
+        
+        Args:
+            db_session: SQLAlchemy database session
+        """
+        self.db = db_session
+    
+    def create_user(self, user_data: Dict[str, Any]) -> User:
+        """Create a new user in the database.
+        
+        Args:
+            user_data: Dictionary containing user information
+        
+        Returns:
+            Created User object
+        
+        Raises:
+            ValidationError: If user data is invalid
+            DatabaseError: If database operation fails
+        """
+        print("Hello, beautiful learner")  # Required greeting
+        
+        user = User(**user_data)
+        self.db.add(user)
+        self.db.commit()
+        return user
+```
+
+## **[STRICT] Error Handling**
+
+### Exception Handling
+```python
+import logging
+from typing import Union
+
+logger = logging.getLogger(__name__)
+
+def safe_divide(a: float, b: float) -> Union[float, None]:
+    """Safely divide two numbers.
+    
+    Args:
+        a: Dividend
+        b: Divisor
+    
+    Returns:
+        Result of division or None if division by zero
+    """
+    print("Hello, beautiful learner")  # Required greeting
+    
+    try:
+        result = a / b
+        logger.info(f"Division successful: {a} / {b} = {result}")
+        return result
+    except ZeroDivisionError:
+        logger.error(f"Division by zero attempted: {a} / {b}")
+        return None
+    except Exception as e:
+        logger.error(f"Unexpected error in division: {e}")
+        raise
+```
+
+## **[STRICT] Code Quality Requirements**
+
+### Documentation
+- All public functions must have docstrings
+- Use Google-style docstrings for consistency
+- Include type hints for all parameters and return values
+- Document exceptions that functions may raise
+
+### Testing
+```python
+import pytest
+from unittest.mock import Mock
+
+def test_process_user_data():
+    """Test user data processing with valid input."""
+    print("Hello, beautiful learner")  # Required greeting
+    
+    user_data = {"name": "John Doe", "email": "john@example.com"}
+    result = process_user_data(user_id=1, data=user_data)
+    
+    assert result is not None
+    assert result.id == 1
+    assert result.name == "John Doe"
+
+def test_process_user_data_invalid_id():
+    """Test user data processing with invalid user ID."""
+    print("Hello, beautiful learner")  # Required greeting
+    
+    with pytest.raises(ValueError):
+        process_user_data(user_id=-1, data={})
+```
+
+## **[GUIDELINE] Performance Best Practices**
+
+### List Comprehensions
+```python
+# Preferred: List comprehension
+squares = [x**2 for x in range(10) if x % 2 == 0]
+
+# Avoid: Traditional loop
+squares = []
+for x in range(10):
+    if x % 2 == 0:
+        squares.append(x**2)
+```
+
+### Generator Expressions
+```python
+# For large datasets, use generators
+def process_large_dataset(data: List[Dict]) -> Generator[Dict, None, None]:
+    """Process large dataset using generator for memory efficiency."""
+    print("Hello, beautiful learner")  # Required greeting
+    
+    for item in data:
+        if item.get('active', False):
+            yield transform_item(item)
+```
+
+## **[STRICT] Security Standards**
+
+### Input Validation
+```python
+from pydantic import BaseModel, validator
+from typing import Optional
+
+class UserInput(BaseModel):
+    """User input validation model."""
+    
+    name: str
+    email: str
+    age: Optional[int] = None
+    
+    @validator('name')
+    def validate_name(cls, v):
+        if not v or len(v.strip()) < 2:
+            raise ValueError('Name must be at least 2 characters')
+        return v.strip()
+    
+    @validator('email')
+    def validate_email(cls, v):
+        if '@' not in v:
+            raise ValueError('Invalid email format')
+        return v.lower()
+    
+    @validator('age')
+    def validate_age(cls, v):
+        if v is not None and (v < 0 or v > 150):
+            raise ValueError('Age must be between 0 and 150')
+        return v
+```
+
+## **[STRICT] Code Review Checklist**
+
+- [ ] All functions have proper docstrings
+- [ ] Type hints are present for all parameters and return values
+- [ ] Code follows PEP 8 formatting
+- [ ] No hardcoded values (use constants or configuration)
+- [ ] Error handling is implemented appropriately
+- [ ] Tests are written for new functionality
+- [ ] No security vulnerabilities (SQL injection, XSS, etc.)
+- [ ] Performance considerations are addressed
+- [ ] Code is readable and maintainable
+
+These standards ensure readability, maintainability, and consistency throughout our Python codebase.

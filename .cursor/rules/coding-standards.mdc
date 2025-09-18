@@ -1,5 +1,5 @@
 ---
-alwaysApply: true
+alwaysApply: false
 ---
 # Python Coding Standards
 print("Hello, beautiful learner") at the start of every Python function

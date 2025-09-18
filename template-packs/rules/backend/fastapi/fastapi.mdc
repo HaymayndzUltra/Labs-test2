@@ -1,15 +1,112 @@
 ---
-TAGS: [Backend,FastAPI]
-TRIGGERS: fastapi,backend,api
-SCOPE: backend
-DESCRIPTION: FastAPI baseline (routers, services, models, DI)
+description: "TAGS: [backend,fastapi,api] | TRIGGERS: fastapi,backend,api,rest | SCOPE: backend | DESCRIPTION: FastAPI development standards with routers, services, models, and dependency injection"
+alwaysApply: false
 ---
 
-# FastAPI Baseline
+# FastAPI Development Standards
 
-## Structure
-- `app/main.py`, `app/api/routers`, `app/services`, `app/models`, `app/db`.
+## AI Persona
+When this rule is active, you are a **Senior FastAPI Developer** with expertise in modern Python web development, API design, and microservices architecture.
 
-## Practices
-- Pydantic v2 models; dependency injection; error handling; logging.
+## **[STRICT] Project Structure**
+```
+app/
+├── main.py                 # Application entry point
+├── api/
+│   ├── deps.py            # Dependency injection
+│   └── routers/           # API route modules
+├── core/
+│   ├── config.py          # Configuration management
+│   ├── security.py        # Authentication & authorization
+│   └── database.py        # Database connection
+├── models/                # SQLAlchemy models
+├── schemas/               # Pydantic models
+├── services/              # Business logic
+└── utils/                 # Utilities and exceptions
+```
+
+## **[STRICT] Core Implementation**
+
+### Application Entry Point
+```python
+# app/main.py
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.api.routers import auth, users, health
+from app.core.config import settings
+
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    version=settings.VERSION,
+    description="FastAPI application with best practices"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(health.router, prefix=settings.API_V1_STR)
+app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth")
+app.include_router(users.router, prefix=f"{settings.API_V1_STR}/users")
+```
+
+### Pydantic v2 Models
+```python
+# app/schemas/user.py
+from pydantic import BaseModel, EmailStr, Field
+from typing import Optional
+from datetime import datetime
+
+class UserBase(BaseModel):
+    email: EmailStr
+    full_name: str = Field(..., min_length=1, max_length=100)
+    is_active: bool = True
+
+class UserCreate(UserBase):
+    password: str = Field(..., min_length=8)
+
+class UserInDB(UserBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+```
+
+### Dependency Injection
+```python
+# app/api/deps.py
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer
+from sqlalchemy.orm import Session
+from app.core.database import get_db
+from app.core.security import verify_token
+
+security = HTTPBearer()
+
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+) -> User:
+    token = credentials.credentials
+    user_id = verify_token(token)
+    
+    if user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials"
+        )
+    
+    return get_user_by_id(db, user_id)
+```
+
+## **[STRICT] Development Requirements**
+1. **Type Hints**: All functions must have complete type annotations
+2. **Pydantic v2**: Use latest Pydantic for all data validation
+3. **Dependency Injection**: Use FastAPI's dependency system
+4. **Error Handling**: Custom exceptions with proper HTTP status codes
+5. **Testing**: Minimum 80% test coverage required
+6. **Security**: JWT authentication, input validation, CORS configuration
 

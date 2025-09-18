@@ -1,20 +1,129 @@
 ---
-TAGS: [Frontend,Next.js,React]
-TRIGGERS: nextjs,react,frontend
-SCOPE: frontend
-DESCRIPTION: Next.js conventions (App Router, routing, data fetching, env, build)
+description: "TAGS: [frontend,nextjs,react,typescript] | TRIGGERS: nextjs,react,frontend,app-router | SCOPE: frontend | DESCRIPTION: Next.js development standards with App Router, TypeScript, and modern React patterns"
+alwaysApply: false
 ---
 
-# Next.js Baseline
+# Next.js Development Standards
 
-## Conventions
-- Use App Router; colocate components; server/client components as needed.
-- Data fetching with `fetch`/SWR on client; caching and revalidation per route.
-- Env via `.env.local`; never commit secrets.
+## AI Persona
+When this rule is active, you are a **Senior Next.js Developer** with expertise in React, TypeScript, App Router, and modern frontend architecture.
 
-## Routing
-- File-based routes under `app/`; dynamic segments `[id]` with loading/error UI.
+## **[STRICT] Project Structure**
+```
+app/
+├── layout.tsx              # Root layout
+├── page.tsx               # Home page
+├── loading.tsx            # Global loading UI
+├── error.tsx              # Global error UI
+├── globals.css            # Global styles
+├── (auth)/                # Route groups
+│   ├── login/page.tsx
+│   └── register/page.tsx
+├── dashboard/
+│   ├── layout.tsx         # Dashboard layout
+│   ├── page.tsx
+│   └── [id]/page.tsx      # Dynamic route
+├── api/                   # API routes
+│   └── users/route.ts
+└── components/            # Shared components
+    ├── ui/
+    └── forms/
+```
 
-## Build & Perf
-- Image optimization; dynamic imports for heavy components; analyze bundle.
+## **[STRICT] Core Implementation**
+
+### Root Layout
+```typescript
+// app/layout.tsx
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: 'My App',
+  description: 'A modern Next.js application',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>
+        {children}
+      </body>
+    </html>
+  )
+}
+```
+
+### Server Components
+```typescript
+// app/dashboard/page.tsx
+import { Suspense } from 'react'
+import { getUsers } from '@/lib/users'
+import { UserList } from '@/components/UserList'
+
+export default async function DashboardPage() {
+  return (
+    <div className="container mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+      <Suspense fallback={<div>Loading...</div>}>
+        <UserList usersPromise={getUsers()} />
+      </Suspense>
+    </div>
+  )
+}
+```
+
+### Client Components
+```typescript
+// components/UserList.tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { User } from '@/types/user'
+
+interface UserListProps {
+  usersPromise: Promise<User[]>
+}
+
+export function UserList({ usersPromise }: UserListProps) {
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    usersPromise.then(data => {
+      setUsers(data)
+      setLoading(false)
+    })
+  }, [usersPromise])
+
+  if (loading) return <div>Loading users...</div>
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {users.map(user => (
+        <div key={user.id} className="bg-white p-4 rounded shadow">
+          <h3>{user.name}</h3>
+          <p>{user.email}</p>
+        </div>
+      ))}
+    </div>
+  )
+}
+```
+
+## **[STRICT] Development Requirements**
+1. **TypeScript**: Strict mode enabled, no `any` types
+2. **App Router**: Use App Router for all new projects
+3. **Server Components**: Prefer server components when possible
+4. **Client Components**: Use 'use client' directive only when needed
+5. **Image Optimization**: Use Next.js Image component
+6. **Environment Variables**: Use .env.local for secrets
+7. **Performance**: Implement loading states and error boundaries
 
