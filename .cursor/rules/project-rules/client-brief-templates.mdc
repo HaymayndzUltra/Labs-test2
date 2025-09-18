@@ -1,0 +1,295 @@
+---
+description: "TAGS: [templates,client-brief,discovery,consulting] | TRIGGERS: client brief template,discovery template,consulting template | SCOPE: project-rules | DESCRIPTION: Comprehensive client brief templates for different project types"
+alwaysApply: false
+priority: 4
+globs: ["**/*.md", "**/templates/**", "**/client-briefs/**"]
+---
+
+# Client Brief Templates
+
+## AI Persona
+When this rule is active, you are a **Client Brief Template Specialist** responsible for generating comprehensive, professional client briefs based on job post analysis and discovery requirements.
+
+## Template Structure
+
+### Standard Client Brief Format
+```markdown
+# Client Brief: [Project Name]
+
+## Project Overview
+- **Project Name**: [Extracted from job post]
+- **Client**: [Company name]
+- **Project Type**: [Web/Mobile/AI/ML/Consulting]
+- **Timeline**: [Estimated duration]
+- **Budget Range**: [If mentioned]
+
+## Business Objectives
+- **Primary Goal**: [Main objective]
+- **Success Metrics**: [How success will be measured]
+- **Target Audience**: [Who will use this]
+- **Business Impact**: [Expected outcomes]
+
+## Technical Requirements
+- **Platform**: [Web/Mobile/Desktop/API]
+- **Technology Stack**: [Preferred technologies]
+- **Integrations**: [Required integrations]
+- **Performance**: [Speed/load requirements]
+- **Security**: [Security requirements]
+
+## Project Scope
+- **In Scope**: [What's included]
+- **Out of Scope**: [What's not included]
+- **Assumptions**: [Key assumptions made]
+- **Constraints**: [Limitations identified]
+
+## Discovery Questions
+### Technical Questions
+1. [Generated based on project type]
+2. [Specific to technology stack]
+3. [Performance requirements]
+4. [Integration needs]
+
+### Business Questions
+1. [Target audience details]
+2. [Business objectives]
+3. [Success metrics]
+4. [Competitive landscape]
+
+### Project Management Questions
+1. [Timeline constraints]
+2. [Budget parameters]
+3. [Resource availability]
+4. [Communication preferences]
+
+## Next Steps
+1. [Immediate actions]
+2. [Discovery meeting]
+3. [Proposal timeline]
+4. [Project kickoff]
+
+## Risk Assessment
+- **Technical Risks**: [Identified risks]
+- **Business Risks**: [Market/competition risks]
+- **Timeline Risks**: [Schedule risks]
+- **Resource Risks**: [Team/availability risks]
+```
+
+## Industry-Specific Templates
+
+### Web Development Template
+```markdown
+# Web Development Client Brief
+
+## Project Overview
+- **Website Type**: [Corporate/E-commerce/Blog/Portfolio]
+- **Primary Purpose**: [Lead generation/Sales/Information/Community]
+- **Target Audience**: [Demographics and behavior]
+- **Competitive Analysis**: [Key competitors]
+
+## Technical Specifications
+- **Frontend Requirements**:
+  - Framework preference: [React/Vue/Angular/None]
+  - Design system: [Custom/Existing/Bootstrap]
+  - Responsive design: [Mobile-first/Desktop-first]
+  - Browser support: [Chrome/Firefox/Safari/IE]
+
+- **Backend Requirements**:
+  - Technology: [Node.js/Python/PHP/.NET]
+  - Database: [MySQL/PostgreSQL/MongoDB]
+  - Hosting: [AWS/Azure/Google Cloud/Shared]
+  - API needs: [REST/GraphQL/Third-party]
+
+- **Content Management**:
+  - CMS preference: [WordPress/Headless/Custom]
+  - User roles: [Admin/Editor/Contributor]
+  - Content types: [Pages/Blogs/Products/Events]
+
+## Business Requirements
+- **SEO Requirements**: [Search optimization needs]
+- **Analytics**: [Google Analytics/Mixpanel/Other]
+- **E-commerce**: [Payment processing/Inventory/Shipping]
+- **Integrations**: [CRM/Email/Calendar/Other tools]
+
+## Discovery Questions
+### Technical
+1. Do you have any existing technical infrastructure?
+2. What are your performance requirements?
+3. Do you need real-time features?
+4. What security measures are required?
+5. Do you need API access for third-party integrations?
+
+### Business
+1. What is your primary business objective?
+2. Who is your target audience?
+3. What makes you different from competitors?
+4. What is your content strategy?
+5. How will you measure success?
+
+### Project Management
+1. What is your preferred timeline?
+2. Do you have an internal team to work with?
+3. What is your budget range?
+4. How do you prefer to communicate?
+5. What are your key milestones?
+```
+
+### Mobile App Template
+```markdown
+# Mobile App Client Brief
+
+## Project Overview
+- **App Type**: [Native iOS/Android/Cross-platform]
+- **Primary Function**: [Core app functionality]
+- **Target Users**: [User personas and demographics]
+- **Market Position**: [Competitive landscape]
+
+## Technical Specifications
+- **Platform Requirements**:
+  - iOS version: [Minimum supported version]
+  - Android version: [Minimum supported version]
+  - Device types: [Phone/Tablet/Both]
+  - Screen sizes: [Specific requirements]
+
+- **Performance Requirements**:
+  - Load time: [Maximum acceptable load time]
+  - Offline capability: [Required/Not required]
+  - Data usage: [Bandwidth considerations]
+  - Battery usage: [Optimization requirements]
+
+- **Integration Requirements**:
+  - Backend API: [Existing/New development]
+  - Third-party services: [Payment/Analytics/Push notifications]
+  - Social media: [Login/Sharing/Integration]
+  - Hardware features: [Camera/GPS/Bluetooth]
+
+## Business Requirements
+- **Monetization**: [Free/Paid/Freemium/Subscription]
+- **User Acquisition**: [Marketing strategy]
+- **Analytics**: [User behavior tracking]
+- **Support**: [Customer support requirements]
+
+## Discovery Questions
+### Technical
+1. Do you have existing backend infrastructure?
+2. What are your performance expectations?
+3. Do you need offline functionality?
+4. What third-party integrations are required?
+5. Do you need real-time features?
+
+### Business
+1. What problem does your app solve?
+2. Who is your target user?
+3. How will you monetize the app?
+4. What is your user acquisition strategy?
+5. How will you measure success?
+
+### Project Management
+1. What is your launch timeline?
+2. Do you need app store optimization?
+3. What is your budget range?
+4. Do you have a marketing plan?
+5. What are your success metrics?
+```
+
+### AI/ML Project Template
+```markdown
+# AI/ML Project Client Brief
+
+## Project Overview
+- **Project Type**: [Prediction/Classification/Recommendation/NLP/Computer Vision]
+- **Business Problem**: [Specific problem to solve]
+- **Data Availability**: [Data sources and quality]
+- **Expected Outcome**: [Desired results]
+
+## Technical Specifications
+- **Data Requirements**:
+  - Data sources: [Internal/External/Public]
+  - Data quality: [Clean/Messy/Unknown]
+  - Data volume: [Size and growth rate]
+  - Data privacy: [GDPR/HIPAA/Other compliance]
+
+- **Model Requirements**:
+  - Accuracy target: [Minimum acceptable accuracy]
+  - Response time: [Real-time/Batch processing]
+  - Scalability: [Expected load and growth]
+  - Interpretability: [Model explainability needs]
+
+- **Infrastructure Requirements**:
+  - Computing power: [CPU/GPU requirements]
+  - Storage: [Data storage needs]
+  - Deployment: [Cloud/On-premise/Edge]
+  - Monitoring: [Model performance tracking]
+
+## Business Requirements
+- **Business Impact**: [Expected ROI and benefits]
+- **Success Metrics**: [How success will be measured]
+- **Risk Tolerance**: [Acceptable error rates]
+- **Compliance**: [Regulatory requirements]
+
+## Discovery Questions
+### Technical
+1. What data do you have available?
+2. What is your data quality like?
+3. What are your accuracy requirements?
+4. Do you need real-time predictions?
+5. What is your deployment environment?
+
+### Business
+1. What business problem are you solving?
+2. How will you measure success?
+3. What is your risk tolerance?
+4. Do you need model explainability?
+5. What is your expected ROI?
+
+### Project Management
+1. What is your timeline?
+2. Do you have data science expertise?
+3. What is your budget range?
+4. Do you need ongoing model maintenance?
+5. What are your compliance requirements?
+```
+
+## Template Customization Rules
+
+### Dynamic Content Generation
+1. **Extract from job post**:
+   - Company name and project title
+   - Technology mentions
+   - Timeline indicators
+   - Budget references
+
+2. **Generate based on project type**:
+   - Relevant technical questions
+   - Industry-specific requirements
+   - Appropriate success metrics
+   - Typical risk factors
+
+3. **Customize for client**:
+   - Company size and industry
+   - Technical sophistication
+   - Budget constraints
+   - Timeline requirements
+
+### Quality Assurance
+- [ ] All sections are relevant to project type
+- [ ] Questions are specific and actionable
+- [ ] Technical requirements are detailed
+- [ ] Business objectives are clear
+- [ ] Timeline is realistic
+- [ ] Risk assessment is comprehensive
+
+## Usage Instructions
+1. **Analyze job post** for key information
+2. **Select appropriate template** based on project type
+3. **Fill in extracted information** from job post
+4. **Generate relevant questions** for missing information
+5. **Customize template** for specific client needs
+6. **Review and validate** completeness and accuracy
+
+## Best Practices
+1. **Always include** technical and business questions
+2. **Customize questions** based on project complexity
+3. **Include risk assessment** for all projects
+4. **Provide clear next steps** for client
+5. **Maintain professional tone** throughout
+6. **Keep templates updated** with new requirements
