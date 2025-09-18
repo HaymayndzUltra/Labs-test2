@@ -1,7 +1,7 @@
 ---
 description: "TAGS: [python,language,programming] | TRIGGERS: python,py,programming | SCOPE: python | DESCRIPTION: Python language-specific rules and best practices"
 alwaysApply: false
-globs: ["*.py", "**/*.py", "src/**/*.py", "tests/**/*.py", "**/test_*.py", "**/*_test.py"]
+globs: *.py,**/*.py,src/**/*.py,tests/**/*.py,**/test_*.py,**/*_test.py
 ---
 
 # Python Language Rules
