@@ -6,6 +6,7 @@ Validate tasks.json DAG and references.
   * unique task ids
   * blocked_by reference existence
   * cycle detection via Kahn topo sort
+  * enum validation for state/persona
 
 Usage:
   python scripts/validate_tasks.py --input tasks.json
@@ -18,6 +19,9 @@ import argparse
 import json
 from pathlib import Path
 from typing import Any, Dict, List, Set, Tuple
+
+ALLOWED_STATES: Set[str] = {"pending", "in_progress", "blocked", "completed", "cancelled"}
+ALLOWED_PERSONAS: Set[str] = {"system-integrator", "code-architect", "qa"}
 
 
 def _collect_tasks(root: Any) -> List[Dict[str, Any]]:
@@ -69,6 +73,16 @@ def validate(tasks: List[Dict[str, Any]]) -> Tuple[bool, List[str]]:
         for dep in _as_list(t.get("blocked_by")):
             if dep and dep not in id_set:
                 errors.append(f"{tid}: blocked_by references unknown id '{dep}'")
+
+    # Enum checks
+    for t in tasks:
+        tid = t.get("id")
+        st = t.get("state")
+        persona = t.get("persona")
+        if st is not None and str(st) not in ALLOWED_STATES:
+            errors.append(f"{tid}: invalid state '{st}' (allowed: {sorted(ALLOWED_STATES)})")
+        if persona is not None and str(persona) not in ALLOWED_PERSONAS:
+            errors.append(f"{tid}: invalid persona '{persona}' (allowed: {sorted(ALLOWED_PERSONAS)})")
 
     # Build graph edges dep -> tid (dep must precede tid)
     from collections import defaultdict, deque
@@ -125,7 +139,7 @@ def main() -> int:
 
     ok, errors = validate(tasks)
     if ok:
-        print("[OK] tasks DAG valid; ids unique; references resolved")
+        print("[OK] tasks DAG valid; ids unique; references resolved; enums valid")
         return 0
 
     print("[FAIL] tasks validation errors:")

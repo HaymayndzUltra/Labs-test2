@@ -68,9 +68,21 @@ python scripts/enforce_gates.py | cat || true
 ```
 [HALT] Review gates output. Fix before proceeding if needed.
 
+Step 5 — Context report (optional)
+```bash
+python scripts/write_context_report.py \
+  --project-name "$PROJECT_NAME" \
+  --industry healthcare \
+  --frontend nextjs --backend fastapi --database postgres --auth auth0 --deploy aws \
+  --compliance hipaa \
+  --output .cursor/ai-governor/project.json || true
+```
+[HALT] Inspect .cursor/ai-governor/project.json (stack/compliance/isolation).
+
 Artifacts:
 - PLAN.md, PLAN.tasks.json (if brief)
 - Generated scaffold under $OUTPUT_ROOT
+- .cursor/ai-governor/project.json (if written)
 
 Next:
 - If brief-first: run /1-create-prd then /2-generate-tasks

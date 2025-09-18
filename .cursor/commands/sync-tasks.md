@@ -19,25 +19,17 @@ Step 1 — Safety: backup tasks.json
 cp -f tasks.json tasks.backup.json || true
 ```
 
-Step 2 — Scan (read-only examples)
+Step 2 — Diff preview (no apply)
 ```bash
-# Frontend hints
-ls -1 app 2>/dev/null | head -50 || true
-ls -1 pages 2>/dev/null | head -50 || true
-# Backend hints
-ls -1 backend 2>/dev/null | head -50 || true
-ls -1 app/routers 2>/dev/null | head -50 || true
-ls -1 src 2>/dev/null | head -50 || true
-# DB hints
-ls -1 migrations 2>/dev/null | head -50 || true
-# Tests
-ls -1 tests 2>/dev/null | head -50 || true
+python scripts/sync_from_scaffold.py --input tasks.json --exclude "node_modules,.git,.venv" --root .
 ```
-[HALT] Decide which detected changes to apply (add/update/complete tasks).
+[HALT] Review proposed ADD/COMPLETE lines.
 
-Step 3 — Apply deltas (manual or scripted)
-- Add missing tasks with area, blocked_by, persona, acceptance.
-- Mark tasks implemented in code as completed.
+Step 3 — Apply changes (confirm)
+```bash
+echo "Apply proposed changes (y/n)?"; read -r ans; [ "$ans" = "y" ] && \
+python scripts/sync_from_scaffold.py --input tasks.json --output tasks.json --exclude "node_modules,.git,.venv" --root . --apply || true
+```
 [HALT] Review updated tasks.json.
 
 Artifacts:
