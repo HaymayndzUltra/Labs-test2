@@ -1,8 +1,0 @@
-[
-  fastapi.mdc,
-  python.mdc,
-  rest-api.mdc,
-  open-api.mdc,
-  performance.mdc,
-  observability.mdc
-]

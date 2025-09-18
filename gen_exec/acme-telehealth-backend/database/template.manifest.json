@@ -1,8 +1,0 @@
-{
-  "name": "postgres",
-  "type": "database",
-  "variants": ["base"],
-  "engines": {
-    "docker": ">=20"
-  }
-}
