@@ -1,0 +1,12 @@
+---
+TAGS: [Frontend,Formatting,Lint]
+TRIGGERS: formatting,lint,prettier
+SCOPE: frontend
+DESCRIPTION: Lint/format guidelines for Next.js frontend
+---
+
+# Formatting & Lint
+
+## Tools
+- ESLint (import/order, hooks), Prettier; consistent aliases.
+

@@ -1,0 +1,20 @@
+---
+TAGS: [Frontend,Next.js,React]
+TRIGGERS: nextjs,react,frontend
+SCOPE: frontend
+DESCRIPTION: Next.js conventions (App Router, routing, data fetching, env, build)
+---
+
+# Next.js Baseline
+
+## Conventions
+- Use App Router; colocate components; server/client components as needed.
+- Data fetching with `fetch`/SWR on client; caching and revalidation per route.
+- Env via `.env.local`; never commit secrets.
+
+## Routing
+- File-based routes under `app/`; dynamic segments `[id]` with loading/error UI.
+
+## Build & Perf
+- Image optimization; dynamic imports for heavy components; analyze bundle.
+

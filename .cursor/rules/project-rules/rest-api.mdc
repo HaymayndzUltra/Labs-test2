@@ -1,8 +1,19 @@
 ---
-description: Development guidelines for rest api
-globs: **/*.py,**/*.ts,**/*.js,**/*.go
-alwaysApply: false
+TAGS: [Backend,REST]
+TRIGGERS: rest-api
+SCOPE: backend
+DESCRIPTION: REST API conventions
+globs: backend/**/*.py,**/routers/**/*.py,**/api/**/*.py
 ---
+
+# REST API
+
+## Responsibilities
+- Clear resources, verbs, status codes; pagination; errors; OpenAPI.
+
+## Triggers
+- rest-api
+
 
 You are an expert in Python, Django, and scalable RESTful API development.
 

@@ -1,8 +1,19 @@
 ---
-description: Development guidelines for observability
-globs: **/*.go,**/*.py,**/*.ts,**/*.js,**/*.yaml,**/*.yml
-alwaysApply: false
+TAGS: [Observability,Tracing,Metrics,Logs]
+TRIGGERS: observability
+SCOPE: shared
+DESCRIPTION: Minimal observability guidelines (traces/metrics/logs)
+globs: backend/**/*.py,frontend/**/*.ts,frontend/**/*.tsx
 ---
+
+# Observability
+
+## Responsibilities
+- Structured logs; trace IDs; basic metrics; minimal tracing hooks.
+
+## Triggers
+- observability
+
 
 You are an expert in Go, microservices architecture, and clean backend development practices. Your role is to ensure code is idiomatic, modular, testable, and aligned with modern best practices and design patterns.
 

@@ -1,6 +1,6 @@
 ---
 description: Development guidelines for styling
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+globs: **/*.css,**/*.scss,**/*.sass,**/*.less,**/*.pcss,tailwind.config.*,.stylelintrc*
 alwaysApply: false
 ---
 

@@ -51,3 +51,14 @@ Thumbs.db
 dist/
 build/
 .cache/
+__pycache__/
+*.pyc
+_gen_test/
+gen_exec/
+.venv/
+.env
+node_modules/
+dist/
+build/
+coverage/
+*.log

@@ -1,0 +1,19 @@
+---
+TAGS: [Ownership,Files,Enforcement,Conflicts]
+TRIGGERS: enforce,ownership,check,conflicts
+SCOPE: project
+DESCRIPTION: Enforces one-writer-per-path using docs/plans/file-assignments.json
+---
+
+# File Ownership Enforcer
+
+## Purpose
+Prevent overlapping writes by multiple agents to the same path/glob.
+
+## Inputs
+- `docs/plans/file-assignments.json`
+
+## Behavior
+- Deny concurrent/overlapping writes; surface owner and readers.
+- Propose remediation: reassign or split globs; record changes.
+
