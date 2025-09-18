@@ -157,7 +157,7 @@ def main() -> None:
             f" --minimal-cursor"
             f" --rules-manifest {str(fe_manifest_path)}"
             f" {'--features ' + ','.join(spec.features) if spec.features else ''}"
-           
+            f" --skip-system-checks"
             f" --yes"
             f" {'--force' if args.force else ''}"
         ).strip()
@@ -193,6 +193,7 @@ def main() -> None:
             f" --rules-manifest {str(be_manifest_path)}"
             f" {'--features ' + ','.join(spec.features) if spec.features else ''}"
             f" {'--compliance ' + ','.join(comp_list) if comp_list else ''}"
+            f" --skip-system-checks"
             f" --yes"
             f" {'--force' if args.force else ''}"
         ).strip()
