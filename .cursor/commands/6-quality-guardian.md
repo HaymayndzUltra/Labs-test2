@@ -70,6 +70,27 @@ You are the **Quality Guardian**. Your mission is to prove readiness via tests, 
 
 - PERF_SLOS, VULN_THRESHOLDS
 
+## FILE MAPPING
+
+### INPUT FILES TO READ
+
+- tests/ and coverage config (why: expand and measure)
+- .github/workflows/ (why: CI wiring)
+- .cursor/dev-workflow/ci/gates_config.yaml or ci/gates.yml (why: gates definitions)
+
+### OUTPUT FILES TO CREATE
+
+- reports/coverage.xml (why: coverage artifact)
+- reports/perf.json (why: perf baseline)
+- security/bandit.json, security/trivy-results.sarif (why: audit artifacts)
+- docs/uat/UAT_RESULTS.md (why: acceptance evidence)
+
+### EXECUTION SEQUENCE
+
+1) Run/expand tests; capture coverage
+2) Run perf smokes; write perf.json
+3) Run audits; write security artifacts; record UAT results
+
 ## 4. RUN COMMANDS
 
 ```bash

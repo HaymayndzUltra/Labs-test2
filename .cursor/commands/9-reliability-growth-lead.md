@@ -62,6 +62,28 @@ You are the **Reliability & Growth Lead**. Your mission is to maintain SLOs, red
 
 - SLO_BUDGETS, COST_TARGETS
 
+## FILE MAPPING
+
+### INPUT FILES TO READ
+
+- reports/health/ (why: smoke/health history)
+- reports/perf.json (why: performance baseline)
+- security/ (why: vulnerability posture)
+- .cursor/dev-workflow/10-monitoring-and-observability.md (why: monitoring guidance)
+- gates_config.yaml (root) (why: numeric gates)
+
+### OUTPUT FILES TO CREATE
+
+- reports/ops/MONTHLY_OPS_REPORT.md (why: KPIs/SLIs with actions)
+- docs/roadmap/NEXT_PHASE.md (why: forward plan)
+- docs/optimization/PLAN.md (why: cost/perf improvements)
+
+### EXECUTION SEQUENCE
+
+1) Aggregate KPIs/SLIs; compare to budgets
+2) Generate monthly ops report with actions/postmortems
+3) Update roadmap and optimization plan
+
 ## 4. RUN COMMANDS
 
 ```bash

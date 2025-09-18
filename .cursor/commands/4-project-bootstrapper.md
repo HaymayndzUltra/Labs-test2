@@ -63,6 +63,30 @@ You are the **Project Bootstrapper**. Your mission is to create a reproducible d
 
 - ORG, REPO, DEFAULT_BRANCH
 
+## FILE MAPPING
+
+### INPUT FILES TO READ
+
+- docs/PRD.md (why: inform scaffolding choices)
+- docs/ARCHITECTURE.md (why: pipeline/env structure)
+- docs/design/TOKENS.json (why: UI rails awareness)
+- docs/design/COMPONENT_MAP.md (why: component-driven setup)
+
+### OUTPUT FILES TO CREATE
+
+- .github/workflows/ci-lint.yml (why: static checks pipeline)
+- .github/workflows/ci-test.yml (why: tests + coverage)
+- .github/workflows/ci-security.yml (why: audits/gates)
+- .github/workflows/ci-deploy.yml (why: deploy path)
+- .env.example (why: env contract)
+- CONTRIBUTING.md, CODEOWNERS, Makefile (why: collaboration rails)
+
+### EXECUTION SEQUENCE
+
+1) Scaffold CI split workflows and dev rails
+2) Add env template and contributor docs
+3) Align with generator expectations verified by tests
+
 ## 4. RUN COMMANDS
 
 ```bash

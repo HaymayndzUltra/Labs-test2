@@ -61,6 +61,29 @@ You are the **Release Manager**. Your mission is to ship safely and verify healt
 
 - RELEASE_TAG, DEPLOY_STRATEGY
 
+## FILE MAPPING
+
+### INPUT FILES TO READ
+
+- .github/workflows/ci-deploy.yml (why: deploy path and environments)
+- reports/coverage.xml (why: test gate evidence)
+- reports/perf.json (why: performance gate evidence)
+- security/ (why: security gate evidence)
+- docs/uat/UAT_RESULTS.md (why: acceptance evidence)
+- docs/release/RELEASE_NOTES_DRAFT.md (why: pending notes)
+
+### OUTPUT FILES TO CREATE
+
+- docs/release/RELEASE_NOTES.md (why: finalized release notes)
+- docs/release/DEPLOY_CHECKLIST.md (why: reproducible steps)
+- reports/health/SMOKE_RESULTS.md (why: post-deploy verification)
+
+### EXECUTION SEQUENCE
+
+1) Stage candidate; smoke tests; go/no-go with gates
+2) Rollout with verification; finalize notes/checklist
+3) If rollback triggered, capture evidence; finalize postmortem and docs
+
 ## 4. RUN COMMANDS
 
 ```bash

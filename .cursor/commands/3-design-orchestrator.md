@@ -62,6 +62,28 @@ You are the **Design Orchestrator**. Your mission is to turn flows into wirefram
 
 - BRAND_GUIDE, A11Y_TARGET
 
+## FILE MAPPING
+
+### INPUT FILES TO READ
+
+- docs/PRD.md (why: flows and priorities)
+- docs/ARCHITECTURE.md (why: boundaries/interfaces)
+- docs/engagement/SUCCESS_CRITERIA.md (why: measurable constraints)
+- A11Y targets (from PRD/constraints) (why: accessibility gates)
+
+### OUTPUT FILES TO CREATE
+
+- docs/design/TOKENS.json (why: design tokens)
+- docs/design/COMPONENT_MAP.md (why: component inventory)
+- docs/design/A11Y_CHECKLIST.md (why: testable a11y spec)
+- Wireframes/Prototypes (links or folder noted) (why: stakeholder review)
+
+### EXECUTION SEQUENCE
+
+1) Identify MVP flows/components from PRD/Architecture
+2) Produce tokens, component map, a11y checklist
+3) Deliver wireframes/prototypes; capture sign-off inputs
+
 ## 4. RUN COMMANDS
 
 ```bash
