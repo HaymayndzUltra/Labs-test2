@@ -236,7 +236,7 @@ jobs:
     steps:
       - name: Check quality gate
         run: |
-          if ${{ contains(needs.*.result, 'failure') }}; then
+          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]]; then
             echo "❌ Quality gate failed - linting errors found"
             exit 1
           else
