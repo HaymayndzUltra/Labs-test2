@@ -51,3 +51,7 @@ Thumbs.db
 dist/
 build/
 .cache/
+__pycache__/
+*.pyc
+_gen_test/
+gen_exec/
