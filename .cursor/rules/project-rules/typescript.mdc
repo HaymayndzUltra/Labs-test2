@@ -1,8 +1,19 @@
 ---
-description: TypeScript development with strict typing and modern features
-globs: **/*.ts,**/*.tsx
-alwaysApply: false
+TAGS: [TypeScript]
+TRIGGERS: typescript
+SCOPE: shared
+DESCRIPTION: TypeScript strict usage
+globs: frontend/**/*.ts,frontend/**/*.tsx,lib/**/*.ts,lib/**/*.tsx,scripts/**/*.ts
 ---
+
+# TypeScript Strict
+
+## Responsibilities
+- Enable strict; no any; explicit types for public APIs.
+
+## Triggers
+- typescript
+
 
 # TypeScript Development Rule
 

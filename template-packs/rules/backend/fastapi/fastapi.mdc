@@ -1,0 +1,15 @@
+---
+TAGS: [Backend,FastAPI]
+TRIGGERS: fastapi,backend,api
+SCOPE: backend
+DESCRIPTION: FastAPI baseline (routers, services, models, DI)
+---
+
+# FastAPI Baseline
+
+## Structure
+- `app/main.py`, `app/api/routers`, `app/services`, `app/models`, `app/db`.
+
+## Practices
+- Pydantic v2 models; dependency injection; error handling; logging.
+

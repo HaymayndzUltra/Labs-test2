@@ -1,8 +1,19 @@
 ---
-description: FastAPI backend development with async patterns and Pydantic
-globs: **/*.py
-alwaysApply: false
+TAGS: [Backend,FastAPI]
+TRIGGERS: fastapi
+SCOPE: backend
+DESCRIPTION: FastAPI baseline (routers, services, models, DI)
+globs: backend/**/*.py,**/routers/**/*.py,**/api/**/*.py,**/services/**/*.py,**/schemas/**/*.py
 ---
+
+# FastAPI Baseline
+
+## Responsibilities
+- Organize routers/services/models; Pydantic v2; DI; error handling.
+
+## Triggers
+- fastapi
+
 
 You are an expert in Python, FastAPI, and scalable API development.
 

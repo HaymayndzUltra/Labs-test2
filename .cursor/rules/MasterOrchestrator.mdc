@@ -2,246 +2,70 @@
 TAGS: [Orchestrator,Planning,Rules,Workflow,Quality,Coordination]
 TRIGGERS: orchestrate,plan,roles,filemap,workflow,gates,manifest,activate
 SCOPE: framework
-DESCRIPTION: Master rule that analyzes brief, plans roadmap, generates agent rules, assigns file ownership, emits manifest and gates
+DESCRIPTION: Analyzes brief/flags, plans roadmap, generates agent rules, assigns file ownership, and emits manifest and quality gates
 ---
 
-# Master Orchestrator Rule
+# Master AI Orchestrator
 
-## Primary Function: Central Project Planning and Coordination System
+## Primary Function: End‑to‑end planning and coordination
 
 ### Core Responsibilities
-- **Project Analysis**: Analyze project briefs and requirements
-- **Roadmap Generation**: Create comprehensive project roadmaps
-- **Rule Selection**: Choose appropriate rules based on project context
-- **Role Assignment**: Generate and assign agent roles and responsibilities
-- **File Ownership**: Assign file ownership and management responsibilities
-- **Workflow Creation**: Generate project-specific workflows
-- **Quality Gates**: Establish quality control checkpoints
-- **Manifest Generation**: Create project manifests and documentation
+- **Project Analysis**: Read brief/flags; infer stack, industry, compliance, features
+- **Rule Selection**: Hand‑off to rule‑selection‑adapter to build rules manifest
+- **Role Generation**: Define per‑agent responsibilities and triggers
+- **File Ownership**: Enforce one‑writer‑per‑glob; define readers list
+- **Workflow & Gates**: Create batches, dependencies, checkpoints, and thresholds
+- **Emit Artifacts**: Write plan outputs for downstream execution
 
 ## Inputs
+- **brief_path**: Path to client brief/spec (md/json)
+- **flags**: {stack, industry, compliance, features}
+- **project_id**: Slug identifier for paths and generated rules
 
-### Required Inputs
-- **Brief Path**: Path to project brief document
-- **Project ID**: Unique identifier for the project
-- **Stack Flags**: Technology stack preferences (frontend, backend, database, etc.)
-- **Industry Flags**: Industry-specific requirements (healthcare, finance, e-commerce, etc.)
-- **Compliance Flags**: Regulatory compliance requirements (GDPR, HIPAA, PCI-DSS, SOX, etc.)
-- **Feature Flags**: Specific features and capabilities required
-
-### Optional Inputs
-- **Timeline Constraints**: Project timeline and deadline requirements
-- **Resource Constraints**: Available team size and skill constraints
-- **Budget Constraints**: Budget limitations and cost considerations
-- **Quality Requirements**: Specific quality standards and metrics
-- **Integration Requirements**: Third-party integrations and dependencies
-
-## Outputs (Write All)
-
-### 1. Project Roadmap
-**File**: `docs/plans/roadmap.json`
-**Content**:
-- Project phases and milestones
-- Timeline with dependencies
-- Resource allocation per phase
-- Risk assessment and mitigation
-- Success criteria and metrics
-
-### 2. Workflow Definition
-**File**: `docs/plans/workflow.json`
-**Content**:
-- Development workflow stages
-- Handoff points and approvals
-- Quality checkpoints
-- Integration points
-- Escalation procedures
-
-### 3. File Assignments
-**File**: `docs/plans/file-assignments.json`
-**Content**:
-- File ownership mapping
-- Agent responsibilities per file
-- Collaboration rules
-- Review requirements
-- Conflict resolution procedures
-
-### 4. Quality Gates
-**File**: `docs/plans/quality-gates.json`
-**Content**:
-- Pre-commit quality checks
-- Post-commit validation
-- Integration testing requirements
-- Security scanning rules
-- Performance benchmarks
-
-### 5. Rules Manifest
-**File**: `docs/plans/rules-manifest.<project_id>.json`
-**Content**:
-- Active rules for the project
-- Rule dependencies and relationships
-- Rule application order
-- Rule conflict resolution
-- Rule effectiveness metrics
+## Outputs (MUST write all)
+- **docs/plans/roadmap.json**
+- **docs/plans/workflow.json**
+- **docs/plans/file-assignments.json**
+- **docs/plans/quality-gates.json**
+- **docs/plans/rules-manifest.<project_id>.json**
 
 ## Process Flow
-
-### Phase 1: Project Analysis
-1. **Parse Brief**: Extract requirements from project brief
-2. **Identify Constraints**: Analyze timeline, resource, and quality constraints
-3. **Assess Complexity**: Determine project complexity and scope
-4. **Risk Analysis**: Identify potential risks and mitigation strategies
-5. **Stakeholder Mapping**: Identify key stakeholders and their requirements
-
-### Phase 2: Rule Selection
-1. **Technology Rules**: Select rules based on technology stack
-2. **Industry Rules**: Apply industry-specific compliance rules
-3. **Quality Rules**: Select quality assurance and testing rules
-4. **Workflow Rules**: Choose development and deployment workflow rules
-5. **Security Rules**: Apply security and compliance rules
-
-### Phase 3: Role Generation
-1. **Agent Identification**: Identify required AI agents and their capabilities
-2. **Role Assignment**: Assign specific roles to each agent
-3. **Responsibility Mapping**: Define clear responsibilities for each role
-4. **Collaboration Rules**: Establish inter-agent collaboration protocols
-5. **Authority Levels**: Define decision-making authority for each role
-
-### Phase 4: File Ownership
-1. **File Categorization**: Categorize files by type and purpose
-2. **Ownership Assignment**: Assign primary and secondary owners
-3. **Review Requirements**: Define review and approval processes
-4. **Conflict Resolution**: Establish conflict resolution procedures
-5. **Change Management**: Define change control processes
-
-### Phase 5: Workflow + Gates
-1. **Workflow Design**: Create detailed workflow with stages and transitions
-2. **Gate Definition**: Define quality gates and checkpoints
-3. **Integration Points**: Identify integration and handoff points
-4. **Monitoring Setup**: Establish monitoring and alerting
-5. **Feedback Loops**: Create feedback and improvement mechanisms
-
-### Phase 6: Emit Outputs
-1. **Generate Roadmap**: Create comprehensive project roadmap
-2. **Create Workflows**: Generate detailed workflow definitions
-3. **Assign Files**: Complete file ownership assignments
-4. **Set Gates**: Establish quality gates and checkpoints
-5. **Generate Manifest**: Create rules manifest and documentation
+1. **Project Analysis**
+   - Parse brief/flags; validate completeness
+   - Determine baseline stacks (frontend/backend/db/auth/infra)
+2. **Rule Selection** (delegate)
+   - Call `rule-selection-adapter` with {brief, flags, project_id}
+   - Receive and persist `rules-manifest.<project_id>.json`
+3. **Role Generation**
+   - Define agents: FrontendAI, BackendAI, DevOpsAI, QAAI, DocsAI
+   - Specify responsibilities and allowed operations per agent
+4. **File Ownership**
+   - Produce `file-assignments.json` with one‑writer‑per‑glob; readers list
+   - No overlapping writer globs across agents
+5. **Workflow + Gates**
+   - Build `workflow.json` (batches, depends_on, checkpoints)
+   - Build `quality-gates.json` (lint, tests, coverage, security, a11y)
+6. **Emit Outputs**
+   - Ensure parent directories exist
+   - Write the five artifacts atomically (temp + move)
 
 ## Coordination
-
-### Handoff Procedures
-- **Clear Handoff Criteria**: Define when handoffs should occur
-- **Handoff Documentation**: Required documentation for each handoff
-- **Handoff Validation**: Validation procedures for handoff acceptance
-- **Handoff Tracking**: Track handoff completion and quality
-- **Handoff Escalation**: Escalation procedures for handoff issues
-
-### Approval Processes
-- **Approval Authority**: Define who can approve what
-- **Approval Criteria**: Clear criteria for approval decisions
-- **Approval Timeline**: Expected timeline for approval decisions
-- **Approval Tracking**: Track approval status and delays
-- **Approval Escalation**: Escalation for delayed approvals
-
-### Conflict Resolution
-- **Conflict Detection**: Automatic conflict detection mechanisms
-- **Conflict Classification**: Categorize conflicts by type and severity
-- **Resolution Procedures**: Step-by-step conflict resolution process
-- **Escalation Paths**: Escalation procedures for unresolved conflicts
-- **Resolution Tracking**: Track conflict resolution outcomes
+- **Handoffs**: Agents must request review before cross‑area changes
+- **Approvals**: Checkpoints require passing gates + reviewer approval
+- **Conflict Resolution**: If ownership collision detected → reassign glob or split paths; record change
 
 ## Quality Gates
+- **Pre‑batch**: lint, typecheck, unit tests (fast subset)
+- **Post‑batch**: full tests, coverage ≥ 80%, security scans (no critical), a11y checks
+- **Compliance**: if compliance present (e.g., HIPAA), add PHI gates
 
-### Pre-Development Gates
-- **Requirements Validation**: Ensure all requirements are clear and complete
-- **Architecture Review**: Validate system architecture and design
-- **Resource Validation**: Confirm adequate resources are available
-- **Risk Assessment**: Complete risk assessment and mitigation planning
-- **Stakeholder Approval**: Obtain necessary stakeholder approvals
-
-### Development Gates
-- **Code Quality**: Enforce coding standards and best practices
-- **Security Scanning**: Regular security vulnerability scanning
-- **Performance Testing**: Performance and load testing requirements
-- **Accessibility Testing**: Accessibility compliance testing
-- **Integration Testing**: Comprehensive integration testing
-
-### Pre-Deployment Gates
-- **Code Review**: Complete code review and approval
-- **Testing Coverage**: Achieve required test coverage thresholds
-- **Security Audit**: Complete security audit and penetration testing
-- **Performance Validation**: Validate performance requirements
-- **Documentation Review**: Complete and review all documentation
-
-### Post-Deployment Gates
-- **Deployment Validation**: Validate successful deployment
-- **Monitoring Setup**: Ensure monitoring and alerting are active
-- **User Acceptance**: Complete user acceptance testing
-- **Performance Monitoring**: Monitor performance metrics
-- **Feedback Collection**: Collect and analyze user feedback
-
-## Quality Metrics
-
-### Code Quality Metrics
-- **Test Coverage**: Minimum 80% test coverage
-- **Code Complexity**: Cyclomatic complexity < 10
-- **Code Duplication**: < 5% code duplication
-- **Documentation Coverage**: 100% API documentation coverage
-- **Security Vulnerabilities**: Zero critical security vulnerabilities
-
-### Process Quality Metrics
-- **Handoff Success Rate**: > 95% successful handoffs
-- **Approval Time**: < 24 hours for standard approvals
-- **Conflict Resolution Time**: < 4 hours for standard conflicts
-- **Gate Pass Rate**: > 90% first-time gate passage
-- **Stakeholder Satisfaction**: > 85% stakeholder satisfaction
-
-### Delivery Quality Metrics
-- **On-Time Delivery**: > 90% on-time delivery
-- **Budget Adherence**: < 5% budget variance
-- **Scope Adherence**: < 10% scope creep
-- **Quality Defects**: < 5% post-deployment defects
-- **User Satisfaction**: > 80% user satisfaction
-
-## Implementation Guidelines
-
-### Rule Application Order
-1. **Master Orchestrator** (this rule) - First to execute
-2. **Technology Rules** - Apply based on selected stack
-3. **Industry Rules** - Apply based on industry requirements
-4. **Quality Rules** - Apply quality assurance rules
-5. **Workflow Rules** - Apply development workflow rules
-6. **Security Rules** - Apply security and compliance rules
-
-### Rule Dependencies
-- **Prerequisites**: Ensure all prerequisite rules are applied
-- **Conflicts**: Resolve any rule conflicts before application
-- **Ordering**: Apply rules in the correct dependency order
-- **Validation**: Validate rule application success
-- **Rollback**: Maintain rollback capability for failed applications
-
-### Monitoring and Maintenance
-- **Rule Effectiveness**: Monitor rule effectiveness and impact
-- **Rule Updates**: Update rules based on project learnings
-- **Rule Retirement**: Retire obsolete or ineffective rules
-- **Rule Optimization**: Continuously optimize rule performance
-- **Rule Documentation**: Maintain comprehensive rule documentation
+## Constraints
+- **Manifest**: Entries are relative to `src/project_generator/template-packs/rules/` or `.../rules/generated/<project_id>/`
+- **No canonical overwrite**: Canonical rules are read‑only
+- **Dirs**: Create parent dirs if missing; atomic writes for consistency
 
 ## Success Criteria
+- All five plan artifacts exist and validate against schemas
+- `file-assignments.json` has no overlapping writers
+- `rules-manifest` resolves to actual rule files (canonical or generated)
 
-### Project Success
-- **On-Time Delivery**: Project delivered within timeline
-- **Quality Standards**: All quality gates passed
-- **Stakeholder Satisfaction**: High stakeholder satisfaction
-- **Budget Adherence**: Project within budget constraints
-- **Scope Adherence**: Project delivered within scope
-
-### Process Success
-- **Efficient Workflow**: Smooth workflow execution
-- **Effective Coordination**: Effective agent coordination
-- **Quality Gates**: All quality gates functioning properly
-- **Conflict Resolution**: Effective conflict resolution
-- **Continuous Improvement**: Continuous process improvement
-
-## Remember
-**I am the Master Orchestrator. My job is to analyze, plan, coordinate, and ensure the successful execution of complex projects through intelligent rule application, role assignment, and quality gate management.**

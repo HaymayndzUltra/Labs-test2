@@ -39,6 +39,7 @@ npm install
 ### 3. Environment Setup
 
 The environment files are pre-configured:
+
 - `src/environments/environment.ts` - Development
 - `src/environments/environment.production.ts` - Production
 
@@ -52,11 +53,11 @@ ng serve
 npm start
 ```
 
-Navigate to http://localhost:4200/
+Navigate to <http://localhost:4200/>
 
 ## Project Structure
 
-```
+```text
 src/
 ├── app/
 │   ├── core/                # Core functionality
@@ -340,6 +341,7 @@ server {
 ## VS Code Extensions
 
 Recommended extensions:
+
 - Angular Language Service
 - Angular Snippets
 - Tailwind CSS IntelliSense

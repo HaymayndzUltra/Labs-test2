@@ -1,117 +1,351 @@
-Job Post: Full-Stack Dashboard & Analytics Developer
+---
+TAGS: [Rule-Generation,Framework,Templates,Frontmatter,Scaffolding]
+TRIGGERS: rule,template,generate,frontmatter,scaffold,validate-rule
+SCOPE: framework
+DESCRIPTION: Generates structured .mdc rules from specs and enforces format, paths, and idempotency
+---
 
-Type: Contract (possible FT)
-Location: Remote (PH-friendly)
-Start: ASAP
+# Rule Generation Framework
 
-Overview
+## Primary Function: Structured Rule Generation System
 
-Kailangan namin ng developer na kayang maglatag ng production-grade dashboards—mula data ingestion hanggang interactive UI—na mabilis, scalable, at secure. Target namin ay ops dashboards, executive KPI boards, customer analytics, at compliance views na may role-based access at auditability.
+### Core Responsibilities
+- **Rule Generation**: Generate structured .mdc rules from specifications
+- **Format Enforcement**: Enforce PLANO frontmatter format and structure
+- **Path Management**: Manage canonical vs generated rule paths
+- **Idempotency**: Ensure safe, repeatable rule generation
+- **Validation**: Validate rule format and content compliance
+- **Summary Reporting**: Provide comprehensive generation reports
 
-Core Responsibilities
+## Inputs
 
-Design & build dashboards (web/mobile) na may:
+### Required Inputs
+- **spec_path**: Path to rule specification (markdown or JSON format)
+- **project_id**: Unique project identifier (slug format)
+- **overwrite**: Boolean flag for overwriting existing files (default: false)
+- **targets[]**: List of rules to generate from specification
 
-Real-time updates (WebSocket/SSE) at cached queries
+### Rule Target Types
+- **Orchestrator Rules**: MasterOrchestrator, workflow-executor
+- **Agent Rules**: FrontendAI, BackendAI, DevOpsAI, QAAI, DocsAI
+- **Enforcement Rules**: file-ownership-enforcer, plan-artifacts-validator
+- **Adapter Rules**: rule-selection-adapter
+- **Domain Rules**: Industry-specific compliance rules
+- **Compliance Rules**: GDPR, HIPAA, PCI, SOX implementations
 
-Drill-down / drill-through / cross-filtering
+### Specification Format
+```json
+{
+  "rule_name": "RuleName",
+  "frontmatter": {
+    "TAGS": ["tag1", "tag2"],
+    "TRIGGERS": "trigger1,trigger2,trigger3",
+    "SCOPE": "scope_value",
+    "DESCRIPTION": "Rule description"
+  },
+  "body": {
+    "sections": [
+      {
+        "title": "Section Title",
+        "content": "Section content with markdown formatting"
+      }
+    ]
+  },
+  "dependencies": ["dependency1", "dependency2"],
+  "conflicts": ["conflict1", "conflict2"]
+}
+```
 
-Saved views, shareable links, and scheduled reports
+## Outputs (Exact Paths)
 
-Data layer & APIs
+### Orchestrator/Executor/Enforcer/Validator/Adapter/Agent Rules
+**Path**: `.cursor/rules/<RuleName>.mdc`
+**Content**: Complete rule with PLANO frontmatter and structured body
+**Examples**:
+- `.cursor/rules/MasterOrchestrator.mdc`
+- `.cursor/rules/FrontendAI.mdc`
+- `.cursor/rules/BackendAI.mdc`
+- `.cursor/rules/DevOpsAI.mdc`
+- `.cursor/rules/QAAI.mdc`
+- `.cursor/rules/DocsAI.mdc`
+- `.cursor/rules/workflow-executor.mdc`
+- `.cursor/rules/file-ownership-enforcer.mdc`
+- `.cursor/rules/plan-artifacts-validator.mdc`
+- `.cursor/rules/rule-selection-adapter.mdc`
 
-ETL from DBs/APIs → semantic layer (metrics & dimensions)
+### Domain/Compliance Rules (Generated Only)
+**Path**: `src/project_generator/template-packs/rules/generated/<project_id>/<RuleName>.mdc`
+**Content**: Project-specific domain or compliance rules
+**Examples**:
+- `src/project_generator/template-packs/rules/generated/project-035/custom-gdpr-rule.mdc`
+- `src/project_generator/template-packs/rules/generated/project-035/healthcare-compliance.mdc`
 
-Pagination, time-windowing, aggregation, window functions
+## Paths Contract
 
-Row-level security (RLS) + data masking for PII
+### Canonical Rules Location
+**Base Path**: `src/project_generator/template-packs/rules/`
+**Purpose**: Store canonical, reusable rule templates
+**Rules**: Never overwrite canonical rules
+**Examples**:
+- `src/project_generator/template-packs/rules/industry-compliance-gdpr.mdc`
+- `src/project_generator/template-packs/rules/industry-compliance-hipaa.mdc`
+- `src/project_generator/template-packs/rules/industry-compliance-pci.mdc`
+- `src/project_generator/template-packs/rules/industry-compliance-sox.mdc`
 
-Performance & DX
+### Generated Rules Location
+**Base Path**: `src/project_generator/template-packs/rules/generated/<project_id>/`
+**Purpose**: Store project-specific rule instances
+**Rules**: Only write domain/compliance additions here
+**Examples**:
+- `src/project_generator/template-packs/rules/generated/project-035/custom-gdpr-rule.mdc`
+- `src/project_generator/template-packs/rules/generated/project-035/healthcare-compliance.mdc`
 
-p95 latency targets, CDN/ISR, query caching (Redis)
+### Framework Rules Location
+**Base Path**: `.cursor/rules/`
+**Purpose**: Store framework-level rules and orchestrators
+**Rules**: Can be overwritten with overwrite=true
+**Examples**:
+- `.cursor/rules/MasterOrchestrator.mdc`
+- `.cursor/rules/FrontendAI.mdc`
+- `.cursor/rules/BackendAI.mdc`
 
-Lighthouse/perf budgets; trace logs & metrics
+## Idempotency
 
-Security & Compliance
+### File Existence Handling
+```python
+def handle_file_existence(file_path: str, overwrite: bool) -> str:
+    """Handle file existence based on overwrite flag"""
+    if os.path.exists(file_path):
+        if overwrite:
+            return "overwrite"
+        else:
+            return "skip"
+    else:
+        return "create"
+```
 
-RBAC/ABAC, audit logs, encryption in-transit/at-rest
+### Atomic Write Operations
+```python
+def atomic_write(file_path: str, content: str) -> bool:
+    """Write file atomically using temporary file + move"""
+    temp_path = f"{file_path}.tmp"
+    try:
+        with open(temp_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        os.rename(temp_path, file_path)
+        return True
+    except Exception as e:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        raise e
+```
 
-GDPR/HIPAA/PCI-aware data handling (retention, export/delete)
+### Idempotency Rules
+- **overwrite=false**: Skip existing files, report as skipped
+- **overwrite=true**: Replace existing files atomically
+- **Re-run Safety**: Multiple runs with same inputs produce identical results
+- **Partial Failure**: Failed writes don't leave partial files
+- **Rollback**: Failed operations can be rolled back safely
 
-Quality & Delivery
+## Validation
 
-CI/CD, versioned schema/migrations, smoke tests (E2E/UI)
+### PLANO Frontmatter Validation
+```python
+def validate_frontmatter(frontmatter: dict) -> List[str]:
+    """Validate PLANO frontmatter format"""
+    errors = []
+    
+    # Required fields
+    required_fields = ['TAGS', 'TRIGGERS', 'SCOPE', 'DESCRIPTION']
+    for field in required_fields:
+        if field not in frontmatter:
+            errors.append(f"Missing required field: {field}")
+    
+    # TAGS validation
+    if 'TAGS' in frontmatter:
+        if not isinstance(frontmatter['TAGS'], list):
+            errors.append("TAGS must be a list")
+        elif not all(isinstance(tag, str) for tag in frontmatter['TAGS']):
+            errors.append("All TAGS must be strings")
+    
+    # TRIGGERS validation
+    if 'TRIGGERS' in frontmatter:
+        if not isinstance(frontmatter['TRIGGERS'], str):
+            errors.append("TRIGGERS must be a string")
+        elif ',' not in frontmatter['TRIGGERS']:
+            errors.append("TRIGGERS must be comma-separated string")
+    
+    # SCOPE validation
+    if 'SCOPE' in frontmatter:
+        if not isinstance(frontmatter['SCOPE'], str):
+            errors.append("SCOPE must be a string")
+    
+    # DESCRIPTION validation
+    if 'DESCRIPTION' in frontmatter:
+        if not isinstance(frontmatter['DESCRIPTION'], str):
+            errors.append("DESCRIPTION must be a string")
+        elif len(frontmatter['DESCRIPTION']) < 10:
+            errors.append("DESCRIPTION must be at least 10 characters")
+    
+    return errors
+```
 
-Clear docs: data contracts, metric definitions, runbooks
+### Content Validation
+```python
+def validate_rule_content(content: str) -> List[str]:
+    """Validate rule content structure"""
+    errors = []
+    
+    # Check for required sections
+    required_sections = [
+        "Primary Function",
+        "Core Responsibilities",
+        "Inputs",
+        "Outputs",
+        "Process Flow"
+    ]
+    
+    for section in required_sections:
+        if f"## {section}" not in content:
+            errors.append(f"Missing required section: {section}")
+    
+    # Check for proper markdown formatting
+    if not content.startswith("# "):
+        errors.append("Content must start with main heading")
+    
+    # Check for code blocks
+    if "```" in content and "```" not in content.replace("```", "", 1):
+        errors.append("Unclosed code block detected")
+    
+    return errors
+```
 
-What You’ll Build (near-term)
+### Path Validation
+```python
+def validate_output_paths(targets: List[str], project_id: str) -> List[str]:
+    """Validate output paths for rule targets"""
+    errors = []
+    
+    for target in targets:
+        if target in ["MasterOrchestrator", "FrontendAI", "BackendAI", "DevOpsAI", "QAAI", "DocsAI", "workflow-executor", "file-ownership-enforcer", "plan-artifacts-validator", "rule-selection-adapter"]:
+            # Framework rules go to .cursor/rules/
+            path = f".cursor/rules/{target}.mdc"
+        else:
+            # Domain/compliance rules go to generated/
+            path = f"src/project_generator/template-packs/rules/generated/{project_id}/{target}.mdc"
+        
+        # Check if path is valid
+        if not path.endswith('.mdc'):
+            errors.append(f"Invalid path extension for {target}: {path}")
+        
+        # Check for path conflicts
+        if target in ["MasterOrchestrator", "FrontendAI", "BackendAI"]:
+            if not path.startswith('.cursor/rules/'):
+                errors.append(f"Framework rule {target} must go to .cursor/rules/")
+    
+    return errors
+```
 
-Ops Dashboard: service health, error rates, p95 latency, cost per request
+## Summary Report
 
-Executive KPI Board: revenue, churn/retention, LTV/CAC, cohort & funnel views
+### Report Structure
+```python
+def generate_summary_report(results: List[dict]) -> str:
+    """Generate comprehensive summary report"""
+    report = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "total_rules": len(results),
+        "created": len([r for r in results if r["status"] == "created"]),
+        "skipped": len([r for r in results if r["status"] == "skipped"]),
+        "failed": len([r for r in results if r["status"] == "failed"]),
+        "overwritten": len([r for r in results if r["status"] == "overwritten"]),
+        "details": results
+    }
+    
+    return json.dumps(report, indent=2)
+```
 
-Customer Analytics: product usage, segmentation, feature adoption
+### Report Content
+- **Timestamp**: When the generation was performed
+- **Total Rules**: Number of rules processed
+- **Created**: Number of new rules created
+- **Skipped**: Number of rules skipped (overwrite=false)
+- **Failed**: Number of rules that failed to generate
+- **Overwritten**: Number of rules that were overwritten
+- **Details**: Per-rule status and any error messages
 
-Compliance View: access logs, data lineage, export/delete requests status
+## Acceptance Criteria
 
-Target Stack (pragmatic, not dogmatic)
+### Given: MasterOrchestrator + FrontendAI + BackendAI Request
+**Input**:
+```json
+{
+  "spec_path": "specs/orchestrator-spec.json",
+  "project_id": "project-035",
+  "overwrite": false,
+  "targets": ["MasterOrchestrator", "FrontendAI", "BackendAI"]
+}
+```
 
-Frontend: Next.js (App Router, TS, Tailwind) / Angular / Nuxt
-Charting: Recharts/ECharts/D3; tables: TanStack Table
-State: Zustand/Signals/Pinia; Forms: React Hook Form/Angular Forms
+**Expected Output**:
+1. **Creates three .mdc files**:
+   - `.cursor/rules/MasterOrchestrator.mdc`
+   - `.cursor/rules/FrontendAI.mdc`
+   - `.cursor/rules/BackendAI.mdc`
 
-Backend: FastAPI / Django / NestJS / Go (Echo)
-API styles: REST/GraphQL; background jobs & schedulers
+2. **Does not write to canonical rules**:
+   - No writes to `src/project_generator/template-packs/rules/`
+   - Only writes to `.cursor/rules/` for framework rules
 
-Data: Postgres (+ pgvector), MongoDB, Firebase; ClickHouse/BigQuery (nice-to-have)
-Cache/queues: Redis
+3. **Idempotency verification**:
+   - Re-run with `overwrite=false` → no changes, all skipped
+   - Re-run with `overwrite=true` → files replaced
 
-Auth: Auth0 / Firebase Auth / Cognito (RBAC, MFA, SSO)
+### Given: Domain Rule Request
+**Input**:
+```json
+{
+  "spec_path": "specs/domain-spec.json",
+  "project_id": "project-035",
+  "overwrite": false,
+  "targets": ["custom-gdpr-rule", "healthcare-compliance"]
+}
+```
 
-Deploy: AWS/Azure/GCP/Vercel; Docker Compose; GitHub Actions
+**Expected Output**:
+1. **Creates domain rule files**:
+   - `src/project_generator/template-packs/rules/generated/project-035/custom-gdpr-rule.mdc`
+   - `src/project_generator/template-packs/rules/generated/project-035/healthcare-compliance.mdc`
 
-Success Metrics (binary & measurable)
+2. **Does not touch canonical rules**:
+   - No writes to `src/project_generator/template-packs/rules/`
+   - Only writes to generated project directory
 
-Time-to-first-value: first useful dashboard live within 2 weeks
+## Implementation Guidelines
 
-Performance: dashboard loads ≤ 2s on median; p95 API ≤ 400ms (cached)
+### Rule Generation Process
+1. **Parse Specification**: Load and validate rule specification
+2. **Validate Inputs**: Check all required inputs are present
+3. **Determine Paths**: Calculate output paths based on rule type
+4. **Check Idempotency**: Handle existing files based on overwrite flag
+5. **Generate Content**: Create rule content with proper formatting
+6. **Validate Output**: Ensure generated content meets standards
+7. **Write Atomically**: Write files using atomic operations
+8. **Generate Report**: Create comprehensive summary report
 
-Quality: 0 P0 bugs post-release week; E2E smoke passing on CI
+### Error Handling
+- **Validation Errors**: Stop generation and report validation failures
+- **Path Errors**: Validate all paths before attempting writes
+- **Write Errors**: Use atomic writes to prevent partial files
+- **Permission Errors**: Check file permissions before writing
+- **Rollback**: Provide rollback capability for failed operations
 
-Security: 100% protected routes behind RBAC; audit log coverage on sensitive events
+### Performance Considerations
+- **Batch Processing**: Process multiple rules in single operation
+- **Parallel Generation**: Generate independent rules in parallel
+- **Caching**: Cache frequently accessed specifications
+- **Validation**: Validate early to avoid expensive operations
+- **Logging**: Comprehensive logging for debugging and monitoring
 
-Usability: ≥90 Lighthouse Accessibility; no layout shift on key views
-
-Must-Have Qualifications
-
-May na-deliver na end-to-end dashboards (link or demo welcome)
-
-Strong sa isa: Next.js/Angular/Nuxt at sa isa: FastAPI/Django/NestJS/Go
-
-Solid SQL (CTEs, window functions, indexes) at API design
-
-Experience with role-based access, audit logging, and handling PII
-
-CI/CD, Docker, basic cloud deploys
-
-Nice-to-Have
-
-ClickHouse/BigQuery, dbt/semantic layer experience
-
-Realtime (WebSocket/SSE), streaming ingestion
-
-OPA/Rego policy checks, Semgrep/Bandit/Trivy familiarity
-
-Visualization craftsmanship (custom D3, complex interactions)
-
-Deliverables (Milestone 1)
-
-Live dashboard with: global filters, 3–5 core KPIs, 2 drill-down pages
-
-Data contract (metrics.md): definitions, formulas, freshness SLAs
-
-Access control: roles, permissions matrix, admin page for user roles
-
-Observability: request tracing + dashboard event logs
-
-Docs: ARCHITECTURE.md, RUNBOOK.md, SECURITY_NOTES.md
+## Remember
+**I am the Rule Generation Framework. My job is to generate structured .mdc rules from specifications while enforcing format, managing paths, and ensuring idempotency. I never overwrite canonical rules and always write domain rules to the generated project directory.**

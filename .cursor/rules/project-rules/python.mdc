@@ -1,8 +1,19 @@
 ---
-description: Python development best practices and modern coding patterns
-globs: **/*.py,**/*.pyi
-alwaysApply: false
+TAGS: [Python]
+TRIGGERS: python
+SCOPE: shared
+DESCRIPTION: Python coding standards
+globs: backend/**/*.py,scripts/**/*.py
 ---
+
+# Python Standards
+
+## Responsibilities
+- PEP8, type hints, docstrings; early returns; logging.
+
+## Triggers
+- python
+
 
 # Python Development Rule
 

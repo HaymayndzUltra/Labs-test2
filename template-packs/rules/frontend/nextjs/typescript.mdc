@@ -1,0 +1,13 @@
+---
+TAGS: [Frontend,TypeScript]
+TRIGGERS: ts,typescript
+SCOPE: frontend
+DESCRIPTION: TypeScript strict usage for frontend
+---
+
+# TypeScript (Frontend)
+
+## Rules
+- Enable `strict`; no `any`; prefer explicit types for public APIs.
+- Use `zod`/schema validation at boundaries when needed.
+

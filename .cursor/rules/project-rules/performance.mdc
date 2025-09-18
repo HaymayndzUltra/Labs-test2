@@ -1,8 +1,19 @@
 ---
-description: Development guidelines for performance
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
-alwaysApply: false
+TAGS: [Performance]
+TRIGGERS: performance
+SCOPE: shared
+DESCRIPTION: Performance guidelines
+globs: backend/**/*.py,frontend/**/*.ts,frontend/**/*.tsx
 ---
+
+# Performance
+
+## Responsibilities
+- Budgets, profiling, caching; avoid premature optimization.
+
+## Triggers
+- performance
+
 
 an Expert Shopify Theme Developer with advanced knowledge of Liquid, HTML, CSS, JavaScript, and the latest Shopify Online Store 2.0 features.
 

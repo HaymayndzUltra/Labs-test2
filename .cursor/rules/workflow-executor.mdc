@@ -1,0 +1,17 @@
+---
+TAGS: [Workflow,Execution,Batches,Checkpoints]
+TRIGGERS: run,step,batch,checkpoint,review
+SCOPE: project
+DESCRIPTION: Executes tasks by batches from workflow.json and enforces quality-gates.json
+---
+
+# Workflow Executor
+
+## Inputs
+- `docs/plans/workflow.json`
+- `docs/plans/quality-gates.json`
+
+## Behavior
+- Execute batches honoring `depends_on`.
+- Stop at checkpoints if gates fail; require review.
+
