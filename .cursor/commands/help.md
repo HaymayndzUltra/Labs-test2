@@ -27,8 +27,32 @@ Key scripts:
 - scripts/update_task_state.py — update task state by id
 - scripts/write_context_report.py — writes .cursor/ai-governor/project.json
 
+Rules & Config:
+- Rules emission is controlled per run (isolation):
+  - Safe default: no nested rules in child projects (`--no-cursor-assets`)
+  - Minimal rules: emit a focused set in child (`--minimal-cursor --include-cursor-assets`)
+  - Full rules: emit complete rules in child (`--include-cursor-assets`)
+- When emitted, rules live under `.cursor/rules/` in the generated project.
+- Quality gates are configured via `gates_config.yaml` (plus optional industry overlays). Values may differ per project.
+
+Task states & personas:
+- Allowed states: `pending`, `in_progress`, `blocked`, `completed`, `cancelled`
+- Personas used by enrichment: `system-integrator`, `code-architect`, `qa`
+
+Quality gates (source of truth = config):
+- `python scripts/enforce_gates.py` reads thresholds from `gates_config.yaml`
+- Examples (subject to config): coverage, vulnerabilities, perf p95
+  - Example schema: coverage >= X; vulns_critical <= Y; perf_p95_ms <= Z
+
+Compliance mapping:
+- Derived from brief/industry and validated by generator/validator
+  - Healthcare → HIPAA (typical)
+  - E-commerce → PCI, GDPR (typical)
+  - Finance → SOX, PCI (typical)
+  - Default → GDPR (typical)
+
 Isolation defaults:
-- If a root .cursor exists, default output root is ../_generated and nested rule sets are off by default.
+- If a root `.cursor` exists, default output root is `../_generated` and nested rule sets are off by default.
 
 Context report (optional, after bootstrap):
 ```bash
