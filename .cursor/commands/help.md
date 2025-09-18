@@ -51,6 +51,11 @@ Compliance mapping:
   - Finance → SOX, PCI (typical)
   - Default → GDPR (typical)
 
+Repo Hardening:
+- PR Template: `.github/pull_request_template.md` (tasks/tests/gates/docs checklist)
+- CODEOWNERS: `CODEOWNERS` for review routing
+- CI: `.github/workflows/ci.yml` (lint/test then `scripts/enforce_gates.py`)
+
 Isolation defaults:
 - If a root `.cursor` exists, default output root is `../_generated` and nested rule sets are off by default.
 
