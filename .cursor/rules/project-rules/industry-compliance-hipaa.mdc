@@ -3,6 +3,7 @@ TAGS: [Compliance,HIPAA]
 TRIGGERS: hipaa
 SCOPE: compliance
 DESCRIPTION: HIPAA safeguards checklist (tech/admin)
+globs: **/*.py,frontend/**/*.ts,frontend/**/*.tsx,docs/**/*.md,**/*.env,**/*.yml,**/*.yaml
 ---
 
 # HIPAA Minimal

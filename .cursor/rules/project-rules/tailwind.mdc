@@ -3,6 +3,7 @@ TAGS: [Styling,Tailwind,CSS]
 TRIGGERS: tailwind
 SCOPE: shared
 DESCRIPTION: Tailwind v4 usage guidelines (utilities-first, variants, responsive)
+globs: frontend/**/*.tsx,frontend/**/*.ts,frontend/**/*.js,frontend/**/*.jsx,frontend/**/*.html,styles/**/*.css,styles/**/*.scss,app/**/*.tsx,components/**/*.tsx
 ---
 
 # Tailwind CSS — Minimal Usage

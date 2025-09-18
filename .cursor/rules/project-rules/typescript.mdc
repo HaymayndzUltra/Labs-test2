@@ -3,6 +3,7 @@ TAGS: [TypeScript]
 TRIGGERS: typescript
 SCOPE: shared
 DESCRIPTION: TypeScript strict usage
+globs: frontend/**/*.ts,frontend/**/*.tsx,lib/**/*.ts,lib/**/*.tsx,scripts/**/*.ts
 ---
 
 # TypeScript Strict

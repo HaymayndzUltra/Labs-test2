@@ -3,6 +3,7 @@ TAGS: [Frontend,Next.js,RSC]
 TRIGGERS: nextjs-rsc-and-client
 SCOPE: frontend
 DESCRIPTION: Guidance for React Server Components vs Client Components in Next.js
+globs: app/**/*.tsx,app/**/*.ts
 ---
 
 # RSC vs Client

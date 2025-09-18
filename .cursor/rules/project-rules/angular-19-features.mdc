@@ -3,6 +3,7 @@ TAGS: [Frontend,Angular,Features]
 TRIGGERS: angular-19-features
 SCOPE: frontend
 DESCRIPTION: Angular 19 features (standalone components, Signals, zoneless CD, deferrable views)
+globs: frontend/**/*.ts,src/app/**/*.ts
 ---
 
 # Angular 19 — Features

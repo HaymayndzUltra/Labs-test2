@@ -3,6 +3,7 @@ TAGS: [Frontend,Next.js,React]
 TRIGGERS: nextjs
 SCOPE: frontend
 DESCRIPTION: Next.js baseline conventions (App Router, routing, data, env)
+globs: frontend/**/*.tsx,frontend/**/*.ts,app/**/*.tsx,app/**/*.ts,components/**/*.tsx,components/**/*.ts
 ---
 
 # Next.js Baseline

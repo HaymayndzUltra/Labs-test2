@@ -3,6 +3,7 @@ TAGS: [Frontend,Formatting,Lint]
 TRIGGERS: nextjs-formatting
 SCOPE: frontend
 DESCRIPTION: Lint/format rules for Next.js frontend
+globs: frontend/**/*.tsx,frontend/**/*.ts,app/**/*.tsx,app/**/*.ts,components/**/*.tsx,components/**/*.ts
 ---
 
 # Formatting & Lint

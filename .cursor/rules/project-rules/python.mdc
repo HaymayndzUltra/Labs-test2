@@ -3,6 +3,7 @@ TAGS: [Python]
 TRIGGERS: python
 SCOPE: shared
 DESCRIPTION: Python coding standards
+globs: backend/**/*.py,scripts/**/*.py
 ---
 
 # Python Standards

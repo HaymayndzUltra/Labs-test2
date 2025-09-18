@@ -3,6 +3,7 @@ TAGS: [Auth0,JavaScript,Auth]
 TRIGGERS: auth0-features, auth0-setup
 SCOPE: frontend
 DESCRIPTION: Auth0 feature implementation in vanilla JS using official SDK methods only
+globs: **/*.js,**/*.html
 ---
 
 # Auth0 JS Features

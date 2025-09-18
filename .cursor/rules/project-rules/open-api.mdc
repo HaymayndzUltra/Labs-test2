@@ -3,6 +3,7 @@ TAGS: [OpenAPI,Spec]
 TRIGGERS: open-api
 SCOPE: backend
 DESCRIPTION: OpenAPI spec hygiene and generation
+globs: **/openapi.yml,**/openapi.yaml,**/openapi.json,**/swagger.yaml,**/swagger.yml
 ---
 
 # OpenAPI

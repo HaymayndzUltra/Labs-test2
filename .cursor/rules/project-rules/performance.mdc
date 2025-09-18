@@ -3,6 +3,7 @@ TAGS: [Performance]
 TRIGGERS: performance
 SCOPE: shared
 DESCRIPTION: Performance guidelines
+globs: backend/**/*.py,frontend/**/*.ts,frontend/**/*.tsx
 ---
 
 # Performance

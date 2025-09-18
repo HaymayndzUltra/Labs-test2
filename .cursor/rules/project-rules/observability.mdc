@@ -3,6 +3,7 @@ TAGS: [Observability,Tracing,Metrics,Logs]
 TRIGGERS: observability
 SCOPE: shared
 DESCRIPTION: Minimal observability guidelines (traces/metrics/logs)
+globs: backend/**/*.py,frontend/**/*.ts,frontend/**/*.tsx
 ---
 
 # Observability

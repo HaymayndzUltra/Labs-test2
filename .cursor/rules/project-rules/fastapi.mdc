@@ -3,6 +3,7 @@ TAGS: [Backend,FastAPI]
 TRIGGERS: fastapi
 SCOPE: backend
 DESCRIPTION: FastAPI baseline (routers, services, models, DI)
+globs: backend/**/*.py,**/routers/**/*.py,**/api/**/*.py,**/services/**/*.py,**/schemas/**/*.py
 ---
 
 # FastAPI Baseline
