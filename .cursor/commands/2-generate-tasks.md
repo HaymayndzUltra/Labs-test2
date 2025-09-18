@@ -11,17 +11,14 @@ Outputs:
 
 Step 1 — Build tasks.json from PLAN.tasks.json
 ```bash
-# If you have a custom post-processor script, call it here; otherwise, copy as baseline
 cp -f PLAN.tasks.json tasks.json
 ```
 
 Step 2 — Enrich tasks (personas, acceptance)
-- Convention: area→persona
-  - backend → code-architect
-  - frontend → system-integrator
-  - devops/qa → qa
-- Add minimal acceptance if missing (smoke tests, lint, docs touch)
-[HALT] Confirm enrichment policy.
+```bash
+python scripts/enrich_tasks.py --input tasks.json --output tasks.json
+```
+[HALT] Review enrichment results printed by the script.
 
 Step 3 — Validate DAG
 - Ensure no cycles; blocked_by refers to existing ids; per-lane concurrency cap observed at execution time.
