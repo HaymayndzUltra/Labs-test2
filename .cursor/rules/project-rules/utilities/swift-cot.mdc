@@ -1,6 +1,6 @@
 ---
-description: Development guidelines for cot
-globs:
+description: Development guidelines for Swift CoT
+globs: **/*.swift
 alwaysApply: false
 ---
 
@@ -54,3 +54,4 @@ The target audience is me—a native Chinese developer eager to learn Swift 6 an
 # START ANALYSIS
 
 If you understand, please prepare to assist me and await my question.
+

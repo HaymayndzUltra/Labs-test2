@@ -1,277 +1,224 @@
-# Validation Report
+# Project Rules Validation Report
 
-moved:
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/accessibility.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/compliance/accessibility.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/al.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/al.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/alpine-js.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/alpine-js.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/android.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/android.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/angular.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/angular.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/api.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/api.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/arduino-framework.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/arduino-framework.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/aspnet.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/aspnet.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/astro.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/astro.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/autohotkey.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/autohotkey.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/axi.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/axi.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/azure.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/infrastructure/azure.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/best-practices.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/best-practices.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/blockchain.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/blockchain.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/bootstrap.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/bootstrap.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/browser-api.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/browser-api.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/clean-architecture.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/clean-architecture.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/cms.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/cms.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/convex.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/convex.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/cot.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/cot.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/cpp.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/languages/cpp.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/cross-platform-desktop-app.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/cross-platform-desktop-app.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/css.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/css.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/cybersecurity.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/compliance/cybersecurity.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/data-analyst.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/data-analyst.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/deep-learning.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/deep-learning.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/django.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/django.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/elixir.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/elixir.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/enterprise-next-nest-plan.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/enterprise-next-nest-plan.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/enterprise.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/enterprise.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/ex.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/ex.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/execution-plan-orchestrator.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/execution-plan-orchestrator.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/expo.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/expo.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/fastapi.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/fastapi.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/fastify.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/fastify.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/fe-be-plan.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/fe-be-plan.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/feature-first.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/feature-first.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/firebase.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/firebase.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/flask.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/flask.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/flutter.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/flutter.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/franework.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/franework.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/function.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/function.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/game-development.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/game-development.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/gatsby.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/gatsby.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/ghost-cms.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/ghost-cms.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/ghost.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/ghost.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/global.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/global.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/go-testing.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/go-testing.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/golang.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/languages/golang.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/graphql.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/graphql.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/html.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/html.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/htmx.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/htmx.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/i18n.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/i18n.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/ibc.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/ibc.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/infrastructure-as-code.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/infrastructure-as-code.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/ionic.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/ionic.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/jakarta-ee.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/jakarta-ee.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/java.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/languages/java.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/javascript.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/languages/javascript.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/julia.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/languages/julia.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/kotlin.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/languages/kotlin.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/laravel.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/laravel.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/livewire.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/livewire.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/lua.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/languages/lua.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/machine-learning.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/machine-learning.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/manifest.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/manifest.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/meta-prompt.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/meta-prompt.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/microservices.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/microservices.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/mongodb.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/mongodb.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/mpsc.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/mpsc.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/nethttp.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/nethttp.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/nextjs-a11y.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/nextjs-a11y.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/nextjs-formatting.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/nextjs-formatting.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/nextjs-rsc-and-client.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/nextjs-rsc-and-client.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/nextjs.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/nextjs.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/node.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/node.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/nodejs.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/nodejs.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/observability.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/observability.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/official.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/official.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/onchainkit.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/onchainkit.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/open-api.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/open-api.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/orm.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/orm.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/package-management.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/package-management.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/paraglide-js.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/paraglide-js.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/pci-compliance.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/compliance/pci-compliance.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/performance.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/performance.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/php.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/languages/php.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/pixijs.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/pixijs.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/playwright.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/playwright.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/popular.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/popular.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/project-trigger-orchestrator.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/project-trigger-orchestrator.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/python.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/languages/python.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/rails.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/rails.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/react-native.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/react-native.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/react.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/react.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/redux.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/redux.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/reflection.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/reflection.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/remix.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/remix.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/responsive-design.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/responsive-design.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/rest-api.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/rest-api.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/robocorp.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/robocorp.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/rspec.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/rspec.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/rust.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/languages/rust.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/salesforce.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/salesforce.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/sanity.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/sanity.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/serverless.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/serverless.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/shadcn-ui.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/shadcn-ui.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/smart-contracts.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/smart-contracts.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/sox-compliance.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/compliance/sox-compliance.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/spring.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/spring.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/standard-js.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/standard-js.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/supabase.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/supabase.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/svelte.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/svelte.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/sveltekit.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/sveltekit.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/swift.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/languages/swift.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/tailwind.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/tailwind.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/terraform.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/infrastructure/terraform.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/threejs.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/threejs.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/timing-optimization.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/timing-optimization.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/trajectory-analysis.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/trajectory-analysis.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/tutorials.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/tutorials.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/typescript.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/languages/typescript.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/ui.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/ui.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/unity.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/unity.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/ux.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/ux.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/viem-v2.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/viem-v2.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/vite.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/vite.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/vivado.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/vivado.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/vue.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/frameworks/vue.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/web-scraping.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/web-scraping.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/web3js.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/web3js.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/webshop.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/webshop.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/woocommerce.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/woocommerce.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/wordpress.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/wordpress.mdc
-- from: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/zod.mdc
-  to: /home/haymayndz/Labs-test2/.cursor/rules/project-rules/utilities/zod.mdc
-duplicates:
-- backend-development.mdc
-- web-development.mdc
-errors: []
+Scanned files: 213
+
+## Mapping (Current → Detected → Proposed Filename → Proposed Category)
+
+| Current Filename | Detected Topic | Index Category | Proposed Filename | Proposed Category | Frontmatter OK | Needs Change |
+|---|---|---|---|---|---|---|
+| INDEX.mdc | laravel | utilities | INDEX.mdc | utilities | yes | no |
+| accessibility.mdc | javascript | compliance | accessibility.mdc | compliance | yes | no |
+| al.mdc | unknown | utilities | al.mdc | utilities | yes | no |
+| alpine-js.mdc | laravel | utilities | alpine-js.mdc | utilities | yes | no |
+| android.mdc | android | frameworks | android.mdc | frameworks | yes | no |
+| angular.mdc | react | frameworks | angular.mdc | frameworks | yes | no |
+| api.mdc | expo | utilities | api.mdc | utilities | yes | no |
+| arduino-framework.mdc | cpp | utilities | arduino-framework.mdc | utilities | yes | no |
+| aspnet.mdc | unknown | utilities | aspnet.mdc | utilities | yes | no |
+| astro.mdc | react | frameworks | astro.mdc | frameworks | yes | no |
+| autohotkey.mdc | unknown | utilities | autohotkey.mdc | utilities | yes | no |
+| axi.mdc | unknown | utilities | axi.mdc | utilities | yes | no |
+| azure.mdc | python | infrastructure | azure.mdc | infrastructure | yes | no |
+| backend-development.mdc | cpp | utilities | backend-development.mdc | utilities | yes | no |
+| best-practices.mdc | expo | utilities | best-practices.mdc | utilities | yes | no |
+| blockchain.mdc | rust | utilities | blockchain.mdc | utilities | yes | no |
+| browser-api.mdc | typescript | utilities | browser-api.mdc | utilities | yes | no |
+| clean-architecture.mdc | expo | utilities | clean-architecture.mdc | utilities | yes | no |
+| cms.mdc | drupal | utilities | cms.mdc | utilities | yes | no |
+| convex.mdc | react | utilities | convex.mdc | utilities | yes | no |
+| cpp.mdc | cpp | languages | cpp.mdc | languages | yes | no |
+| cybersecurity.mdc | python | compliance | cybersecurity.mdc | compliance | yes | no |
+| data-analyst.mdc | python | utilities | data-analyst.mdc | utilities | yes | no |
+| database.mdc | javascript | utilities | database.mdc | utilities | yes | no |
+| deep-learning.mdc | python | utilities | deep-learning.mdc | utilities | yes | no |
+| deployment.mdc | expo | infrastructure | deployment.mdc | infrastructure | yes | no |
+| django.mdc | python | frameworks | django.mdc | frameworks | yes | no |
+| elixir.mdc | unknown | utilities | elixir.mdc | utilities | yes | no |
+| enterprise.mdc | python | utilities | enterprise.mdc | utilities | yes | no |
+| ex.mdc | unknown | utilities | ex.mdc | utilities | yes | no |
+| fastapi.mdc | python | frameworks | fastapi.mdc | frameworks | yes | no |
+| fastify.mdc | expo | utilities | fastify.mdc | utilities | yes | no |
+| fe-be-plan.mdc | python | utilities | fe-be-plan.mdc | utilities | yes | no |
+| feature-first.mdc | flutter | utilities | feature-first.mdc | utilities | yes | no |
+| flask.mdc | python | frameworks | flask.mdc | frameworks | yes | no |
+| flutter.mdc | expo | frameworks | flutter.mdc | frameworks | yes | no |
+| function.mdc | python | utilities | function.mdc | utilities | yes | no |
+| game-development.mdc | expo | utilities | game-development.mdc | utilities | yes | no |
+| gatsby.mdc | react | frameworks | gatsby.mdc | frameworks | yes | no |
+| ghost-cms.mdc | laravel | utilities | ghost-cms.mdc | utilities | yes | no |
+| global.mdc | typescript | utilities | global.mdc | utilities | yes | no |
+| golang.mdc | expo | languages | golang.mdc | languages | yes | no |
+| graphql.mdc | react | utilities | graphql.mdc | utilities | yes | no |
+| htmx.mdc | flask | utilities | htmx.mdc | utilities | yes | no |
+| i18n.mdc | react | utilities | i18n.mdc | utilities | yes | no |
+| ibc.mdc | rust | utilities | ibc.mdc | utilities | yes | no |
+| infrastructure-as-code.mdc | terraform | utilities | infrastructure-as-code.mdc | utilities | yes | no |
+| ionic.mdc | angular | frameworks | ionic.mdc | frameworks | yes | no |
+| jakarta-ee.mdc | react | utilities | jakarta-ee.mdc | utilities | yes | no |
+| java.mdc | spring | languages | java.mdc | languages | yes | no |
+| julia.mdc | expo | languages | julia.mdc | languages | yes | no |
+| kotlin.mdc | flutter | languages | kotlin.mdc | languages | yes | no |
+| laravel.mdc | laravel | frameworks | laravel.mdc | frameworks | yes | no |
+| livewire.mdc | laravel | utilities | livewire.mdc | utilities | yes | no |
+| lua.mdc | lua | languages | lua.mdc | languages | yes | no |
+| machine-learning.mdc | python | utilities | machine-learning.mdc | utilities | yes | no |
+| meta-prompt.mdc | lua | utilities | meta-prompt.mdc | utilities | yes | no |
+| microservices.mdc | python | utilities | microservices.mdc | utilities | yes | no |
+| mpsc.mdc | rust | utilities | mpsc.mdc | utilities | yes | no |
+| nethttp.mdc | golang | utilities | nethttp.mdc | utilities | yes | no |
+| nextjs.mdc | python | frameworks | nextjs.mdc | frameworks | yes | no |
+| nodejs.mdc | react | utilities | nodejs.mdc | utilities | yes | no |
+| observability.mdc | expo | utilities | observability.mdc | utilities | yes | no |
+| official.mdc | nextjs | utilities | official.mdc | utilities | yes | no |
+| onchainkit.mdc | typescript | utilities | onchainkit.mdc | utilities | yes | no |
+| open-api.mdc | unknown | utilities | open-api.mdc | utilities | yes | no |
+| orm.mdc | expo | utilities | orm.mdc | utilities | yes | no |
+| package-management.mdc | python | utilities | package-management.mdc | utilities | yes | no |
+| paraglide-js.mdc | react | utilities | paraglide-js.mdc | utilities | yes | no |
+| pci-compliance.mdc | pci-compliance | compliance | pci-compliance.mdc | compliance | yes | no |
+| performance.mdc | javascript | utilities | performance.mdc | utilities | yes | no |
+| php.mdc | laravel | languages | php.mdc | languages | yes | no |
+| pixijs.mdc | ionic | utilities | pixijs.mdc | utilities | yes | no |
+| popular.mdc | react | utilities | popular.mdc | utilities | yes | no |
+| project-setup.mdc | python | utilities | project-setup.mdc | utilities | yes | no |
+| python.mdc | python | languages | python.mdc | languages | yes | no |
+| rails.mdc | rails | frameworks | rails.mdc | frameworks | yes | no |
+| react-native.mdc | react | frameworks | react-native.mdc | frameworks | yes | no |
+| react.mdc | react | frameworks | react.mdc | frameworks | yes | no |
+| redux.mdc | react | utilities | redux.mdc | utilities | yes | no |
+| reflection.mdc | lua | utilities | reflection.mdc | utilities | yes | no |
+| remix.mdc | react | frameworks | remix.mdc | frameworks | yes | no |
+| responsive-design.mdc | accessibility | utilities | responsive-design.mdc | utilities | yes | no |
+| rest-api.mdc | python | utilities | rest-api.mdc | utilities | yes | no |
+| review/behavior.mdc | unknown | utilities | review/behavior.mdc | utilities | yes | no |
+| robocorp.mdc | python | utilities | robocorp.mdc | utilities | yes | no |
+| rust.mdc | rust | languages | rust.mdc | languages | yes | no |
+| salesforce.mdc | javascript | utilities | salesforce.mdc | utilities | yes | no |
+| sanity.mdc | react | utilities | sanity.mdc | utilities | yes | no |
+| serverless.mdc | python | utilities | serverless.mdc | utilities | yes | no |
+| shadcn-ui.mdc | react | utilities | shadcn-ui.mdc | utilities | yes | no |
+| smart-contracts.mdc | unknown | utilities | smart-contracts.mdc | utilities | yes | no |
+| sox-compliance.mdc | sox-compliance | compliance | sox-compliance.mdc | compliance | yes | no |
+| spring.mdc | spring | frameworks | spring.mdc | frameworks | yes | no |
+| standard-js.mdc | react | utilities | standard-js.mdc | utilities | yes | no |
+| styling.mdc | react | utilities | styling.mdc | utilities | yes | no |
+| svelte.mdc | react | frameworks | svelte.mdc | frameworks | yes | no |
+| sveltekit.mdc | react | frameworks | sveltekit.mdc | frameworks | yes | no |
+| swift.mdc | swift | languages | swift.mdc | languages | yes | no |
+| terraform.mdc | terraform | infrastructure | terraform.mdc | infrastructure | yes | no |
+| testing.mdc | react | utilities | testing.mdc | utilities | yes | no |
+| threejs.mdc | react | utilities | threejs.mdc | utilities | yes | no |
+| timing-optimization.mdc | unknown | utilities | timing-optimization.mdc | utilities | yes | no |
+| tutorials.mdc | golang | utilities | tutorials.mdc | utilities | yes | no |
+| typescript.mdc | react | languages | typescript.mdc | languages | yes | no |
+| ui.mdc | javascript | utilities | ui.mdc | utilities | yes | no |
+| unity.mdc | expo | utilities | unity.mdc | utilities | yes | no |
+| utilities/al.mdc | unknown | utilities | utilities/al.mdc | utilities | yes | no |
+| utilities/alpine-js.mdc | laravel | utilities | utilities/alpine-js.mdc | utilities | yes | no |
+| utilities/api.mdc | expo | utilities | utilities/api.mdc | utilities | yes | no |
+| utilities/arduino-framework.mdc | cpp | utilities | utilities/arduino-framework.mdc | utilities | yes | no |
+| utilities/aspnet.mdc | unknown | utilities | utilities/aspnet.mdc | utilities | yes | no |
+| utilities/autohotkey.mdc | unknown | utilities | utilities/autohotkey.mdc | utilities | yes | no |
+| utilities/axi.mdc | unknown | utilities | utilities/axi.mdc | utilities | yes | no |
+| utilities/best-practices.mdc | expo | utilities | utilities/best-practices.mdc | utilities | yes | no |
+| utilities/blockchain.mdc | rust | utilities | utilities/blockchain.mdc | utilities | yes | no |
+| utilities/bootstrap.mdc | javascript | utilities | utilities/bootstrap.mdc | utilities | yes | no |
+| utilities/browser-api.mdc | typescript | utilities | utilities/browser-api.mdc | utilities | yes | no |
+| utilities/clean-architecture.mdc | expo | utilities | utilities/clean-architecture.mdc | utilities | yes | no |
+| utilities/cms.mdc | drupal | utilities | utilities/cms.mdc | utilities | yes | no |
+| utilities/convex.mdc | react | utilities | utilities/convex.mdc | utilities | yes | no |
+| utilities/cross-platform-desktop-app.mdc | nextjs | utilities | utilities/cross-platform-desktop-app.mdc | utilities | yes | no |
+| utilities/css.mdc | javascript | utilities | utilities/css.mdc | utilities | yes | no |
+| utilities/data-analyst.mdc | python | utilities | utilities/data-analyst.mdc | utilities | yes | no |
+| utilities/deep-learning.mdc | python | utilities | utilities/deep-learning.mdc | utilities | yes | no |
+| utilities/elixir.mdc | unknown | utilities | utilities/elixir.mdc | utilities | yes | no |
+| utilities/enterprise-next-nest-plan.mdc | rails | utilities | utilities/enterprise-next-nest-plan.mdc | utilities | yes | no |
+| utilities/enterprise.mdc | python | utilities | utilities/enterprise.mdc | utilities | yes | no |
+| utilities/ex.mdc | unknown | utilities | utilities/ex.mdc | utilities | yes | no |
+| utilities/execution-plan-orchestrator.mdc | rails | utilities | utilities/execution-plan-orchestrator.mdc | utilities | yes | no |
+| utilities/fastify.mdc | expo | utilities | utilities/fastify.mdc | utilities | yes | no |
+| utilities/fe-be-plan.mdc | python | utilities | utilities/fe-be-plan.mdc | utilities | yes | no |
+| utilities/feature-first.mdc | flutter | utilities | utilities/feature-first.mdc | utilities | yes | no |
+| utilities/firebase.mdc | angular | utilities | utilities/firebase.mdc | utilities | yes | no |
+| utilities/function.mdc | python | utilities | utilities/function.mdc | utilities | yes | no |
+| utilities/game-development.mdc | expo | utilities | utilities/game-development.mdc | utilities | yes | no |
+| utilities/ghost-cms.mdc | laravel | utilities | utilities/ghost-cms.mdc | utilities | yes | no |
+| utilities/ghost.mdc | javascript | utilities | utilities/ghost.mdc | utilities | yes | no |
+| utilities/global.mdc | typescript | utilities | utilities/global.mdc | utilities | yes | no |
+| utilities/go-testing.mdc | expo | utilities | utilities/go-testing.mdc | utilities | yes | no |
+| utilities/graphql.mdc | react | utilities | utilities/graphql.mdc | utilities | yes | no |
+| utilities/html.mdc | flask | utilities | utilities/html.mdc | utilities | yes | no |
+| utilities/htmx.mdc | flask | utilities | utilities/htmx.mdc | utilities | yes | no |
+| utilities/i18n.mdc | react | utilities | utilities/i18n.mdc | utilities | yes | no |
+| utilities/ibc.mdc | rust | utilities | utilities/ibc.mdc | utilities | yes | no |
+| utilities/infrastructure-as-code.mdc | terraform | utilities | utilities/infrastructure-as-code.mdc | utilities | yes | no |
+| utilities/jakarta-ee.mdc | react | utilities | utilities/jakarta-ee.mdc | utilities | yes | no |
+| utilities/livewire.mdc | laravel | utilities | utilities/livewire.mdc | utilities | yes | no |
+| utilities/machine-learning.mdc | python | utilities | utilities/machine-learning.mdc | utilities | yes | no |
+| utilities/manifest-backend.mdc | manifest-backend | utilities | utilities/manifest-backend.mdc | utilities | yes | no |
+| utilities/meta-prompt.mdc | lua | utilities | utilities/meta-prompt.mdc | utilities | yes | no |
+| utilities/microservices.mdc | python | utilities | utilities/microservices.mdc | utilities | yes | no |
+| utilities/mongodb.mdc | react | utilities | utilities/mongodb.mdc | utilities | yes | no |
+| utilities/mpsc.mdc | rust | utilities | utilities/mpsc.mdc | utilities | yes | no |
+| utilities/nethttp.mdc | golang | utilities | utilities/nethttp.mdc | utilities | yes | no |
+| utilities/node.mdc | expo | utilities | utilities/node.mdc | utilities | yes | no |
+| utilities/nodejs.mdc | react | utilities | utilities/nodejs.mdc | utilities | yes | no |
+| utilities/observability.mdc | expo | utilities | utilities/observability.mdc | utilities | yes | no |
+| utilities/official.mdc | nextjs | utilities | utilities/official.mdc | utilities | yes | no |
+| utilities/onchainkit.mdc | typescript | utilities | utilities/onchainkit.mdc | utilities | yes | no |
+| utilities/open-api.mdc | unknown | utilities | utilities/open-api.mdc | utilities | yes | no |
+| utilities/orm.mdc | expo | utilities | utilities/orm.mdc | utilities | yes | no |
+| utilities/package-management.mdc | python | utilities | utilities/package-management.mdc | utilities | yes | no |
+| utilities/paraglide-js.mdc | react | utilities | utilities/paraglide-js.mdc | utilities | yes | no |
+| utilities/performance.mdc | javascript | utilities | utilities/performance.mdc | utilities | yes | no |
+| utilities/pixijs.mdc | ionic | utilities | utilities/pixijs.mdc | utilities | yes | no |
+| utilities/playwright.mdc | typescript | utilities | utilities/playwright.mdc | utilities | yes | no |
+| utilities/popular.mdc | react | utilities | utilities/popular.mdc | utilities | yes | no |
+| utilities/project-trigger-orchestrator.mdc | python | utilities | utilities/project-trigger-orchestrator.mdc | utilities | yes | no |
+| utilities/redux.mdc | react | utilities | utilities/redux.mdc | utilities | yes | no |
+| utilities/reflection.mdc | lua | utilities | utilities/reflection.mdc | utilities | yes | no |
+| utilities/responsive-design.mdc | accessibility | utilities | utilities/responsive-design.mdc | utilities | yes | no |
+| utilities/rest-api.mdc | python | utilities | utilities/rest-api.mdc | utilities | yes | no |
+| utilities/robocorp.mdc | python | utilities | utilities/robocorp.mdc | utilities | yes | no |
+| utilities/rspec.mdc | unknown | utilities | utilities/rspec.mdc | utilities | yes | no |
+| utilities/salesforce.mdc | javascript | utilities | utilities/salesforce.mdc | utilities | yes | no |
+| utilities/sanity.mdc | react | utilities | utilities/sanity.mdc | utilities | yes | no |
+| utilities/serverless.mdc | python | utilities | utilities/serverless.mdc | utilities | yes | no |
+| utilities/shadcn-ui.mdc | react | utilities | utilities/shadcn-ui.mdc | utilities | yes | no |
+| utilities/smart-contracts.mdc | unknown | utilities | utilities/smart-contracts.mdc | utilities | yes | no |
+| utilities/standard-js.mdc | react | utilities | utilities/standard-js.mdc | utilities | yes | no |
+| utilities/supabase.mdc | react | utilities | utilities/supabase.mdc | utilities | yes | no |
+| utilities/swift-cot.mdc | swift | utilities | utilities/swift-cot.mdc | utilities | yes | no |
+| utilities/tailwind.mdc | react | utilities | utilities/tailwind.mdc | utilities | yes | no |
+| utilities/threejs.mdc | react | utilities | utilities/threejs.mdc | utilities | yes | no |
+| utilities/timing-optimization.mdc | unknown | utilities | utilities/timing-optimization.mdc | utilities | yes | no |
+| utilities/trajectory-analysis.mdc | lua | utilities | utilities/trajectory-analysis.mdc | utilities | yes | no |
+| utilities/tutorials.mdc | golang | utilities | utilities/tutorials.mdc | utilities | yes | no |
+| utilities/ui.mdc | javascript | utilities | utilities/ui.mdc | utilities | yes | no |
+| utilities/unity.mdc | expo | utilities | utilities/unity.mdc | utilities | yes | no |
+| utilities/ux.mdc | javascript | utilities | utilities/ux.mdc | utilities | yes | no |
+| utilities/viem-v2.mdc | react | utilities | utilities/viem-v2.mdc | utilities | yes | no |
+| utilities/vite.mdc | laravel | utilities | utilities/vite.mdc | utilities | yes | no |
+| utilities/vivado.mdc | unknown | utilities | utilities/vivado.mdc | utilities | yes | no |
+| utilities/web-scraping.mdc | python | utilities | utilities/web-scraping.mdc | utilities | yes | no |
+| utilities/web3js.mdc | rust | utilities | utilities/web3js.mdc | utilities | yes | no |
+| utilities/webshop.mdc | lua | utilities | utilities/webshop.mdc | utilities | yes | no |
+| utilities/woocommerce.mdc | wordpress | utilities | utilities/woocommerce.mdc | utilities | yes | no |
+| utilities/wordpress.mdc | wordpress | utilities | utilities/wordpress.mdc | utilities | yes | no |
+| utilities/zod.mdc | react | utilities | utilities/zod.mdc | utilities | yes | no |
+| ux.mdc | javascript | utilities | ux.mdc | utilities | yes | no |
+| viem-v2.mdc | react | utilities | viem-v2.mdc | utilities | yes | no |
+| vite.mdc | laravel | utilities | vite.mdc | utilities | yes | no |
+| vivado.mdc | unknown | utilities | vivado.mdc | utilities | yes | no |
+| vue.mdc | react | frameworks | vue.mdc | frameworks | yes | no |
+| web-development.mdc | python | utilities | web-development.mdc | utilities | yes | no |
+| web-scraping.mdc | python | utilities | web-scraping.mdc | utilities | yes | no |
+| web-styling.mdc | expo | utilities | web-styling.mdc | utilities | yes | no |
+| web3js.mdc | rust | utilities | web3js.mdc | utilities | yes | no |
+| webshop.mdc | lua | utilities | webshop.mdc | utilities | yes | no |
+| woocommerce.mdc | wordpress | utilities | woocommerce.mdc | utilities | yes | no |
+| wordpress.mdc | wordpress | utilities | wordpress.mdc | utilities | yes | no |
+| zod.mdc | react | utilities | zod.mdc | utilities | yes | no |
+
+## Detailed Changes (only files needing changes)
+

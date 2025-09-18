@@ -1,6 +1,6 @@
 ---
-description: Development guidelines for manifest
-globs: **/*.test.ts,**/*.spec.ts,**/*.test.js,**/*.spec.js
+description: Development guidelines for Manifest backend
+globs: **/manifest/**.yml,**/package.json,.vscode/settings.json,.vscode/extensions.json
 alwaysApply: false
 ---
 
@@ -27,7 +27,7 @@ On the `manifest/backend.yml`, follow those rules:
 - Add a linebreak before each entity object
 - Each entity appears once. Relationships goes below the properties, do not repeat the entity name.
 - Do not use special characters.
-. Do not use middlewares, endpoints or hooks.
+- Do not use middlewares, endpoints or hooks.
 - Use YAML abbreviated form for objects, with spaces. Example: { name: issueDate, type: date }
 - Do not add relationships to single entities
 - For relationships, use short form. Ex: ' belongsTo:
@@ -59,3 +59,4 @@ properties:
 - title
 - { name: description, type: richText }
 - { name: cover, type: image }
+
