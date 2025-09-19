@@ -8,7 +8,7 @@ import { PrismaModule } from './prisma/prisma.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
-    ThrottlerModule.forRoot({ ttl: 60, limit: 100 }),
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     PrismaModule,
   ],
   controllers: [AppController],
