@@ -12,10 +12,10 @@ import { AuthService } from '@core/services/auth.service';
       <div class="container mx-auto px-4 py-16">
         <div class="text-center">
           <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            Welcome to {{PROJECT_NAME}}
+            Welcome
           </h1>
           <p class="text-xl text-gray-600 mb-8">
-            {{INDUSTRY}} {{PROJECT_TYPE}} Application
+            Starter Angular Application
           </p>
           
           <div class="space-x-4">
@@ -65,7 +65,7 @@ import { AuthService } from '@core/services/auth.service';
               </div>
               <div class="ml-4">
                 <h3 class="text-lg font-medium text-gray-900">Fast</h3>
-                <p class="mt-1 text-sm text-gray-500">Built with performance in mind using Angular 17 and optimized for speed.</p>
+                <p class="mt-1 text-sm text-gray-500">Built with performance in mind using Angular 20 and optimized for speed.</p>
               </div>
             </div>
           </div>
