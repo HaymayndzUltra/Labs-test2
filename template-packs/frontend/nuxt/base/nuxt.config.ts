@@ -1,6 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
+  future: {
+    compatibilityVersion: 4,
+  },
+  srcDir: 'app',
   
   modules: [
     '@nuxtjs/tailwindcss',
@@ -43,6 +47,10 @@ export default defineNuxtConfig({
 
   experimental: {
     payloadExtraction: false,
+    defaults: {
+      // Nuxt 4 returns shallow refs for data by default. Keep defaults but allow deep opt-in per fetch.
+      // useAsyncData: { deep: true }
+    }
   },
 
   sourcemap: {
