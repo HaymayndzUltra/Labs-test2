@@ -1,10 +1,10 @@
 # {{PROJECT_NAME}} Nuxt Frontend
 
-A {{INDUSTRY}} {{PROJECT_TYPE}} frontend built with Nuxt 3, Vue 3, and Tailwind CSS.
+A {{INDUSTRY}} {{PROJECT_TYPE}} frontend built with Nuxt 4, Vue 3, and Tailwind CSS.
 
 ## Features
 
-- ⚡ **Nuxt 3** - The Intuitive Vue Framework
+- ⚡ **Nuxt 4** - The Intuitive Vue Framework
 - 🎨 **Tailwind CSS** - Utility-first CSS framework
 - 🔐 **Authentication** - JWT-based auth with refresh tokens
 - 📦 **Pinia** - State management
@@ -17,7 +17,7 @@ A {{INDUSTRY}} {{PROJECT_TYPE}} frontend built with Nuxt 3, Vue 3, and Tailwind 
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - npm or pnpm
 - Backend API running (see backend README)
 

@@ -18,7 +18,7 @@
     "typecheck": "nuxt typecheck"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "dependencies": {
     "@nuxtjs/tailwindcss": "latest",
@@ -49,7 +49,7 @@
     "prettier": "^3.1.1",
     "prettier-plugin-tailwindcss": "^0.5.9",
     "tailwindcss": "^3.4.0",
-    "typescript": "^5.5.0",
+    "typescript": "^5.8.0",
     "vitest": "^1.0.0",
     "vue-tsc": "^2.0.0"
   }

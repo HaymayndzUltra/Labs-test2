@@ -1,10 +1,10 @@
 # {{PROJECT_NAME}} Angular Frontend
 
-A {{INDUSTRY}} {{PROJECT_TYPE}} frontend built with Angular 17, TypeScript, and Tailwind CSS.
+A {{INDUSTRY}} {{PROJECT_TYPE}} frontend built with Angular 20.2, TypeScript, and Tailwind CSS.
 
 ## Features
 
-- 🅰️ **Angular 17** - Modern web application framework
+- 🅰️ **Angular 20.2** - Modern web application framework
 - 🔒 **Standalone Components** - Simplified component architecture
 - 🔐 **JWT Authentication** - Secure authentication with interceptors
 - 🛡️ **Route Guards** - Protected routes with auth guards
@@ -17,9 +17,9 @@ A {{INDUSTRY}} {{PROJECT_TYPE}} frontend built with Angular 17, TypeScript, and 
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 20.19+
 - npm 9+
-- Angular CLI 17+
+- Angular CLI 20.2+
 - Backend API running (see backend README)
 
 ## Quick Start
@@ -27,7 +27,7 @@ A {{INDUSTRY}} {{PROJECT_TYPE}} frontend built with Angular 17, TypeScript, and 
 ### 1. Install Angular CLI
 
 ```bash
-npm install -g @angular/cli@17
+npm install -g @angular/cli@20.2
 ```
 
 ### 2. Install Dependencies
