@@ -7,7 +7,7 @@ const config = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.json' }],
+    '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest',
   },
 };
 module.exports = config;
