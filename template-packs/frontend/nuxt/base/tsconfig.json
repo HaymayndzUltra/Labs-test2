@@ -6,8 +6,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "types": [
-      "@nuxt/types",
-      "@pinia/nuxt",
       "@types/node"
     ]
   }
