@@ -1,64 +1,310 @@
-# Security
-# Compliance
-# Evidence files go herenode_modules/
+# =============================================================================
+# ROOT .GITIGNORE - COMPREHENSIVE FACTORY REPOSITORY
+# =============================================================================
+# This file covers all common patterns across all generated projects
+# Template-specific .gitignore files should only contain minimal, stack-specific rules
 
-__pycache__/
-*.pyc
-.env
-.DS_Store
-.idea/
-.vscode/
-coverage/
-dist/
-build/
-.venv/
+# =============================================================================
+# SECURITY & SECRETS
+# =============================================================================
+# Environment files
 .env
 .env.*
-*.db
-.next/
-.svelte-kit/
-.cursor/dev-workflow/snapshots/
+!.env.example
+!.env.template
+!.env.sample
+
+# API keys, tokens, certificates
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+secrets/
+.secrets/
+
+# =============================================================================
+# DEPENDENCIES & PACKAGE MANAGERS
+# =============================================================================
+# Node.js
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # Python
 __pycache__/
 *.py[cod]
 *.egg-info/
+*.egg
 .pytest_cache/
 .coverage
 .nox/
 .tox/
 venv/
 .venv/
-.env
-.env.*
+env/
+.env/
+
+# Go
+vendor/
+
+# Rust
+target/
+Cargo.lock
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+
+# =============================================================================
+# BUILD ARTIFACTS & DISTRIBUTION
+# =============================================================================
+# General build outputs
+dist/
+build/
+out/
+.output/
+.next/
+.nuxt/
+.angular/cache/
+.expo/
+.expo-shared/
+
+# Compiled binaries
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# =============================================================================
+# CACHES & TEMPORARY FILES
+# =============================================================================
+# General caches
+.cache/
+.parcel-cache/
+.turbo/
+.swc/
+.eslintcache
+.stylelintcache
+
+# OS generated files
 .DS_Store
-# Node
-node_modules/
-npm-debug.log*
-yarn-error.log
-pnpm-lock.yaml
-# Editor/OS
-.idea/
-.vscode/
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
-# Cursor rules and snapshots
+Desktop.ini
+
+# =============================================================================
+# IDE & EDITOR FILES
+# =============================================================================
+# VSCode
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# =============================================================================
+# TESTING & COVERAGE
+# =============================================================================
+# Coverage reports
+coverage/
+*.lcov
+.nyc_output/
+htmlcov/
+
+# Test results
+test-results/
+playwright-report/
+test-results.xml
+junit.xml
+
+# =============================================================================
+# LOGS & DEBUGGING
+# =============================================================================
+# Log files
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# =============================================================================
+# DATABASE & STORAGE
+# =============================================================================
+# SQLite
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# =============================================================================
+# FRAMEWORK-SPECIFIC (GENERAL)
+# =============================================================================
+# React/Next.js
+.next/
+out/
+
+# Vue/Nuxt
+.nuxt/
+.output/
+
+# Angular
+.angular/cache/
+dist/
+
+# Expo
+.expo/
+.expo-shared/
+# Managed workflow only - remove if switching to Bare:
+android/
+ios/
+
+# Svelte
+.svelte-kit/
+
+# =============================================================================
+# BACKEND FRAMEWORKS (GENERAL)
+# =============================================================================
+# Node.js backends
+dist/
+coverage/
+
+# Python backends
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+staticfiles/
+media/
+
+# Go backends
+bin/
+tmp/
+
+# =============================================================================
+# DEVELOPMENT & WORKFLOW
+# =============================================================================
+# Cursor AI
+.cursor/
 .cursor/dev-workflow/snapshots/
 .cursor/dev-workflow/routing_logs/
 .cursor/dev-workflow/waivers/
 .snapshots/
-# Build artifacts
-dist/
-build/
-.cache/
-__pycache__/
-*.pyc
-_gen_test/
+
+# Generated content (factory-specific)
+_generated/
 gen_exec/
-.venv/
-.env
-node_modules/
-dist/
-build/
-coverage/
-*.log
+_gen_test/
+
+# =============================================================================
+# DEPLOYMENT & INFRASTRUCTURE
+# =============================================================================
+# Docker
+.dockerignore
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Kubernetes
+*.kubeconfig
+
+# =============================================================================
+# DOCUMENTATION & REPORTS
+# =============================================================================
+# Generated docs
+docs/_build/
+site/
+
+# Reports
+reports/
+*.report
+
+# =============================================================================
+# KEEP THESE FILES (EXPLICITLY TRACKED)
+# =============================================================================
+# Lock files (for reproducible builds)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+go.sum
+go.mod
+requirements.txt
+requirements-dev.txt
+poetry.lock
+Pipfile.lock
+uv.lock
+
+# Configuration files
+*.config.js
+*.config.ts
+*.config.json
+tsconfig.json
+jsconfig.json
+tailwind.config.js
+next.config.js
+nuxt.config.js
+vite.config.js
+webpack.config.js
+
+# Database migrations (keep these!)
+# prisma/migrations/
+# django migrations are in apps/*/migrations/
+
+# =============================================================================
+# END OF ROOT .GITIGNORE
+# =============================================================================
