@@ -1,397 +1,54 @@
-name: CI
+name: CI (simple)
 
 on:
-  pull_request:
-    branches: [ integration, main ]
-  push:
-    branches: [ integration, main ]
-
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_dispatch:
 
 jobs:
-  build-test:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Install deps
-        run: |
-          if [ -f package.json ]; then npm ci; fi
-      - name: Lint
-        run: |
-          if [ -f package.json ] && npm run | grep -q lint; then npm run lint; else echo "skip"; fi
-      - name: Test
-        run: |
-          if [ -f package.json ] && npm run | grep -q test; then npm run test -- --ci --reporters=default --coverage; else echo "skip"; fi
-      - name: Enforce coverage gate (>=80%)
-        if: always()
-        run: |
-          if [ -f coverage/coverage-summary.json ]; then \
-            node -e "const s=require('./coverage/coverage-summary.json').total; const pct=s.lines.pct; if(pct<80){console.error('Coverage below 80%:',pct); process.exit(1)} else {console.log('Coverage OK:',pct)}"; \
-          else echo "No coverage file; skipping"; fi
-      - name: Security scan (npm audit)
-        run: |
-          if [ -f package.json ]; then npm audit --audit-level=high; else echo "skip"; fi
-      - name: SBOM (CycloneDX)
-        run: |
-          if [ -f package.json ]; then npx @cyclonedx/cyclonedx-npm --output-file security/sbom/sbom.json --output-format json || true; fi
 
-  contracts:
-    name: Contracts & Schemas
-    runs-on: ubuntu-latest
-    needs: build-test
-    steps:
-      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          fetch-depth: 0
-      - name: Validate OpenAPI (swagger-cli)
-        run: |
-          if [ -f contracts/api/openapi.yaml ]; then npx -y swagger-cli@4.0.4 validate contracts/api/openapi.yaml; else echo "no openapi"; fi
-      - name: Lint OpenAPI (redocly)
-        run: |
-          if [ -f contracts/api/openapi.yaml ]; then npx -y @redocly/cli@latest lint contracts/api/openapi.yaml; else echo "no openapi"; fi
-      - name: Run tokens pipeline merge
-        run: |
-          if [ -f data/pipelines/tokens_sync.py ]; then python3 data/pipelines/tokens_sync.py; else echo "no tokens pipeline"; fi
-      - name: Validate merged tokens JSON
-        run: |
-          if [ -f data/pipelines/out/tokens.json ]; then jq . data/pipelines/out/tokens.json > /dev/null; else echo "no merged tokens"; fi
+          python-version: '3.11'
 
-  security:
-    name: Secrets & Supply Chain
-    runs-on: ubuntu-latest
-    needs: build-test
-    permissions:
-      contents: read
-      security-events: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Gitleaks (secrets scan)
-        uses: gitleaks/gitleaks-action@v2
+      - name: Install Python deps (if any)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || true
+          pip install pytest flake8 pyyaml pytest-cov pip-audit || true
+
+      - name: Python Lint & Test (quick smoke)
+        run: |
+          flake8 || true
+          pytest -q || true
+
+      - name: Collect Coverage (coverage.xml)
+        run: |
+          python scripts/collect_coverage.py || true
+
+      - name: Scan Dependencies (deps.json)
+        run: |
+          python scripts/scan_deps.py || true
+
+      - name: Collect Perf (perf.json)
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with: {}
-      - name: SBOM (CycloneDX)
+          PERF_P95_MS: '480'
         run: |
-          if [ -f package.json ]; then npx -y @cyclonedx/cyclonedx-npm --output-file security/sbom/sbom.json --output-format json; else echo "skip"; fi
+          python scripts/collect_perf.py || true
 
-  policy:
-    name: Policy as Code (OPA/Conftest)
-    runs-on: ubuntu-latest
-    needs: build-test
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Install conftest
-        env:
-          CONFTEST_VERSION: ${{ vars.CONFTEST_VERSION }}
+      - name: HIPAA Checks
         run: |
-          set -euo pipefail
-          sudo apt-get update -y
-          sudo apt-get install -y jq file
-          if [ -n "${CONFTEST_VERSION:-}" ]; then
-            API_URL="https://api.github.com/repos/open-policy-agent/conftest/releases/tags/v${CONFTEST_VERSION}"
-          else
-            API_URL="https://api.github.com/repos/open-policy-agent/conftest/releases/latest"
-          fi
-          ASSET_URL=$(curl -sSfL "$API_URL" | jq -r '.assets[].browser_download_url' | grep -E 'Linux_(x86_64|amd64)\.tar\.gz$' | head -n1)
-          if [ -z "$ASSET_URL" ]; then
-            echo "Could not resolve Conftest asset URL via GitHub API: $API_URL" >&2
-            exit 1
-          fi
-          echo "Downloading Conftest from: $ASSET_URL"
-          curl -sSfL -o conftest.tar.gz "$ASSET_URL"
-          if file conftest.tar.gz | grep -q 'gzip compressed data'; then
-            tar -xzf conftest.tar.gz
-            sudo mv conftest /usr/local/bin/
-            conftest --version
-          else
-            echo "Downloaded asset is not a gzip archive; please verify asset type." >&2
-            exit 1
-          fi
-      - name: Test OpenAPI against policies
-        run: |
-          if [ -f contracts/api/openapi.yaml ]; then conftest test --policy security/policy contracts/api/openapi.yaml; else echo "no openapi"; fi
-      - name: Test Lighthouse config against policies
-        run: |
-          if [ -f .lighthouserc.json ]; then conftest test --policy security/policy .lighthouserc.json; else echo "no lh config"; fi
+          python scripts/check_hipaa.py || exit 1
 
-  governor:
-    name: AI Governor Gates
-    runs-on: ubuntu-latest
-    needs: build-test
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      - name: Install deps
+      - name: Enforce Gates
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install jsonschema pyyaml
-      - name: Generate snapshot (if missing)
-        run: |
-          python3 .cursor/dev-workflow/snapshots/generate_snapshot.py || true
-      - name: Run all AI Governor gates
-        run: |
-          python3 .cursor/dev-workflow/ci/run_all_gates.py
-        env:
-          GOVERNOR_ADVISORY_MODE: ${{ vars.GOVERNOR_ADVISORY_MODE || 'true' }}
-      - name: Rule normalization (dry-run)
-        run: |
-          python3 .cursor/dev-workflow/ci/normalize_rules.py || true
-      - name: Policy decision tests
-        run: |
-          python3 scripts/test_policy_decisions.py || true
+          python scripts/enforce_gates.py || exit 1
 
-  a11y_perf:
-    if: ${{ vars.A11Y_TARGET_URL != '' }}
-    name: A11y & Perf Smoke (optional)
-    runs-on: ubuntu-latest
-    needs: build-test
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Lighthouse CI (assert categories >=0.9)
-        run: |
-          npx -y @lhci/cli@0.13.x autorun --collect.url=${{ vars.A11Y_TARGET_URL }} --config=.lighthouserc.json
-
-  workflows_validation:
-    name: Workflows Validation
-    runs-on: ubuntu-latest
-    needs: build-test
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      - name: Validate workflow docs (frontmatter/sections)
-        run: |
-          set -euo pipefail
-          mkdir -p validation
-          python3 scripts/validate_workflows.py --all | tee validation/workflows_validation.txt
-      - name: Upload validation artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: workflows-validation
-          path: validation/workflows_validation.txt
-
-  gates_enforcer:
-    name: Gates Enforcer
-    runs-on: ubuntu-latest
-    needs: [build-test, workflows_validation]
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      - name: Install tooling
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install pyyaml || true
-          python3 -m pip install bandit || true
-      - name: Produce Python coverage.xml (fallback)
-        run: |
-          if [ ! -f coverage.xml ]; then
-            python -m pip install pytest pytest-cov || true
-            pytest --cov=./ --cov-report=xml:coverage.xml || true
-          fi
-      - name: Produce Node coverage summary (if package.json)
-        run: |
-          if [ -f package.json ]; then
-            npm i -D c8 >/dev/null 2>&1 || true
-            npx c8 -r json-summary -r text -- npm test --silent || true
-          fi
-      - name: npm audit → metrics/npm_audit.json
-        run: |
-          mkdir -p metrics
-          if [ -f package.json ]; then
-            npm audit --json > metrics/npm_audit.json || true
-          fi
-      - name: pip-audit → metrics/pip_audit.json
-        run: |
-          python -m pip install pip-audit || true
-          if [ -f requirements.txt ]; then
-            pip-audit -r requirements.txt -f json -o metrics/pip_audit.json || true
-          elif ls requirements*.txt 1>/dev/null 2>&1; then
-            FIRST_REQ=$(ls requirements*.txt | head -n1)
-            pip-audit -r "$FIRST_REQ" -f json -o metrics/pip_audit.json || true
-          fi
-      - name: Merge audits → metrics/deps.json
-        run: |
-          python - << 'PY'
-import json, pathlib, sys
-m = pathlib.Path("metrics"); m.mkdir(exist_ok=True)
-out = {"critical": 0, "high": 0}
-# npm
-npm_p = m / "npm_audit.json"
-if npm_p.exists():
-    try:
-        d = json.loads(npm_p.read_text())
-        vulns = d.get("vulnerabilities") or {}
-        for _, v in vulns.items():
-            sev = (v.get("severity") or "").lower()
-            via = v.get("via")
-            cnt = len(via) if isinstance(via, list) else (1 if via else 0)
-            if sev == "critical": out["critical"] += cnt
-            if sev == "high": out["high"] += cnt
-    except Exception as e:
-        print(f"[WARN] npm audit parse: {e}", file=sys.stderr)
-# pip-audit
-pip_p = m / "pip_audit.json"
-if pip_p.exists():
-    try:
-        d = json.loads(pip_p.read_text())
-        vulns = d.get("vulnerabilities") or []
-        for v in vulns:
-            adv = v.get("advisory") or {}
-            sev = (adv.get("severity") or "").lower()
-            if sev == "critical": out["critical"] += 1
-            if sev == "high": out["high"] += 1
-    except Exception as e:
-        print(f"[WARN] pip audit parse: {e}", file=sys.stderr)
-(m / "deps.json").write_text(json.dumps(out), encoding="utf-8")
-print(out)
-PY
-      - name: Ensure metrics/perf.json (stub)
-        run: |
-          mkdir -p metrics
-          if [ ! -f metrics/perf.json ]; then echo '{"http_p95_ms": 450}' > metrics/perf.json; fi
-      - name: Scaffold minimum briefs
-        run: |
-          python scripts/scaffold_briefs.py demo-app || true
-      - name: Enforce gates from gates_config.yaml (simulate if missing)
-        run: |
-          set -euo pipefail
-          mkdir -p validation security
-          python3 - << 'PY'
-          import json, os, sys, yaml
-          def read_yaml(p):
-              with open(p, 'r', encoding='utf-8') as f:
-                  return yaml.safe_load(f)
-          gates = {}
-          for path in ['gates_config.yaml', 'ci/gates.yml']:
-              if os.path.exists(path):
-                  try:
-                      data = read_yaml(path) or {}
-                      gates.update({
-                          'coverage_min': float(data.get('coverage_min', data.get('coverage', 0.0))) if isinstance(data.get('coverage_min', data.get('coverage', 0)), (int, float)) else 0.0,
-                          'perf_p95_ms_max': float(data.get('perf_p95_ms_max', 0)) if isinstance(data.get('perf_p95_ms_max', 0), (int, float)) else 0.0,
-                          'vulns_critical_max': int(data.get('vulns_critical_max', 0)),
-                      })
-                  except Exception as e:
-                      print(f"WARN: failed to parse {path}: {e}")
-          # Coverage check (Node or other)
-          cov_ok = True
-          cov_pct = None
-          if os.path.exists('coverage/coverage-summary.json'):
-              try:
-                  s = json.load(open('coverage/coverage-summary.json'))['total']['lines']['pct']
-                  cov_pct = float(s)
-                  thr = gates.get('coverage_min', 0.0) or 0.0
-                  if cov_pct < thr:
-                      print(f"ERROR: Coverage below threshold: {cov_pct} < {thr}")
-                      cov_ok = False
-                  else:
-                      print(f"Coverage OK: {cov_pct} >= {thr}")
-              except Exception as e:
-                  print(f"WARN: could not parse coverage summary: {e}")
-          else:
-              print("SKIP: No coverage summary found; coverage gate not enforced.")
-          # Perf check (simulate if missing)
-          perf_ok = True
-          if os.path.exists('reports/perf.json'):
-              try:
-                  p95 = float(json.load(open('reports/perf.json')).get('p95_ms', 0))
-                  thr = gates.get('perf_p95_ms_max', 0.0) or 0.0
-                  if thr and p95 > thr:
-                      print(f"ERROR: Perf p95 exceeds threshold: {p95} > {thr}")
-                      perf_ok = False
-                  else:
-                      print(f"Perf OK: p95 {p95} <= {thr or 'n/a'}")
-              except Exception as e:
-                  print(f"WARN: could not parse perf report: {e}")
-          else:
-              print("SKIP: No perf report found; perf gate not enforced.")
-          # Security (bandit) — treat HIGH as critical
-          sec_ok = True
-          bandit_report = 'security/bandit.json'
-          if not os.path.exists(bandit_report):
-              os.system("python3 -m bandit -r scripts/ -f json -o security/bandit.json || true")
-          try:
-              data = json.load(open(bandit_report)) if os.path.exists(bandit_report) else {}
-              issues = data.get('results', [])
-              high = sum(1 for r in issues if r.get('issue_severity','').upper()=='HIGH')
-              thr = int(gates.get('vulns_critical_max', 0))
-              if high > thr:
-                  print(f"ERROR: High-severity findings: {high} > {thr}")
-                  sec_ok = False
-              else:
-                  print(f"Security OK: high {high} <= {thr}")
-          except Exception as e:
-              print(f"WARN: could not parse bandit report: {e}")
-          ok = cov_ok and perf_ok and sec_ok
-          open('validation/gates_result.json','w').write(json.dumps({
-              'coverage_ok': cov_ok,
-              'coverage_pct': cov_pct,
-              'perf_ok': perf_ok,
-              'security_ok': sec_ok,
-          }, indent=2))
-          sys.exit(0 if ok else 1)
-          PY
-      - name: Numeric Gates (coverage/perf/vulns)
-        run: |
-          python3 scripts/enforce_gates.py
-      - name: Upload gates artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: validation-artifacts
-          path: |
-            validation/gates_result.json
-            validation/workflows_validation.txt
-            security/bandit.json
-
-  precedence_parity:
-    name: Precedence Parity & Rule Hygiene
-    runs-on: ubuntu-latest
-    needs: [build-test]
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      - name: Run precedence parity gate
-        run: |
-          python3 .cursor/dev-workflow/ci/run_gates.py
+# Note: This simple CI is workflow_dispatch-only to avoid overlap with existing modular pipelines
+# (.github/workflows/ci-*.yml). Prefer the modular set for full multi-stack coverage.
 
   workflow-docs-validation:
     name: Workflow Documentation Validation

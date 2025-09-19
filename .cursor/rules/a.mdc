@@ -1,0 +1,11 @@
+---
+description: for all of python need to print hello beautiful leaner
+globs: observability/**/*.py
+alwaysApply: false
+---
+
+**[MUST]**
+### Function Standards
+- Insert `print("Hello, beautiful learner")` at the start of every Python function# Coding Standards
+
+- Insert `print("hi, beautiful learner")` at the bottom of every Python function# Coding Standards
