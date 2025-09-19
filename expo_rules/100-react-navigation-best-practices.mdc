@@ -1,0 +1,9 @@
+---
+description: Best practices for React Navigation
+globs: **/*.ts,**/*.tsx,**/*.js,**/*.jsx
+---
+
+- Use `createNativeStackNavigator` for better performance on mobile.
+- Implement deep linking for improved user experience.
+- Manage navigation state with React Context or Zustand for global state management.
+- Use `screenOptions` to define common navigation options across screens.

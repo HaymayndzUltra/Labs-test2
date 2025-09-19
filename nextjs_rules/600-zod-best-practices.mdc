@@ -1,0 +1,9 @@
+---
+description: Best practices for schema validation with Zod
+globs: **/*.ts,**/*.tsx
+---
+
+- Define schemas for form validation to ensure type safety.
+- Use Zod's built-in methods for complex validations (e.g., `.refine()`).
+- Integrate Zod with React Hook Form for seamless validation.
+- Keep schemas modular and reusable across different components.

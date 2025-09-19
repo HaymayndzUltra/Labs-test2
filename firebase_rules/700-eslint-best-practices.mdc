@@ -1,0 +1,10 @@
+---
+description: Best practices for ESLint configuration and usage
+globs: **/*.ts,**/*.js
+---
+
+- Use a consistent coding style by extending popular configurations (e.g., Airbnb).
+- Enable TypeScript support with `@typescript-eslint` for better linting.
+- Regularly run linting as part of your CI/CD pipeline.
+- Customize rules to fit your team's coding standards.
+- Use ESLint plugins to enforce best practices for imports and other patterns.

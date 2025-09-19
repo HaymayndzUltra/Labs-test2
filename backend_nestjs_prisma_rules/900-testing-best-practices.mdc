@@ -1,0 +1,10 @@
+---
+description: Best practices for testing with Jest in NestJS
+globs: **/*.ts
+---
+
+- Write unit tests for individual components and services
+- Use integration tests to verify interactions between modules
+- Leverage Jest's mocking capabilities for external dependencies
+- Ensure coverage reports are generated and reviewed regularly
+- Use `supertest` for testing HTTP endpoints effectively

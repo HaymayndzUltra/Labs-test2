@@ -1,0 +1,9 @@
+---
+description: Guidelines for UI components and styling with Tailwind CSS
+globs: **/*.ts,**/*.tsx,**/*.css
+---
+
+- Use Tailwind CSS for utility-first styling to maintain consistency.
+- Follow a design system or component library for reusable UI components.
+- Ensure UI is responsive using Tailwind's responsive utilities.
+- Implement accessibility best practices in all UI components.

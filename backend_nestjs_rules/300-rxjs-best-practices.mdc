@@ -1,0 +1,10 @@
+---
+description: Best practices for using RxJS
+globs: **/*.ts
+---
+
+- Use operators like `map`, `filter`, and `mergeMap` to compose complex asynchronous flows.
+- Avoid using `subscribe` directly in components; prefer using `async` pipes in templates.
+- Manage subscriptions carefully to prevent memory leaks, using `takeUntil` or `async` pipes.
+- Use Subjects and BehaviorSubjects judiciously to manage state and events.
+- Leverage operators like `debounceTime` and `switchMap` for handling user input and API calls efficiently.

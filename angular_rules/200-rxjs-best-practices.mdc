@@ -1,0 +1,9 @@
+---
+description: Best practices for using RxJS in Angular applications
+globs: **/*.ts
+---
+
+- Use `async` pipe in templates to manage subscriptions automatically
+- Prefer `switchMap` for handling observable streams that depend on previous values
+- Use operators like `debounceTime` and `distinctUntilChanged` for efficient event handling
+- Avoid nested subscriptions; use higher-order mapping operators instead

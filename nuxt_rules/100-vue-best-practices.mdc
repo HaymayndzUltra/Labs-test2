@@ -1,0 +1,9 @@
+---
+description: Best practices for Vue 3 applications
+globs: **/*.ts,**/*.tsx,**/*.js,**/*.jsx
+---
+
+- Use the Composition API for better organization of logic and state.
+- Implement reactive state management with Pinia for a more streamlined approach.
+- Ensure components are reusable and follow the single responsibility principle.
+- Use slots and scoped slots for flexible component design.

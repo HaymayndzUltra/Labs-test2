@@ -1,0 +1,9 @@
+---
+description: Best practices and guidelines for FastAPI applications
+globs: **/*.py
+---
+
+- Use dependency injection for better modularity and testing
+- Leverage FastAPI's built-in validation with Pydantic models
+- Implement CORS middleware for cross-origin requests
+- Use async functions for I/O-bound operations to improve performance

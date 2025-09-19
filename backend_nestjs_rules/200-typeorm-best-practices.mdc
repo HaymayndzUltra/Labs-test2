@@ -1,0 +1,10 @@
+---
+description: Best practices for TypeORM usage
+globs: **/*.ts
+---
+
+- Use migrations for database schema changes to maintain consistency.
+- Define entities with clear relationships and use lazy loading where appropriate.
+- Implement repository patterns for data access to encapsulate database logic.
+- Use transactions for complex operations that involve multiple database changes.
+- Optimize queries with proper indexing and avoid N+1 query problems.

@@ -220,11 +220,24 @@ After generating a project:
 
 Each generated project includes:
 
-### AI Development Workflows
-- **Analyze**: `Apply instructions from .cursor/dev-workflow/1-analyze-and-plan-prd.md`
-- **Plan**: `Apply instructions from .cursor/dev-workflow/2-create-actionable-plan.md`
-- **Execute**: `Apply instructions from .cursor/dev-workflow/3-execute-tasks-parallel.md`
-- **Review**: `Apply instructions from .cursor/dev-workflow/4-retrospective-learnings.md`
+### Development Workflows
+
+#### Slash Commands (Quick Actions)
+- **Bootstrap**: `/0-bootstrap-project` - Fast, portable bootstrap with HALT checkpoints
+- **PRD Creation**: `/1-create-prd` - Generate PRD and planning artifacts from brief
+- **Task Generation**: `/2-generate-tasks` - Convert plan tasks into actionable tasks.json
+- **Task Sync**: `/sync-tasks` - Scan repo and reconcile tasks.json with actual code
+- **Task Execution**: `/3-process-tasks` - Execute tasks per lane with state management
+- **Quality Control**: `/4-quality-control` - Validate scope, run tests, enforce gates
+- **Retrospective**: `/5-implementation-retrospective` - Summarize outcomes and improve
+
+#### AI Workflow Protocols (Detailed Instructions)
+- **Bootstrap**: `Apply instructions from .cursor/dev-workflow/0-bootstrap-your-project.md`
+- **PRD Creation**: `Apply instructions from .cursor/dev-workflow/1-create-prd.md`
+- **Task Generation**: `Apply instructions from .cursor/dev-workflow/2-generate-tasks.md`
+- **Task Execution**: `Apply instructions from .cursor/dev-workflow/3-process-tasks.md`
+- **Quality Control**: `Apply instructions from .cursor/dev-workflow/4-quality-control-protocol.md`
+- **Retrospective**: `Apply instructions from .cursor/dev-workflow/5-implementation-retrospective.md`
 
 ### Active Rules
 - Client-specific development standards

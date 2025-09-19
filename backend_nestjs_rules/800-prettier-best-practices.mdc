@@ -1,0 +1,10 @@
+---
+description: Best practices for Prettier configuration
+globs: **/*.ts,**/*.js,**/*.json,**/*.md
+---
+
+- Use a consistent configuration across the team to avoid formatting conflicts.
+- Integrate Prettier with ESLint to ensure code is both linted and formatted.
+- Set up Prettier to run on pre-commit hooks to enforce formatting before code is pushed.
+- Use the `--check` option in CI to ensure all files are properly formatted.
+- Regularly update Prettier to benefit from the latest features and fixes.

@@ -1,0 +1,10 @@
+---
+description: Best practices for NestJS applications
+globs: **/*.ts
+---
+
+- Use modules to organize your application logically.
+- Implement guards and interceptors for better security and request handling.
+- Utilize DTOs (Data Transfer Objects) for validation and transformation of data.
+- Leverage the built-in dependency injection system for better testability and modularity.
+- Use Swagger for API documentation and ensure it is up-to-date.

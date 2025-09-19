@@ -1,0 +1,9 @@
+---
+description: Best practices for Axios
+globs: **/*.ts,**/*.tsx,**/*.js,**/*.jsx
+---
+
+- Create an Axios instance for centralized configuration (base URL, headers).
+- Use interceptors for handling requests and responses globally.
+- Implement error handling strategies to manage API errors gracefully.
+- Use cancellation tokens to prevent memory leaks in component unmounting.

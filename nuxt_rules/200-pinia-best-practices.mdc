@@ -1,0 +1,9 @@
+---
+description: Best practices for state management with Pinia
+globs: **/*.ts,**/*.tsx,**/*.js,**/*.jsx
+---
+
+- Define stores with clear state, getters, and actions for better maintainability.
+- Use TypeScript for type safety in your Pinia stores.
+- Keep store logic modular and separate from UI components.
+- Utilize plugins for persisting state or adding additional functionality.

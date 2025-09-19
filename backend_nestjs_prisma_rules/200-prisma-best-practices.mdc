@@ -1,0 +1,10 @@
+---
+description: Best practices for using Prisma ORM
+globs: **/*.ts
+---
+
+- Use migrations for schema changes to maintain database integrity
+- Utilize Prisma Client for type-safe database queries
+- Implement error handling for database operations
+- Use transactions for complex operations to ensure data consistency
+- Keep your Prisma schema organized and well-documented

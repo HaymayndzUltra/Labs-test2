@@ -1,0 +1,8 @@
+---
+description: Best practices for using Celery in Django applications
+globs: **/*.py
+---
+
+- Use task retries and error handling to manage failures gracefully.
+- Keep tasks small and focused to improve maintainability.
+- Monitor task performance and failures using tools like Flower.

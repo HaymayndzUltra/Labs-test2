@@ -1,0 +1,9 @@
+---
+description: Best practices for SQLAlchemy ORM usage
+globs: **/*.py
+---
+
+- Use the declarative base for model definitions
+- Implement session management with context managers
+- Use migrations with Alembic for database schema changes
+- Optimize queries with eager loading to reduce N+1 query problems

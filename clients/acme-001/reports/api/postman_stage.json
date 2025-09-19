@@ -1,0 +1,15 @@
+{
+  "run": {
+    "stats": {
+      "assertions": {
+        "total": 9,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "started": 1758259063092,
+      "completed": 1758259064092
+    },
+    "failures": []
+  }
+}

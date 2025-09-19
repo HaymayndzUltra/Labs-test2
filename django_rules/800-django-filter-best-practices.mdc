@@ -1,0 +1,8 @@
+---
+description: Best practices for filtering in Django applications
+globs: **/*.py
+---
+
+- Use Django Filter's `FilterSet` for cleaner and more maintainable filter logic.
+- Implement custom filters for complex queries.
+- Ensure filters are secure and do not expose sensitive data.

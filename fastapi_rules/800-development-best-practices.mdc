@@ -1,0 +1,9 @@
+---
+description: Best practices for code quality and formatting in Python projects
+globs: **/*.py
+---
+
+- Use Black for consistent code formatting
+- Use Flake8 for linting and enforcing coding standards
+- Use MyPy for type checking to catch type errors early
+- Use Isort for organizing imports in a consistent manner

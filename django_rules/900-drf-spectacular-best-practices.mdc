@@ -1,0 +1,8 @@
+---
+description: Best practices for API documentation with DRF Spectacular
+globs: **/*.py
+---
+
+- Use schema generation to keep your API documentation up to date.
+- Annotate your views and serializers for better documentation clarity.
+- Regularly review and test your API documentation for accuracy.

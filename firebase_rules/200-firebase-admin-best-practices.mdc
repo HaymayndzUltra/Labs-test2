@@ -1,0 +1,10 @@
+---
+description: Best practices for Firebase Admin SDK usage
+globs: **/*.ts,**/*.js
+---
+
+- Initialize the Admin SDK only once to avoid performance issues.
+- Use Firestore transactions for atomic operations.
+- Implement security rules to protect data access.
+- Use batch writes for efficiency when updating multiple documents.
+- Regularly review and update permissions for service accounts.

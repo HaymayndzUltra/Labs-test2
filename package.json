@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "api:run:stage": "newman run clients/acme-001/postman/collection.json -e clients/acme-001/postman/env.stage.json --reporters cli,json --reporter-json-export clients/acme-001/reports/api/postman_stage.json",
+    "api:gate": "node tools/check-postman.js clients/acme-001/reports/api/postman_stage.json"
+  },
+  "devDependencies": {
+    "newman": "^6.2.1"
+  }
+}

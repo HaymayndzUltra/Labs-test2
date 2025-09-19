@@ -1,0 +1,8 @@
+---
+description: Best practices for using psycopg2 with PostgreSQL
+globs: **/*.py
+---
+
+- Use connection pooling for better performance.
+- Handle exceptions and ensure connections are closed properly.
+- Use parameterized queries to prevent SQL injection.

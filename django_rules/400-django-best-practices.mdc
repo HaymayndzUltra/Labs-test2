@@ -1,0 +1,9 @@
+---
+description: Best practices and guidelines for Django applications
+globs: **/*.py
+---
+
+- Use Django's built-in authentication and permissions system effectively.
+- Organize your apps logically and keep them small and focused.
+- Utilize Django's class-based views for better reusability.
+- Implement middleware for cross-cutting concerns like authentication and logging.

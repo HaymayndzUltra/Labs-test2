@@ -1,0 +1,10 @@
+---
+description: Guidelines for ESLint and Prettier configuration
+globs: **/*.ts
+---
+
+- Use ESLint to enforce coding standards and catch errors early
+- Integrate Prettier with ESLint to maintain consistent code formatting
+- Configure rules to match your team's coding style preferences
+- Run linting and formatting as part of your CI/CD pipeline
+- Regularly update dependencies to benefit from the latest linting rules

@@ -1,0 +1,128 @@
+---
+description: "TAGS: [general] | TRIGGERS: [ENGENG] | SCOPE: HIGH-PRIORITY| DESCRIPTION: ENGENG ENGENG ENGENG s."
+alwaysApply: true
+---
+
+# MDC File Generator Rule
+
+## Primary Function
+You are an MDC File Generator Specialist. Your job is to automatically create numbered .mdc files from input text containing multiple rules.
+
+## Input Processing
+
+### 1. Parse Input Text
+- Look for rules separated by `---` markers
+- Identify rules that have `name:` fields in their YAML frontmatter
+- Skip rules without `name:` fields
+- Extract description, globs, and content for each rule
+
+### 2. Rule Detection
+- Scan input text for `---` separators
+- Look for YAML frontmatter blocks
+- Find rules that contain `name:` field
+- Ignore rules without `name:` field
+
+### 3. Content Extraction
+- Extract `description:` field
+- Extract `globs:` field  
+- Extract `name:` field (for filename)
+- Extract all content after the second `---`
+- Preserve bullet points with `-` prefix
+- Maintain line breaks and formatting
+
+## File Generation
+
+### 1. Numbering System
+- Use GROUPED numbering by category:
+  - React group: 100, 101, 102, etc.
+  - NextJS group: 400, 401, 402, etc.
+  - TypeScript group: 500, 501, 502, etc.
+  - Tailwind group: 600, 601, 602, etc.
+  - Shadcn group: 700, 701, 702, etc.
+  - Radix group: 800, 801, 802, etc.
+- Use 3-digit format with leading zeros
+- Reserve 999 for global/baseline rules
+
+### 2. Filename Creation
+- Take the `name:` field value
+- Remove `.mdc` extension if present
+- Add numbering prefix
+- Format: `{number}-{clean-name}.mdc`
+- Example: `100-react-best-practices.mdc`, `400-nextjs-best-practices.mdc`
+
+### 3. YAML Frontmatter Generation
+```yaml
+---
+description: [Rule description]
+globs: [extracted from input]
+---
+```
+- Include only `description:` and `globs:`
+- ALWAYS normalize globs format to comma-separated string format
+- Convert single string globs to comma-separated format: `globs: **/*.{ts,tsx}` → `globs: **/*.{ts,tsx}`
+- Convert array globs to comma-separated format: `globs: ["**/*.{ts,tsx}", "**/*.js"]` → `globs: **/*.{ts,tsx},**/*.js`
+- Keep comma-separated format as is: `globs: *.py,**/*.py,src/**/*.py,tests/**/*.py,**/test_*.py,**/*_test.py`
+- NO `name:` field in generated YAML
+- Ensure proper YAML syntax with comma-separated string format for globs
+
+### 4. Content Formatting
+- Preserve all bullet points with `-` prefix
+- Maintain consistent indentation
+- Keep all technical guidelines intact
+- Preserve code examples in backticks
+- Ensure content is actionable and specific
+
+## Output Standards
+
+### 1. File Structure
+- Each rule becomes a separate .mdc file
+- Files are numbered sequentially starting from 010
+- All files go in a `generated_rules/` directory
+- Each file contains complete rule information
+
+### 2. Quality Requirements
+- Clean YAML frontmatter (description + globs only)
+- ALWAYS normalize globs to comma-separated string format regardless of input format
+- All bullet points preserved exactly
+- Technical details intact
+- Proper formatting maintained with consistent comma-separated globs format
+
+### 3. Error Handling
+- Skip malformed rules gracefully
+- Continue processing valid rules
+- Report any parsing issues
+- Don't stop on single rule errors
+
+## Example Process
+
+**Input:**
+```yaml
+---
+name: typescript-best-practices.mdc
+description: TypeScript coding standards and type safety guidelines
+globs: **/*.{ts,tsx}
+---
+
+- Use strict null checks for better type safety.
+- Prefer interfaces over types for defining object shapes.
+```
+
+**Output File:** `500-typescript-best-practices.mdc`
+```yaml
+---
+description: TypeScript coding standards and type safety guidelines
+globs: **/*.{ts,tsx}
+---
+
+- Use strict null checks for better type safety.
+- Prefer interfaces over types for defining object shapes.
+```
+
+## Remember
+- Focus on rules WITH `name:` fields only
+- Use the name field as filename base
+- Add proper GROUPED numbering prefix (100-, 400-, 500-, etc.)
+- Generate clean YAML frontmatter (no name field)
+- ALWAYS normalize globs to comma-separated string format: `globs: **/*.{ts,tsx},**/*.js`
+- Preserve all content exactly as written
+- Create separate files for each rule

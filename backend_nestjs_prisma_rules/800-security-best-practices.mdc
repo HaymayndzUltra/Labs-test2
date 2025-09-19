@@ -1,0 +1,10 @@
+---
+description: Security best practices for NestJS applications
+globs: **/*.ts
+---
+
+- Use Helmet to secure HTTP headers
+- Implement rate limiting with the Throttler module
+- Validate and sanitize user input to prevent injection attacks
+- Use environment variables for sensitive configuration
+- Regularly update dependencies to patch known vulnerabilities

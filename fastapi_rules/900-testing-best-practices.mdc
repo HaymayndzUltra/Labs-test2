@@ -1,0 +1,9 @@
+---
+description: Best practices for testing FastAPI applications with pytest
+globs: **/*.py
+---
+
+- Use fixtures for setup and teardown of test environments
+- Implement async test cases with pytest-asyncio for async endpoints
+- Use pytest-cov for coverage reporting
+- Organize tests into modules that mirror application structure

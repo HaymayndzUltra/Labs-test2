@@ -1,0 +1,10 @@
+Postman Test Evidence
+====================
+Date: 2025-09-19T05:17:47.405Z
+Report: clients/acme-001/reports/api/postman_stage.json
+Status: PASSED
+Tests: 9
+Passed: 9
+Failed: 0
+Duration: 1000ms
+Quality Gate: PASSED

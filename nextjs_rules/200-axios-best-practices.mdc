@@ -1,0 +1,9 @@
+---
+description: Best practices for making HTTP requests with Axios
+globs: **/*.ts,**/*.tsx,**/*.js,**/*.jsx
+---
+
+- Create an Axios instance for centralized configuration (base URL, headers).
+- Use interceptors for handling requests and responses globally.
+- Implement error handling for failed requests to improve user experience.
+- Use async/await syntax for cleaner asynchronous code.

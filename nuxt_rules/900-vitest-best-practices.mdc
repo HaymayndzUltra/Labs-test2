@@ -1,0 +1,9 @@
+---
+description: Best practices for testing with Vitest
+globs: **/*.ts,**/*.tsx,**/*.js,**/*.jsx
+---
+
+- Write unit tests for individual components and functions to ensure reliability.
+- Use the `--coverage` flag to monitor test coverage and identify untested code.
+- Organize tests in a dedicated directory structure for clarity.
+- Utilize mocking and stubbing to isolate components during testing.

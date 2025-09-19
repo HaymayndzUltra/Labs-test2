@@ -1,0 +1,8 @@
+---
+description: Guidelines for handling CORS in Django applications
+globs: **/*.py
+---
+
+- Configure allowed origins carefully to prevent security issues.
+- Use the `CORS_ALLOW_CREDENTIALS` setting if cookies are needed.
+- Regularly review and update CORS settings as your application evolves.
