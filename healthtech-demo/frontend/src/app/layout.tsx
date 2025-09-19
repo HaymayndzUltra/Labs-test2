@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
@@ -31,12 +32,12 @@ export default function RootLayout({
                 <div className="flex justify-between items-center h-16">
                   <h1 className="text-xl font-semibold">{APP_NAME}</h1>
                   <nav className="space-x-4">
-                    <a href="/" className="text-gray-700 hover:text-gray-900">
+                    <Link href="/" className="text-gray-700 hover:text-gray-900">
                       Home
-                    </a>
-                    <a href="/dashboard" className="text-gray-700 hover:text-gray-900">
+                    </Link>
+                    <Link href="/dashboard" className="text-gray-700 hover:text-gray-900">
                       Dashboard
-                    </a>
+                    </Link>
                   </nav>
                 </div>
               </div>
