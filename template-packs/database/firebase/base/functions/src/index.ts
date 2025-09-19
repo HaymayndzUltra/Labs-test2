@@ -1,4 +1,6 @@
-import * as functions from 'firebase-functions';
+import { onRequest, onCall, HttpsError } from 'firebase-functions/v2/https';
+import { onDocumentCreated, onDocumentUpdated, onDocumentDeleted } from 'firebase-functions/v2/firestore';
+import { onSchedule } from 'firebase-functions/v2/scheduler';
 import * as admin from 'firebase-admin';
 
 // Initialize Firebase Admin SDK
@@ -7,7 +9,7 @@ admin.initializeApp();
 const db = admin.firestore();
 
 // HTTPS Function - Health Check
-export const healthCheck = functions.https.onRequest((req, res) => {
+export const healthCheck = onRequest((req, res) => {
   res.status(200).json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
@@ -17,11 +19,9 @@ export const healthCheck = functions.https.onRequest((req, res) => {
 });
 
 // Firestore Trigger - User Creation
-export const onUserCreate = functions.firestore
-  .document('users/{userId}')
-  .onCreate(async (snap, context) => {
-    const userData = snap.data();
-    const userId = context.params.userId;
+export const onUserCreate = onDocumentCreated('users/{userId}', async (event) => {
+    const userData = event.data?.data() || {} as any;
+    const userId = event.params.userId;
     
     console.log(`New user created: ${userId}`);
     
@@ -46,15 +46,13 @@ export const onUserCreate = functions.firestore
     });
     
     console.log(`User profile and welcome notification created for ${userId}`);
-  });
+});
 
 // Firestore Trigger - User Update
-export const onUserUpdate = functions.firestore
-  .document('users/{userId}')
-  .onUpdate(async (change, context) => {
-    const beforeData = change.before.data();
-    const afterData = change.after.data();
-    const userId = context.params.userId;
+export const onUserUpdate = onDocumentUpdated('users/{userId}', async (event) => {
+    const beforeData = event.data?.before.data() || {} as any;
+    const afterData = event.data?.after.data() || {} as any;
+    const userId = event.params.userId;
     
     // Update profile if name changed
     if (beforeData.name !== afterData.name) {
@@ -65,13 +63,11 @@ export const onUserUpdate = functions.firestore
       
       console.log(`Profile updated for user ${userId}`);
     }
-  });
+});
 
 // Firestore Trigger - User Delete
-export const onUserDelete = functions.firestore
-  .document('users/{userId}')
-  .onDelete(async (snap, context) => {
-    const userId = context.params.userId;
+export const onUserDelete = onDocumentDeleted('users/{userId}', async (event) => {
+    const userId = event.params.userId;
     
     console.log(`User deleted: ${userId}`);
     
@@ -102,12 +98,10 @@ export const onUserDelete = functions.firestore
     await batch.commit();
     
     console.log(`Cleaned up data for deleted user ${userId}`);
-  });
+});
 
 // Scheduled Function - Clean up expired sessions
-export const cleanupExpiredSessions = functions.pubsub
-  .schedule('every 1 hours')
-  .onRun(async (context) => {
+export const cleanupExpiredSessions = onSchedule('every 1 hours', async (event) => {
     const now = admin.firestore.Timestamp.now();
     
     const expiredSessions = await db.collection('sessions')
@@ -127,13 +121,10 @@ export const cleanupExpiredSessions = functions.pubsub
     await batch.commit();
     
     console.log(`Cleaned up ${expiredSessions.size} expired sessions`);
-  });
+});
 
 // Scheduled Function - Send daily digest
-export const sendDailyDigest = functions.pubsub
-  .schedule('0 9 * * *') // Every day at 9 AM
-  .timeZone('UTC')
-  .onRun(async (context) => {
+export const sendDailyDigest = onSchedule({ schedule: '0 9 * * *', timeZone: 'UTC' }, async (event) => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     
@@ -157,21 +148,19 @@ export const sendDailyDigest = functions.pubsub
     }
     
     console.log(`Sent daily digest to ${usersSnapshot.size} users`);
-  });
+});
 
 // HTTP Function - Get user statistics
-export const getUserStats = functions.https.onCall(async (data, context) => {
+export const getUserStats = onCall(async (request) => {
   // Check if user is authenticated
-  if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
-  }
+  if (!request.auth) throw new HttpsError('unauthenticated', 'User must be authenticated');
   
-  const userId = context.auth.uid;
+  const userId = request.auth.uid;
   
   // Check if user is admin
   const userDoc = await db.collection('users').doc(userId).get();
   if (!userDoc.exists || userDoc.data()?.role !== 'admin') {
-    throw new functions.https.HttpsError('permission-denied', 'Admin access required');
+    throw new HttpsError('permission-denied', 'Admin access required');
   }
   
   // Get statistics
