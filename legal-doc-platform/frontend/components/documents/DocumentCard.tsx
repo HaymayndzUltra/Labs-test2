@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { DocumentTextIcon, EyeIcon, ShareIcon, DownloadIcon, ClockIcon } from '@heroicons/react/24/outline'
+import { DocumentTextIcon, EyeIcon, ShareIcon, ArrowDownTrayIcon, ClockIcon } from '@heroicons/react/24/outline'
 import { format } from 'date-fns'
 
 interface Document {
@@ -146,7 +146,7 @@ export default function DocumentCard({ document, onView, onShare, onDownload }: 
             className="p-1 text-legal-600 hover:text-primary-600 hover:bg-primary-50 rounded"
             title="Download document"
           >
-            <DownloadIcon className="w-4 h-4" />
+            <ArrowDownTrayIcon className="w-4 h-4" />
           </button>
         </div>
         
