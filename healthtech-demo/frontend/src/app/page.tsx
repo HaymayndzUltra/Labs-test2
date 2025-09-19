@@ -1,12 +1,16 @@
 export default function HomePage() {
+  const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'HealthTech Demo'
+  const INDUSTRY = process.env.NEXT_PUBLIC_INDUSTRY || 'Healthcare'
+  const PROJECT_TYPE = process.env.NEXT_PUBLIC_PROJECT_TYPE || 'Web'
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="text-center">
         <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-          Welcome to {{PROJECT_NAME}}
+          Welcome to {APP_NAME}
         </h1>
         <p className="mt-6 text-lg leading-8 text-gray-600">
-          Your {{INDUSTRY}} {{PROJECT_TYPE}} solution.
+          Your {INDUSTRY} {PROJECT_TYPE} solution.
         </p>
         <div className="mt-10 flex items-center justify-center gap-x-6">
           <a
