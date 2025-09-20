@@ -912,7 +912,7 @@ class ProjectGenerator:
 
         # Enhanced validate_rules.py with frontmatter parsing and trigger uniqueness checks
         validate_rules = '''#!/usr/bin/env python3
-import os, sys, re, json
+import os, sys, re, json, glob
 from typing import Dict, List, Tuple, DefaultDict
 from collections import defaultdict
 
@@ -966,6 +966,30 @@ def extract_triggers_and_scope(description: str) -> Tuple[List[str], str]:
         pass
     return triggers, scope
 
+def extract_paths(meta: Dict[str, str], description: str) -> List[str]:
+    paths: List[str] = []
+    # Prefer explicit frontmatter key: paths: "src/components/**,app/**"
+    raw = meta.get('paths', '')
+    if raw:
+        parts = [p.strip() for p in raw.split(',') if p.strip()]
+        paths.extend(parts)
+    # Fallback: PATHS: ... inside description text
+    try:
+        m_paths = re.search(r'PATHS:\s*([^|\n]+)', description or '', flags=re.IGNORECASE)
+        if m_paths:
+            parts = [p.strip() for p in m_paths.group(1).split(',') if p.strip()]
+            paths.extend(parts)
+    except Exception:
+        pass
+    # Deduplicate
+    seen = set()
+    unique: List[str] = []
+    for p in paths:
+        if p not in seen:
+            seen.add(p)
+            unique.append(p)
+    return unique
+
 def write_report(data: Dict[str, object]) -> None:
     try:
         os.makedirs(REPORT_DIR, exist_ok=True)
@@ -984,6 +1008,7 @@ def main() -> int:
         return 1
 
     triggers_by_scope: DefaultDict[str, DefaultDict[str, List[str]]] = defaultdict(lambda: defaultdict(list))
+    rules_paths: Dict[str, List[str]] = {}
     missing: List[str] = []
     missing_scope: List[str] = []
 
@@ -996,11 +1021,14 @@ def main() -> int:
         meta, _ = parse_frontmatter(content)
         desc = meta.get('description','')
         triggers, scope = extract_triggers_and_scope(desc)
+        paths = extract_paths(meta, desc)
         if not desc:
             print(f"[WARN] {p}: missing description frontmatter")
         if not scope:
             missing_scope.append(p)
             continue
+        if paths:
+            rules_paths[p] = paths
         scope_key = scope.lower()
         for t in triggers:
             tkey = t.lower()
@@ -1042,6 +1070,11 @@ def main() -> int:
         'duplicates_by_scope': {k: list(v.keys()) for k, v in duplicates_by_scope.items()},
         'missing_scope_files': missing_scope,
         'missing_files': missing,
+        'rules_paths': rules_paths,
+        'paths_resolution_sample': {
+            rp: {pat: len(glob.glob(pat, recursive=True)) for pat in pats}
+            for rp, pats in list(rules_paths.items())[:20]
+        },
     }
     write_report(report_data)
 
