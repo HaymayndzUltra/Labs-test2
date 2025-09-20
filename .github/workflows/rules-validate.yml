@@ -1,0 +1,36 @@
+name: Rules Validation
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  validate-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate rules
+        run: |
+          if [ -f .cursor/tools/validate_rules.py ]; then \
+            python .cursor/tools/validate_rules.py; \
+          else \
+            echo "[INFO] No .cursor/tools/validate_rules.py found. Skipping."; \
+          fi
+        continue-on-error: true
+
+      - name: Upload rules validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rules-validation-report
+          path: .cursor/tools/reports/rules_validation.json
+          if-no-files-found: warn
