@@ -1,11 +1,11 @@
 # {{PROJECT_NAME}} Frontend
 
-This is a Next.js 14 application using the App Router.
+This is a Next.js 15 application using the App Router.
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
+- Node.js 18+ (20/22 preferred)
 - npm or yarn
 
 ### Installation
@@ -77,3 +77,25 @@ npm run test:coverage
 - [Next.js Documentation](https://nextjs.org/docs)
 - [React Documentation](https://react.dev)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+
+## React 19 Upgrade Notes (codemods & checks)
+
+When upgrading or generating with React 19:
+
+1. Dependencies
+   - React/ReactDOM 19.1.x
+   - TypeScript 5.9+
+   - eslint-config-next ^15.x (flat config compatible)
+
+2. Run codemods (review before commit)
+   - Apply React 19 migration codemods for actions, form submission changes, and removed legacy patterns.
+   - Verify client components only where needed; prefer server components by default.
+
+3. Acceptance checks
+   - `next build` succeeds with no type errors
+   - `next start` boots, all App Router pages render
+   - Forms submit correctly under React 19
+   - ESLint passes with `eslint-config-next@15`
+   - No bundle size regression >10%
+
+Tip: If Jest fails after upgrade, align `babel-jest` with `jest@29` or migrate the test runner consistently.

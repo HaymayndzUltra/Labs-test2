@@ -62,6 +62,24 @@ npx expo start --android
 npx expo start --web
 ```
 
+### 4. SDK 54 alignment (recommended)
+
+Use Expo's installer to auto-align package versions for SDK 54:
+
+```bash
+npx expo install --fix
+```
+
+Then ensure routing and reanimated are configured:
+
+```bash
+# expo-router v4 recommended
+npm i expo-router@^4 --save
+
+# enable Reanimated Babel plugin if not already
+echo "Ensure 'react-native-reanimated/plugin' is in babel.config.js plugins"
+```
+
 ### 4. Run on Device/Simulator
 
 - **iOS Simulator**: Press `i` in the terminal
