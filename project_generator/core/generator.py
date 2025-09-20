@@ -79,6 +79,13 @@ class ProjectGenerator:
         # Precompile placeholder regexes
         self._placeholder_map = None
         self._placeholder_regex = None
+        # Rules manifest/telemetry containers
+        self._rules_included_from_manifest: list[str] = []
+        self._rules_selected_includes: list[str] = []
+        self._rules_fallbacks_written: list[str] = []
+        self._rules_emitted: list[str] = []
+        self._included_master_rules: bool = False
+        self._included_common_rules: bool = False
     
     def generate(self) -> Dict[str, Any]:
         """Generate the complete project"""
@@ -178,6 +185,26 @@ class ProjectGenerator:
                 if source_devwf.exists():
                     shutil.copytree(source_devwf, self.project_root / '.cursor' / 'dev-workflow', dirs_exist_ok=True)
         except Exception:
+            pass
+
+        # Copy master-rules and common-rules into generated project when present
+        try:
+            if not self.no_cursor_assets:
+                repo_root = Path(__file__).resolve().parents[2]
+                source_rules_root = repo_root / '.cursor' / 'rules'
+                dest_rules_root = self.project_root / '.cursor' / 'rules'
+                # master-rules
+                src_master = source_rules_root / 'master-rules'
+                if src_master.exists() and src_master.is_dir():
+                    shutil.copytree(src_master, dest_rules_root / 'master-rules', dirs_exist_ok=True)
+                    self._included_master_rules = True
+                # common-rules
+                src_common = source_rules_root / 'common-rules'
+                if src_common.exists() and src_common.is_dir():
+                    shutil.copytree(src_common, dest_rules_root / 'common-rules', dirs_exist_ok=True)
+                    self._included_common_rules = True
+        except Exception:
+            # Non-fatal; copying rules should not break generation
             pass
         
         # Create .gitignore
@@ -386,7 +413,8 @@ class ProjectGenerator:
         """Generate compliance and project-specific rules"""
         if self.no_cursor_assets:
             return
-        rules_dir = self.project_root / '.cursor' / 'rules'
+        rules_root_dir = self.project_root / '.cursor' / 'rules'
+        rules_dir = rules_root_dir / 'project-rules'
         
         # Minimal-cursor: only include manifest-specified project rules and explicit compliance rules; skip client-specific.
         if self.minimal_cursor:
@@ -394,21 +422,41 @@ class ProjectGenerator:
         else:
             # Client-specific rules
             client_rules = self._generate_client_rules()
+            rules_dir.mkdir(parents=True, exist_ok=True)
             (rules_dir / 'client-specific-rules.mdc').write_text(client_rules)
+            self._rules_emitted.append('project-rules/client-specific-rules.mdc')
         
         # Industry compliance rules
         if self.args.compliance:
             for compliance in self.args.compliance.split(','):
                 compliance_rules = self._generate_compliance_rules_content(compliance.strip())
                 (rules_dir / f'industry-compliance-{compliance}.mdc').write_text(compliance_rules)
+                self._rules_emitted.append(f'project-rules/industry-compliance-{compliance}.mdc')
         
         # Project workflow rules
         workflow_rules = self._generate_workflow_rules()
         (rules_dir / 'project-workflow.mdc').write_text(workflow_rules)
+        self._rules_emitted.append('project-rules/project-workflow.mdc')
 
         # Optionally include a minimal set of technology-specific project rules (legacy path)
         if not self.minimal_cursor:
             self._include_selected_project_rules(rules_dir)
+
+        # Write rules manifest/telemetry
+        try:
+            import json as _json
+            manifest = {
+                'mode': 'minimal' if self.minimal_cursor else 'full',
+                'included_master_rules': self._included_master_rules,
+                'included_common_rules': self._included_common_rules,
+                'emitted_project_rules': sorted(self._rules_emitted),
+                'manifest_includes': sorted(self._rules_included_from_manifest),
+                'selected_includes': sorted(self._rules_selected_includes),
+                'fallbacks_written': sorted(self._rules_fallbacks_written),
+            }
+            (rules_root_dir / 'manifest.json').write_text(_json.dumps(manifest, indent=2))
+        except Exception:
+            pass
 
     def _include_rules_from_manifest(self, rules_dir: Path) -> None:
         """Copy only rules listed in the JSON manifest from root .cursor/rules/project-rules.
@@ -443,7 +491,13 @@ class ProjectGenerator:
                     continue
                 src = source_dir / fname
                 if src.exists() and src.is_file():
-                    shutil.copy(src, rules_dir / fname)
+                    dest = rules_dir / fname
+                    dest.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy(src, dest)
+                    try:
+                        self._rules_included_from_manifest.append(str(Path('project-rules') / fname))
+                    except Exception:
+                        pass
                 else:
                     # Fallback to embedded minimal content when file missing
                     self._write_fallback_rule_if_known(rules_dir, fname)
@@ -478,7 +532,20 @@ class ProjectGenerator:
         content = mapping.get(fname)
         if content:
             try:
-                (rules_dir / fname).write_text(content, encoding='utf-8')
+                # Normalize SCOPE to project:<slug>
+                try:
+                    slug = getattr(self.args, 'name', '')
+                except Exception:
+                    slug = ''
+                scope_replacement = f"SCOPE: project:{slug}"
+                content = content.replace("SCOPE: project-rules", scope_replacement)
+                dest = rules_dir / fname
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                dest.write_text(content, encoding='utf-8')
+                try:
+                    self._rules_fallbacks_written.append(str(Path('project-rules') / fname))
+                except Exception:
+                    pass
             except Exception:
                 pass
 
@@ -723,7 +790,13 @@ class ProjectGenerator:
             for fname in filtered:
                 src = source_dir / fname
                 if src.exists() and src.is_file():
-                    shutil.copy(src, rules_dir / fname)
+                    dest = rules_dir / fname
+                    dest.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy(src, dest)
+                    try:
+                        self._rules_selected_includes.append(str(Path('project-rules') / fname))
+                    except Exception:
+                        pass
         except Exception:
             # Non-fatal: rule inclusion should never break generation
             return
@@ -839,9 +912,13 @@ class ProjectGenerator:
 
         # Enhanced validate_rules.py with frontmatter parsing and trigger uniqueness checks
         validate_rules = '''#!/usr/bin/env python3
-import os, sys, re
-from typing import Dict, List, Tuple
+import os, sys, re, json
+from typing import Dict, List, Tuple, DefaultDict
+from collections import defaultdict
+
 RULES_ROOT = os.path.join('.cursor','rules')
+REPORT_DIR = os.path.join('.cursor','tools','reports')
+
 def iter_mdc(root: str) -> List[str]:
     out: List[str] = []
     for base, _, files in os.walk(root):
@@ -849,12 +926,12 @@ def iter_mdc(root: str) -> List[str]:
             if f.lower().endswith('.mdc'):
                 out.append(os.path.join(base, f))
     return out
+
 def parse_frontmatter(content: str) -> Tuple[Dict[str,str], str]:
     if not content.startswith('---'):
         return {}, content
     parts = content.split('\n')
     try:
-        # find closing '---' after first line
         end_idx = None
         for i in range(1, min(len(parts), 200)):
             if parts[i].strip() == '---':
@@ -872,11 +949,11 @@ def parse_frontmatter(content: str) -> Tuple[Dict[str,str], str]:
         return meta, body
     except Exception:
         return {}, content
+
 def extract_triggers_and_scope(description: str) -> Tuple[List[str], str]:
     if not description:
         return [], ''
-    # Example: TAGS: [...] | TRIGGERS: a,b,c | SCOPE: myproj | DESCRIPTION: ...
-    triggers = []
+    triggers: List[str] = []
     scope = ''
     try:
         m_trg = re.search(r'TRIGGERS:\s*([^|]+)', description, flags=re.IGNORECASE)
@@ -888,6 +965,15 @@ def extract_triggers_and_scope(description: str) -> Tuple[List[str], str]:
     except Exception:
         pass
     return triggers, scope
+
+def write_report(data: Dict[str, object]) -> None:
+    try:
+        os.makedirs(REPORT_DIR, exist_ok=True)
+        with open(os.path.join(REPORT_DIR, 'rules_validation.json'), 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2)
+    except Exception:
+        pass
+
 def main() -> int:
     if not os.path.isdir(RULES_ROOT):
         print('[RULES] .cursor/rules not found; failing.')
@@ -896,9 +982,11 @@ def main() -> int:
     if not files:
         print('[RULES] No .mdc rules found; failing.')
         return 1
-    trigger_map: Dict[str, List[str]] = {}
+
+    triggers_by_scope: DefaultDict[str, DefaultDict[str, List[str]]] = defaultdict(lambda: defaultdict(list))
     missing: List[str] = []
     missing_scope: List[str] = []
+
     for p in files:
         try:
             content = open(p, 'r', encoding='utf-8', errors='ignore').read()
@@ -912,24 +1000,56 @@ def main() -> int:
             print(f"[WARN] {p}: missing description frontmatter")
         if not scope:
             missing_scope.append(p)
+            continue
+        scope_key = scope.lower()
         for t in triggers:
-            key = t.lower()
-            trigger_map.setdefault(key, []).append(p)
-    duplicates = {k:v for k,v in trigger_map.items() if len(v) > 1}
-    if duplicates:
-        print('[RULES] Duplicate TRIGGERS detected:')
-        for k, paths in duplicates.items():
-            print(f"  - {k}:")
-            for pp in paths:
-                print(f"    * {pp}")
-    if missing_scope:
-        print('[RULES] Files missing SCOPE in description:')
-        for p in missing_scope:
-            print(f"  - {p}")
-    if duplicates or missing or missing_scope:
+            tkey = t.lower()
+            triggers_by_scope[scope_key][tkey].append(p)
+
+    duplicates_by_scope: Dict[str, Dict[str, List[str]]] = {}
+    global_duplicates: Dict[str, List[str]] = {}
+
+    # Build duplicates per scope and compute global duplicates (flattened) as warnings
+    all_trigger_to_paths: DefaultDict[str, List[str]] = defaultdict(list)
+    for scope_key, trig_map in triggers_by_scope.items():
+        for tkey, paths in trig_map.items():
+            if len(paths) > 1:
+                duplicates_by_scope.setdefault(scope_key, {})[tkey] = paths
+            all_trigger_to_paths[tkey].extend(paths)
+
+    for tkey, paths in all_trigger_to_paths.items():
+        if len(paths) > 1:
+            global_duplicates[tkey] = paths
+
+    if global_duplicates:
+        print('[RULES] Global duplicate TRIGGERS detected (warning only):')
+        for k, paths in global_duplicates.items():
+            print(f"  - {k} ({len(paths)} occurrences)")
+
+    if duplicates_by_scope:
+        print('[RULES] Duplicate TRIGGERS detected within the same SCOPE (failing):')
+        for scope_key, trig_map in duplicates_by_scope.items():
+            print(f"  SCOPE: {scope_key}")
+            for tkey, paths in trig_map.items():
+                print(f"    - {tkey}:")
+                for pp in paths:
+                    print(f"      * {pp}")
+
+    report_data = {
+        'files_count': len(files),
+        'scopes_count': len(triggers_by_scope),
+        'triggers_by_scope': {k: {kk: len(vv) for kk, vv in v.items()} for k, v in triggers_by_scope.items()},
+        'duplicates_by_scope': {k: list(v.keys()) for k, v in duplicates_by_scope.items()},
+        'missing_scope_files': missing_scope,
+        'missing_files': missing,
+    }
+    write_report(report_data)
+
+    if duplicates_by_scope or missing or missing_scope:
         return 1
-    print(f"[RULES] OK: {len(files)} rule files; {len(trigger_map)} triggers; no duplicates; all have SCOPE.")
+    print(f"[RULES] OK: {len(files)} rule files; scopes={len(triggers_by_scope)}; no intra-scope duplicates; all have SCOPE.")
     return 0
+
 if __name__ == '__main__':
     sys.exit(main())
 '''
@@ -1170,6 +1290,7 @@ print('[COMPLIANCE] All required compliance rules present.')
         hook_script = (
             "#!/usr/bin/env bash\n"
             "set -euo pipefail\n"
+            "command -v python >/dev/null 2>&1 || { echo '[HOOK] python not found; skipping rules checks'; exit 0; }\n"
             "python .cursor/tools/validate_rules.py\n"
             "python .cursor/tools/check_compliance.py\n"
         )
@@ -1923,7 +2044,7 @@ jobs:
             'coordination', 'multi-agent', 'analyze'
         ]
         lines.append(
-            f"description: \"TAGS: [project,client,standards] | TRIGGERS: {','.join(client_triggers)} | SCOPE: {self.args.name} | DESCRIPTION: Client-specific rules and standards for {self.args.name}\""
+            f"description: \"TAGS: [project,client,standards] | TRIGGERS: {','.join(client_triggers)} | SCOPE: project:{self.args.name} | DESCRIPTION: Client-specific rules and standards for {self.args.name}\""
         )
         lines.append("---")
         lines.append("")
@@ -1963,7 +2084,7 @@ jobs:
         frontmatter = [
             '---',
             'alwaysApply: false',
-            f"description: \"TAGS: [workflow,process,project] | TRIGGERS: {','.join(triggers)} | SCOPE: {self.args.name} | DESCRIPTION: Project workflow and process rules for {self.args.name}\"",
+            f"description: \"TAGS: [workflow,process,project] | TRIGGERS: {','.join(triggers)} | SCOPE: project:{self.args.name} | DESCRIPTION: Project workflow and process rules for {self.args.name}\"",
             '---',
             ''
         ]
