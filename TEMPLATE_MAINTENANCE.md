@@ -14,6 +14,10 @@ node scripts/audit-versions.mjs
 
 ### If Red → Fix Dependencies/Config OR Update expected-versions.json
 
+## Template Structure
+
+Templates are located in `project_generator/template-packs/` (symlinked to `template-packs/`)
+
 ## Template Requirements by Framework
 
 ### Next.js Template

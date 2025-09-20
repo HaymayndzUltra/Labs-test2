@@ -3,13 +3,13 @@ import fs from 'fs';
 import path from 'path';
 
 const templates = [
-  'template-packs/frontend/nextjs/base',
-  'template-packs/frontend/nuxt/base',
-  'template-packs/frontend/angular/base',
-  'template-packs/frontend/expo/base',
-  'template-packs/backend/nestjs/base',
-  'template-packs/backend/nestjs/prisma',
-  'template-packs/database/firebase/base/functions'
+  'project_generator/template-packs/frontend/nextjs/base',
+  'project_generator/template-packs/frontend/nuxt/base',
+  'project_generator/template-packs/frontend/angular/base',
+  'project_generator/template-packs/frontend/expo/base',
+  'project_generator/template-packs/backend/nestjs/base',
+  'project_generator/template-packs/backend/nestjs/prisma',
+  'project_generator/template-packs/database/firebase/base/functions'
 ];
 
 let failed = false;
