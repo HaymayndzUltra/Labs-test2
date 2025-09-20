@@ -1,0 +1,12 @@
+name: templates-drift
+on:
+  schedule: [{ cron: "0 5 * * 1" }]  # every Monday 05:00 UTC
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npx npm-check-updates -u || true
+      - run: git diff --quiet || (git config user.name "bot" && git config user.email "bot@example" && git checkout -b chore/drift && git commit -am "chore: weekly drift bump" && git push -u origin chore/drift)
