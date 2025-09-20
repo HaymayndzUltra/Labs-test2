@@ -13,7 +13,6 @@ psycopg2-binary==2.9.9
 # Authentication & Security
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
-python-multipart==0.0.6
 
 # Redis
 redis==5.0.1
@@ -40,4 +39,3 @@ isort==5.13.2
 sentry-sdk==1.39.1
 
 # CORS
-python-multipart==0.0.6
