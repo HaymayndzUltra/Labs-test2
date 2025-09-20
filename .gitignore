@@ -237,10 +237,7 @@ tmp/
 # DEVELOPMENT & WORKFLOW
 # =============================================================================
 # Cursor AI
-.cursor/
-.cursor/dev-workflow/snapshots/
-.cursor/dev-workflow/routing_logs/
-.cursor/dev-workflow/waivers/
+
 .snapshots/
 
 # Generated content (factory-specific)

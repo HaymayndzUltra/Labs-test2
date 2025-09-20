@@ -1,14 +1,1 @@
-Gumawa ka nga ng prompt para sa ibang AI, mas mataas kasi ang context windown ito, gumawa ka ng meta prompt ianalyse ang mga nasa notepads,
-
-
-tapos kung papaano maiaalign dito /home/
-
-/home/haymayndz/Labs-test2/.cursor/commands/0-bootstrap-project.md
-/home/haymayndz/Labs-test2/.cursor/commands/1-create-prd.md
-/home/haymayndz/Labs-test2/.cursor/commands/2-generate-tasks.md
-/home/haymayndz/Labs-test2/.cursor/commands/3-process-tasks.md
-/home/haymayndz/Labs-test2/.cursor/commands/4-quality-control.md
-/home/haymayndz/Labs-test2/.cursor/commands/5-implementation-retrospective.md
-/home/haymayndz/Labs-test2/.cursor/commands/sync-tasks.md
-
-dapat devex experience at walang gaps, masusunod lahat. isipin mo ang step by step na ginagawa ng isang developer para gumawa ng enterprises na web tapos may integration din ng AI kailangna lahat yon masusunod tapos automation.
+gumawa ka nga ng meta prompt para sa kagaya mo, kasi pinalitan ko ang laman ng /home/haymayndz/Labs-test2/.cursor ngayon kailangan ianalyse yan ang buong logic niyan kapag malinaw na , ianalyse naman ito /home/haymayndz/Labs-test2/project_generator dahil yan ang project generator na gmagawa ng bagong folder sa labas ng repo. icheck kung mag kakaron ng conflict , tapos mag suggest for fix if ever. mag bigay din ng reason why
