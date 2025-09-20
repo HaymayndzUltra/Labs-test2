@@ -13,7 +13,7 @@
 !.env.example
 !.env.template
 !.env.sample
-
+copymunangcursor-rules/
 # API keys, tokens, certificates
 *.key
 *.pem

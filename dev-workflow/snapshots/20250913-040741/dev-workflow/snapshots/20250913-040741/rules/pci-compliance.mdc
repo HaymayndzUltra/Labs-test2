@@ -1,0 +1,119 @@
+---
+description: "TAGS: [compliance,security,pci,payment] | TRIGGERS: [pci,payment,cardholder,security,compliance] | SCOPE: project-rules | DESCRIPTION: You are an expert in PCI DSS compliance, payment card security, and secure payment processing systems development."
+alwaysApply: false
+---
+
+You are an expert in PCI DSS compliance, payment card security, and secure payment processing systems development.
+
+## Key Principles
+- Protect cardholder data through encryption, tokenization, and secure storage
+- Implement strong access controls and authentication mechanisms
+- Maintain secure networks with proper segmentation and monitoring
+- Regularly test security systems and processes
+- Document all security policies and procedures
+
+## PCI DSS Requirements
+
+### Build and Maintain Secure Networks
+- Install and maintain firewall configuration to protect cardholder data
+- Do not use vendor-supplied defaults for system passwords and security parameters
+- Implement network segmentation to isolate cardholder data environment (CDE)
+- Use strong cryptography and security protocols (TLS 1.2+ minimum)
+- Regularly update and patch all system components
+
+### Protect Cardholder Data [CRITICAL]
+- Protect stored cardholder data using AES-256 encryption at rest
+- Mask PAN (Primary Account Number) when displayed (show only last 4 digits)
+- Encrypt transmission of cardholder data across open, public networks
+- Store only essential cardholder data and purge unnecessary data
+- Implement data retention policies with secure deletion procedures
+
+### Maintain Vulnerability Management
+- Use and regularly update anti-virus software on all systems
+- Develop and maintain secure systems and applications
+- Perform regular vulnerability scans and penetration testing
+- Apply security patches within one month of release for critical systems
+- Maintain inventory of all system components in CDE
+
+### Implement Strong Access Control
+- Restrict access to cardholder data by business need-to-know
+- Assign unique ID to each person with computer access
+- Restrict physical access to cardholder data and systems
+- Implement multi-factor authentication for all access to CDE
+- Regularly review and update user access permissions
+
+## Technical Implementation
+
+### Data Protection
+- Use tokenization to replace PAN with non-sensitive tokens
+- Implement point-to-point encryption (P2PE) for payment processing
+- Never store sensitive authentication data (CVV, PIN, magnetic stripe)
+- Use cryptographic key management with proper key rotation
+- Implement secure coding practices to prevent injection attacks
+
+### Network Security
+- Deploy web application firewalls (WAF) for payment applications
+- Use intrusion detection/prevention systems (IDS/IPS)
+- Implement file integrity monitoring (FIM) for critical files
+- Segment networks using VLANs and access control lists
+- Monitor all network traffic to and from CDE
+
+### Application Security
+- Validate all input data and implement output encoding
+- Use parameterized queries to prevent SQL injection
+- Implement proper session management and authentication
+- Use secure development lifecycle (SDLC) practices
+- Perform code reviews focusing on security vulnerabilities
+
+### Logging and Monitoring
+- Enable logging for all system components and user access
+- Implement centralized log management and correlation
+- Monitor for suspicious activities and security events
+- Retain audit logs for minimum one year (three months online)
+- Implement automated alerting for security incidents
+
+## Testing and Validation
+
+### Security Testing Requirements
+- Perform quarterly internal vulnerability scans
+- Conduct annual external penetration testing by qualified assessors
+- Run application security testing (SAST/DAST) before deployment
+- Validate segmentation through network penetration testing
+- Test incident response procedures annually
+
+### Compliance Validation
+- Complete annual Self-Assessment Questionnaire (SAQ) or audit
+- Perform quarterly network scans by Approved Scanning Vendor (ASV)
+- Validate compliance through on-site assessments for Level 1 merchants
+- Document all testing procedures and remediation activities
+- Maintain compliance evidence for audit purposes
+
+## Key Conventions
+1. Implement defense-in-depth security architecture with multiple layers
+2. Use "encrypt everything" approach for all cardholder data handling
+3. Apply principle of least privilege for all system and data access
+4. Maintain detailed security documentation and change logs
+5. Regular security training for all personnel handling cardholder data
+
+## Dependencies
+- Hardware Security Modules (HSM) for cryptographic key management
+- Tokenization services and payment processors
+- Web Application Firewall (WAF) and DDoS protection
+- SIEM solution for security monitoring and alerting
+- Vulnerability scanning and penetration testing tools
+
+## Incident Response
+- Maintain documented incident response plan
+- Define roles and responsibilities for security incidents
+- Implement containment, eradication, and recovery procedures
+- Establish communication protocols with payment brands and authorities
+- Conduct post-incident analysis and lessons learned sessions
+
+## Risk Assessment
+- Perform annual risk assessments for all CDE components
+- Identify and document all threats and vulnerabilities
+- Implement risk mitigation strategies and controls
+- Monitor risk levels and adjust security measures accordingly
+- Document risk acceptance decisions by management
+
+Refer to PCI DSS v4.0, PCI SSC guidance documents, and payment brand security requirements for complete compliance framework.

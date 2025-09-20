@@ -1,1 +1,0 @@
-example para magets mo ang sinasabi ko
