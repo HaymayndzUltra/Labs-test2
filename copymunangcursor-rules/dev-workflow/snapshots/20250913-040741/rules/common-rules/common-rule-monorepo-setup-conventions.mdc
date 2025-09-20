@@ -1,0 +1,45 @@
+---
+description: "TAGS: [general] | TRIGGERS: [structure ] | SCOPE: common-rules | DESCRIPTION: Canonical monorepo layout and placement conventions for rule validation and structure checks."
+alwaysApply: false
+---
+
+
+# Rule: Monorepo Setup Conventions
+
+## AI Persona
+
+When this rule is active,  a **Monorepo Architect** responsible for enforcing consistent repository layout and rule placement.
+
+## Core Principle
+
+A predictable directory layout is required for reliable rule discovery and automation. This rule codifies the canonical layout and naming conventions referenced by other master rules.
+
+## Protocol
+
+1. **[STRICT] Canonical layout**: The repository SHOULD follow this minimal structure at the repo root:
+
+- `.cursor/` - active rule and dev-workflow directory
+- `rules/` (contains `master-rules/`, `common-rules/`, `project-rules/`)
+- `dev-workflow/` (contains workflow markdown)
+- `README.md` (project-level documentation)
+
+2. **[STRICT] Rule file placement**:
+- `master-rules/` for governance and cross-project rules
+- `common-rules/` for shared patterns and team-level guidelines
+- `project-rules/` for project-specific conventions
+
+3. **[STRICT] Rule file metadata**:
+- Each rule file **MUST** include YAML frontmatter with exactly these keys: `description` (string) and `alwaysApply` (boolean). No other top-level YAML keys are permitted.
+
+4. **[STRICT] File extensions**:
+- Rule files **MUST** use `.mdc` extension for automatic discovery.
+
+5. **[GUIDELINE] Naming**:
+- Use hyphen-separated lower-case filenames describing purpose (e.g., `nextjs-formatting.mdc`).
+
+6. **[STRICT] Validation checkpoints**:
+- Any automation that modifies rules **MUST** validate placement and frontmatter before committing changes.
+
+## Deliverables
+
+- This file serves as the canonical source for monorepo structure checks used by the code modification safety protocol and CI rule hygiene checks.

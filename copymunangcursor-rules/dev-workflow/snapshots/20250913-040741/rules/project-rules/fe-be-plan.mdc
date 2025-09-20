@@ -1,0 +1,46 @@
+---
+description: "TAGS: [planning,automation,dag] | TRIGGERS: PLAN,RUN_BE,RUN_FE,CSAN,QA,PR,STATUS | SCOPE: project-rules | DESCRIPTION: Generate FE/BE plan artifacts (PLAN.md + tasks.json) from a brief; no deploy."
+alwaysApply: false
+---
+
+# FE/BE Plan Orchestrator (PLAN trigger)
+
+## Purpose
+- In a single trigger (PLAN), build a complete plan from `brief.md`:
+  - `PLAN.md` (readable): FE/BE lanes (ordered), dependencies (DAG), Blocking vs Independent, conflicts+mitigations, per-task acceptance, Next Triggers  
+  - `tasks.json` (machine-readable): complete task graph
+
+## Inputs
+- `brief.md` (client brief)  
+- Optional config presets (stack/industry/features)
+
+## Outputs
+- `PLAN.md` and `tasks.json` in chosen path (no deploy, no code edits)
+
+## Triggers
+- `PLAN`: read the brief → generate PLAN.md + tasks.json  
+- `RUN_BE`: execute BE lane in order until milestone/blocker  
+- `RUN_FE`: execute FE lane in order until milestone/blocker  
+- `CSAN`: conflict scan + mitigations (resequencing, mocks, feature flags)  
+- `QA`: tests/lints/coverage for completed scope only  
+- `PR`: artifacts + acceptance checklist; STOP (no deploy)  
+- `STATUS`: progress, blocked_on, next allowed triggers
+
+## Bounds & Guardrails
+- No deploy; secrets forbidden in outputs; ≤3 concurrent per lane  
+- Ports documented (3000 FE, 8000 BE) and configurable  
+- Migration lock: avoid simultaneous schema change and seed/tests
+
+## Acceptance (PLAN)
+- `PLAN.md` must have:
+  - FE/BE lanes that are topologically ordered; Blocking vs Independent  
+  - Conflicts table + mitigations  
+  - Per-task acceptance + DoD  
+  - Next Triggers line  
+- `tasks.json` valid JSON; fields: id, title, area, estimate, blocked_by[], acceptance[], dod[], labels[], state  
+- Total tasks ≥ 18 (BE ≥ 9, FE ≥ 9)
+
+## Command (reference)
+```
+python3 scripts/plan_from_brief.py --brief docs/briefs/project1/brief.md --out PLAN.md
+```
