@@ -1,13 +1,10 @@
-/** @type {import('jest').Config} */
-const config = {
-  testEnvironment: 'jest-environment-jsdom',
-  testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'],
+/** Next template: Jest 30 + babel-jest (no ts-jest) */
+module.exports = {
+  testEnvironment: 'jsdom',
+  testPathIgnorePatterns: ['/node_modules/', '/.next/'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-  },
   transform: {
-    '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest',
+    '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest'
   },
+  moduleFileExtensions: ['ts','tsx','js','jsx','json']
 };
-module.exports = config;

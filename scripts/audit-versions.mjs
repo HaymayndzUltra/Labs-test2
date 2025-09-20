@@ -1,0 +1,52 @@
+#!/usr/bin/env node
+import fs from 'fs';
+import path from 'path';
+
+const templates = [
+  'template-packs/frontend/nextjs/base',
+  'template-packs/frontend/nuxt/base',
+  'template-packs/frontend/angular/base',
+  'template-packs/frontend/expo/base',
+  'template-packs/backend/nestjs/base',
+  'template-packs/backend/nestjs/prisma',
+  'template-packs/database/firebase/base/functions'
+];
+
+let failed = false;
+
+for (const dir of templates) {
+  const pkgPath = path.join(dir, 'package.json');
+  const expPath = path.join(dir, 'expected-versions.json');
+  
+  if (!fs.existsSync(pkgPath) || !fs.existsSync(expPath)) {
+    console.log(`[SKIP] ${dir} (missing package.json or expected-versions.json)`); 
+    continue;
+  }
+  
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  const exp = JSON.parse(fs.readFileSync(expPath, 'utf8'));
+
+  const get = (obj, k) => obj?.[k];
+  const diffs = [];
+
+  for (const section of ['dependencies', 'devDependencies']) {
+    const want = exp[section] || {};
+    for (const [name, range] of Object.entries(want)) {
+      const got = get(pkg[section], name);
+      if (!got) {
+        diffs.push(`${section}.${name} missing (want ${range})`);
+      } else if (got !== range) {
+        diffs.push(`${section}.${name} = ${got} (want ${range})`);
+      }
+    }
+  }
+
+  if (diffs.length) {
+    failed = true;
+    console.error(`\n[DIFF] ${dir}\n- ${diffs.join('\n- ')}`);
+  } else {
+    console.log(`[MATCH] ${dir}`);
+  }
+}
+
+process.exit(failed ? 2 : 0);
