@@ -1,9 +1,0 @@
-{
-  "name": "allow-all",
-  "scope": "global",
-  "priority": 0,
-  "conditions": [],
-  "actions": ["allow"],
-  "waiver_allowed": true
-}
-

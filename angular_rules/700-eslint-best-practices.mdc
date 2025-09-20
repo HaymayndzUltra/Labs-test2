@@ -1,9 +1,0 @@
----
-description: Best practices for using ESLint in Angular projects
-globs: **/*.ts,**/*.html
----
-
-- Configure ESLint to enforce consistent coding styles
-- Use `@angular-eslint` for Angular-specific linting rules
-- Regularly run linting as part of your CI/CD pipeline
-- Fix linting errors before committing code to maintain code quality

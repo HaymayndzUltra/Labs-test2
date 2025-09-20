@@ -1,9 +1,0 @@
----
-description: Best practices for monitoring applications with Sentry
-globs: **/*.py
----
-
-- Integrate Sentry for error tracking and performance monitoring
-- Use context information to enrich error reports
-- Set up alerts for critical issues to ensure quick response
-- Regularly review Sentry dashboards for insights into application health

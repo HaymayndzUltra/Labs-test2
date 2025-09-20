@@ -1,9 +1,0 @@
----
-description: Best practices for Nuxt 3 applications
-globs: **/*.ts,**/*.tsx,**/*.js,**/*.jsx
----
-
-- Utilize the Composition API for better state management and reusability.
-- Leverage Nuxt's built-in middleware for authentication and authorization.
-- Optimize performance with server-side rendering (SSR) and static site generation (SSG).
-- Use the `asyncData` and `fetch` methods for data fetching in pages.

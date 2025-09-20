@@ -1,9 +1,0 @@
----
-description: Best practices for making HTTP requests with httpx
-globs: **/*.py
----
-
-- Use async capabilities for non-blocking HTTP requests
-- Implement timeout settings to avoid hanging requests
-- Handle exceptions gracefully for robust error management
-- Use connection pooling for improved performance

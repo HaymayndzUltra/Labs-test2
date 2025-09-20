@@ -1,9 +1,0 @@
----
-description: Best practices for styling with Tailwind CSS
-globs: **/*.ts,**/*.tsx,**/*.css
----
-
-- Use utility-first classes for rapid UI development and consistency.
-- Create custom components with Tailwind's `@apply` directive for reusable styles.
-- Leverage responsive design utilities to ensure mobile-friendliness.
-- Use the `tailwind.config.js` file to customize themes and extend functionality.

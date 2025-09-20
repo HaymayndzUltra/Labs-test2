@@ -1,9 +1,0 @@
----
-description: Best practices for Django REST Framework (DRF) applications
-globs: **/*.py
----
-
-- Use serializers to validate and transform data.
-- Implement viewsets and routers for cleaner URL routing.
-- Use pagination and filtering to manage large datasets.
-- Secure your API with proper authentication and permissions.

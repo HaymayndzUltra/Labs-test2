@@ -1,8 +1,0 @@
----
-description: Best practices for JWT authentication in Django REST Framework
-globs: **/*.py
----
-
-- Use short-lived access tokens and refresh tokens for security.
-- Implement token blacklisting for logout functionality.
-- Secure your JWTs with strong signing algorithms.

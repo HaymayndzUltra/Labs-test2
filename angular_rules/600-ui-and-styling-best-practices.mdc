@@ -1,9 +1,0 @@
----
-description: Guidelines for UI components and styling with Tailwind CSS
-globs: **/*.ts,**/*.html,**/*.scss
----
-
-- Use Tailwind CSS for utility-first styling
-- Follow a consistent naming convention for classes
-- Ensure components are responsive using Tailwind's responsive utilities
-- Utilize Tailwind's JIT mode for optimized performance

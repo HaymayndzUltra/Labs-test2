@@ -1,9 +1,0 @@
----
-description: Best practices for data fetching with SWR
-globs: **/*.ts,**/*.tsx
----
-
-- Use SWR for data fetching to leverage caching and revalidation.
-- Implement error handling and loading states for better UX.
-- Use the `mutate` function to update data optimistically.
-- Set a proper refresh interval based on the data's nature.

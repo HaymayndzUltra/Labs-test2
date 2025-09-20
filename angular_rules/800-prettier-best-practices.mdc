@@ -1,9 +1,0 @@
----
-description: Best practices for code formatting with Prettier
-globs: **/*.ts,**/*.html,**/*.scss
----
-
-- Use Prettier for consistent code formatting across the project
-- Integrate Prettier with ESLint to avoid conflicts
-- Set up pre-commit hooks to format code automatically before commits
-- Customize Prettier settings to match team preferences and project needs

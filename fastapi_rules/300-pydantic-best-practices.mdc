@@ -1,9 +1,0 @@
----
-description: Best practices for data validation and settings management with Pydantic
-globs: **/*.py
----
-
-- Use Pydantic models for request and response validation
-- Leverage settings management with Pydantic Settings for environment variables
-- Implement custom validators for complex validation logic
-- Use `BaseModel` for structured data and type safety

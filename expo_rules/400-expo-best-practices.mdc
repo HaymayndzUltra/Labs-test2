@@ -1,9 +1,0 @@
----
-description: Best practices for Expo applications
-globs: **/*.ts,**/*.tsx,**/*.js,**/*.jsx
----
-
-- Utilize Expo's managed workflow for easier development and deployment.
-- Leverage Expo's built-in components for consistent UI and performance.
-- Use `expo-router` for simplified navigation and routing management.
-- Optimize assets with `expo-asset` for better performance on mobile devices.

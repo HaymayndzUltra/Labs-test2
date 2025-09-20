@@ -1,9 +1,0 @@
----
-description: Best practices for testing with Jest
-globs: **/*.ts,**/*.tsx,**/*.js,**/*.jsx
----
-
-- Use `jest-expo` preset for seamless integration with Expo.
-- Write unit tests for components and hooks to ensure functionality.
-- Use mocking for API calls to isolate tests and improve performance.
-- Implement snapshot testing for UI components to catch unintended changes.

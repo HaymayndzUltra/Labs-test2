@@ -1,9 +1,0 @@
----
-description: Best practices for maintaining code quality in Django projects
-globs: **/*.py
----
-
-- Use Black for consistent code formatting.
-- Use Flake8 for linting and catching common errors.
-- Use MyPy for type checking to improve code reliability.
-- Regularly run tests and code quality checks in CI/CD pipelines.

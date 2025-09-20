@@ -1,9 +1,0 @@
----
-description: Best practices for form handling with React Hook Form
-globs: **/*.ts,**/*.tsx
----
-
-- Use the `useForm` hook to manage form state efficiently.
-- Implement validation with Zod for type-safe schema validation.
-- Use controlled components to ensure form inputs are managed by React.
-- Leverage the `Controller` component for integrating with UI libraries.

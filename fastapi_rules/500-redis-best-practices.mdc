@@ -1,9 +1,0 @@
----
-description: Best practices for using Redis with FastAPI
-globs: **/*.py
----
-
-- Use Redis for caching frequently accessed data
-- Implement connection pooling for efficient resource management
-- Use Pub/Sub features for real-time notifications
-- Ensure data persistence with appropriate Redis configurations

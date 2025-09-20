@@ -1,8 +1,0 @@
----
-description: Best practices for managing environment variables in Django
-globs: **/*.py
----
-
-- Store sensitive information in environment variables, not in code.
-- Use `.env` files for local development and ensure they are excluded from version control.
-- Validate environment variables to ensure required settings are present.

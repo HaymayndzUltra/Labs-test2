@@ -1,9 +1,0 @@
----
-description: Best practices for React Query
-globs: **/*.ts,**/*.tsx,**/*.js,**/*.jsx
----
-
-- Use `useQuery` and `useMutation` hooks for data fetching and state management.
-- Implement query invalidation to keep data fresh and up-to-date.
-- Utilize `React Query Devtools` for debugging and monitoring query states.
-- Set up global query configurations for consistent behavior across your app.

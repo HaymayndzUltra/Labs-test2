@@ -1,8 +1,0 @@
----
-description: Best practices for testing Django applications with pytest
-globs: **/*.py
----
-
-- Use fixtures to set up test data efficiently.
-- Write tests for both views and models to ensure full coverage.
-- Use pytest's parameterization feature to reduce code duplication in tests.

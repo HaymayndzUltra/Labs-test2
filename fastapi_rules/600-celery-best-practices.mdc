@@ -1,9 +1,0 @@
----
-description: Best practices for task management with Celery
-globs: **/*.py
----
-
-- Use Celery for background task processing to improve response times
-- Implement task retries and error handling for robustness
-- Use result backends to track task states and results
-- Organize tasks into modules for better maintainability

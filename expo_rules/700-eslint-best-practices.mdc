@@ -1,9 +1,0 @@
----
-description: Best practices for ESLint configuration
-globs: **/*.ts,**/*.tsx,**/*.js,**/*.jsx
----
-
-- Use `eslint-config-expo` for a standard configuration tailored for Expo projects.
-- Integrate Prettier with ESLint to maintain consistent code formatting.
-- Set up rules to enforce best practices and catch common errors.
-- Regularly run linting as part of your CI/CD pipeline to maintain code quality.
