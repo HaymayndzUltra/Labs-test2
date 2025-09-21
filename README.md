@@ -7,6 +7,73 @@
 
 A comprehensive, industry-aware project generator that creates production-ready applications with built-in compliance, CI/CD pipelines, and AI Governor Framework integration. Built with sophisticated template processing, intelligent rule management, and enterprise-grade performance optimization.
 
+---
+
+## 🧠 AI‑Native Project Factory (Cursor IDE)
+
+This repository includes an AI‑native development workflow designed for Cursor IDE. It uses rules‑as‑code (`.cursor/rules/*.mdc`), background agents, and scripted gates to generate, validate, and hand off client projects end‑to‑end.
+
+### Workflow at a glance (0→5)
+- 0 Bootstrap: Verify tools, load rules, list templates; HALT on missing criticals
+- 1 PRD: Draft PRD + architecture summary; confirm detected layers
+- 2 Tasks: Generate plan + tasks, validate DAG, snapshot artifacts
+- 3 Process: Preflight stack selection → dry‑run → generate → install/test → sync/apply → validate
+- 4 Quality Control: Collect coverage/perf/dep scans; enforce numeric gates; prepare evidence
+- 5 Retrospective & Delivery: Build Submission Pack; publish link; capture improvements
+
+### Quickstart (≤ 10 minutes)
+Pick ONE path.
+
+1) Makefile
+```bash
+make bootstrap
+make plan
+make preflight
+make dryrun
+make generate
+make test
+make sync
+make validate
+make qc
+make deliver
+```
+
+2) One‑shot script
+```bash
+NAME="demo-app" INDUSTRY="healthcare" PROJECT_TYPE="fullstack" FE="nextjs" BE="fastapi" DB="postgres" \
+  ./scripts/e2e_from_brief.sh
+```
+
+3) Cursor messagebox (per protocol)
+```text
+/apply-instructions-from-0-bootstrap-your-project.md
+/apply-instructions-from-1-create-prd.md
+/apply-instructions-from-2-generate-tasks.md
+/apply-instructions-from-3-process-tasks.md
+/apply-instructions-from-4-quality-control-protocol.md
+/apply-instructions-from-5-implementation-retrospective.md
+```
+
+### Flow (ASCII)
+```
+[0 Bootstrap] → [1 PRD] → [2 Tasks] → [3 Process] → [4 QC] → [5 Retro/Delivery]
+     |             |            |             |          |            |
+     v             v            v             v          v            v
+  Rules/Doctor   PRD.md     PLAN.md +       Scaffold   Evidence     Pack +
+  Templates      Layers     PLAN.tasks.json  + Tests    (cov/perf/   Links
+                                                 Sync   deps)        Issues
+```
+
+### Open the detailed workflow files
+- 0: `.cursor/dev-workflow/0-bootstrap-your-project.md`
+- 1: `.cursor/dev-workflow/1-create-prd.md`
+- 2: `.cursor/dev-workflow/2-generate-tasks.md`
+- 3: `.cursor/dev-workflow/3-process-tasks.md`
+- 4: `.cursor/dev-workflow/4-quality-control-protocol.md`
+- 5: `.cursor/dev-workflow/5-implementation-retrospective.md`
+
+See also: `docs/FRAMEWORK.md` for the philosophy, rules‑as‑code, policy overlays, and glossary.
+
 ## 🚀 Features
 
 ### Core Capabilities
