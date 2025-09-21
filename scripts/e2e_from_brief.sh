@@ -8,6 +8,9 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)"
 cd "$ROOT_DIR"
 
+# Ensure local package imports (project_generator) are resolvable
+export PYTHONPATH="$ROOT_DIR:${PYTHONPATH:-}"
+
 CONFIG_FILE="${CONFIG_FILE:-workflow.config.json}"
 
 # Select Python interpreter
@@ -66,10 +69,10 @@ echo "[E2E] Bootstrap"
   --name "${NAME:-demo}" --industry "${INDUSTRY:-healthcare}" --project-type "${PROJECT_TYPE:-fullstack}" | cat
 
 echo "[E2E] Plan from brief"
-"$PY_BIN" scripts/plan_from_brief.py "docs/briefs/${NAME}/brief.md"
+"$PY_BIN" scripts/plan_from_brief.py --brief "docs/briefs/${NAME}/brief.md" --out PLAN.md
 
-echo "[E2E] Validate tasks.json"
-"$PY_BIN" scripts/validate_tasks.py tasks.json
+echo "[E2E] Validate tasks graph"
+"$PY_BIN" scripts/validate_tasks.py PLAN.tasks.json
 
 echo "[E2E] Preflight selection gate"
 "$PY_BIN" scripts/select_stacks.py \
