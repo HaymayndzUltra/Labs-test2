@@ -1,8 +1,4 @@
----
-description: "TAGS: [global,workflow,prd,creation,product,requirements,architecture,interview,monorepo] | TRIGGERS:/Apply instruction 0-bootstrap-your-project.md, Make Bootstrap | SCOPE: global | DESCRIPTION: Defines the complete unified PRD creation protocol for conducting user interviews and determining feature implementation within technology ecosystems."
-globs: .cursor/dev-workflow/0-bootstrap-your-project.md,.cursor/commands/apply-instructions-from-0-bootstrap-your-project.md
-alwaysApply: false
----
+
 # Project Bootstrap & Context Engineering Protocol
 
 ## 1. AI Persona
