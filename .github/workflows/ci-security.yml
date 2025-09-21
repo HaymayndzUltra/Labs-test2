@@ -81,14 +81,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Build Docker images
+      - name: Check for Dockerfiles
+        id: check-dockerfiles
         run: |
-          docker build -t ${{ github.event.repository.name }}-frontend ./frontend
-          docker build -t ${{ github.event.repository.name }}-backend ./backend
-        if: ${{ hashFiles('frontend/Dockerfile') != '' || hashFiles('backend/Dockerfile') != '' }}
+          if [ -f frontend/Dockerfile ] || [ -f backend/Dockerfile ]; then
+            echo "has_dockerfiles=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_dockerfiles=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Build Docker images
+        if: steps.check-dockerfiles.outputs.has_dockerfiles == 'true'
+        run: |
+          if [ -f frontend/Dockerfile ]; then
+            docker build -t ${{ github.event.repository.name }}-frontend ./frontend
+          fi
+          if [ -f backend/Dockerfile ]; then
+            docker build -t ${{ github.event.repository.name }}-backend ./backend
+          fi
       
       - name: Run Trivy on Docker images
-        if: ${{ hashFiles('frontend/Dockerfile') != '' || hashFiles('backend/Dockerfile') != '' }}
+        if: steps.check-dockerfiles.outputs.has_dockerfiles == 'true'
         run: |
           # Scan frontend image if exists
           if [ -f frontend/Dockerfile ]; then
@@ -127,26 +140,38 @@ jobs:
 
   # SAST - Static Application Security Testing
   sast-python:
-    if: ${{ hashFiles('backend/requirements.txt', 'backend/pyproject.toml') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       
+      - name: Check for Python files
+        id: check-python
+        run: |
+          if [ -f backend/requirements.txt ] || [ -f backend/pyproject.toml ]; then
+            echo "has_python=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_python=false" >> $GITHUB_OUTPUT
+          fi
+      
       - name: Setup Python
+        if: steps.check-python.outputs.has_python == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       
       - name: Install Bandit
+        if: steps.check-python.outputs.has_python == 'true'
         run: pip install bandit[toml]
       
       - name: Run Bandit security scan
+        if: steps.check-python.outputs.has_python == 'true'
         working-directory: backend
         run: |
           bandit -r app -f json -o bandit-report.json
           bandit -r app -lll
       
       - name: Upload Bandit report
+        if: steps.check-python.outputs.has_python == 'true'
         uses: actions/upload-artifact@v3
         with:
           name: bandit-report
@@ -174,26 +199,38 @@ jobs:
             --rule 'security/detect-unsafe-regex: error'
 
   sast-go:
-    if: ${{ hashFiles('backend/go.mod') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       
+      - name: Check for Go files
+        id: check-go
+        run: |
+          if [ -f backend/go.mod ]; then
+            echo "has_go=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_go=false" >> $GITHUB_OUTPUT
+          fi
+      
       - name: Setup Go
+        if: steps.check-go.outputs.has_go == 'true'
         uses: actions/setup-go@v5
         with:
           go-version: '1.21'
       
       - name: Install gosec
+        if: steps.check-go.outputs.has_go == 'true'
         run: go install github.com/securego/gosec/v2/cmd/gosec@latest
       
       - name: Run gosec security scan
+        if: steps.check-go.outputs.has_go == 'true'
         working-directory: backend
         run: |
           gosec -fmt=json -out=gosec-report.json ./...
           gosec -severity=medium ./...
       
       - name: Upload gosec report
+        if: steps.check-go.outputs.has_go == 'true'
         uses: actions/upload-artifact@v3
         with:
           name: gosec-report
@@ -201,14 +238,26 @@ jobs:
 
   # Optional healthcare security checks (if patterns exist)
   hipaa-security-check:
-    if: ${{ hashFiles('backend/app/models/**/*.py') != '' || hashFiles('frontend/**') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Check for healthcare patterns
+        id: check-hipaa
+        run: |
+          if [ -d backend/app/models ] || [ -d frontend ]; then
+            echo "has_hipaa_patterns=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_hipaa_patterns=false" >> $GITHUB_OUTPUT
+          fi
+      
       - name: Check for PHI patterns in logs (best-effort)
+        if: steps.check-hipaa.outputs.has_hipaa_patterns == 'true'
         run: |
           ! grep -r -i -E "(console\.log|logger\.|print)" . | grep -i -E "(patient|ssn|dob|diagnosis)" || true
+      
       - name: Verify encryption usage markers (best-effort)
+        if: steps.check-hipaa.outputs.has_hipaa_patterns == 'true'
         run: |
           grep -r "@Encrypted" backend/app/models || true
   
@@ -238,8 +287,17 @@ jobs:
         with:
           soft_fail: false
       
+      - name: Check for Kubernetes files
+        id: check-k8s
+        run: |
+          if [ -d k8s ] && ls k8s/*.yaml 1> /dev/null 2>&1; then
+            echo "has_k8s=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_k8s=false" >> $GITHUB_OUTPUT
+          fi
+      
       - name: Kubernetes security scan
-        if: hashFiles('k8s/*.yaml') != ''
+        if: steps.check-k8s.outputs.has_k8s == 'true'
         run: |
           # Install kubesec
           wget -O kubesec https://github.com/controlplaneio/kubesec/releases/download/v2.11.0/kubesec_linux_amd64
