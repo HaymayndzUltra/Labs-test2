@@ -159,4 +159,6 @@ git commit -m "docs(rules): refine PRD Qs and enforce tasks validation gates"
 # (Optional) GitHub MCP: create PR or commit referencing the Notion delivery link
 // Build Submission Pack locally
 /run: bash -lc 'chmod +x scripts/build_submission_pack.sh && ./scripts/build_submission_pack.sh'
+# Notion MCP: upload dist/<NAME>-submission/* and publish page link
+/run: bash -lc 'mkdir -p evidence/status && printf "Delivered: %s\n" "$(date -Is)" >> evidence/status/05_delivery.md'
 ```

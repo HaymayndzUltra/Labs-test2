@@ -179,4 +179,5 @@ python scripts/validate_tasks.py tasks.json
 /apply-instructions-from-1-create-prd.md
 # Confirm detected layers and constraints based on approved brief
 # Notion MCP: create/update "PRD + Architecture Summary" and attach PRD.md
+/run: bash -lc 'mkdir -p evidence/status && printf "PRD posted: %s\n" "$(date -Is)" >> evidence/status/01_prd.md'
 ```

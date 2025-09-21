@@ -316,4 +316,5 @@ python scripts/check_compliance_docs.py
 /run: python scripts/enforce_gates.py
 /run: python scripts/check_compliance_docs.py
 # Notion MCP: create "Submission Pack" page; upload evidence/submission-pack/*
+/run: bash -lc 'mkdir -p evidence/status && printf "QC PASS (if enforce_gates succeeded): %s\n" "$(date -Is)" >> evidence/status/04_qc.md'
 ```
