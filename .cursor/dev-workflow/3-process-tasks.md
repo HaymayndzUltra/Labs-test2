@@ -222,6 +222,10 @@ python scripts/validate_tasks.py tasks.json
 
 ```text
 /apply-instructions-from-3-process-tasks.md
+/run: python scripts/select_stacks.py --industry <INDUSTRY> --project-type <TYPE> \
+  --frontend <FE> --backend <BE> --database <DB> --compliance <COMMA_LIST_OR_EMPTY> \
+  --output selection.json --summary evidence/stack-selection.md
+# Review evidence/stack-selection.md; if FAIL or unknown tech → stop and adjust flags
 /run: ./scripts/generate_client_project.py --list-templates | cat
 /run: ./scripts/generate_client_project.py --name <NAME> --industry <INDUSTRY> --project-type <TYPE> \
   --frontend <FE> --backend <BE> --database <DB> --auth <AUTH> --deploy <DEPLOY> --workers 8 --dry-run --yes
