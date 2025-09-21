@@ -62,7 +62,8 @@ done
 
 echo "[E2E] Bootstrap"
 "$PY_BIN" scripts/doctor.py --strict || true
-./scripts/generate_client_project.py --list-templates | cat
+./scripts/generate_client_project.py --list-templates \
+  --name "${NAME:-demo}" --industry "${INDUSTRY:-healthcare}" --project-type "${PROJECT_TYPE:-fullstack}" | cat
 
 echo "[E2E] Plan from brief"
 "$PY_BIN" scripts/plan_from_brief.py "docs/briefs/${NAME}/brief.md"
