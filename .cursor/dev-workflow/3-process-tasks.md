@@ -215,3 +215,20 @@ python scripts/validate_tasks.py tasks.json
 
 - Enforce a single-writer policy for `tasks.json`. Never run sync/apply concurrently with status updates.
 - Re-run `validate_tasks.py` after any mutation.
+
+---
+
+## MESSAGEBOX MACRO (Protocol 3 — Process Tasks)
+
+```text
+/apply-instructions-from-3-process-tasks.md
+/run: ./scripts/generate_client_project.py --list-templates | cat
+/run: ./scripts/generate_client_project.py --name <NAME> --industry <INDUSTRY> --project-type <TYPE> \
+  --frontend <FE> --backend <BE> --database <DB> --auth <AUTH> --deploy <DEPLOY> --workers 8 --dry-run --yes
+# Optional: client preview checkpoint
+/run: ./scripts/generate_client_project.py --name <NAME> --industry <INDUSTRY> --project-type <TYPE> \
+  --frontend <FE> --backend <BE> --database <DB> --auth <AUTH> --deploy <DEPLOY> --workers 8 --yes
+/run: python scripts/sync_from_scaffold.py --plan
+/run: python scripts/sync_from_scaffold.py --apply
+/run: python scripts/validate_tasks.py tasks.json
+```

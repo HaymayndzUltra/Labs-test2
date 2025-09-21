@@ -170,3 +170,13 @@ python scripts/validate_tasks.py tasks.json
 
 - If PRD lacks layer placement or comms constraints, halt and clarify before generation.
 - If `validate_tasks.py` reports errors after generation (next protocol), fix PRD or mappings and re-run.
+
+---
+
+## MESSAGEBOX MACRO (Protocol 1 — PRD)
+
+```text
+/apply-instructions-from-1-create-prd.md
+# Confirm detected layers and constraints based on approved brief
+# Notion MCP: create/update "PRD + Architecture Summary" and attach PRD.md
+```

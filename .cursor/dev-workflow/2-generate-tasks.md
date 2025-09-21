@@ -174,3 +174,14 @@ python scripts/lane_executor.py --lane frontend --cap 3
 - Do not proceed to generation/execution until `tasks.json` passes validation (no duplicate IDs, no missing deps, no cycles).
 - If UI tasks are primary, perform duplicate-prevention search before decomposition; propose reuse when viable.
 - Present high-level tasks and wait for explicit "Go" before detailed decomposition.
+
+---
+
+## MESSAGEBOX MACRO (Protocol 2 — Plan & Tasks)
+
+```text
+/apply-instructions-from-2-generate-tasks.md
+/run: python scripts/plan_from_brief.py docs/briefs/<project>/brief.md
+/run: python scripts/validate_tasks.py tasks.json
+# Notion MCP: attach PLAN.md and snapshot of tasks.json to the project page
+```

@@ -303,3 +303,17 @@ python scripts/check_compliance_docs.py
 ### Stop-the-line Gates
 
 - If any gate fails, mark as NOT READY and return actionable findings; do not proceed to retrospective until issues are addressed or explicitly waived.
+
+---
+
+## MESSAGEBOX MACRO (Protocol 4 — Quality Control)
+
+```text
+/apply-instructions-from-4-quality-control-protocol.md
+/run: python scripts/collect_coverage.py
+/run: python scripts/collect_perf.py
+/run: python scripts/scan_deps.py
+/run: python scripts/enforce_gates.py
+/run: python scripts/check_compliance_docs.py
+# Notion MCP: create "Submission Pack" page; upload evidence/submission-pack/*
+```

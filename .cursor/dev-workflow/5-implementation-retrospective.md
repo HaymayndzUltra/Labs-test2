@@ -148,3 +148,13 @@ After user validation of improvement actions:
 git add .
 git commit -m "docs(rules): refine PRD Qs and enforce tasks validation gates"
 ```
+
+---
+
+## MESSAGEBOX MACRO (Protocol 5 — Retrospective & Delivery)
+
+```text
+/apply-instructions-from-5-implementation-retrospective.md
+# Notion MCP: publish final Submission Pack page link; request client acceptance
+# (Optional) GitHub MCP: create PR or commit referencing the Notion delivery link
+```
