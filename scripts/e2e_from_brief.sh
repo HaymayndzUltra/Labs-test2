@@ -10,9 +10,20 @@ cd "$ROOT_DIR"
 
 CONFIG_FILE="${CONFIG_FILE:-workflow.config.json}"
 
+# Select Python interpreter
+if command -v python >/dev/null 2>&1; then
+  PY_BIN=python
+elif command -v python3 >/dev/null 2>&1; then
+  PY_BIN=python3
+else
+  echo "[E2E] Python is not installed. Please install python3." >&2
+  exit 127
+fi
+
 read_cfg() {
+  local cfg_path="$1"; shift
   local key="$1"
-  python - "$key" <<'PY'
+  "$PY_BIN" - "$cfg_path" "$key" <<'PY'
 import json,sys
 cfg_path=sys.argv[1]
 key=sys.argv[2]
@@ -50,17 +61,17 @@ for var in "${required[@]}"; do
 done
 
 echo "[E2E] Bootstrap"
-python scripts/doctor.py --strict || true
+"$PY_BIN" scripts/doctor.py --strict || true
 ./scripts/generate_client_project.py --list-templates | cat
 
 echo "[E2E] Plan from brief"
-python scripts/plan_from_brief.py "docs/briefs/${NAME}/brief.md"
+"$PY_BIN" scripts/plan_from_brief.py "docs/briefs/${NAME}/brief.md"
 
 echo "[E2E] Validate tasks.json"
-python scripts/validate_tasks.py tasks.json
+"$PY_BIN" scripts/validate_tasks.py tasks.json
 
 echo "[E2E] Preflight selection gate"
-python scripts/select_stacks.py \
+"$PY_BIN" scripts/select_stacks.py \
   --industry "$INDUSTRY" --project-type "$PROJECT_TYPE" \
   --frontend "$FE" --backend "$BE" --database "$DB" \
   --compliance "${COMPLIANCE:-}" \
@@ -83,22 +94,22 @@ chmod +x scripts/install_and_test.sh
 ./scripts/install_and_test.sh || true
 
 echo "[E2E] Sync & validate"
-python scripts/sync_from_scaffold.py --plan
-python scripts/sync_from_scaffold.py --apply
-python scripts/validate_tasks.py tasks.json
+"$PY_BIN" scripts/sync_from_scaffold.py --plan
+"$PY_BIN" scripts/sync_from_scaffold.py --apply
+"$PY_BIN" scripts/validate_tasks.py tasks.json
 
 echo "[E2E] QC metrics & gates"
-python scripts/collect_coverage.py || true
-python scripts/collect_perf.py || true
-python scripts/scan_deps.py || true
-python scripts/enforce_gates.py
+"$PY_BIN" scripts/collect_coverage.py || true
+"$PY_BIN" scripts/collect_perf.py || true
+"$PY_BIN" scripts/scan_deps.py || true
+"$PY_BIN" scripts/enforce_gates.py
 
 echo "[E2E] Build Submission Pack"
 chmod +x scripts/build_submission_pack.sh
 ./scripts/build_submission_pack.sh || true
 
 echo "[E2E] Compliance docs (optional)"
-python scripts/check_compliance_docs.py || true
+"$PY_BIN" scripts/check_compliance_docs.py || true
 
 echo "[E2E] Done. See evidence/ and selection.json"
 
