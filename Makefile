@@ -1,3 +1,61 @@
+SHELL := /usr/bin/bash
+
+NAME ?= $(shell jq -r .name workflow.config.json 2>/dev/null)
+INDUSTRY ?= $(shell jq -r .industry workflow.config.json 2>/dev/null)
+PROJECT_TYPE ?= $(shell jq -r .project_type workflow.config.json 2>/dev/null)
+FE ?= $(shell jq -r .frontend workflow.config.json 2>/dev/null)
+BE ?= $(shell jq -r .backend workflow.config.json 2>/dev/null)
+DB ?= $(shell jq -r .database workflow.config.json 2>/dev/null)
+AUTH ?= $(shell jq -r .auth workflow.config.json 2>/dev/null)
+DEPLOY ?= $(shell jq -r .deploy workflow.config.json 2>/dev/null)
+COMPLIANCE ?= $(shell jq -r .compliance workflow.config.json 2>/dev/null)
+
+.PHONY: bootstrap prd plan preflight dryrun generate sync validate qc deliver all
+
+bootstrap:
+	python scripts/doctor.py || true
+	./scripts/generate_client_project.py --list-templates | cat
+
+prd:
+	@echo "PRD is derived from approved brief; confirm architecture in Protocol 1"
+
+plan:
+	python scripts/plan_from_brief.py docs/briefs/$(NAME)/brief.md
+	python scripts/validate_tasks.py tasks.json
+
+preflight:
+	python scripts/select_stacks.py --industry $(INDUSTRY) --project-type $(PROJECT_TYPE) \
+	  --frontend $(FE) --backend $(BE) --database $(DB) --compliance $(COMPLIANCE) \
+	  --output selection.json --summary evidence/stack-selection.md
+
+dryrun:
+	./scripts/generate_client_project.py --name $(NAME) --industry $(INDUSTRY) --project-type $(PROJECT_TYPE) \
+	  --frontend $(FE) --backend $(BE) --database $(DB) --auth $(AUTH) --deploy $(DEPLOY) --workers 8 --dry-run --yes
+
+generate:
+	./scripts/generate_client_project.py --name $(NAME) --industry $(INDUSTRY) --project-type $(PROJECT_TYPE) \
+	  --frontend $(FE) --backend $(BE) --database $(DB) --auth $(AUTH) --deploy $(DEPLOY) --workers 8 --yes
+
+sync:
+	python scripts/sync_from_scaffold.py --plan
+	python scripts/sync_from_scaffold.py --apply
+
+validate:
+	python scripts/validate_tasks.py tasks.json
+
+qc:
+	python scripts/collect_coverage.py || true
+	python scripts/collect_perf.py || true
+	python scripts/scan_deps.py || true
+	python scripts/enforce_gates.py
+	python scripts/check_compliance_docs.py || true
+
+deliver:
+	@echo "Publish Submission Pack via Notion MCP (manual or scripted)"
+
+all: bootstrap plan preflight dryrun generate sync validate qc
+	@echo "All steps completed"
+
 # Client Project Generator Makefile
 
 .PHONY: help setup test test-unit test-integration test-e2e test-all lint format security clean install dev \
