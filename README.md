@@ -5,10 +5,11 @@
 [![Quick Reference](https://img.shields.io/badge/quick-reference-green)](WORKFLOW_QUICK_REFERENCE.md)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A comprehensive, industry-aware project generator that creates production-ready applications with built-in compliance, CI/CD pipelines, and AI Governor Framework integration.
+A comprehensive, industry-aware project generator that creates production-ready applications with built-in compliance, CI/CD pipelines, and AI Governor Framework integration. Built with sophisticated template processing, intelligent rule management, and enterprise-grade performance optimization.
 
 ## 🚀 Features
 
+### Core Capabilities
 - **Industry-Specific Templates**: Pre-configured for Healthcare, Finance, E-commerce, SaaS, and Enterprise
 - **Compliance Ready**: Built-in support for HIPAA, GDPR, SOX, and PCI compliance
 - **Full Stack Support**: Frontend (Next.js, Nuxt, Angular, Expo), Backend (FastAPI, Django, NestJS, Go)
@@ -16,6 +17,13 @@ A comprehensive, industry-aware project generator that creates production-ready 
 - **CI/CD Pipelines**: GitHub Actions with quality gates and security scanning
 - **AI Governor Integration**: Seamless integration with AI development workflows
 - **Smart Selection**: Policy-driven technology recommendations based on industry
+
+### Advanced Architecture
+- **Sophisticated Template Engine**: Multi-layered templating with inheritance, conditional logic, and custom helpers
+- **Intelligent Rule Management**: Hierarchical rule system with industry-specific precedence and validation
+- **Enterprise Performance**: Concurrent processing, memory optimization, and intelligent caching
+- **State Management**: Persistent state tracking with rollback support and quality gates
+- **External Integration**: Robust Docker, Git, and CI/CD integration with comprehensive validation
 
 ## 📋 Prerequisites
 
@@ -311,11 +319,43 @@ healthcare:
 - Rate limiting setup
 - CORS configuration
 
+## 🏗️ Architecture Overview
+
+The Client Project Generator is built on a sophisticated multi-layered architecture designed for enterprise-scale project generation:
+
+### Template Processing System
+- **Multi-Layer Templating**: Simple variable substitution combined with advanced Handlebars-like templating
+- **Industry-Aware Generation**: Templates adapt based on industry requirements with compliance patterns
+- **Template Inheritance**: Hierarchical structure with base templates and industry-specific overlays
+- **Custom Helpers**: Advanced logic functions for complex template processing
+
+### Rule Management System
+- **Hierarchical Rule Precedence**: Security > Compliance > Quality > Workflow > Project rules
+- **Industry-Specific Adjustments**: Healthcare/finance get higher security priority
+- **Dynamic Rule Generation**: Project-specific rules created based on configuration
+- **AI Governor Integration**: Seamless integration with master rule system
+
+### Performance & Scalability
+- **Concurrent Processing**: ThreadPoolExecutor with configurable worker management
+- **Memory Optimization**: Chunked processing, streaming, and LRU caching
+- **Intelligent Caching**: Multi-layered caching with TTL-based invalidation
+- **Resource Management**: Memory budgets and automatic cleanup
+
+### State Management
+- **Persistent State**: States stored in `.cursor/ai-governor/state.json`
+- **State Machine**: Defined transitions with validation and rollback support
+- **Quality Gates**: Prevent invalid transitions with error recovery
+- **Context Preservation**: Critical context maintained across state transitions
+
 ## 📖 Additional Documentation
 
 - [**Workflow Guide**](WORKFLOW_GUIDE.md) - Complete workflow documentation
 - [**Workflow Quick Reference**](WORKFLOW_QUICK_REFERENCE.md) - Quick command reference
-- [Architecture Guide](docs/ARCHITECTURE.md)
+- [Architecture Guide](docs/ARCHITECTURE.md) - Detailed architecture documentation
+- [Template System](docs/TEMPLATE_SYSTEM.md) - Template processing and inheritance
+- [Rule Management](docs/RULE_MANAGEMENT.md) - Rule hierarchy and management
+- [Performance & Scalability](docs/PERFORMANCE_SCALABILITY.md) - Performance optimization patterns
+- [Integration Patterns](docs/INTEGRATION_PATTERNS.md) - External integrations and AI Governor
 - [Compliance Guide](docs/COMPLIANCE.md)
 - [Deployment Guide](docs/DEPLOYMENT.md)
 - [Contributing Guide](CONTRIBUTING.md)
