@@ -1,85 +1,65 @@
-# 📚 Documentation Index
+# AI‑Native Project Factory (Client Docs)
 
-Welcome to the Client Project Generator documentation. This index will help you find the information you need quickly.
+## Overview (What)
+This is a client‑ready, AI‑native project generator and delivery workflow that builds full‑stack apps (Next.js/Nuxt/Angular/Expo + FastAPI/Django/NestJS/Go + PostgreSQL/Firebase/MongoDB) with governance built in (rules‑as‑code, quality gates, compliance overlays) and Cursor IDE automation.
 
-## 🚀 Getting Started
+## Why AI‑native (Why)
+Traditional workflows rely on manual steps, scattered scripts, and undocumented tribal knowledge. This framework codifies the process:
+- Rules‑as‑code in `.cursor/rules/*.mdc` (governance becomes executable)
+- Deterministic scripts for planning, generation, validation, and packaging
+- Measurable gates (coverage, performance, dependency health)
+- Evidence‑based delivery (Submission Pack with manifest + checksums)
 
-- **[Main README](../README.md)** - Project overview and quick start
-- **[Workflow Guide](../WORKFLOW_GUIDE.md)** - Complete workflow documentation
-- **[Workflow Quick Reference](../WORKFLOW_QUICK_REFERENCE.md)** - Command cheat sheet
+## How it works (How)
+- Workflows live in `.cursor/dev-workflow/0…5` and can be executed via Cursor messagebox commands, Make targets, or a one‑shot script.
+- Scripts under `scripts/` implement planning (`plan_from_brief.py`), selection (`select_stacks.py`), generation, validation, and gates.
+- CI mirrors local steps for consistency.
 
-## 📋 Workflow Documentation
+### Workflow stages (0→5)
+- 0 Bootstrap: Verify tools and load rules; list available templates
+- 1 PRD: Draft the Product Requirements Document + Architecture Summary
+- 2 Tasks: Generate PLAN.md + PLAN.tasks.json and validate the task graph
+- 3 Process: Preflight stack selection → dry‑run → generate scaffold → install/test → sync/apply → validate
+- 4 Quality Control: Collect coverage/perf/dependency scans; enforce numeric gates
+- 5 Retrospective & Delivery: Build a Submission Pack and publish links for acceptance
 
-### Phase Guides
-- **[Phase 0: Bootstrap Project](.cursor/commands/0-bootstrap-project.md)** - Project initialization
-- **[Phase 1: Create PRD](.cursor/commands/1-create-prd.md)** - Requirements and planning
-- **[Phase 2: Generate Tasks](.cursor/commands/2-generate-tasks.md)** - Task management setup
-- **[Phase 3: Sync Tasks](.cursor/commands/sync-tasks.md)** - Task synchronization
-- **[Phase 4: Process Tasks](.cursor/commands/3-process-tasks.md)** - Task execution
-- **[Phase 5: Quality Control](.cursor/commands/4-quality-control.md)** - Quality assurance
-- **[Phase 6: Retrospective](.cursor/commands/5-implementation-retrospective.md)** - Review and improvement
+### Quick start
+Pick ONE run style.
 
-### Technical Documentation
-- **[Architecture Guide](ARCHITECTURE.md)** - System architecture and design
-- **[Compliance Guide](COMPLIANCE.md)** - Compliance requirements and implementation
-- **[Deployment Guide](DEPLOYMENT.md)** - Deployment strategies and configurations
-- **[API Documentation](API.md)** - API reference and examples
+1) Makefile (stepwise)
+```bash
+make bootstrap && make plan && make preflight && make dryrun && make generate && make test && make sync && make validate && make qc && make deliver
+```
 
-## 🛠️ Development Guides
+2) One‑shot (terminal)
+```bash
+NAME="demo-app" INDUSTRY="healthcare" PROJECT_TYPE="fullstack" FE="nextjs" BE="fastapi" DB="postgres" \
+  ./scripts/e2e_from_brief.sh
+```
 
-- **[Contributing Guide](../CONTRIBUTING.md)** - How to contribute to the project
-- **[Template System](TEMPLATES.md)** - Template pack documentation
-- **[Integration Examples](integration/)** - Real-world integration examples
+3) Cursor messagebox (guided)
+```text
+/apply-instructions-from-0-bootstrap-your-project.md
+/apply-instructions-from-1-create-prd.md
+/apply-instructions-from-2-generate-tasks.md
+/apply-instructions-from-3-process-tasks.md
+/apply-instructions-from-4-quality-control-protocol.md
+/apply-instructions-from-5-implementation-retrospective.md
+```
 
-## 📊 Reference Materials
+### Visual flow
+```
+[0 Bootstrap] → [1 PRD] → [2 Tasks] → [3 Process] → [4 QC] → [5 Retro/Delivery]
+     |             |            |             |          |            |
+     v             v            v             v          v            v
+  Rules/Doctor   PRD.md     PLAN.md +       Scaffold   Evidence     Pack +
+  Templates      Layers     PLAN.tasks.json  + Tests    (cov/perf/   Links
+                                                 Sync   deps)
+```
 
-- **[Template Packs](../template-packs/)** - Available templates and configurations
-- **[Scripts Reference](../scripts/)** - Command-line tool documentation
-- **[Rules System](../.cursor/rules/)** - AI rules and governance
-
-## 🔍 Quick Navigation
-
-### By Role
-- **Project Manager**: Start with [Workflow Guide](../WORKFLOW_GUIDE.md)
-- **Developer**: Check [Quick Reference](../WORKFLOW_QUICK_REFERENCE.md) and [Architecture Guide](ARCHITECTURE.md)
-- **DevOps**: Review [Deployment Guide](DEPLOYMENT.md) and [Compliance Guide](COMPLIANCE.md)
-- **Contributor**: Read [Contributing Guide](../CONTRIBUTING.md)
-
-### By Task
-- **Setting up a new project**: [Phase 0 Guide](.cursor/commands/0-bootstrap-project.md)
-- **Understanding the workflow**: [Workflow Guide](../WORKFLOW_GUIDE.md)
-- **Customizing templates**: [Template System](TEMPLATES.md)
-- **Deploying applications**: [Deployment Guide](DEPLOYMENT.md)
-- **Ensuring compliance**: [Compliance Guide](COMPLIANCE.md)
-
-## 📝 Documentation Standards
-
-This documentation follows these principles:
-
-- **Clear Structure**: Logical organization and navigation
-- **Comprehensive Coverage**: All aspects of the system documented
-- **Practical Examples**: Real-world usage examples
-- **Regular Updates**: Documentation kept current with code changes
-- **Multiple Formats**: Various formats for different use cases
-
-## 🤝 Contributing to Documentation
-
-We welcome contributions to improve this documentation:
-
-1. **Report Issues**: Use GitHub issues to report documentation problems
-2. **Suggest Improvements**: Propose better organization or content
-3. **Submit Updates**: Create pull requests with documentation improvements
-4. **Add Examples**: Share real-world usage examples
-
-## 📞 Getting Help
-
-If you can't find what you're looking for:
-
-1. **Check the Index**: This page should help you locate information
-2. **Search the Repository**: Use GitHub's search functionality
-3. **Ask the Community**: Use GitHub discussions or issues
-4. **Review Examples**: Check the integration examples directory
-
----
-
-**Remember**: Good documentation is a living resource. Help us keep it current and useful for everyone!
+### Detailed docs
+- Workflow details: `.cursor/dev-workflow/*`
+- Full workflow: `docs/WORKFLOW.md`
+- Supported stacks: `docs/FRAMEWORKS.md`
+- Trigger commands: `docs/TRIGGERS.md`
+- Client deck overview: `docs/CLIENT_PRESENTATION.md`
