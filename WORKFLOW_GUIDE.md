@@ -4,17 +4,17 @@ This comprehensive guide explains the complete workflow system for the Client Pr
 
 ## 📋 Table of Contents
 
-- [Workflow Overview](#workflow-overview)
-- [Phase Commands](#phase-commands)
-- [Key Scripts](#key-scripts)
-- [Configuration & Rules](#configuration--rules)
-- [Task Management](#task-management)
-- [Quality Gates](#quality-gates)
-- [Compliance Mapping](#compliance-mapping)
-- [Isolation Strategy](#isolation-strategy)
-- [Context Reports](#context-reports)
-- [Best Practices](#best-practices)
-- [Troubleshooting](#troubleshooting)
+- [🔄 Workflow Overview](#-workflow-overview)
+- [🎯 Phase Commands](#-phase-commands)
+- [🛠️ Key Scripts](#️-key-scripts)
+- [⚙️ Configuration & Rules](#️-configuration--rules)
+- [📊 Task Management](#-task-management)
+- [🚦 Quality Gates](#-quality-gates)
+- [🏛️ Compliance Mapping](#️-compliance-mapping)
+- [🔒 Isolation Strategy](#-isolation-strategy)
+- [📋 Context Reports](#-context-reports)
+- [🎯 Best Practices](#-best-practices)
+- [🚨 Troubleshooting](#-troubleshooting)
 
 ## 🔄 Workflow Overview
 
@@ -34,6 +34,7 @@ The Client Project Generator follows a structured 6-phase workflow designed to c
 **Purpose**: Fast, portable bootstrap for any repo using dry-run-first and HALT checkpoints. Supports brief-first and scaffold-first starts. **Never deploy.**
 
 **What it does**:
+
 - Analyzes the project brief (dry-run mode) with HALT checkpoints
 - Selects appropriate isolation strategy and output root
 - Generates project scaffold with templates (brief-first or scaffold-first)
@@ -41,6 +42,7 @@ The Client Project Generator follows a structured 6-phase workflow designed to c
 - **Never deploys** - all operations are local development only
 
 **Usage**:
+
 ```bash
 python scripts/generate_client_project.py \
   --name my-project \
@@ -53,6 +55,7 @@ python scripts/generate_client_project.py \
 ```
 
 **Outputs**:
+
 - Complete project scaffold
 - Template files and configurations
 - Initial project structure
@@ -62,11 +65,13 @@ python scripts/generate_client_project.py \
 **Purpose**: Generate Product Requirements Document and planning artifacts
 
 **What it does**:
+
 - Creates `PLAN.md` from project brief
 - Generates `PLAN.tasks.json` with task definitions
 - Establishes project scope and requirements
 
 **Usage**:
+
 ```bash
 python scripts/plan_from_brief.py \
   --brief docs/briefs/project1/brief.md \
@@ -74,6 +79,7 @@ python scripts/plan_from_brief.py \
 ```
 
 **Outputs**:
+
 - `PLAN.md` - Human-readable project plan
 - `PLAN.tasks.json` - Machine-readable task definitions
 
@@ -82,18 +88,21 @@ python scripts/plan_from_brief.py \
 **Purpose**: Build comprehensive task management system
 
 **What it does**:
+
 - Builds complete `tasks.json` with enriched personas
 - Adds acceptance criteria and definitions of done
 - Validates DAG (Directed Acyclic Graph) and enums
 - Ensures proper task dependencies
 
 **Usage**:
+
 ```bash
 python scripts/enrich_tasks.py --input tasks.json --output enriched_tasks.json
 python scripts/validate_tasks.py --tasks enriched_tasks.json
 ```
 
 **Outputs**:
+
 - Enriched `tasks.json` with personas and acceptance criteria
 - Validation report for task dependencies
 
@@ -102,6 +111,7 @@ python scripts/validate_tasks.py --tasks enriched_tasks.json
 **Purpose**: Scan repo (routes/pages/migrations/tests) and reconcile tasks.json with actual code. **Idempotent, never deploy.**
 
 **What it does**:
+
 - Scans repository structure for implemented features
 - Identifies missing or completed tasks based on code
 - Updates task states to match actual implementation
@@ -110,6 +120,7 @@ python scripts/validate_tasks.py --tasks enriched_tasks.json
 - Updates task definitions based on code changes
 
 **Usage**:
+
 ```bash
 python scripts/sync_from_scaffold.py \
   --scaffold-dir ../_generated/my-project \
@@ -118,6 +129,7 @@ python scripts/sync_from_scaffold.py \
 ```
 
 **Outputs**:
+
 - Updated `tasks.json` reflecting current code state
 - Diff report showing changes made
 
@@ -126,18 +138,21 @@ python scripts/sync_from_scaffold.py \
 **Purpose**: Execute tasks.json per lane with HALTs, update state, record run history. **Never deploy.**
 
 **What it does**:
+
 - Executes tasks lane-by-lane (backend/frontend/devops) with HALT checkpoints
 - Updates task states (pending → in_progress → completed)
 - Records run history for audit and tracking
 - **Never deploys** - only local build/test/lint operations
 
 **Usage**:
+
 ```bash
 python scripts/update_task_state.py --task-id TASK-001 --state in_progress
 python scripts/update_task_state.py --task-id TASK-001 --state completed
 ```
 
 **Outputs**:
+
 - Updated task states
 - Execution history
 - Progress reports
@@ -147,12 +162,14 @@ python scripts/update_task_state.py --task-id TASK-001 --state completed
 **Purpose**: Ensure code quality and compliance
 
 **What it does**:
+
 - Runs comprehensive test suites
 - Executes linting and code quality checks
 - Enforces numeric quality gates
 - Validates compliance requirements
 
 **Usage**:
+
 ```bash
 python scripts/enforce_gates.py --config gates_config.yaml
 make test
@@ -160,6 +177,7 @@ make lint
 ```
 
 **Outputs**:
+
 - Test results and coverage reports
 - Linting reports
 - Quality gate validation results
@@ -169,12 +187,14 @@ make lint
 **Purpose**: Review outcomes and propose improvements
 
 **What it does**:
+
 - Summarizes implementation outcomes
 - Identifies lessons learned
 - Proposes process improvements
 - Documents best practices
 
 **Usage**:
+
 ```bash
 python scripts/write_context_report.py \
   --project-name "myapp" \
@@ -183,6 +203,7 @@ python scripts/write_context_report.py \
 ```
 
 **Outputs**:
+
 - Retrospective report
 - Improvement recommendations
 - Updated project context
@@ -220,16 +241,19 @@ python scripts/write_context_report.py \
 The system provides three levels of rule emission for generated projects:
 
 #### Safe Default (`--no-cursor-assets`)
+
 - **Use case**: When generating projects in existing repositories
 - **Behavior**: No nested rules in child projects
 - **Output location**: `../_generated` (if root `.cursor` exists)
 
 #### Minimal Rules (`--minimal-cursor --include-cursor-assets`)
+
 - **Use case**: When you want focused rule sets
 - **Behavior**: Emits a focused set of essential rules
 - **Output location**: `.cursor/rules/` in generated project
 
 #### Full Rules (`--include-cursor-assets`)
+
 - **Use case**: When you want complete rule coverage
 - **Behavior**: Emits complete rules ecosystem
 - **Output location**: `.cursor/rules/` in generated project
@@ -286,16 +310,19 @@ Tasks can be in one of five states:
 The system uses three personas for task enrichment:
 
 #### System Integrator
+
 - **Focus**: Integration, deployment, infrastructure
 - **Responsibilities**: CI/CD, deployment pipelines, system integration
 - **Tasks**: Environment setup, deployment automation, monitoring
 
 #### Code Architect
+
 - **Focus**: Technical design, architecture, code quality
 - **Responsibilities**: System design, code structure, technical decisions
 - **Tasks**: Architecture design, code review, technical documentation
 
 #### QA (Quality Assurance)
+
 - **Focus**: Testing, quality validation, compliance
 - **Responsibilities**: Test design, quality gates, compliance validation
 - **Tasks**: Test creation, quality validation, compliance checking
@@ -320,23 +347,27 @@ Tasks are organized in a Directed Acyclic Graph (DAG) to ensure proper execution
 ### Gate Types
 
 #### Coverage Gates
+
 - **Unit Test Coverage**: Minimum 80%, Critical 90%
 - **Integration Test Coverage**: Minimum 70%
 - **E2E Test Coverage**: Minimum 60%
 
 #### Security Gates
+
 - **Critical Vulnerabilities**: 0 allowed
 - **High Vulnerabilities**: Maximum 2
 - **Secrets Detection**: 0 allowed
 - **Dependency Vulnerabilities**: 0 critical
 
 #### Performance Gates
+
 - **Response Time P95**: Maximum 500ms
 - **Response Time P99**: Maximum 1000ms
 - **Memory Usage**: Within defined limits
 - **CPU Usage**: Within defined limits
 
 #### Compliance Gates
+
 - **HIPAA Compliance**: All requirements met
 - **GDPR Compliance**: All requirements met
 - **SOX Compliance**: All requirements met
@@ -450,15 +481,19 @@ python scripts/write_context_report.py \
 ### Common Issues
 
 #### Issue: "No evidence found in codebase"
+
 **Solution**: Ensure you're in the correct directory and files exist
 
 #### Issue: "Conflicting evidence found"
+
 **Solution**: Review conflicting files and resolve inconsistencies
 
 #### Issue: "Partial evidence suggests..."
+
 **Solution**: Gather more information or make reasonable assumptions
 
 #### Issue: "Rule conflicts detected"
+
 **Solution**: Review rule hierarchy and resolve conflicts
 
 ### Debug Commands

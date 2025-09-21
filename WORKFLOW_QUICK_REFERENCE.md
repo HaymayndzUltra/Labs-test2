@@ -15,6 +15,7 @@
 ## Quick Start Commands
 
 ### Bootstrap a New Project
+
 ```bash
 python scripts/generate_client_project.py \
   --name my-project \
@@ -27,6 +28,7 @@ python scripts/generate_client_project.py \
 ```
 
 ### Generate Project Plan
+
 ```bash
 python scripts/plan_from_brief.py \
   --brief docs/briefs/project1/brief.md \
@@ -34,6 +36,7 @@ python scripts/plan_from_brief.py \
 ```
 
 ### Sync Tasks with Code
+
 ```bash
 python scripts/sync_from_scaffold.py \
   --scaffold-dir . \
@@ -42,6 +45,7 @@ python scripts/sync_from_scaffold.py \
 ```
 
 ### Enforce Quality Gates
+
 ```bash
 python scripts/enforce_gates.py --config gates_config.yaml
 ```

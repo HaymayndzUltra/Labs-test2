@@ -21,6 +21,7 @@ Templates are located in `project_generator/template-packs/` (symlinked to `temp
 ## Template Requirements by Framework
 
 ### Next.js Template
+
 - ✅ Use Babel pipeline (no ts-jest)
 - ✅ Jest 30 + babel-jest
 - ✅ Include .babelrc with @babel/preset-typescript
@@ -28,26 +29,31 @@ Templates are located in `project_generator/template-packs/` (symlinked to `temp
 - ✅ Node engines >=20.10.0
 
 ### Nuxt 4 Template
+
 - ✅ Set "type": "module" in package.json
 - ✅ Use Vitest (no Jest)
 - ✅ Include package-lock.json
 - ✅ Node engines >=20.10.0
 
 ### Expo SDK 54 Template
+
 - ✅ Set engines.node >=20.10.0
 - ✅ Expo ^54.0.0 + React Native 0.81.x
 - ✅ Include package-lock.json
 
 ### NestJS Templates
+
 - ✅ Jest 30 + babel-jest (no ts-jest)
 - ✅ Include package-lock.json
 - ✅ Node engines >=20.10.0
 
 ### Firebase Functions Template
+
 - ✅ Single ESLint config (no duplicates)
 - ✅ Include package-lock.json
 
 ### All Templates
+
 - ✅ Always emit package-lock.json
 - ✅ Include expected-versions.json
 - ✅ Set packageManager="npm@10"
@@ -56,6 +62,7 @@ Templates are located in `project_generator/template-packs/` (symlinked to `temp
 ## CI Integration
 
 Every PR is automatically validated with:
+
 1. `doctor-templates.mjs` - Template health check
 2. `audit-versions.mjs` - Version consistency check
 

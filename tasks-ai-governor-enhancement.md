@@ -6,6 +6,7 @@ alwaysApply: false
 # Advanced Automation Workflow Analyzer with Dynamic Rule Generation
 
 ## [STRICT] Purpose and Scope
+
 - Analyze project briefs or end-to-end tasks to identify automation opportunities
 - Generate multiple system instructions with specific triggers for connected workflows
 - **DYNAMIC RULE GENERATION**: Create new, advanced AI rules based on learned patterns from prompts
@@ -15,6 +16,7 @@ alwaysApply: false
 ## [STRICT] Core Capabilities
 
 ### 1. Project Analysis Engine
+
 - **Input Processing**: Parse project briefs, requirements, and task descriptions
 - **Pattern Recognition**: Identify repetitive tasks, dependencies, and automation candidates
 - **Complexity Assessment**: Evaluate task complexity and automation feasibility
@@ -22,6 +24,7 @@ alwaysApply: false
 - **Learning Integration**: Extract patterns for rule generation
 
 ### 2. Automation Generation
+
 - **Workflow Design**: Create connected automation sequences
 - **Trigger Definition**: Generate specific command triggers for each automation step
 - **Dependency Mapping**: Establish proper sequencing and prerequisites
@@ -29,6 +32,7 @@ alwaysApply: false
 - **Rule Integration**: Embed learned patterns into automation workflows
 
 ### 3. Dynamic Rule Generation Engine
+
 - **Pattern Learning**: Analyze prompts to identify reusable patterns
 - **Rule Synthesis**: Generate new AI rules based on learned patterns
 - **Advanced Capabilities**: Create more sophisticated automation rules
@@ -36,6 +40,7 @@ alwaysApply: false
 - **Continuous Evolution**: Improve rules based on usage patterns and feedback
 
 ### 4. System Instruction Creation
+
 - **Modular Instructions**: Generate focused, single-purpose system instructions
 - **Triggerable Commands**: Create specific user commands for each automation
 - **Context Preservation**: Maintain project context across automation chains
@@ -45,6 +50,7 @@ alwaysApply: false
 ## [STRICT] Enhanced Command Triggers
 
 ### MAKE_AUTO_BRIEF
+
 - **Purpose**: Convert project brief into automation-ready format with learning
 - **Input**: Raw project brief or requirements document
 - **Output**: Structured brief with automation opportunities and learning insights
@@ -56,6 +62,7 @@ alwaysApply: false
   5. Generate automation-ready brief with metadata and learning insights
 
 ### GENERATE_AUTOMATION
+
 - **Purpose**: Create specific automation workflows from analyzed brief
 - **Input**: Automation-ready brief from MAKE_AUTO_BRIEF
 - **Output**: Detailed automation specifications with triggers and learned patterns
@@ -68,6 +75,7 @@ alwaysApply: false
   6. Generate implementation specifications with learning metadata
 
 ### CREATE_FLOW
+
 - **Purpose**: Generate complete automation flow with system instructions
 - **Input**: Automation specifications from GENERATE_AUTOMATION
 - **Output**: Executable automation flow with all system instructions
@@ -80,6 +88,7 @@ alwaysApply: false
   6. Provide execution guidance with learning insights
 
 ### ANALYZE_PROJECT
+
 - **Purpose**: Deep analysis of existing project for automation opportunities
 - **Input**: Project codebase, documentation, or configuration
 - **Output**: Comprehensive automation analysis report with learning insights
@@ -92,6 +101,7 @@ alwaysApply: false
   6. Create automation roadmap with learning insights
 
 ### **NEW: GENERATE_RULES**
+
 - **Purpose**: Generate new AI rules based on learned patterns from prompts
 - **Input**: Learned patterns from previous analyses or specific prompt
 - **Output**: New, advanced AI rules that can be used for future automations
@@ -104,6 +114,7 @@ alwaysApply: false
   6. Output ready-to-use rule files
 
 ### **NEW: ADVANCE_RULES**
+
 - **Purpose**: Enhance existing rules based on new learning and patterns
 - **Input**: Existing rule + new patterns/insights
 - **Output**: Enhanced version of the rule with new capabilities
@@ -116,6 +127,7 @@ alwaysApply: false
   6. Output enhanced rule file
 
 ### **NEW: LEARN_FROM_PROMPT**
+
 - **Purpose**: Extract learning from a single prompt to generate rules
 - **Input**: Any prompt or instruction
 - **Output**: Generated rules based on prompt analysis
@@ -130,6 +142,7 @@ alwaysApply: false
 ## [STRICT] Learning and Pattern Recognition
 
 ### Pattern Extraction
+
 - **Prompt Analysis**: Identify common patterns in user prompts
 - **Workflow Patterns**: Recognize recurring automation sequences
 - **Integration Patterns**: Learn how different systems connect
@@ -137,6 +150,7 @@ alwaysApply: false
 - **Optimization Patterns**: Learn efficiency improvements
 
 ### Rule Generation Templates
+
 ```yaml
 rule_template:
   metadata:
@@ -153,6 +167,7 @@ rule_template:
 ```
 
 ### Learning Integration
+
 - **Context Awareness**: Adapt rules based on project context
 - **Technology Stack**: Generate rules specific to detected tech stacks
 - **Industry Patterns**: Learn industry-specific automation patterns
@@ -162,6 +177,7 @@ rule_template:
 ## [STRICT] Advanced Output Specifications
 
 ### Enhanced Automation Brief Format
+
 ```yaml
 project_metadata:
   name: string
@@ -199,6 +215,7 @@ generated_rules:
 ```
 
 ### Dynamic Rule Generation Format
+
 ```markdown
 ---
 description: "TAGS: [learned_tags] | TRIGGERS: [learned_triggers] | SCOPE: [appropriate_scope] | DESCRIPTION: [learned_description]"
@@ -236,6 +253,7 @@ alwaysApply: false
 ## [STRICT] Self-Improvement Mechanisms
 
 ### Continuous Learning
+
 - **Pattern Accumulation**: Build database of learned patterns
 - **Rule Evolution**: Continuously improve existing rules
 - **Capability Expansion**: Add new capabilities based on learning
@@ -243,6 +261,7 @@ alwaysApply: false
 - **Adaptation**: Adapt to new technologies and methodologies
 
 ### Feedback Integration
+
 - **Success Metrics**: Track successful automation outcomes
 - **Failure Analysis**: Learn from failed automations
 - **User Feedback**: Incorporate user suggestions and improvements
@@ -250,6 +269,7 @@ alwaysApply: false
 - **Usage Patterns**: Adapt to how users actually use the system
 
 ### Rule Validation
+
 - **Compatibility Check**: Ensure new rules work with existing system
 - **Conflict Detection**: Identify and resolve rule conflicts
 - **Quality Assurance**: Validate rule quality and completeness
@@ -259,6 +279,7 @@ alwaysApply: false
 ## [STRICT] Advanced Safety and Bounds
 
 ### Learning Safety
+
 - **Pattern Validation**: Validate learned patterns before rule generation
 - **Security Review**: Ensure learned patterns don't introduce security risks
 - **Quality Gates**: Implement quality checks for generated rules
@@ -266,6 +287,7 @@ alwaysApply: false
 - **Audit Trail**: Track all rule generation and modifications
 
 ### Operational Bounds
+
 - **Resource Limits**: Respect system resource constraints for learning
 - **Rate Limiting**: Limit rule generation frequency
 - **Storage Management**: Manage rule storage and cleanup
@@ -275,6 +297,7 @@ alwaysApply: false
 ## [STRICT] Success Metrics
 
 ### Learning Effectiveness
+
 - **Pattern Recognition Accuracy**: How well patterns are identified
 - **Rule Generation Quality**: Quality of generated rules
 - **Automation Improvement**: Improvement in automation effectiveness
@@ -282,6 +305,7 @@ alwaysApply: false
 - **System Performance**: Impact on overall system performance
 
 ### Continuous Improvement
+
 - **Learning Rate**: How quickly the system learns new patterns
 - **Rule Evolution**: How well rules evolve and improve
 - **Adaptation Speed**: How quickly the system adapts to new requirements
@@ -291,6 +315,7 @@ alwaysApply: false
 ## [STRICT] Implementation Guidelines
 
 ### Rule Generation Process
+
 1. **Pattern Analysis**: Analyze input for reusable patterns
 2. **Template Selection**: Choose appropriate rule template
 3. **Content Generation**: Generate rule content based on patterns
@@ -298,7 +323,8 @@ alwaysApply: false
 5. **Testing**: Test rule functionality before deployment
 6. **Deployment**: Deploy validated rule to system
 
-### Learning Integration
+### Learning Integration Process
+
 1. **Pattern Extraction**: Extract patterns from all inputs
 2. **Pattern Storage**: Store patterns in searchable database
 3. **Pattern Analysis**: Analyze patterns for rule generation opportunities
@@ -319,6 +345,7 @@ Admin dashboard rules
 Testing automation rules
 
 ### Scenario 2: Pattern-Based Rule Generation
+
 User: "I need to automate the deployment process for my microservices"
 GENERATE_RULES → Analyzes deployment patterns and generates:
 Microservices deployment rules
@@ -335,11 +362,11 @@ Improves recovery mechanisms
 Adds more robust validation
 Enhances logging and monitoring
 
-
 This enhanced rule now includes **dynamic rule generation** capabilities that allow the AI to learn from prompts and create more advanced, context-aware automation rules automatically! 🚀
 
 The enhanced rule now includes:
 �� NEW CAPABILITIES
+
 1. GENERATE_RULES - Dynamic Rule Creation
 Analyzes any prompt and generates new AI rules
 Learns patterns and creates reusable rule templates
@@ -364,6 +391,7 @@ Example 1: Learning from E-commerce Prompt
 Input: "Create a full-stack e-commerce platform with React, Node.js, PostgreSQL, Stripe integration, admin dashboard, real-time notifications, and automated testing"
 
 Output: Generates 5+ specialized rules:
+
 - E-commerce automation rules
 - Payment integration rules  
 - Real-time notification rules
@@ -375,6 +403,7 @@ Example 2: Pattern-Based Enhancement
 Input: "I need to automate the deployment process for my microservices"
 
 Output: Generates deployment-focused rules:
+
 - Microservices deployment rules
 - CI/CD pipeline rules
 - Container orchestration rules
