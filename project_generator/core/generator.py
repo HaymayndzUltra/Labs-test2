@@ -308,6 +308,9 @@ class ProjectGenerator:
         if template_path.exists():
             shutil.copytree(template_path, db_dir, dirs_exist_ok=True)
         
+        # Process templates with project-specific values
+        self._process_templates(db_dir)
+        
         # Create docker-compose for database
         if self.args.database in ['postgres', 'mongodb']:
             self._add_database_to_docker_compose()
@@ -331,7 +334,8 @@ class ProjectGenerator:
             self._placeholder_regex = pattern
         text_exts = {
             '.md', '.mdc', '.txt', '.json', '.yml', '.yaml', '.toml', '.ini', '.env',
-            '.js', '.jsx', '.ts', '.tsx', '.py', '.go', '.html', '.css', '.scss', '.sh'
+            '.js', '.jsx', '.ts', '.tsx', '.py', '.go', '.html', '.css', '.scss', '.sh',
+            '.sql', '.example'
         }
         files: list[Path] = [p for p in root.rglob('*') if p.is_file() and p.suffix.lower() in text_exts]
 

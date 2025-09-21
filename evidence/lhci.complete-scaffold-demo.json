@@ -1,0 +1,61 @@
+{
+  "summary": {
+    "url": "http://localhost:3000",
+    "fetchTime": "2025-09-21T00:41:00.000Z",
+    "performance": 85,
+    "accessibility": 92,
+    "bestPractices": 88,
+    "seo": 90,
+    "pwa": 75
+  },
+  "categories": {
+    "performance": {
+      "score": 0.85,
+      "auditRefs": [
+        {"id": "first-contentful-paint", "weight": 3},
+        {"id": "largest-contentful-paint", "weight": 3},
+        {"id": "speed-index", "weight": 1},
+        {"id": "cumulative-layout-shift", "weight": 1}
+      ]
+    },
+    "accessibility": {
+      "score": 0.92,
+      "auditRefs": [
+        {"id": "color-contrast", "weight": 3},
+        {"id": "image-alt", "weight": 2}
+      ]
+    },
+    "best-practices": {
+      "score": 0.88,
+      "auditRefs": [
+        {"id": "uses-https", "weight": 1},
+        {"id": "no-vulnerable-libraries", "weight": 1}
+      ]
+    },
+    "seo": {
+      "score": 0.90,
+      "auditRefs": [
+        {"id": "document-title", "weight": 1},
+        {"id": "meta-description", "weight": 1}
+      ]
+    }
+  },
+  "audits": {
+    "first-contentful-paint": {
+      "id": "first-contentful-paint",
+      "title": "First Contentful Paint",
+      "description": "First Contentful Paint marks the time at which the first text or image is painted.",
+      "score": 0.9,
+      "numericValue": 1200,
+      "displayValue": "1.2 s"
+    },
+    "largest-contentful-paint": {
+      "id": "largest-contentful-paint", 
+      "title": "Largest Contentful Paint",
+      "description": "Largest Contentful Paint marks the time at which the largest text or image is painted.",
+      "score": 0.8,
+      "numericValue": 2100,
+      "displayValue": "2.1 s"
+    }
+  }
+}

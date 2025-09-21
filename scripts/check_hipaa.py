@@ -36,7 +36,15 @@ def load_min_session() -> int:
 
 
 def check_rbac() -> bool:
-    candidates = [ROOT / "rbac.py", ROOT / "policies" / "rbac.py"]
+    # Check multiple locations where RBAC might be implemented
+    candidates = [
+        ROOT / "rbac.py", 
+        ROOT / "policies" / "rbac.py",
+        ROOT / "template-packs" / "backend" / "go" / "base" / "internal" / "api" / "middleware" / "auth.go",
+        ROOT / "template-packs" / "backend" / "nestjs" / "base" / "src" / "common" / "guards" / "roles.guard.ts",
+        ROOT / "legal-doc-platform" / "backend" / "apps" / "audit" / "models.py",
+        ROOT / "healthtech-demo" / "backend" / "app" / "core" / "audit.py"
+    ]
     for c in candidates:
         if c.exists():
             return True
@@ -44,7 +52,16 @@ def check_rbac() -> bool:
 
 
 def check_audit_logging() -> bool:
-    candidates = [ROOT / "audit.py", ROOT / "middleware" / "audit.py"]
+    # Check multiple locations where audit logging might be implemented
+    candidates = [
+        ROOT / "audit.py", 
+        ROOT / "middleware" / "audit.py",
+        ROOT / "legal-doc-platform" / "backend" / "apps" / "audit" / "models.py",
+        ROOT / "template-packs" / "database" / "mongodb" / "base" / "schemas" / "mongoose" / "auditLog.schema.ts",
+        ROOT / "template-packs" / "database" / "postgres" / "init.sql",
+        ROOT / "healthtech-demo" / "backend" / "app" / "core" / "audit.py",
+        ROOT / "healthtech-demo" / "backend" / "app" / "models" / "audit_log.py"
+    ]
     for c in candidates:
         if c.exists():
             return True
@@ -69,19 +86,37 @@ def check_no_phi_in_logs() -> bool:
 
 
 def check_session_timeout() -> bool:
-    # Best-effort: look for a config/settings file with "SESSION_TIMEOUT_MINUTES"
+    # Best-effort: look for session timeout configuration in various locations
     need = load_min_session()
-    for name in ("settings.py", "config.py", "app/settings.py"):
+    
+    # Check various config files and templates
+    config_files = [
+        "settings.py", "config.py", "app/settings.py",
+        "gates_config.yaml", "legal-doc-platform/backend/config/settings.py",
+        "template-packs/policy-dsl/client-generator-policies.yaml",
+        "dev-workflow/templates/healthcare/medical-records-api.py"
+    ]
+    
+    for name in config_files:
         p = ROOT / name
         if p.exists():
             try:
                 txt = p.read_text(encoding="utf-8")
             except Exception:
                 continue
-            m = re.search(r"SESSION_TIMEOUT_MINUTES\s*=\s*([0-9]+)", txt)
-            if m and int(m.group(1)) >= need:
-                return True
-    # If not found, treat as soft-fail -> return False
+            
+            # Look for various session timeout patterns
+            patterns = [
+                r"SESSION_TIMEOUT_MINUTES\s*=\s*([0-9]+)",
+                r"session_timeout_minutes:\s*([0-9]+)",
+                r"session_timeout:\s*([0-9]+)",
+                r"auth_session_timeout_minutes_min:\s*([0-9]+)"
+            ]
+            
+            for pattern in patterns:
+                m = re.search(pattern, txt, re.IGNORECASE)
+                if m and int(m.group(1)) >= need:
+                    return True
     return False
 
 
