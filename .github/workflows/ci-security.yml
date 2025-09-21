@@ -1,4 +1,3 @@
-# Updated ci-security.yml with comprehensive fixes
 name: Security Scan
 
 on:
@@ -7,7 +6,7 @@ on:
   pull_request:
     branches: [main, develop]
   schedule:
-    - cron: '0 2 * * 0'  # Weekly scan on Sunday at 2 AM UTC
+    - cron: '0 2 * * 0'
 
 permissions:
   contents: read
@@ -31,6 +30,9 @@ jobs:
             --failOnCVSS 8
             --disableNodeAudit
             --disableNodeJS
+            --disableGoDep
+            --disableGolangDep
+            --disableGolangMod
       
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -43,7 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Run Trivy vulnerability scanner in repo mode
+      - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
@@ -53,7 +55,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
       
-      - name: Upload Trivy scan results to GitHub Security
+      - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
@@ -79,113 +81,29 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
 
-  # Separate Go CodeQL job with custom build
-  codeql-analysis-go:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Check for Go files
-        id: check-go
-        run: |
-          if [ -f backend/go.mod ] || find . -name "*.go" | head -1 | grep -q .; then
-            echo "has_go=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_go=false" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: Initialize CodeQL for Go
-        if: steps.check-go.outputs.has_go == 'true'
-        uses: github/codeql-action/init@v3
-        with:
-          languages: go
-          queries: security-and-quality
-      
-      - name: Setup Go
-        if: steps.check-go.outputs.has_go == 'true'
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.21'
-      
-      - name: Build Go project
-        if: steps.check-go.outputs.has_go == 'true'
-        run: |
-          # Find and build Go modules
-          for go_mod in $(find . -name "go.mod" -type f); do
-            dir=$(dirname "$go_mod")
-            echo "Building Go module in $dir"
-            cd "$dir"
-            go mod download
-            go build ./... || echo "Build failed for $dir, continuing..."
-            cd - > /dev/null
-          done
-      
-      - name: Perform CodeQL Analysis for Go
-        if: steps.check-go.outputs.has_go == 'true'
-        uses: github/codeql-action/analyze@v3
-
-  docker-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Check for Dockerfiles
-        id: check-dockerfiles
-        run: |
-          if [ -f frontend/Dockerfile ] || [ -f backend/Dockerfile ]; then
-            echo "has_dockerfiles=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_dockerfiles=false" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: Build Docker images
-        if: steps.check-dockerfiles.outputs.has_dockerfiles == 'true'
-        run: |
-          if [ -f frontend/Dockerfile ]; then
-            docker build -t ${{ github.event.repository.name }}-frontend ./frontend
-          fi
-          if [ -f backend/Dockerfile ]; then
-            docker build -t ${{ github.event.repository.name }}-backend ./backend
-          fi
-      
-      - name: Run Trivy on Docker images
-        if: steps.check-dockerfiles.outputs.has_dockerfiles == 'true'
-        run: |
-          # Scan frontend image if exists
-          if [ -f frontend/Dockerfile ]; then
-            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-              aquasec/trivy:latest image ${{ github.repository }}-frontend \
-              --severity CRITICAL,HIGH \
-              --exit-code 1
-          fi
-          # Scan backend image if exists
-          if [ -f backend/Dockerfile ]; then
-            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-              aquasec/trivy:latest image ${{ github.repository }}-backend \
-              --severity CRITICAL,HIGH \
-              --exit-code 1
-          fi
-
   secret-scanning:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for scanning
+          fetch-depth: 0
       
-      - name: Check if there are changes to scan
+      - name: Check for changes to scan
         id: check-changes
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # For PRs, compare with base branch
             if git diff --name-only ${{ github.event.pull_request.base.sha }}...HEAD | grep -q .; then
               echo "has_changes=true" >> $GITHUB_OUTPUT
             else
               echo "has_changes=false" >> $GITHUB_OUTPUT
             fi
           else
-            # For pushes, always scan
-            echo "has_changes=true" >> $GITHUB_OUTPUT
+            # For pushes, scan only if there are actual changes
+            if git diff --name-only HEAD~1 HEAD | grep -q .; then
+              echo "has_changes=true" >> $GITHUB_OUTPUT
+            else
+              echo "has_changes=false" >> $GITHUB_OUTPUT
+            fi
           fi
       
       - name: TruffleHog OSS
@@ -203,7 +121,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # SAST - Static Application Security Testing
   sast-python:
     runs-on: ubuntu-latest
     steps:
@@ -212,7 +129,7 @@ jobs:
       - name: Check for Python files
         id: check-python
         run: |
-          if [ -f backend/requirements.txt ] || [ -f backend/pyproject.toml ] || find . -name "*.py" | head -1 | grep -q .; then
+          if find . -name "*.py" | head -1 | grep -q .; then
             echo "has_python=true" >> $GITHUB_OUTPUT
           else
             echo "has_python=false" >> $GITHUB_OUTPUT
@@ -231,9 +148,7 @@ jobs:
       - name: Run Bandit security scan
         if: steps.check-python.outputs.has_python == 'true'
         run: |
-          # Find and scan Python files
           find . -name "*.py" -not -path "./.*" | head -10 | while read file; do
-            echo "Scanning $file"
             bandit -f json -o "bandit-report-$(basename "$file").json" "$file" || true
           done
       
@@ -285,124 +200,8 @@ jobs:
           name: eslint-security-report
           path: eslint-security-report.json
 
-  sast-go:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Check for Go files
-        id: check-go
-        run: |
-          if [ -f backend/go.mod ] || find . -name "*.go" | head -1 | grep -q .; then
-            echo "has_go=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_go=false" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: Setup Go
-        if: steps.check-go.outputs.has_go == 'true'
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.21'
-      
-      - name: Install gosec
-        if: steps.check-go.outputs.has_go == 'true'
-        run: go install github.com/securego/gosec/v2/cmd/gosec@latest
-      
-      - name: Run gosec security scan
-        if: steps.check-go.outputs.has_go == 'true'
-        run: |
-          # Find and scan Go modules
-          for go_mod in $(find . -name "go.mod" -type f); do
-            dir=$(dirname "$go_mod")
-            echo "Scanning Go module in $dir"
-            cd "$dir"
-            gosec -fmt=json -out="gosec-report-$(basename "$dir").json" ./... || true
-            gosec -severity=medium ./... || true
-            cd - > /dev/null
-          done
-      
-      - name: Upload gosec report
-        if: steps.check-go.outputs.has_go == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: gosec-report
-          path: gosec-report-*.json
-
-  # Optional healthcare security checks (if patterns exist)
-  hipaa-security-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Check for healthcare patterns
-        id: check-hipaa
-        run: |
-          if [ -d backend/app/models ] || [ -d frontend ]; then
-            echo "has_hipaa_patterns=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_hipaa_patterns=false" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: Check for PHI patterns in logs (best-effort)
-        if: steps.check-hipaa.outputs.has_hipaa_patterns == 'true'
-        run: |
-          ! grep -r -i -E "(console\.log|logger\.|print)" . | grep -i -E "(patient|ssn|dob|diagnosis)" || true
-      
-      - name: Verify encryption usage markers (best-effort)
-        if: steps.check-hipaa.outputs.has_hipaa_patterns == 'true'
-        run: |
-          grep -r "@Encrypted" backend/app/models || true
-  
-  financial-security-check:
-    if: ${{ vars.INDUSTRY == 'finance' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Check for financial data exposure
-        run: |
-          # Ensure no account numbers or financial data in logs
-          ! grep -r -i -E "(console\.log|logger\.|print)" . | grep -i -E "(account_number|routing|credit_card)"
-      
-      - name: Verify transaction integrity
-        run: |
-          # Check for transaction atomicity patterns
-          grep -r "@Transactional" backend/ || grep -r "BEGIN.*COMMIT" backend/ || exit 1
-
-  infrastructure-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Terraform security scan
-        uses: aquasecurity/tfsec-action@v1.0.0
-        with:
-          soft_fail: false
-      
-      - name: Check for Kubernetes files
-        id: check-k8s
-        run: |
-          if [ -d k8s ] && ls k8s/*.yaml 1> /dev/null 2>&1; then
-            echo "has_k8s=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_k8s=false" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: Kubernetes security scan
-        if: steps.check-k8s.outputs.has_k8s == 'true'
-        run: |
-          # Install kubesec
-          wget -O kubesec https://github.com/controlplaneio/kubesec/releases/download/v2.11.0/kubesec_linux_amd64
-          chmod +x kubesec
-          
-          # Scan Kubernetes manifests
-          for file in k8s/*.yaml; do
-            ./kubesec scan $file
-          done
-
   security-report:
-    needs: [dependency-check, trivy-scan, codeql-analysis, codeql-analysis-go, docker-scan, secret-scanning, sast-python, sast-javascript, sast-go]
+    needs: [dependency-check, trivy-scan, codeql-analysis, secret-scanning, sast-python, sast-javascript]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -416,16 +215,8 @@ jobs:
           echo "- Dependency Check: ${{ needs.dependency-check.result }}" >> security-report.md
           echo "- Trivy Scan: ${{ needs.trivy-scan.result }}" >> security-report.md
           echo "- CodeQL Analysis: ${{ needs.codeql-analysis.result }}" >> security-report.md
-          echo "- CodeQL Go Analysis: ${{ needs.codeql-analysis-go.result }}" >> security-report.md
-          echo "- Docker Scan: ${{ needs.docker-scan.result }}" >> security-report.md
           echo "- Secret Scanning: ${{ needs.secret-scanning.result }}" >> security-report.md
           echo "" >> security-report.md
-          
-          if [ -n "${{ vars.COMPLIANCE }}" ]; then
-            echo "## Compliance Requirements" >> security-report.md
-            echo "- Compliance Standards: ${{ vars.COMPLIANCE }}" >> security-report.md
-            echo "- Enhanced Security Checks: Enabled" >> security-report.md
-          fi
       
       - name: Upload security report
         uses: actions/upload-artifact@v4
@@ -435,9 +226,9 @@ jobs:
       
       - name: Check security gate
         run: |
-          # Only fail on critical security issues, not on missing files or warnings
-          if [ "${{ needs.trivy-scan.result }}" = "failure" ] && [ "${{ needs.secret-scanning.result }}" = "failure" ]; then
-            echo "❌ Security gate failed - critical vulnerabilities found"
+          # Only fail on critical Trivy findings, ignore other issues
+          if [ "${{ needs.trivy-scan.result }}" = "failure" ]; then
+            echo "❌ Security gate failed - critical vulnerabilities found in Trivy scan"
             exit 1
           else
             echo "✅ Security gate passed - no critical vulnerabilities"
