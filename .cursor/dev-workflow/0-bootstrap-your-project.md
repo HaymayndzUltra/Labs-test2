@@ -128,43 +128,14 @@ python scripts/doctor.py
 
 ---
 
-## MESSAGEBOX MACRO (0→5 Full Sequence)
+## MESSAGEBOX MACRO (Protocol 0 — Bootstrap Only)
 
-Paste into Cursor messagebox. Replace placeholders. The flow halts naturally on validation/gate failures.
+Use this macro to perform bootstrap checks only. Next steps happen in their own protocol files.
 
 ```text
 /apply-instructions-from-0-bootstrap-your-project.md
 /run: python scripts/doctor.py
 /run: ./scripts/generate_client_project.py --list-templates | cat
-
-/apply-instructions-from-1-create-prd.md
-# brief is already approved; confirm detected layers only
-# Notion: publish PRD + Architecture Summary (use your Notion MCP action)
-
-/apply-instructions-from-2-generate-tasks.md
-/run: python scripts/plan_from_brief.py docs/briefs/<project>/brief.md
-/run: python scripts/validate_tasks.py tasks.json
-# Notion: attach PLAN.md and a snapshot of tasks.json to the project page
-
-/apply-instructions-from-3-process-tasks.md
-/run: ./scripts/generate_client_project.py --name <NAME> --industry <INDUSTRY> --project-type <TYPE> \
-  --frontend <FE> --backend <BE> --database <DB> --auth <AUTH> --deploy <DEPLOY> --workers 8 --dry-run --yes
-# Optional: client preview checkpoint after dry-run
-/run: ./scripts/generate_client_project.py --name <NAME> --industry <INDUSTRY> --project-type <TYPE> \
-  --frontend <FE> --backend <BE> --database <DB> --auth <AUTH> --deploy <DEPLOY> --workers 8 --yes
-/run: python scripts/sync_from_scaffold.py --plan
-/run: python scripts/sync_from_scaffold.py --apply
-/run: python scripts/validate_tasks.py tasks.json
-
-/apply-instructions-from-4-quality-control-protocol.md
-/run: python scripts/collect_coverage.py
-/run: python scripts/collect_perf.py
-/run: python scripts/scan_deps.py
-/run: python scripts/enforce_gates.py
-/run: python scripts/check_compliance_docs.py
-# Notion: create Submission Pack page; upload evidence/submission-pack/* (QC metrics, reports, checksums)
-
-/apply-instructions-from-5-implementation-retrospective.md
-# Notion: publish final delivery & request acceptance; add support notes
+# Next: open Protocol 1 and run its macro when ready
 ```
 
