@@ -147,3 +147,26 @@ Verify that the proposed interactions respect the project's known communication 
 ## 4. Out of Scope
 - [What this feature will NOT do]
 ``` 
+
+---
+
+## ORCHESTRATOR ALIGNMENT & STOP CONDITIONS
+
+### Pre-requisites
+
+- Context Discovery MUST be executed at start (load master/common/project rules).
+- Confirm detected implementation layer and architectural constraints with the user before drafting the PRD.
+
+### Integration With Planning Pipeline
+
+Once PRD is validated, proceed to task generation:
+
+```bash
+python scripts/plan_from_brief.py docs/briefs/<project>/brief.md
+python scripts/validate_tasks.py tasks.json
+```
+
+### Stop-the-line Gates
+
+- If PRD lacks layer placement or comms constraints, halt and clarify before generation.
+- If `validate_tasks.py` reports errors after generation (next protocol), fix PRD or mappings and re-run.

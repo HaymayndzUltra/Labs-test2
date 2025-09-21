@@ -151,3 +151,26 @@ Based on PRD: `[Link to PRD file]`
 > **Recommended Model:** `{Persona Name}`
     -   [ ] 3.1 [Specific test sub-task]
 ``` 
+
+---
+
+## ORCHESTRATOR ALIGNMENT & STOP CONDITIONS
+
+### Required Commands
+
+After generating tasks from the PRD, always validate and serialize execution:
+
+```bash
+# Validate graph integrity
+python scripts/validate_tasks.py tasks.json
+
+# (Optional) compute lane-based execution suggestion
+python scripts/lane_executor.py --lane backend --cap 3
+python scripts/lane_executor.py --lane frontend --cap 3
+```
+
+### Gate Rules
+
+- Do not proceed to generation/execution until `tasks.json` passes validation (no duplicate IDs, no missing deps, no cycles).
+- If UI tasks are primary, perform duplicate-prevention search before decomposition; propose reuse when viable.
+- Present high-level tasks and wait for explicit "Go" before detailed decomposition.

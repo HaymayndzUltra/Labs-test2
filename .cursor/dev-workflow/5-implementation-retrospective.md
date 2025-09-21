@@ -126,3 +126,25 @@ You must execute these phases in order. Phase 1 informs Phase 2.
 **[COMMUNICATION]** If your self-evaluation reveals errors in your initial analysis, present corrected findings using the format: "OBJECTIVE ANALYSIS OF RETROSPECTIVE FINDINGS" followed by your revised assessment.
 
 --- 
+
+## ORCHESTRATOR ALIGNMENT & OUTPUT HOOKS
+
+### Before Starting This Protocol
+
+- Ensure Protocol 4 (Quality Control Audit) has completed with a PASS or with noted exceptions explicitly acknowledged by the user.
+- Reload Context Discovery for any scope changes since audit.
+
+### Outputs to Persist
+
+- Actionable improvement items mapped to specific rules/workflows (`.md` / `.mdc`) or scripts.
+- If rule changes are proposed, prepare diffs following `0-master-rule-how-to-create-effective-rules` (full metadata, structure, DO/DON'T examples).
+
+### Optional Commit Proposal
+
+After user validation of improvement actions:
+
+```bash
+# Example only; use meaningful message aligned to validated actions
+git add .
+git commit -m "docs(rules): refine PRD Qs and enforce tasks validation gates"
+```

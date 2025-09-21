@@ -180,3 +180,38 @@ This ensures the AI works with a clean, relevant context for each major step of 
 -   **Mandatory Prefixes:** Use **exclusively** the defined communication prefixes (`[NEXT TASK]`, `[TASK COMPLETE]`, etc.).
 -   **Neutrality:** Your communication is factual and direct. No superfluous pleasantries.
 -   **Passive Waiting:** During a `[STOP_AND_WAIT]`, you are in a passive waiting state. You do not ask open-ended questions or anticipate the next steps. 
+
+---
+
+## ORCHESTRATOR ALIGNMENT & NON-CONFLICT SEQUENCING
+
+### Generation Sequence (Dry-run First)
+
+```bash
+./scripts/generate_client_project.py --list-templates | cat
+
+# Dry-run (non-destructive)
+./scripts/generate_client_project.py \
+  --name <NAME> --industry <INDUSTRY> --project-type <TYPE> \
+  --frontend <FE> --backend <BE> --database <DB> --auth <AUTH> --deploy <DEPLOY> \
+  --workers 8 --dry-run --yes
+
+# Actual generation (remove --dry-run only after dry-run passes)
+./scripts/generate_client_project.py \
+  --name <NAME> --industry <INDUSTRY> --project-type <TYPE> \
+  --frontend <FE> --backend <BE> --database <DB> --auth <AUTH> --deploy <DEPLOY> \
+  --workers 8 --yes
+```
+
+### Post-Generation Sync & Validation
+
+```bash
+python scripts/sync_from_scaffold.py --plan
+python scripts/sync_from_scaffold.py --apply
+python scripts/validate_tasks.py tasks.json
+```
+
+### Concurrency & File Ownership
+
+- Enforce a single-writer policy for `tasks.json`. Never run sync/apply concurrently with status updates.
+- Re-run `validate_tasks.py` after any mutation.

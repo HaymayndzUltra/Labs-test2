@@ -275,3 +275,31 @@ Your mission is twofold:
 4. **Learn and Adapt:** Document the misunderstanding to avoid similar errors
 
 **[COMMUNICATION]** Present your self-evaluation using the format: "OBJECTIVE ANALYSIS OF AUDIT RECOMMENDATIONS" followed by your corrective assessment.
+
+---
+
+## ORCHESTRATOR ALIGNMENT & METRICS PIPELINE
+
+### Metrics Collection
+
+```bash
+python scripts/collect_coverage.py
+python scripts/collect_perf.py     # or set PERF_P95_MS env / metrics/input_perf.txt
+python scripts/scan_deps.py
+```
+
+### Gate Enforcement
+
+```bash
+python scripts/enforce_gates.py
+```
+
+### Compliance Documentation (when applicable)
+
+```bash
+python scripts/check_compliance_docs.py
+```
+
+### Stop-the-line Gates
+
+- If any gate fails, mark as NOT READY and return actionable findings; do not proceed to retrospective until issues are addressed or explicitly waived.

@@ -92,3 +92,37 @@ You are an **AI Codebase Analyst & Context Architect**. Your mission is to perfo
 >
 > You are now ready to use the main development workflow, starting with `1-create-prd.md`." 
 
+
+---
+
+## ORCHESTRATOR ALIGNMENT & STOP CONDITIONS
+
+To prevent conflicts and keep this protocol aligned with the Project Trigger Orchestrator and master-rules, apply the following concrete steps and gates.
+
+### Rules Init (must precede all steps)
+
+```bash
+# Apply instructions from master-rules (Context Discovery + Collaboration)
+# And security overlay when applicable
+export ROUTER_CACHE=on
+export ROUTER_LRU_SIZE=512
+```
+
+### Environment Bootstrap (non-destructive)
+
+```bash
+python scripts/doctor.py
+./scripts/generate_client_project.py --list-templates | cat
+```
+
+### Stop-the-line Gates
+
+- Do not proceed to analysis if critical tooling is missing (doctor flags). Resolve first.
+- Ensure rules are placed under `.cursor/rules/` and converted to `.mdc` with valid YAML frontmatter prior to any further steps.
+- If rule discovery indicates ambiguity or conflicts, halt and request clarification before continuing.
+
+### Consistency With Master Rules
+
+- Always run Context Discovery at the start of a new session or scope change (aligns with `1-master-rule-context-discovery`).
+- For multi-step requests without an existing plan file, present a concise plan and await approval (aligns with `2-master-rule-ai-collaboration-guidelines`).
+
