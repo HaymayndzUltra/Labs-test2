@@ -10,10 +10,10 @@ AUTH ?= $(shell jq -r .auth workflow.config.json 2>/dev/null)
 DEPLOY ?= $(shell jq -r .deploy workflow.config.json 2>/dev/null)
 COMPLIANCE ?= $(shell jq -r .compliance workflow.config.json 2>/dev/null)
 
-.PHONY: bootstrap prd plan preflight dryrun generate sync validate qc deliver all
+.PHONY: bootstrap prd plan preflight dryrun generate sync validate test qc deliver all
 
 bootstrap:
-	python scripts/doctor.py || true
+	python scripts/doctor.py --strict || true
 	./scripts/generate_client_project.py --list-templates | cat
 
 prd:
@@ -43,6 +43,10 @@ sync:
 validate:
 	python scripts/validate_tasks.py tasks.json
 
+test:
+	chmod +x scripts/install_and_test.sh
+	./scripts/install_and_test.sh
+
 qc:
 	python scripts/collect_coverage.py || true
 	python scripts/collect_perf.py || true
@@ -51,7 +55,8 @@ qc:
 	python scripts/check_compliance_docs.py || true
 
 deliver:
-	@echo "Publish Submission Pack via Notion MCP (manual or scripted)"
+	chmod +x scripts/build_submission_pack.sh
+	./scripts/build_submission_pack.sh
 
 all: bootstrap plan preflight dryrun generate sync validate qc
 	@echo "All steps completed"

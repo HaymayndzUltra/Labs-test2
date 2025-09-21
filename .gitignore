@@ -68,7 +68,6 @@ hs_err_pid*
 # BUILD ARTIFACTS & DISTRIBUTION
 # =============================================================================
 # General build outputs
-dist/
 build/
 out/
 .output/
@@ -216,7 +215,7 @@ ios/
 # BACKEND FRAMEWORKS (GENERAL)
 # =============================================================================
 # Node.js backends
-dist/
+
 coverage/
 
 # Python backends

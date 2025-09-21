@@ -50,7 +50,7 @@ for var in "${required[@]}"; do
 done
 
 echo "[E2E] Bootstrap"
-python scripts/doctor.py || true
+python scripts/doctor.py --strict || true
 ./scripts/generate_client_project.py --list-templates | cat
 
 echo "[E2E] Plan from brief"
@@ -78,6 +78,10 @@ echo "[E2E] Generate"
   --frontend "$FE" --backend "$BE" --database "$DB" --auth "${AUTH:-}" --deploy "${DEPLOY:-}" \
   --workers 8 --yes
 
+echo "[E2E] Install & test"
+chmod +x scripts/install_and_test.sh
+./scripts/install_and_test.sh || true
+
 echo "[E2E] Sync & validate"
 python scripts/sync_from_scaffold.py --plan
 python scripts/sync_from_scaffold.py --apply
@@ -88,6 +92,10 @@ python scripts/collect_coverage.py || true
 python scripts/collect_perf.py || true
 python scripts/scan_deps.py || true
 python scripts/enforce_gates.py
+
+echo "[E2E] Build Submission Pack"
+chmod +x scripts/build_submission_pack.sh
+./scripts/build_submission_pack.sh || true
 
 echo "[E2E] Compliance docs (optional)"
 python scripts/check_compliance_docs.py || true

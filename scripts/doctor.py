@@ -7,6 +7,8 @@ and prints actionable PASS/FAIL checks.
 """
 
 import os
+import sys
+import argparse
 import shutil
 import subprocess
 from typing import Tuple
@@ -32,6 +34,9 @@ def print_result(name: str, ok: bool, info: str, hint: str = ""):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Environment Doctor")
+    parser.add_argument("--strict", action="store_true", help="Exit non-zero if critical tools are missing")
+    args = parser.parse_args()
     # CI detection
     in_ci = os.environ.get("CI") or os.environ.get("GITHUB_ACTIONS")
     if in_ci:
@@ -39,25 +44,40 @@ def main():
     else:
         print("[INFO] Local environment detected")
 
-    ok, info = check("docker")
-    print_result("Docker", ok, info, hint="Install Docker and ensure daemon is running: https://docker.com")
+    ok_docker, info = check("docker")
+    print_result("Docker", ok_docker, info, hint="Install Docker and ensure daemon is running: https://docker.com")
 
-    okn, info = check("node")
-    print_result("Node.js", okn, info, hint="Install Node 18+: https://nodejs.org")
+    ok_node, info = check("node")
+    print_result("Node.js", ok_node, info, hint="Install Node 18+: https://nodejs.org")
 
-    oknpm, info = check("npm")
-    print_result("npm", oknpm, info, hint="Install with Node or use pnpm/yarn")
+    ok_npm, info = check("npm")
+    print_result("npm", ok_npm, info, hint="Install with Node or use pnpm/yarn")
 
-    okpy, info = check("python3", ("--version",))
-    print_result("Python3", okpy, info, hint="Install Python 3.11+")
+    ok_py, info = check("python3", ("--version",))
+    print_result("Python3", ok_py, info, hint="Install Python 3.11+")
 
-    okpip = bool(shutil.which("pip")) or bool(shutil.which("pip3"))
-    print_result("pip", okpip, "pip detected" if okpip else "pip not found", hint="Install pip or use python -m ensurepip")
+    ok_pip = bool(shutil.which("pip")) or bool(shutil.which("pip3"))
+    print_result("pip", ok_pip, "pip detected" if ok_pip else "pip not found", hint="Install pip or use python -m ensurepip")
 
-    okgo, info = check("go", ("version",))
-    print_result("Go", okgo, info, hint="Install Go 1.21+: https://golang.org")
+    ok_go, info = check("go", ("version",))
+    print_result("Go", ok_go, info, hint="Install Go 1.21+: https://golang.org")
 
-    # Summary exit code is 0; doctor is advisory
+    # Strict mode: fail if critical tools missing
+    if args.strict:
+        critical_missing = []
+        if not ok_node:
+            critical_missing.append("node")
+        if not ok_npm:
+            critical_missing.append("npm")
+        if not ok_py:
+            critical_missing.append("python3")
+        if not ok_pip:
+            critical_missing.append("pip/pip3")
+        if critical_missing:
+            print(f"\n[ERROR] Critical tools missing: {', '.join(critical_missing)}")
+            sys.exit(2)
+
+    # Summary exit code (non-strict) is 0; doctor is advisory
     print("\n[INFO] Doctor checks complete")
 
 
