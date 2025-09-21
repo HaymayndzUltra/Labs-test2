@@ -30,15 +30,6 @@ jobs:
             --failOnCVSS 8
             --disableNodeAudit
             --disableNodeJS
-            --disableNpmAudit
-            --disableNuspec
-            --disableNugetconf
-            --disableAssembly
-            --disableNexus
-            --disableCentral
-            --disableRetireJS
-            --disableOssIndex
-            --disableKnownExploited
       
       - name: Upload results
         uses: actions/upload-artifact@v4
