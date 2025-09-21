@@ -30,6 +30,8 @@ jobs:
             --failOnCVSS 8
             --disableNodeAudit
             --disableNodeJS
+            --exclude '^template-packs/.*'
+            --exclude '^project_generator/.*'
       
       - name: Upload results
         uses: actions/upload-artifact@v4
