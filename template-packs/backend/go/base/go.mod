@@ -1,4 +1,4 @@
-module {{PROJECT_NAME}}
+module template-packs-backend-go-base
 
 go 1.21
 
