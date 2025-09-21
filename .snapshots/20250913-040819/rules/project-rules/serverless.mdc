@@ -1,7 +1,7 @@
 ---
 description: Backend Serverless Standards
 globs: **/*.py,**/*.ts
-alwaysApply: false
+alwaysApply: true
 ---
 
 
