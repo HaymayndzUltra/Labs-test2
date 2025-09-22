@@ -1,4 +1,18 @@
-.PHONY: setup dev test lint build deploy clean
+.PHONY: setup dev test lint build deploy deploy-frontend deploy-backend deploy-staging deploy-production rollback pipeline-validate clean
+
+ENV ?= staging
+APP_NAME ?= portfolio-dashboard
+VERCEL_TOKEN ?=
+VERCEL_ORG_ID ?=
+VERCEL_PROJECT_ID ?=
+FRONTEND_ENV_FILE ?= .env.$(ENV)
+BACKEND_IMAGE ?=
+AWS_REGION ?= us-east-1
+AWS_PROFILE ?=
+REVISION ?= previous
+FRONTEND_URL ?=
+API_URL ?=
+PIPELINE_REPORT ?= reports/$(ENV)-pipeline-validation.json
 
 # Setup project
 setup:
@@ -40,9 +54,69 @@ build:
 
 
 # Deploy application
-deploy:
-	@echo "Deploying to vercel..."
-	# Add deployment commands here
+deploy: deploy-frontend deploy-backend
+
+deploy-frontend:
+	@if [ -z "$(VERCEL_TOKEN)" ]; then \
+	        echo "Missing VERCEL_TOKEN environment variable"; \
+	        exit 1; \
+	fi
+	@if [ -z "$(VERCEL_ORG_ID)" ]; then \
+	        echo "Missing VERCEL_ORG_ID environment variable"; \
+	        exit 1; \
+	fi
+	@if [ -z "$(VERCEL_PROJECT_ID)" ]; then \
+	        echo "Missing VERCEL_PROJECT_ID environment variable"; \
+	        exit 1; \
+	fi
+	@if [ ! -f "$(FRONTEND_ENV_FILE)" ]; then \
+	        echo "Expected environment file $(FRONTEND_ENV_FILE) for frontend deployment"; \
+	        exit 1; \
+	fi
+	cd frontend && npm ci
+	cd frontend && npm run build
+	cd frontend && npx vercel deploy --prebuilt --token "$(VERCEL_TOKEN)" --org "$(VERCEL_ORG_ID)" --project "$(VERCEL_PROJECT_ID)" --env-file "../$(FRONTEND_ENV_FILE)" --yes $(if $(filter production,$(ENV)),--prod,)
+
+deploy-backend:
+	@if [ -z "$(AWS_REGION)" ]; then \
+	        echo "Missing AWS_REGION environment variable"; \
+	        exit 1; \
+	fi
+	@if [ -z "$(BACKEND_IMAGE)" ]; then \
+	        echo "Missing BACKEND_IMAGE tag for backend deployment"; \
+	        exit 1; \
+	fi
+	AWS_REGION=$(AWS_REGION) AWS_PROFILE=$(AWS_PROFILE) APP_NAME=$(APP_NAME) BACKEND_IMAGE=$(BACKEND_IMAGE) ./scripts/deploy_backend.sh $(ENV)
+
+deploy-staging:
+	@$(MAKE) deploy ENV=staging
+
+deploy-production:
+	@$(MAKE) deploy ENV=production
+
+rollback:
+	@if [ -z "$(AWS_REGION)" ]; then \
+	        echo "Missing AWS_REGION environment variable"; \
+	        exit 1; \
+	fi
+	AWS_REGION=$(AWS_REGION) AWS_PROFILE=$(AWS_PROFILE) APP_NAME=$(APP_NAME) ./scripts/rollback_backend.sh $(ENV) $(REVISION)
+	@if [ -n "$(VERCEL_TOKEN)" ]; then \
+	        ./scripts/rollback_frontend.sh $(ENV); \
+	else \
+	        echo "Skipping frontend rollback because VERCEL_TOKEN is not provided"; \
+	fi
+
+pipeline-validate:
+	@if [ -z "$(FRONTEND_URL)" ]; then \
+	        echo "FRONTEND_URL must be provided (e.g., make pipeline-validate FRONTEND_URL=https://staging.example.com API_URL=https://staging.example.com/api/health)"; \
+	        exit 1; \
+	fi
+	@if [ -z "$(API_URL)" ]; then \
+	        echo "API_URL must be provided"; \
+	        exit 1; \
+	fi
+	mkdir -p $(dir $(PIPELINE_REPORT))
+	python3 scripts/health/check_deployment.py --environment $(ENV) --frontend-url $(FRONTEND_URL) --api-url $(API_URL) --output-file $(PIPELINE_REPORT)
 
 # Clean build artifacts
 clean:

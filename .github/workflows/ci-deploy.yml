@@ -154,32 +154,27 @@ jobs:
     environment: ${{ needs.pre-deploy-checks.outputs.deploy_env }}
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
-      
-      - name: Deploy to ECS
+
+      - name: Deploy backend service
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          BACKEND_IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:sha-${{ github.sha }}
+          APP_NAME: ${{ vars.APP_NAME }}
+          ECS_CLUSTER_NAME: ${{ vars.ECS_CLUSTER_NAME }}
+          ECS_SERVICE_NAME: ${{ vars.ECS_SERVICE_NAME }}
+          ECS_DESIRED_COUNT: ${{ vars.ECS_DESIRED_COUNT }}
+          TASK_EXECUTION_ROLE_ARN: ${{ secrets.AWS_ECS_EXECUTION_ROLE_ARN }}
+          TASK_ROLE_ARN: ${{ secrets.AWS_ECS_TASK_ROLE_ARN }}
         run: |
-          # Update task definition with new image
-          aws ecs register-task-definition \
-            --family ${{ github.event.repository.name }}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
-            --task-definition-file ./deploy/aws/task-definition.json
-          
-          # Update service
-          aws ecs update-service \
-            --cluster ${{ github.event.repository.name }}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
-            --service ${{ github.event.repository.name }}-service \
-            --task-definition ${{ github.event.repository.name }}-${{ needs.pre-deploy-checks.outputs.deploy_env }}
-      
-      - name: Wait for deployment
-        run: |
-          aws ecs wait services-stable \
-            --cluster ${{ github.event.repository.name }}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
-            --services ${{ github.event.repository.name }}-service
+          chmod +x scripts/deploy_backend.sh
+          ./scripts/deploy_backend.sh ${{ needs.pre-deploy-checks.outputs.deploy_env }}
 
   deploy-azure:
     if: ${{ vars.DEPLOY_TARGET == 'azure' }}
@@ -273,25 +268,38 @@ jobs:
     environment: ${{ needs.pre-deploy-checks.outputs.deploy_env }}
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Install test dependencies
+
+      - name: Run deployment health verification
+        env:
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+          API_URL: ${{ secrets.API_HEALTH_URL }}
+          DB_URL: ${{ secrets.DB_HEALTH_URL }}
         run: |
-          npm install -g newman
-          pip install httpie
-      
-      - name: Run health checks
-        run: |
-          # Check frontend
-          httpie GET ${{ vars.FRONTEND_URL }}/health
-          
-          # Check backend API
-          httpie GET ${{ vars.API_URL }}/health
-          
-          # Check database connectivity
-          httpie GET ${{ vars.API_URL }}/api/v1/health/db
-      
+          if [ -z "${FRONTEND_URL}" ] || [ -z "${API_URL}" ]; then
+            echo "FRONTEND_URL and API_HEALTH_URL secrets are required for smoke tests" >&2
+            exit 1
+          fi
+          args=(
+            --environment "${{ needs.pre-deploy-checks.outputs.deploy_env }}"
+            --frontend-url "${FRONTEND_URL}"
+            --api-url "${API_URL}"
+            --output-file "health-report.json"
+          )
+          if [ -n "${DB_URL}" ]; then
+            args+=(--db-url "${DB_URL}")
+          fi
+          python3 scripts/health/check_deployment.py "${args[@]}"
+
+      - name: Upload health verification report
+        uses: actions/upload-artifact@v3
+        with:
+          name: health-report-${{ github.run_number }}
+          path: health-report.json
+          if-no-files-found: error
+
       - name: Run smoke tests
         run: |
+          npm install -g newman
           newman run tests/postman/smoke-tests.json \
             --environment tests/postman/${{ needs.pre-deploy-checks.outputs.deploy_env }}-env.json
 
@@ -301,22 +309,39 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ needs.pre-deploy-checks.outputs.deploy_env }}
     steps:
-      - name: Trigger rollback
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        if: ${{ vars.DEPLOY_TARGET == 'aws' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Roll back backend service
+        if: ${{ vars.DEPLOY_TARGET == 'aws' }}
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          APP_NAME: ${{ vars.APP_NAME }}
+          ECS_CLUSTER_NAME: ${{ vars.ECS_CLUSTER_NAME }}
+          ECS_SERVICE_NAME: ${{ vars.ECS_SERVICE_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          echo "❌ Deployment failed, initiating rollback"
-          
-          if [ "${{ vars.DEPLOY_TARGET }}" = "aws" ]; then
-          # Roll back ECS to previous task definition
-          aws ecs update-service \
-            --cluster ${{ github.event.repository.name }}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
-            --service ${{ github.event.repository.name }}-service \
-            --task-definition $(aws ecs describe-services \
-              --cluster ${{ github.event.repository.name }}-${{ needs.pre-deploy-checks.outputs.deploy_env }} \
-              --services ${{ github.event.repository.name }}-service \
-              --query 'services[0].taskDefinition' --output text | \
-              awk -F: '{print $1":"$2-1}')
-          fi
-      
+          chmod +x scripts/rollback_backend.sh
+          ./scripts/rollback_backend.sh ${{ needs.pre-deploy-checks.outputs.deploy_env }} previous
+
+      - name: Roll back frontend deployment
+        if: ${{ secrets.VERCEL_TOKEN != '' }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_ROLLBACK_TARGET: ${{ secrets.VERCEL_ROLLBACK_TARGET }}
+        run: |
+          chmod +x scripts/rollback_frontend.sh
+          ./scripts/rollback_frontend.sh ${{ needs.pre-deploy-checks.outputs.deploy_env }}
+
       - name: Notify team
         uses: 8398a7/action-slack@v3
         with:

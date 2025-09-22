@@ -1,0 +1,23 @@
+{
+  "environment": "staging",
+  "timestamp": "2025-09-22T22:26:32Z",
+  "results": [
+    {
+      "name": "frontend",
+      "target": "http://127.0.0.1:8080",
+      "ok": true,
+      "http_status": 200,
+      "latency_ms": 7.536658999924839,
+      "response_excerpt": "<!DOCTYPE HTML>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Directory listing for /</title>\n</head>\n<body>\n<h1>Directory listing for /</h1>\n<hr>\n<ul>\n<li><a href=\".cursor/\">.cursor/</a></li>\n<li><a href=\".cursorignore\">.cursorignore</a></li>\n<li><a href=\".cursorrules\">.cursorrules</a></li>\n<li><a href=\".env.example\">.env.example</a></li>\n<li><a href=\".git/\">.git/</a></li>\n<li><a href=\".github/\">.github/</a></li>\n<li><a href=\".gitignore\">.gitignore</a></li>\n<li><a href=\".markdownlint.yml\">.markdown"
+    },
+    {
+      "name": "api",
+      "target": "http://127.0.0.1:8080",
+      "ok": true,
+      "http_status": 200,
+      "latency_ms": 3.0419800000345276,
+      "response_excerpt": "<!DOCTYPE HTML>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Directory listing for /</title>\n</head>\n<body>\n<h1>Directory listing for /</h1>\n<hr>\n<ul>\n<li><a href=\".cursor/\">.cursor/</a></li>\n<li><a href=\".cursorignore\">.cursorignore</a></li>\n<li><a href=\".cursorrules\">.cursorrules</a></li>\n<li><a href=\".env.example\">.env.example</a></li>\n<li><a href=\".git/\">.git/</a></li>\n<li><a href=\".github/\">.github/</a></li>\n<li><a href=\".gitignore\">.gitignore</a></li>\n<li><a href=\".markdownlint.yml\">.markdown"
+    }
+  ],
+  "overall_ok": true
+}
