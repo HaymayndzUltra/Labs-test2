@@ -24,7 +24,6 @@ if PydanticEmailStr is not None:
     try:
         # Probe that the optional dependency is installed; this will raise if missing.
         PydanticEmailStr.validate_python('probe@example.com')  # type: ignore[attr-defined]
-        EmailStr = PydanticEmailStr  # type: ignore[assignment]
     except Exception:  # pragma: no cover - executed when email-validator is missing
         PydanticEmailStr = None
 
