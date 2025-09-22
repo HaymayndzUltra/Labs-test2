@@ -1,0 +1,45 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Semgrep",
+          "version": "1.45.0",
+          "informationUri": "https://semgrep.dev"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "python.security.audit.hardcoded-password",
+          "level": "error",
+          "message": {
+            "text": "Possible hardcoded password"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "backend/main.py"
+                },
+                "region": {
+                  "startLine": 25,
+                  "startColumn": 1,
+                  "endLine": 25,
+                  "endColumn": 50
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "summary": {
+        "total": 1,
+        "errors": 1,
+        "warnings": 0,
+        "notes": 0
+      }
+    }
+  ]
+}

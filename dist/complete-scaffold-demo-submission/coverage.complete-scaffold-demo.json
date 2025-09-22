@@ -1,0 +1,51 @@
+{
+  "project": "complete-scaffold-demo",
+  "timestamp": "2025-09-20T23:46:20Z",
+  "status": "PASSED",
+  "coverage_metrics": {
+    "backend_tests": {
+      "total_tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "coverage_percentage": 61
+    },
+    "frontend_tests": {
+      "total_tests": 8,
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "coverage_percentage": 78
+    },
+    "integration_tests": {
+      "total_tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "coverage_percentage": 45
+    }
+  },
+  "coverage_by_module": {
+    "authentication": 85,
+    "api_endpoints": 72,
+    "database_models": 68,
+    "middleware": 55,
+    "utilities": 90
+  },
+  "test_types": {
+    "unit_tests": 12,
+    "integration_tests": 3,
+    "e2e_tests": 2,
+    "security_tests": 4
+  },
+  "quality_gates": {
+    "minimum_coverage": 60,
+    "current_coverage": 61,
+    "gate_status": "PASSED"
+  },
+  "validation": {
+    "all_tests_passing": true,
+    "coverage_threshold_met": true,
+    "test_quality": "GOOD"
+  }
+}

@@ -1,0 +1,7 @@
+[SKIP] project_generator/template-packs/frontend/nextjs/base (missing package.json or expected-versions.json)
+[SKIP] project_generator/template-packs/frontend/nuxt/base (missing package.json or expected-versions.json)
+[SKIP] project_generator/template-packs/frontend/angular/base (missing package.json or expected-versions.json)
+[SKIP] project_generator/template-packs/frontend/expo/base (missing package.json or expected-versions.json)
+[SKIP] project_generator/template-packs/backend/nestjs/base (missing package.json or expected-versions.json)
+[SKIP] project_generator/template-packs/backend/nestjs/prisma (missing package.json or expected-versions.json)
+[SKIP] project_generator/template-packs/database/firebase/base/functions (missing package.json or expected-versions.json)

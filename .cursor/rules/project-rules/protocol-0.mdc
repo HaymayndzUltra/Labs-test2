@@ -354,13 +354,3 @@ Use this macro to perform bootstrap checks only. Next steps happen in their own 
 # Next: open Protocol 1 and run its macro when ready
 ```
 ```
-
-**In summary**: Ang format na ito ay nag-convert ng Protocol 0 sa Master Rule format na may:
-- **YAML frontmatter** na may proper tags at triggers
-- **Structured sections** na may clear hierarchy
-- **Step-by-step protocols** na may validation checkpoints
-- **Error handling** at rollback procedures
-- **Communication standards** para sa status reporting
-- **Dynamic adaptation** para sa changing conditions
-
-Ang key difference ay ang **structured approach** at **validation requirements** na ginagawang mas robust ang bootstrap process.

@@ -67,7 +67,7 @@ hs_err_pid*
 # =============================================================================
 # BUILD ARTIFACTS & DISTRIBUTION
 # =============================================================================
-# General build outputs
+# General build outputs (but keep important dist/ and artifacts/)
 build/
 out/
 .output/
@@ -76,6 +76,16 @@ out/
 .angular/cache/
 .expo/
 .expo-shared/
+
+# Keep important distribution and evidence files
+!dist/
+!artifacts/
+!evidence/
+!reports/
+!dist/**/*
+!artifacts/**/*
+!evidence/**/*
+!reports/**/*
 
 # Compiled binaries
 bin/
@@ -239,10 +249,10 @@ tmp/
 
 .snapshots/
 
-# Generated content (factory-specific)
-_generated/
-gen_exec/
-_gen_test/
+# Generated content (factory-specific) - but keep important generated content
+# _generated/  # Commented out to allow important generated content
+# gen_exec/    # Commented out to allow execution artifacts
+# _gen_test/   # Commented out to allow test artifacts
 
 # =============================================================================
 # DEPLOYMENT & INFRASTRUCTURE
@@ -266,9 +276,24 @@ _gen_test/
 docs/_build/
 site/
 
-# Reports
-reports/
+# Reports (but keep important project reports)
+# reports/  # Commented out to allow project reports
 *.report
+
+# =============================================================================
+# BACKGROUND AGENT ACCESS - CRITICAL DIRECTORIES
+# =============================================================================
+# These directories contain important project artifacts that background agents need
+!dist/
+!artifacts/
+!evidence/
+!reports/
+!gen_exec/
+!gen_test/
+!_generated/
+!complete-scaffold-demo/
+!healthtech-demo/
+!legal-doc-platform/
 
 # =============================================================================
 # KEEP THESE FILES (EXPLICITLY TRACKED)

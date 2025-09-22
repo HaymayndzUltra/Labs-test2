@@ -1,8 +1,6 @@
 ---
-description: Base Guidelines for Sonnet-3.7 + Cursor Agent
-globs: *,**/*
+alwaysApply: false
 ---
-
 # Instructions
 
 1. Always use codebase_search with target_directories="`home/haymaydz/Labs-Test2`" first to find existing core files

@@ -1,24 +1,71 @@
 # Development Guide
 
-## Workflow Docs Frontmatter & Gates
-- All `docs/workflows/*.md` include YAML frontmatter with keys: `title, phase, triggers, scope, inputs, outputs, artifacts, gates, owner`.
-- Gates are centralized in `gates_config.yaml` and consumed by CI.
+## Getting Started
 
-## Validators & Commands
-- Validate workflows locally:
-  - `python3 scripts/validate_workflows.py --all`
-  - `make workflow.phase.N` (dry-run)
-- Compliance (docs) checks:
-  - `python3 scripts/check_compliance_docs.py` → writes `validation/compliance_report.json`
-- Backups:
-  - `make backup-workflows` and `make restore-test`
+### Prerequisites
+- Node.js 18+
+- Python 3.11+
+- Docker and Docker Compose
+- Git
 
-## CI Integration
-- GitHub Actions jobs:
-  - `workflows_validation` → validates frontmatter/sections and uploads artifact
-  - `gates_enforcer` → enforces coverage/perf/security thresholds and uploads artifacts
+### Initial Setup
 
-## Troubleshooting
-- Validator failures: add missing sections/frontmatter keys to the referenced workflow doc.
-- Compliance failures: ensure HIPAA controls are explicitly mentioned in 02, 08, and 10.
-- Trigger path issues: ensure `apply` matches actual file and `globs` is `docs/workflows/**/*.md`.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourorg/portfolio-dashboard.git
+   cd portfolio-dashboard
+   ```
+
+2. **Install dependencies**
+   ```bash
+   make setup
+   ```
+
+3. **Configure environment**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your values
+   ```
+
+4. **Start development environment**
+   ```bash
+   make dev
+   ```
+
+## Development Workflow
+
+1. Pull latest changes: `git pull origin develop`
+2. Create a feature branch: `git checkout -b feature/TICKET-description`
+3. Implement changes, add tests, update docs
+4. Run tests: `make test` and linters: `make lint`
+5. Commit and push: `git add . && git commit -m "feat: ..." && git push`
+6. Open a Pull Request and request review
+
+## Testing
+
+### Test Structure
+```
+tests/
+├── unit/
+├── integration/
+├── e2e/
+└── fixtures/
+```
+
+### Running Tests
+```bash
+make test
+```
+
+## Security Best Practices
+- Never commit secrets
+- Validate all inputs
+- Use parameterized queries
+- Implement rate limiting
+- Keep dependencies updated
+
+## Resources
+### Documentation
+- nextjs Docs: https://docs.nextjs.com
+- fastapi Docs: https://docs.fastapi.com
+- Project Wiki: https://github.com/yourorg/portfolio-dashboard/wiki

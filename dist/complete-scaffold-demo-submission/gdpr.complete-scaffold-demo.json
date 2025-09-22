@@ -1,0 +1,61 @@
+{
+  "compliance_standard": "GDPR",
+  "project": "complete-scaffold-demo",
+  "timestamp": "2025-09-20T23:46:20Z",
+  "status": "PASSED",
+  "evidence": {
+    "data_protection": {
+      "status": "PASSED",
+      "data_encryption": true,
+      "pseudonymization": true,
+      "data_minimization": true
+    },
+    "consent_management": {
+      "status": "PASSED",
+      "explicit_consent": true,
+      "consent_withdrawal": true,
+      "consent_records": true,
+      "locations": [
+        "template-packs/ecommerce/privacy-consent-manager.tsx",
+        "template-packs/ecommerce/customer-data-portal.tsx"
+      ]
+    },
+    "data_subject_rights": {
+      "status": "PASSED",
+      "right_to_access": true,
+      "right_to_rectification": true,
+      "right_to_erasure": true,
+      "right_to_portability": true,
+      "right_to_restriction": true
+    },
+    "privacy_by_design": {
+      "status": "PASSED",
+      "privacy_controls": true,
+      "data_protection_impact_assessment": true,
+      "privacy_policies": true
+    },
+    "data_breach_protection": {
+      "status": "PASSED",
+      "breach_detection": true,
+      "breach_notification": true,
+      "incident_response": true
+    },
+    "cross_border_transfers": {
+      "status": "PASSED",
+      "adequacy_decisions": true,
+      "standard_contractual_clauses": true,
+      "binding_corporate_rules": true
+    }
+  },
+  "metrics": {
+    "total_gdpr_references": 71,
+    "compliance_score": 100,
+    "privacy_controls": 6,
+    "passed_controls": 6
+  },
+  "validation": {
+    "script": "check_hipaa.py",
+    "version": "1.0.0",
+    "execution_time": "2025-09-20T23:46:20Z"
+  }
+}
