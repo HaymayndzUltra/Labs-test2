@@ -1,10 +1,10 @@
-"""
-User schemas
-"""
+"""User schemas"""
 from typing import Optional
 from datetime import datetime
 
 from pydantic import BaseModel, EmailStr
+
+from .tenant import Tenant
 
 
 # Shared properties
@@ -13,6 +13,8 @@ class UserBase(BaseModel):
     is_active: Optional[bool] = True
     is_superuser: bool = False
     full_name: Optional[str] = None
+    tenant_id: Optional[int] = None
+    tenant_role: Optional[str] = "member"
 
 
 # Properties to receive via API on creation
@@ -37,7 +39,7 @@ class UserInDBBase(UserBase):
 
 # Additional properties to return via API
 class User(UserInDBBase):
-    pass
+    tenant: Optional[Tenant] = None
 
 
 # Additional properties stored in DB
