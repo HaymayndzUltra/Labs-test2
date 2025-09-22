@@ -30,3 +30,9 @@ Snapshot & multi-agent runs:
 - Generate a snapshot: `python3 .cursor/dev-workflow/snapshots/generate_snapshot.py`.
 - The generated `snap-*.json` is required for background/parallel agent runs and should be included in the job environment.
 
+Automated Upwork job post intake:
+
+- Run the orchestrator command: ``@command python3 .cursor/dev-workflow/tools/auto_jobpost_intake.py`` (add `--force-refresh` on the first run or when you need a fresh discovery pass).
+- Paste the job post when prompted; the tool writes the post, `context_snapshot/` bundle, and `selection.json` into a new `upwork-sessions/session-*/` folder while seeding `project-brief.md` with the summary headline.
+- Use `--session-id session-XYZ` and `--overwrite` to regenerate a specific session folder during testing or reviews.
+

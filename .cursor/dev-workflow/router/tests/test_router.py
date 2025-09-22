@@ -1,8 +1,12 @@
 import json
 import sys
+from pathlib import Path
 
 # Import router as a real module for coverage collection
-sys.path.insert(0, '/workspace/.cursor/dev-workflow/router')
+ROUTER_PATH = Path(__file__).resolve().parent.parent
+router_path_str = str(ROUTER_PATH)
+if router_path_str not in sys.path:
+    sys.path.insert(0, router_path_str)
 import router  # type: ignore
 
 def test_precedence_fallback():
