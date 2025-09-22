@@ -1,4 +1,8 @@
-compliance_gates: {}
+compliance_gates:
+  gdpr:
+    consent_tracking: true
+    data_retention_check: true
+    privacy_impact: true
 quality_gates:
   lint:
     required: true

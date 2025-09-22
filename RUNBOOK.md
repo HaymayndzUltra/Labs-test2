@@ -10,9 +10,15 @@
 - CI jobs:
   - `workflows_validation`: validates workflow docs
   - `gates_enforcer`: enforces coverage/perf/security gates
+- Compliance automation: `ci.yml` runs `python scripts/validate_compliance_assets.py` to ensure docs/ gates match generator output before enforcing quality gates.
 - Local simulation:
   - Coverage gate (Node): ensure `coverage/coverage-summary.json` exists
   - Perf gate: place `reports/perf.json` with `{ "p95_ms": <value> }`
+
+## Compliance Controls (Phase 08)
+- Generator-aligned assets: run `python scripts/validate_compliance_assets.py --write` after changing stack options to refresh `docs/COMPLIANCE.md` and `gates_config.yaml`.
+- Backend toggles: set `COMPLIANCE_*` variables (`COMPLIANCE_REGIMES`, audit/access flags, `COMPLIANCE_LOG_DESTINATION`) in environment files and confirm middleware logs reach central storage.
+- CI evidence: artifacts from `scripts/validate_compliance_assets.py` and `scripts/enforce_gates.py` should be attached to compliance reviews.
 
 ## Monitoring & Observability (Phase 10)
 - Ensure structured logs with correlation IDs
