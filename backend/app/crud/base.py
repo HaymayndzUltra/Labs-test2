@@ -35,8 +35,29 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     ) -> List[ModelType]:
         return db.query(self.model).offset(skip).limit(limit).all()
 
+    def get_multi_by_tenant(
+        self,
+        db: Session,
+        tenant_id: int,
+        *,
+        skip: int = 0,
+        limit: int = 100,
+    ) -> List[ModelType]:
+        if not hasattr(self.model, 'tenant_id'):
+            raise AttributeError('Model does not have tenant_id attribute')
+        return (
+            db.query(self.model)
+            .filter(self.model.tenant_id == tenant_id)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
     def create(self, db: Session, *, obj_in: CreateSchemaType) -> ModelType:
-        obj_in_data = jsonable_encoder(obj_in)
+        if hasattr(obj_in, 'model_dump'):
+            obj_in_data = obj_in.model_dump(mode='python', exclude_unset=True)  # type: ignore[attr-defined]
+        else:
+            obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data)  # type: ignore
         db.add(db_obj)
         db.commit()
@@ -53,6 +74,8 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         obj_data = jsonable_encoder(db_obj)
         if isinstance(obj_in, dict):
             update_data = obj_in
+        elif hasattr(obj_in, 'model_dump'):
+            update_data = obj_in.model_dump(exclude_unset=True, mode='python')  # type: ignore[attr-defined]
         else:
             update_data = obj_in.dict(exclude_unset=True)
         for field in obj_data:

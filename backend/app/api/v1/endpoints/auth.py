@@ -1,10 +1,8 @@
-"""
-Authentication endpoints
-"""
+"""Authentication endpoints"""
 from datetime import timedelta
 from typing import Any
 
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -12,18 +10,32 @@ from app import crud, models, schemas
 from app.api import deps
 from app.config import settings
 from app.core import security
-from app.core.security import get_password_hash
 
 router = APIRouter()
+
+
+def _signup_tenant(
+    db: Session, signup: schemas.TenantSignup
+) -> models.User:
+    if crud.user.get_by_email(db, email=signup.owner_email):
+        raise HTTPException(status_code=400, detail="A user with that email already exists")
+    tenant = crud.tenant.create_with_subscription(db, tenant_in=signup.tenant)
+    owner_payload = schemas.UserCreate(
+        email=signup.owner_email,
+        password=signup.owner_password,
+        full_name=signup.owner_full_name,
+        tenant_id=tenant.id,
+        tenant_role="admin",
+    )
+    owner = crud.user.create(db, obj_in=owner_payload)
+    return owner
 
 
 @router.post("/login/access-token", response_model=schemas.Token)
 def login_access_token(
     db: Session = Depends(deps.get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ) -> Any:
-    """
-    OAuth2 compatible token login, get an access token for future requests
-    """
+    """OAuth2 compatible token login, get an access token for future requests."""
     user = crud.user.authenticate(
         db, email=form_data.username, password=form_data.password
     )
@@ -38,22 +50,20 @@ def login_access_token(
         ),
         "token_type": "bearer",
         "refresh_token": security.create_refresh_token(user.id),
+        "tenant_id": user.tenant_id,
+        "tenant_role": user.tenant_role,
     }
 
 
 @router.post("/login/test-token", response_model=schemas.User)
 def test_token(current_user: models.User = Depends(deps.get_current_user)) -> Any:
-    """
-    Test access token
-    """
+    """Test access token"""
     return current_user
 
 
 @router.post("/password-recovery/{email}", response_model=schemas.Msg)
 def recover_password(email: str, db: Session = Depends(deps.get_db)) -> Any:
-    """
-    Password Recovery
-    """
+    """Password Recovery"""
     user = crud.user.get_by_email(db, email=email)
 
     if not user:
@@ -67,38 +77,28 @@ def recover_password(email: str, db: Session = Depends(deps.get_db)) -> Any:
 
 @router.post("/reset-password/", response_model=schemas.Msg)
 def reset_password(
-    token: str = Body(...),
-    new_password: str = Body(...),
+    *,
+    token: str,
+    new_password: str,
     db: Session = Depends(deps.get_db),
 ) -> Any:
-    """
-    Reset password
-    """
+    """Reset password"""
     # TODO: Verify password reset token
     # TODO: Reset password
     return {"msg": "Password updated successfully"}
 
 
-@router.post("/register", response_model=schemas.User)
+@router.post("/register", response_model=schemas.User, status_code=status.HTTP_201_CREATED)
 def register(
     *,
     db: Session = Depends(deps.get_db),
-    user_in: schemas.UserCreate,
+    signup: schemas.TenantSignup,
 ) -> Any:
-    """
-    Create new user without the need to be logged in.
-    """
+    """Create new tenant and owner without the need to be logged in."""
     if not settings.USERS_OPEN_REGISTRATION:
         raise HTTPException(
             status_code=403,
             detail="Open user registration is forbidden on this server",
         )
-    user = crud.user.get_by_email(db, email=user_in.email)
-    if user:
-        raise HTTPException(
-            status_code=400,
-            detail="The user with this username already exists in the system.",
-        )
-    user = crud.user.create(db, obj_in=user_in)
-    # TODO: Send registration confirmation email
-    return user
+    owner = _signup_tenant(db, signup)
+    return owner
