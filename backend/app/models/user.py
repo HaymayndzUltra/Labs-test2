@@ -8,7 +8,7 @@ from sqlalchemy.sql import func
 from app.database import Base
 
 if TYPE_CHECKING:
-    from .tenant import Tenant  # noqa: F401
+    pass
 
 
 class User(Base):
