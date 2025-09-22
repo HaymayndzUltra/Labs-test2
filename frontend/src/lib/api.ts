@@ -9,12 +9,18 @@ export const api = axios.create({
   },
 });
 
-// Request interceptor for auth
+// Request interceptor for auth and tenant context
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('auth_token');
+      const tenantId = localStorage.getItem('active_tenant_id');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      if (tenantId) {
+        config.headers['X-Tenant-ID'] = tenantId;
+      }
     }
     return config;
   },
@@ -23,13 +29,33 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor for error handling
+// Response interceptor for error handling and session hydration
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (
+      typeof window !== 'undefined' &&
+      response.config.url?.includes('/login/access-token') &&
+      response.data
+    ) {
+      const { access_token, tenant_id, tenant_role } = response.data;
+      if (access_token) {
+        localStorage.setItem('auth_token', access_token);
+      }
+      if (tenant_id) {
+        localStorage.setItem('active_tenant_id', String(tenant_id));
+      }
+      if (tenant_role) {
+        localStorage.setItem('tenant_role', tenant_role);
+      }
+    }
+    return response;
+  },
   async (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && typeof window !== 'undefined') {
       // Handle unauthorized access
       localStorage.removeItem('auth_token');
+      localStorage.removeItem('active_tenant_id');
+      localStorage.removeItem('tenant_role');
       window.location.href = '/login';
     }
     return Promise.reject(error);

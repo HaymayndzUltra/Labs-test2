@@ -7,6 +7,8 @@ A saas fullstack backend built with FastAPI.
 - ⚡ **FastAPI** - Modern, fast web framework for building APIs
 - 🔐 **JWT Authentication** - Secure authentication with access/refresh tokens
 - 👥 **User Management** - User registration, profiles, and management
+- 🏢 **Multi-Tenancy** - Tenant-aware data isolation with role-based access
+- 💳 **Billing APIs** - Plan management, cancellation, and resume flows
 - 📚 **Auto Documentation** - Interactive API docs with Swagger/ReDoc
 - 🗄️ **PostgreSQL** - Robust relational database
 - 🔄 **Alembic Migrations** - Database version control
@@ -73,6 +75,28 @@ The API will be available at:
 - ReDoc: http://localhost:8000/api/redoc
 - Health Check: http://localhost:8000/health
 
+
+## Tenant & Billing Overview
+
+- Tenants are represented by the `tenants` table and linked to users via `tenant_id`.
+- Each tenant has a single `subscriptions` record tracking plan, seats, status, and renewal windows.
+- Authentication responses now include `tenant_id` and `tenant_role`; the frontend stores these values for future requests.
+- Superusers can operate on other tenants by including the `X-Tenant-ID` header.
+- Apply migrations after pulling updates:
+
+```bash
+alembic upgrade head
+```
+
+### Key Endpoints
+- `POST /api/v1/auth/register` – create a tenant + owner in one call
+- `GET /api/v1/tenants/me` / `PUT /api/v1/tenants/me` – inspect and update tenant profile
+- `GET /api/v1/billing/subscription` – retrieve active plan
+- `POST /api/v1/billing/subscription` – change plan or seats
+- `POST /api/v1/billing/subscription/cancel` / `resume` – pause or restart billing
+
+Use the `Authorization` header for bearer tokens and include `X-Tenant-ID` when acting across tenants.
+
 ## Project Structure
 
 ```
@@ -86,10 +110,15 @@ app/
 │   └── security.py    # Security utilities
 ├── crud/              # CRUD operations
 │   ├── base.py       # Base CRUD class
-│   └── crud_user.py  # User CRUD
+│   ├── crud_user.py  # User CRUD
+│   ├── crud_tenant.py  # Tenant CRUD
+│   └── crud_subscription.py  # Subscription CRUD
 ├── models/            # SQLAlchemy models
+│   ├── tenant.py     # Tenant & subscription models
 │   └── user.py       # User model
 ├── schemas/           # Pydantic schemas
+│   ├── subscription.py  # Subscription schemas
+│   ├── tenant.py     # Tenant schemas
 │   ├── token.py      # Auth schemas
 │   └── user.py       # User schemas
 ├── services/          # Business logic

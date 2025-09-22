@@ -1,7 +1,5 @@
-"""
-User CRUD operations
-"""
-from typing import Any, Dict, Optional, Union
+"""User CRUD operations"""
+from typing import Any, Dict, Optional, Union, List
 
 from sqlalchemy.orm import Session
 
@@ -15,12 +13,26 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     def get_by_email(self, db: Session, *, email: str) -> Optional[User]:
         return db.query(User).filter(User.email == email).first()
 
+    def get_multi_by_tenant(
+        self, db: Session, *, tenant_id: int, skip: int = 0, limit: int = 100
+    ) -> List[User]:
+        return (
+            db.query(User)
+            .filter(User.tenant_id == tenant_id)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
     def create(self, db: Session, *, obj_in: UserCreate) -> User:
         db_obj = User(
             email=obj_in.email,
             hashed_password=get_password_hash(obj_in.password),
             full_name=obj_in.full_name,
             is_superuser=obj_in.is_superuser,
+            tenant_id=obj_in.tenant_id,
+            tenant_role=obj_in.tenant_role or "member",
+            is_active=obj_in.is_active if obj_in.is_active is not None else True,
         )
         db.add(db_obj)
         db.commit()
@@ -46,6 +58,8 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             return None
         if not verify_password(password, user.hashed_password):
             return None
+        if user.tenant and not user.tenant.is_active:
+            return None
         return user
 
     def is_active(self, user: User) -> bool:
@@ -53,6 +67,11 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 
     def is_superuser(self, user: User) -> bool:
         return user.is_superuser
+
+    def is_tenant_admin(self, user: User) -> bool:
+        if user.is_superuser:
+            return True
+        return user.tenant_role == "admin"
 
 
 user = CRUDUser(User)
