@@ -1,10 +1,12 @@
 # Runbook
 
 ## Testing & QA (Phase 05)
-- Run unit tests: `make test-unit`
-- Scripts-only tests: `make test-scripts`
-- Coverage (scripts): `make coverage-scripts`
-- Security (scripts baseline): `make security-scripts`
+- Full stack regression (frontend + backend) with coverage aggregation: `make test`
+- Backend unit focus: `cd backend && pytest tests/unit`
+- Backend integration focus: `cd backend && pytest tests/integration`
+- Frontend component/API contract suite: `cd frontend && npm test`
+- Coverage gate: aggregated results in `coverage/coverage-summary.json` must be ≥70% (see
+  `gates_config.yaml`).
 
 ## Deployment (Phase 06)
 - CI jobs:

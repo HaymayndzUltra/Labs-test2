@@ -2,7 +2,9 @@
 from typing import Optional
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
+
+from app.utils.email import EmailStr
 
 from .tenant import Tenant
 
