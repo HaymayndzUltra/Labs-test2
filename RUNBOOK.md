@@ -25,7 +25,7 @@
   BACKEND_IMAGE=ghcr.io/org/portfolio-dashboard-backend:sha-<commit> \
   FRONTEND_ENV_FILE=.env.production AWS_REGION=$AWS_REGION make deploy-production
   ```
-- Health verification: `python3 scripts/health/check_deployment.py --environment staging --frontend-url $FRONTEND_URL --api-url $API_HEALTH_URL --db-url $DB_HEALTH_URL --output-file reports/staging-health.json`
+- Health verification: `python3 scripts/health/check_deployment.py --environment staging --frontend-url $FRONTEND_URL --api-url $API_HEALTH_URL --db-url $DB_HEALTH_URL --output-file reports/staging-pipeline-validation.json`
 
 ## Rollback playbook
 - Triggered automatically if `smoke-tests` fails in CI or manually via `make rollback`.

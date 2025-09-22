@@ -20,7 +20,7 @@ This document describes how to configure the environments, wire in secrets, and 
    - Provision an ECS cluster and service (`ECS_CLUSTER_NAME`, `ECS_SERVICE_NAME`) pointing at the task family defined in `deploy/aws/task-definition.json`.
 4. In **GitHub > Settings > Secrets and variables > Actions** configure per-environment secrets:
    - **Secrets**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_ECS_EXECUTION_ROLE_ARN`, `AWS_ECS_TASK_ROLE_ARN`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `FRONTEND_URL`, `API_HEALTH_URL`, `DB_HEALTH_URL` (optional), `VERCEL_ROLLBACK_TARGET` (or environment-specific overrides).
-   - **Variables**: `DEPLOY_TARGET` (`aws`/`azure`/`gcp`/`vercel`), `AWS_REGION`, `APP_NAME`, `ECS_CLUSTER_NAME`, `ECS_SERVICE_NAME`, `ECS_DESIRED_COUNT`.
+   - **Variables**: `DEPLOY_TARGET=aws`, `AWS_REGION`, `APP_NAME`, `ECS_CLUSTER_NAME`, `ECS_SERVICE_NAME`, `ECS_DESIRED_COUNT`.
 
 > ℹ️ *Secrets should be managed in your password vault (1Password, Bitwarden, etc.). Never commit real credentials to the repository. Share `.env` values via secure channels only.*
 
@@ -34,7 +34,8 @@ make setup
 make build
 
 # Verify health endpoints (requires staging/prod URLs)
-make pipeline-validate ENV=staging FRONTEND_URL=https://app.staging.example.com API_URL=https://api.staging.example.com/health
+make pipeline-validate ENV=staging FRONTEND_URL=https://app.staging.example.com API_URL=https://api.staging.example.com/health \
+  DB_URL=https://api.staging.example.com/health/db
 ```
 
 The `pipeline-validate` target uses `scripts/health/check_deployment.py` to hit the public health endpoints and stores results in `reports/<env>-pipeline-validation.json`.
@@ -43,14 +44,12 @@ The `pipeline-validate` target uses `scripts/health/check_deployment.py` to hit 
 
 Automated deployments are executed by `.github/workflows/ci-deploy.yml`. The workflow:
 
-1. Detects the deployment environment (`staging` on push to `main`, or manually via `workflow_dispatch`).
-2. Runs unit/integration/security checks via reusable CI workflows.
-3. Builds and publishes Docker images to GHCR for both the frontend and backend (`ghcr.io/<org>/<repo>-frontend` and `ghcr.io/<org>/<repo>-backend`).
-4. Deploys:
-   - **Frontend**: `amondnet/vercel-action` pushes the Next.js build to Vercel. Equivalent Makefile target: `make deploy-frontend ENV=staging BACKEND_IMAGE=...`.
-   - **Backend**: `scripts/deploy_backend.sh` updates the ECS service with the new image tag (and optionally registers a new task definition from `deploy/aws/task-definition.json`).
-5. Executes health verification via `scripts/health/check_deployment.py` and smoke tests (`newman`).
-6. Fails fast and triggers rollback scripts on error.
+1. Resolves the deployment environment (`staging` on push to `main`, overridable via `workflow_dispatch`) and allows emergency runs with `skip_tests: true`.
+2. Detects which stacks/tests exist, then runs the reusable test and security workflows unless explicitly skipped.
+3. Builds and pushes the backend container image to GHCR (`ghcr.io/<org>/<repo>-backend:sha-<commit>`).
+4. Deploys the AWS backend with `scripts/deploy_backend.sh` and the frontend via the Vercel CLI (using `.env.<env>` when present).
+5. Executes health verification via `scripts/health/check_deployment.py` and Postman smoke tests.
+6. On failure, triggers rollback scripts for ECS and Vercel (and optionally posts to Slack).
 
 ### Manual deployments
 
@@ -89,7 +88,7 @@ The CI workflow automatically triggers the same scripts when `smoke-tests` fail.
 
 1. Connect the repository to Vercel and confirm the production/staging aliases match the URLs listed above.
 2. Configure the environment variables (from `.env.<env>`) in the Vercel dashboard for each environment.
-3. Trigger deployments either through the CI workflow or manually via `npx vercel deploy`/Git pushes. Use `VERCEL_SCOPE` if the project lives in an organization.
+3. Trigger deployments either through the CI workflow or manually via `npx vercel deploy`/Git pushes. The Makefile and workflow pass `VERCEL_ORG_ID` to `--scope` automatically.
 
 ### Backend (ECS/Fargate)
 
