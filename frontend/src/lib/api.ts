@@ -9,6 +9,12 @@ export const api = axios.create({
   },
 });
 
+export const redirectToLogin = () => {
+  if (typeof window !== 'undefined') {
+    window.location.href = '/login';
+  }
+};
+
 // Request interceptor for auth
 api.interceptors.request.use(
   (config) => {
@@ -30,7 +36,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Handle unauthorized access
       localStorage.removeItem('auth_token');
-      window.location.href = '/login';
+      redirectToLogin();
     }
     return Promise.reject(error);
   }

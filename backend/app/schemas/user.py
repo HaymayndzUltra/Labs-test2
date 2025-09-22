@@ -4,7 +4,9 @@ User schemas
 from typing import Optional
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
+
+from app.utils.email import EmailStr
 
 
 # Shared properties

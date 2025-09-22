@@ -43,19 +43,31 @@
 
 ## Testing
 
-### Test Structure
-```
-tests/
-├── unit/
-├── integration/
-├── e2e/
-└── fixtures/
-```
+### Backend
+- Unit tests live in `backend/tests/unit` and cover core CRUD and security helpers.
+  ```bash
+  cd backend
+  pytest tests/unit
+  ```
+- Integration tests exercise the FastAPI routes in `backend/tests/integration`.
+  ```bash
+  cd backend
+  pytest tests/integration
+  ```
 
-### Running Tests
-```bash
-make test
-```
+### Frontend
+- Component and API-contract tests live alongside the source under `frontend/src`.
+  ```bash
+  cd frontend
+  npm test
+  ```
+
+### Full Suite & Coverage
+- `make test` runs the frontend and backend suites with coverage, enforces the 70% line
+  threshold defined in `gates_config.yaml`, and aggregates results into
+  `coverage/coverage-summary.json` for the quality gate pipeline.
+- Individual reports are left in `frontend/coverage/coverage-summary.json` and
+  `coverage/backend-coverage.xml` for debugging.
 
 ## Security Best Practices
 - Never commit secrets

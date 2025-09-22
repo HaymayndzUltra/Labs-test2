@@ -9,6 +9,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -20,14 +31,12 @@ jobs:
           pip install -r requirements.txt || true
           pip install pytest flake8 pyyaml pytest-cov pip-audit || true
 
-      - name: Python Lint & Test (quick smoke)
+      - name: Lint and run test suites
+        env:
+          CI: true
         run: |
           flake8 || true
-          pytest -q || true
-
-      - name: Collect Coverage (coverage.xml)
-        run: |
-          python scripts/collect_coverage.py || true
+          make test
 
       - name: Scan Dependencies (deps.json)
         run: |

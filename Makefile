@@ -20,8 +20,9 @@ dev:
 
 # Run tests
 test:
-	cd frontend && npm test
-	cd backend && pytest
+	cd frontend && npm test -- --ci --coverage --runInBand
+	cd backend && pytest --cov=app --cov-report=term-missing --cov-report=xml:../coverage/backend-coverage.xml --cov-fail-under=70
+	python scripts/aggregate_coverage.py
 
 
 

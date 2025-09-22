@@ -4,7 +4,9 @@ Application configuration
 import secrets
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import AnyHttpUrl, EmailStr, HttpUrl
+from pydantic import AnyHttpUrl, HttpUrl
+
+from app.utils.email import EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import field_validator
 
