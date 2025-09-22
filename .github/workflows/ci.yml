@@ -43,6 +43,10 @@ jobs:
         run: |
           python scripts/check_hipaa.py || exit 1
 
+      - name: Validate Compliance Assets
+        run: |
+          python scripts/validate_compliance_assets.py
+
       - name: Enforce Gates
         run: |
           python scripts/enforce_gates.py || exit 1
