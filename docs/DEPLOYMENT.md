@@ -83,6 +83,35 @@ VERCEL_TOKEN=... ./scripts/rollback_frontend.sh staging <deployment-url>
 
 The CI workflow automatically triggers the same scripts when `smoke-tests` fail.
 
+## Deployment targets
+
+### Vercel (frontend)
+
+1. Connect the repository to Vercel and confirm the production/staging aliases match the URLs listed above.
+2. Configure the environment variables (from `.env.<env>`) in the Vercel dashboard for each environment.
+3. Trigger deployments either through the CI workflow or manually via `npx vercel deploy`/Git pushes. Use `VERCEL_SCOPE` if the project lives in an organization.
+
+### Backend (ECS/Fargate)
+
+- Ensure the ECS service references the task definition family shipped in `deploy/aws/task-definition.json`.
+- Update the container image via the Makefile targets or call `scripts/deploy_backend.sh` directly with `--image` when running outside CI.
+- Confirm autoscaling policies, load balancer listeners, and Route53 records are pointed at the service before cutting over traffic.
+
+## Post-deployment validation
+
+- Run the automated health checks (`make pipeline-validate`) to verify the frontend, API, and database endpoints respond with success codes.
+- Inspect logs/metrics dashboards (CloudWatch, Datadog, Grafana) to ensure error rates stay within the agreed SLOs.
+- Confirm alerts remain green and no new anomalies are reported in your incident management tooling.
+- Validate backups are still scheduled and restore a recent snapshot in a non-production environment at least once per release cycle.
+
+## Compliance operations
+
+- Confirm the appropriate data-protection regime is enabled via `COMPLIANCE_REGIMES` and related audit/access logging flags in the backend environment variables.
+- Ensure the audit log destination (`COMPLIANCE_LOG_DESTINATION`) is writable and forwarded to your SIEM.
+- Redact additional headers by appending to `COMPLIANCE_REDACT_HEADERS` when deploying behind custom proxies.
+- Execute `python scripts/validate_compliance_assets.py` prior to releases to confirm docs and gates match the generator outputs.
+- Review `docs/COMPLIANCE.md` with operators and document the completion of each checklist stage.
+
 ## Observability and evidence
 
 - Health verification reports are uploaded as build artifacts and also stored locally when you run `make pipeline-validate`.
