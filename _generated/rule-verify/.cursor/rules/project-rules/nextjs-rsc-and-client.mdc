@@ -1,0 +1,8 @@
+---
+alwaysApply: false
+description: "TAGS: [frontend,nextjs,rsc] | TRIGGERS: server,client | SCOPE: project:rule-verify | DESCRIPTION: RSC vs Client component guidelines."
+---
+
+# RSC and Client Components
+
+- Default to RSC; use Client only for stateful/interactive UI.

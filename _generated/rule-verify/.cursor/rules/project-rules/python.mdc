@@ -1,0 +1,8 @@
+---
+alwaysApply: false
+description: "TAGS: [python] | TRIGGERS: lint,test | SCOPE: project:rule-verify | DESCRIPTION: Minimal Python guidelines."
+---
+
+# Python Minimal
+
+- Use black + flake8; avoid global state; prefer dataclasses for simple data.

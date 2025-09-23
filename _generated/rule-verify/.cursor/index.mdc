@@ -1,0 +1,38 @@
+---
+description: "rule-verify fullstack project for the enterprise industry with a nextjs frontend and fastapi backend."
+globs: */frontend/**/*.tsx
+globs: */frontend/**/*.ts
+globs: */frontend/**/*.js
+globs: */frontend/**/*.jsx
+globs: */backend/**/*
+globs: */database/**/*
+globs: docs/**/*
+globs: scripts/**/*
+globs: tests/**/*
+alwaysApply: true
+---
+
+# rule-verify Project Overview
+
+- **Industry:** enterprise
+- **Project Type:** fullstack
+- **Features:** api_gateway, audit_logging, compliance_reporting, data_governance, enterprise_auth, reporting, role_based_access, sso_integration
+
+## Technology Stack
+
+- **Frontend:** nextjs
+- **Backend:** fastapi
+- **Database:** postgres
+- **Auth:** custom
+- **Deploy:** aws
+
+## Compliance Considerations
+
+- No additional regulatory frameworks were selected.
+
+## Project Rules
+
+- Keep the `nextjs` frontend synchronized with backend contracts and shared APIs.
+- Structure the `fastapi` backend with clear domain boundaries and automated testing.
+- Manage the `postgres` data layer with migrations and backups aligned to compliance needs.
+- Prioritize delivery of key features: api_gateway, audit_logging, compliance_reporting, data_governance, enterprise_auth, reporting, role_based_access, sso_integration.

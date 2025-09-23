@@ -1,0 +1,8 @@
+{
+  "snapshot_id": "snap-0001",
+  "git_commit": "0000000000000000000000000000000000000000",
+  "rules_manifest": ["1-master-rule-context-discovery","2-master-rule-ai-collaboration-guidelines","9-governance-precedence"],
+  "tech_fingerprint": {"node":"14.x"},
+  "signed_by": "router-sim"
+}
+

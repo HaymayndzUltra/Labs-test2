@@ -1,0 +1,8 @@
+---
+alwaysApply: false
+description: "TAGS: [openapi] | TRIGGERS: schema,contract | SCOPE: project:rule-verify | DESCRIPTION: Minimal OpenAPI usage."
+---
+
+# OpenAPI Minimal
+
+- Keep spec near code; generate clients only for stable endpoints.
