@@ -15,6 +15,7 @@ Metrics files expected:
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -27,7 +28,7 @@ except Exception:
     sys.exit(2)
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(os.getenv("PROJECT_ROOT") or Path(__file__).resolve().parents[1])
 GATES = ROOT / "gates_config.yaml"
 
 

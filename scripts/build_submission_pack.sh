@@ -4,7 +4,11 @@ set -euo pipefail
 # build_submission_pack.sh
 # Assemble dist/<NAME>-submission with manifest, SUBMISSION.md, checksums, and evidence copies.
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)"
+if [[ -n "${PROJECT_ROOT:-}" ]]; then
+  ROOT_DIR="$PROJECT_ROOT"
+else
+  ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)"
+fi
 cd "$ROOT_DIR"
 
 NAME="${NAME:-$(jq -r .name workflow.config.json 2>/dev/null || echo project)}"

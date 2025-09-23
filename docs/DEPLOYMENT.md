@@ -1,156 +1,93 @@
 # Deployment Guide
 
-This document describes how to configure the environments, wire in secrets, and ship code using the automated CI/CD pipeline that lives in `.github/workflows/ci-deploy.yml` and the helper targets in the project `Makefile`.
+This guide explains how to configure environments, run local verification, and operate the supported CI/CD workflows for generated projects. It builds on the lifecycle documented in the [Local Development Workflow](LOCAL_DEV_WORKFLOW.md) and [CI/CD Overview](CI_CD_OVERVIEW.md).
 
-## Environment overview
+## Environment Matrix
 
-| Environment   | Purpose                          | Frontend host                  | Backend host                  |
-|---------------|----------------------------------|--------------------------------|-------------------------------|
-| `development` | Local work using Docker Compose  | http://localhost:3000          | http://localhost:8000         |
-| `staging`     | Pre-production smoke tests       | https://app.staging.example.com | https://api.staging.example.com |
-| `production`  | Public traffic                   | https://app.example.com        | https://api.example.com       |
+| Environment | Purpose | Frontend URL | API URL |
+| --- | --- | --- | --- |
+| `development` | Local validation of the generated scaffold | http://localhost:3000 (stack dependent) | http://localhost:8000 (stack dependent) |
+| `staging` | Automated smoke testing of the latest commit | `https://app.staging.example.com` | `https://api.staging.example.com` |
+| `production` | Customer-facing traffic | `https://app.example.com` | `https://api.example.com` |
 
-## Configure secrets and variables
+Update the hostnames with real values for each client engagement.
 
-1. Copy `.env.example` into environment-specific files (`.env.staging`, `.env.production`) and replace placeholder values with real endpoints and credentials.  
-2. In **Vercel**, add the same environment variables for each environment. These are required for `npx vercel deploy` during Makefile deploys and for the GitHub Actions `deploy-vercel` job.  
-3. In **AWS (ECS/Fargate)**:  
-   - Create the execution role (`TASK_EXECUTION_ROLE_ARN`) with permissions for `AmazonECSTaskExecutionRolePolicy` and private registry access if required.  
-   - Create the application task role (`TASK_ROLE_ARN`) with the minimal permissions the API needs (database, SSM, etc.).  
-   - Provision an ECS cluster and service (`ECS_CLUSTER_NAME`, `ECS_SERVICE_NAME`) pointing at the task family defined in `deploy/aws/task-definition.json`.  
-4. In **GitHub > Settings > Secrets and variables > Actions** configure per-environment secrets:
-   - **Secrets**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_ECS_EXECUTION_ROLE_ARN`, `AWS_ECS_TASK_ROLE_ARN`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `FRONTEND_URL`, `API_HEALTH_URL`, `DB_HEALTH_URL` (optional), `VERCEL_ROLLBACK_TARGET` (or environment-specific overrides).
-   - **Variables**: `DEPLOY_TARGET=aws`, `AWS_REGION`, `APP_NAME`, `ECS_CLUSTER_NAME`, `ECS_SERVICE_NAME`, `ECS_DESIRED_COUNT`.
-5. In **GitHub > Settings > Environments**, create a `production` environment and require manual approval. The `ci-promote-prod` workflow references this protected environment before any production deployment runs.
+## Configure Secrets and Variables
 
-> ℹ️ *Secrets should be managed in your password vault (1Password, Bitwarden, etc.). Never commit real credentials to the repository. Share `.env` values via secure channels only.*
+1. **Environment files** – Copy `.env.example` from the generated project into `.env.staging` and `.env.production`, filling in API URLs, authentication settings, third-party integrations, and compliance flags. Store the files securely (not in git).
+2. **Vercel** – Add the same variables to the Vercel project for staging and production. Grant the GitHub integration access so CI can deploy via the CLI.
+3. **AWS/ECS** – Provision the ECS cluster, service, task execution role, task role, and related security groups. Capture the following for CI: `AWS_REGION`, `AWS_ECS_EXECUTION_ROLE_ARN`, `AWS_ECS_TASK_ROLE_ARN`, `ECS_CLUSTER_NAME`, `ECS_SERVICE_NAME`, `APP_NAME`, `ECS_DESIRED_COUNT`.
+4. **GitHub > Settings > Secrets and variables > Actions** – Configure repository-level secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, etc.) and environment-specific variables (`FRONTEND_URL_*`, `API_URL_*`, `DB_URL_*`). The [`ci-secrets-preflight.yml`](../.github/workflows/ci-secrets-preflight.yml) workflow will fail if any required value is missing.
+5. **Protected environments** – Require approvals for the `production` environment so `ci-promote-prod.yml` cannot run without explicit authorization.
 
-## Local validation before deploy
+## Local Validation Before Deployment
+
+Run these commands from the factory repository after provisioning the isolated project directory (see [Local Development Workflow](LOCAL_DEV_WORKFLOW.md)).
 
 ```bash
-# Prepare dependencies
-make setup
+# Execute the full lifecycle using workflow.config.json or env overrides
+NAME=acme INDUSTRY=enterprise PROJECT_TYPE=fullstack \
+FE=nextjs BE=fastapi DB=postgres OUTPUT_ROOT=../_generated make lifecycle
 
-# Run the build pipeline locally
-make build
-
-# Execute the non-interactive lifecycle (reads workflow.config.json or env overrides)
-NAME=acme INDUSTRY=enterprise PROJECT_TYPE=fullstack FE=nextjs BE=fastapi DB=postgres make lifecycle
-
-# Verify health endpoints (requires staging/prod URLs)
-make pipeline-validate ENV=staging FRONTEND_URL=https://app.staging.example.com API_URL=https://api.staging.example.com/health \
+# Validate the deployed app once URLs are known
+make pipeline-validate ENV=staging \
+  FRONTEND_URL=https://app.staging.example.com \
+  API_URL=https://api.staging.example.com/health \
   DB_URL=https://api.staging.example.com/health/db
+```
 
-The `lifecycle` target wraps `scripts/e2e_from_brief.sh`, passing any stack variables supplied on the command line (and otherwise falling back to `workflow.config.json`). It produces selection.json, generated source, gate evidence, `dist/` submission bundles, and compliance validation logs in `evidence/`.
+Artifacts (metrics, evidence, submission pack) remain under `../_generated/<NAME>/` and should be archived with the client deliverable.
 
-The `pipeline-validate` target uses `scripts/health/check_deployment.py` to hit the public health endpoints and stores results in `reports/<env>-pipeline-validation.json`.
+## Automated Pipeline
 
-Deployment workflow
+### 1. Secrets Preflight (`ci-secrets-preflight.yml`)
 
-Automated deployments are executed by .github/workflows/ci-deploy.yml. The workflow:
+- Triggered on every push to `main`, pull request, and manual dispatch.
+- Verifies required secrets/variables are populated before any build or deploy job runs.
 
-Resolves the deployment environment (staging on push to main, overridable via workflow_dispatch) and allows emergency runs with skip_tests: true.
+### 2. Staging Deployment (`ci-deploy.yml`)
 
-Detects which stacks/tests exist, then runs the reusable test and security workflows unless explicitly skipped.
+- Builds and tests the scaffold using `scripts/install_and_test.sh` and related collectors.
+- Builds the backend container image, deploys it to ECS, and publishes the frontend via Vercel.
+- Executes `scripts/health/check_deployment.py` against staging URLs and uploads artifacts (`reports/`, `evidence/`, `dist/`).
 
-Builds and pushes the backend container image to GHCR (ghcr.io/<org>/<repo>-backend:sha-<commit>).
+### 3. Production Promotion (`ci-promote-prod.yml`)
 
-Deploys the AWS backend with scripts/deploy_backend.sh and the frontend via the Vercel CLI (using .env.<env> when present).
+- Manually triggered with approvals enforced by the `production` environment.
+- Re-runs gates using `scripts/enforce_gates.py`, deploys to production, and validates health endpoints.
+- Uploads the same artifacts as staging for audit traceability.
 
-Executes health verification via scripts/health/check_deployment.py and Postman smoke tests.
+### 4. Nightly Observability (`nightly-observability.yml`)
 
-On failure, triggers rollback scripts for ECS and Vercel (and optionally posts to Slack).
+- Scheduled at 02:00 UTC; also available on demand.
+- Runs health checks for staging and production, writing results to `reports/<env>-pipeline-validation.json` and publishing them as workflow artifacts.
 
-## Production promotion (`ci-promote-prod.yml`)
+Refer to the [CI/CD Overview](CI_CD_OVERVIEW.md) for detailed job breakdowns and customization guidance.
 
-Manual production cutovers run through the `ci-promote-prod` workflow. Trigger it with **Run workflow** in GitHub Actions, then complete the required approval in the protected `production` environment. The workflow:
+## Manual Operations
 
-- Re-runs `scripts/install_and_test.sh` and the coverage/perf/dependency collectors before enforcing `scripts/enforce_gates.py`. Promotion aborts if any gate fails.
-- Deploys the frontend through the existing Vercel CLI pattern (reusing `.env.production` when present) and updates ECS with `scripts/deploy_backend.sh production`, targeting the image `ghcr.io/<org>/<repo>-backend:sha-<commit>`.
-- Executes `scripts/health/check_deployment.py` against the production URLs (`FRONTEND_URL_PRODUCTION`, `API_URL_PRODUCTION`, `DB_URL_PRODUCTION`) and writes `reports/production-pipeline-validation.json`.
-- Uploads `reports/`, `evidence/`, and `dist/` as artifacts even when a step fails to preserve release evidence.
+While the workflows cover the happy path, the generated project also ships with helper scripts:
 
-## Nightly observability (`nightly-observability.yml`)
+- `scripts/deploy_backend.sh <environment>` – Deploy the backend container manually (expects `BACKEND_IMAGE` and AWS credentials).
+- `scripts/health/check_deployment.py` – Run spot checks locally or during incident response.
+- `make pipeline-validate ENV=<env>` – Convenience wrapper around the health script.
 
-Nightly (02:00 UTC) and ad-hoc dispatch runs execute `scripts/health/check_deployment.py` against staging and production using repository variables for the public endpoints. Each job writes `reports/<env>-pipeline-validation.json` and uploads the file as an artifact so the on-call team can review availability evidence the following morning.
+These commands should be executed from the generated project directory (`../_generated/<NAME>/`).
 
-## Secrets preflight (`ci-secrets-preflight.yml`)
+## Rollback & Incident Response
 
-The `ci-secrets-preflight` workflow runs on every push to `main`, pull request, and manual dispatch. It exports the Vercel tokens, ECS roles, deployment metadata (`APP_NAME`, `ECS_*`), AWS region, and the staging/production health-check URLs into the job environment. If any variable is empty the job fails immediately with a clear message (without echoing secret contents), allowing teams to remediate configuration issues before builds progress.
+1. **Backend** – Use `scripts/deploy_backend.sh <environment> --image <previous-tag>` or roll back the ECS service to an earlier task definition revision.
+2. **Frontend** – Restore the previous Vercel deployment via `npx vercel rollback` or the Vercel dashboard.
+3. **Health Verification** – Re-run `make pipeline-validate` for the affected environment to confirm recovery.
+4. **Evidence** – Capture logs, metrics, and the updated health report and attach them to the incident record.
 
-# Deploy to staging (requires env vars from .env.staging)
-VERCEL_TOKEN=... VERCEL_ORG_ID=... VERCEL_PROJECT_ID=... \
-BACKEND_IMAGE=ghcr.io/org/portfolio-dashboard-backend:sha-<commit> \
-AWS_REGION=us-east-1 make deploy-staging
+## Troubleshooting
 
-# Deploy to production
-ENV=production FRONTEND_ENV_FILE=.env.production \
-VERCEL_TOKEN=... VERCEL_ORG_ID=... VERCEL_PROJECT_ID=... \
-BACKEND_IMAGE=ghcr.io/org/portfolio-dashboard-backend:sha-<commit> \
-AWS_REGION=us-east-1 make deploy-production
+| Issue | Mitigation |
+| --- | --- |
+| `ci-secrets-preflight` fails | Review the workflow logs for the missing key name and populate the secret or variable in GitHub. |
+| Staging deploy fails tests | Reproduce locally with `make lifecycle` and inspect the artifacts under the generated project directory. |
+| Production promotion blocked by gates | Check `${PROJECT_ROOT}/metrics/` and `${PROJECT_ROOT}/reports/` for failing thresholds, increase coverage/performance, or update `gates_config.yaml` (with approvals). |
+| Nightly observability artifacts missing | Ensure repository variables for staging/production URLs are present; rerun the workflow manually once corrected. |
 
-The Makefile target builds the frontend and runs the Vercel CLI, then calls scripts/deploy_backend.sh for ECS. For production deployments set FRONTEND_ENV_FILE=.env.production so secrets are applied correctly.
-
-Rollbacks
-
-If smoke tests fail or a regression is detected:
-
-# Backend: revert to previous ECS task definition
-AWS_REGION=us-east-1 make rollback ENV=staging REVISION=previous
-
-# Frontend: provide the deployment/alias to restore
-VERCEL_TOKEN=... ./scripts/rollback_frontend.sh staging <deployment-url>
-
-The CI workflow automatically triggers the same scripts when smoke-tests fail.
-
-Deployment targets
-Vercel (frontend)
-
-Connect the repository to Vercel and confirm the production/staging aliases match the URLs listed above.
-
-Configure the environment variables (from .env.<env>) in the Vercel dashboard for each environment.
-
-Trigger deployments either through the CI workflow or manually via npx vercel deploy/Git pushes. The Makefile and workflow pass VERCEL_ORG_ID to --scope automatically.
-
-Backend (ECS/Fargate)
-
-Ensure the ECS service references the task definition family shipped in deploy/aws/task-definition.json.
-
-Update the container image via the Makefile targets or call scripts/deploy_backend.sh directly with --image when running outside CI.
-
-Confirm autoscaling policies, load balancer listeners, and Route53 records are pointed at the service before cutting over traffic.
-
-Post-deployment validation
-
-Run the automated health checks (make pipeline-validate) to verify the frontend, API, and database endpoints respond with success codes.
-
-Inspect logs/metrics dashboards (CloudWatch, Datadog, Grafana) to ensure error rates stay within the agreed SLOs.
-
-Confirm alerts remain green and no new anomalies are reported in your incident management tooling.
-
-Validate backups are still scheduled and restore a recent snapshot in a non-production environment at least once per release cycle.
-
-Compliance operations
-
-Confirm the appropriate data-protection regime is enabled via COMPLIANCE_REGIMES and related audit/access logging flags in the backend environment variables.
-
-Ensure the audit log destination (COMPLIANCE_LOG_DESTINATION) is writable and forwarded to your SIEM.
-
-Redact additional headers by appending to COMPLIANCE_REDACT_HEADERS when deploying behind custom proxies.
-
-Execute python scripts/validate_compliance_assets.py prior to releases to confirm docs and gates match the generator outputs.
-
-Review docs/COMPLIANCE.md with operators and document the completion of each checklist stage.
-
-Observability and evidence
-
-Health verification reports are uploaded as build artifacts and also stored locally when you run make pipeline-validate.
-
-Place additional run evidence (Grafana exports, log snapshots) in observability/ or reports/ as needed. The example report generated during development lives at reports/staging-pipeline-validation.json.
-
-Troubleshooting
-Issue	Resolution
-Vercel deploy fails with missing env	Ensure .env.<env> exists and the Makefile has access to VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID.
-ECS deployment fails with IAM error	Double-check TASK_EXECUTION_ROLE_ARN/TASK_ROLE_ARN permissions and that the secrets are configured in GitHub.
-Health checks fail	Inspect the health-report.json artifact for the failing endpoint and rerun scripts/health/check_deployment.py locally with --insecure if using self-signed certificates.
-Rollback script cannot find previous revision	ECS must have at least two task definition revisions. Register a new revision manually or provide an explicit ARN/number to make rollback.
+For further context, see the [System Overview](SYSTEM_OVERVIEW.md) and [Compliance & Evidence Guide](COMPLIANCE_EVIDENCE.md).

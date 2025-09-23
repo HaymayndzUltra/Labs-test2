@@ -1,6 +1,0 @@
-{
-  "frontend": {"name": "nextjs", "variant": "base"},
-  "backend": {"name": "fastapi", "variant": "base"},
-  "database": {"name": "postgres", "variant": "base"},
-  "compliance": {"name": "gdpr", "variant": "overlay"}
-}

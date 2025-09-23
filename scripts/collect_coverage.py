@@ -9,11 +9,12 @@ Usage:
 """
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(os.getenv("PROJECT_ROOT") or Path(__file__).resolve().parents[1])
 
 
 def main() -> int:
