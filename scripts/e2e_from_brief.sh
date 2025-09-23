@@ -133,6 +133,18 @@ echo "[E2E] Build Submission Pack"
 chmod +x scripts/build_submission_pack.sh
 ./scripts/build_submission_pack.sh || true
 
+echo "[E2E] Validate compliance assets"
+mkdir -p evidence
+compliance_validate_cmd=("$PY_BIN" scripts/validate_compliance_assets.py)
+if [[ -n "${VALIDATE_COMPLIANCE_WRITE:-}" ]]; then
+  compliance_validate_cmd+=(--write)
+fi
+if ! "${compliance_validate_cmd[@]}" | tee evidence/validate_compliance_assets.log; then
+  validate_status=${PIPESTATUS[0]}
+  echo "[E2E] Compliance asset validation failed." >&2
+  exit "${validate_status:-1}"
+fi
+
 echo "[E2E] Compliance docs (optional)"
 "$PY_BIN" scripts/check_compliance_docs.py || true
 
