@@ -5,7 +5,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowDownRight,
   ArrowUpRight,
+  BarChart3,
+  Check,
   ChevronDown,
+  Gauge,
   Heart,
   Loader2,
   Package,
@@ -15,7 +18,10 @@ import {
   SlidersHorizontal,
   Sparkles,
   Star,
+  TrendingUp,
+  Users,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
@@ -192,6 +198,55 @@ const TREND_PALETTE: Record<MetricTrend, TrendPalette> = {
     icon: ArrowUpRight,
   },
 };
+
+type MetricVisual = {
+  icon: LucideIcon;
+  accent: string;
+  glow: string;
+};
+
+const METRIC_VISUAL_LIBRARY: { test: RegExp; icon: LucideIcon; accent: string; glow: string }[] = [
+  {
+    test: /revenue|sales|gmv|profit/i,
+    icon: TrendingUp,
+    accent: 'bg-emerald-500/10 text-emerald-600',
+    glow: 'from-emerald-100/70',
+  },
+  {
+    test: /customer|user|audience|retention/i,
+    icon: Users,
+    accent: 'bg-sky-500/15 text-sky-600',
+    glow: 'from-sky-100/60',
+  },
+  {
+    test: /order|purchase|cart|conversion/i,
+    icon: ShoppingCart,
+    accent: 'bg-indigo-500/10 text-indigo-600',
+    glow: 'from-indigo-100/60',
+  },
+  {
+    test: /quality|score|performance|speed/i,
+    icon: Gauge,
+    accent: 'bg-amber-500/10 text-amber-600',
+    glow: 'from-amber-100/60',
+  },
+];
+
+const DEFAULT_METRIC_VISUAL: MetricVisual = {
+  icon: BarChart3,
+  accent: 'bg-primary/10 text-primary',
+  glow: 'from-primary/10',
+};
+
+function resolveMetricVisual(metric: OverviewMetric): MetricVisual {
+  const match = METRIC_VISUAL_LIBRARY.find(
+    (entry) => entry.test.test(metric.id) || entry.test.test(metric.label),
+  );
+  if (match) {
+    return { icon: match.icon, accent: match.accent, glow: match.glow };
+  }
+  return DEFAULT_METRIC_VISUAL;
+}
 
 function formatCurrency(value: number, currency: string) {
   return new Intl.NumberFormat('en-US', {
@@ -379,17 +434,20 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-surface">
       <div className="w-full border-b border-indigo-100/70 bg-surface-alt/80 shadow-sm backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center gap-4 px-6 py-6">
-          <div className="flex items-center gap-3">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-6 md:flex-row md:items-center">
+          <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary/90 via-secondary/80 to-primary/60 text-lg font-semibold text-white shadow-soft">
-              CX
+              <Sparkles className="h-5 w-5" />
             </div>
-            <div>
-              <p className="text-lg font-semibold text-neutral-900">Commerce Experience</p>
-              <p className="text-sm text-neutral-600">Enterprise analytics workspace</p>
+            <div className="space-y-1">
+              <p className="text-lg font-semibold text-neutral-900">Aurora Commerce Studio</p>
+              <p className="text-sm text-neutral-600">Client-ready performance dashboard</p>
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+                <Sparkles className="h-3 w-3" /> Client preview
+              </span>
             </div>
           </div>
-          <div className="hidden flex-1 items-center gap-3 rounded-full border border-indigo-100 bg-surface-alt px-4 py-2 shadow-soft md:flex">
+          <div className="hidden flex-1 items-center gap-3 rounded-full border border-indigo-100 bg-white/80 px-4 py-2 shadow-soft md:flex">
             <Search className="h-4 w-4 text-neutral-500" />
             <input
               type="search"
@@ -405,7 +463,7 @@ export default function DashboardPage() {
               Quick find
             </button>
           </div>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex items-center gap-2 md:ml-auto">
             <button
               type="button"
               className="hidden items-center gap-2 rounded-full border border-indigo-100 bg-surface-alt px-3 py-2 text-sm font-medium text-neutral-600 transition hover:border-primary/40 hover:text-primary lg:flex"
@@ -504,16 +562,39 @@ function BrandCarousel() {
   const lastTimestampRef = useRef<number>(0);
   const offsetRef = useRef<number>(0);
   const effectiveWidthRef = useRef<number>(0);
-  const speedRef = useRef<number>(80); // px per second
-  const currentSpeedRef = useRef<number>(80);
-  const targetSpeedRef = useRef<number>(80);
+  const BASE_SPEED = 160; // px per second
+  const speedRef = useRef<number>(BASE_SPEED);
+  const currentSpeedRef = useRef<number>(0);
+  const targetSpeedRef = useRef<number>(0);
   const tweenStartRef = useRef<number>(0);
   const tweenDurationRef = useRef<number>(400);
-  const startSpeedRef = useRef<number>(80);
+  const startSpeedRef = useRef<number>(0);
+  const hoverRef = useRef(false);
+  const pauseTimeoutRef = useRef<number>();
+  const autoScrollIntervalRef = useRef<number>();
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   const GAP = 64;
+  const AUTO_SCROLL_INTERVAL = 3000;
+  const SCROLL_ACTIVE_DURATION = 1400;
 
   const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updatePreference = (event: MediaQueryList | MediaQueryListEvent) => {
+      setPrefersReducedMotion(event.matches);
+    };
+    updatePreference(media);
+    const listener = (event: MediaQueryListEvent) => updatePreference(event);
+    if (typeof media.addEventListener === 'function') {
+      media.addEventListener('change', listener);
+      return () => media.removeEventListener('change', listener);
+    }
+    media.addListener(listener);
+    return () => media.removeListener(listener);
+  }, []);
 
   const computeWidths = useCallback(() => {
     const track = trackRef.current;
@@ -533,6 +614,16 @@ function BrandCarousel() {
   }, [computeWidths]);
 
   useEffect(() => {
+    if (prefersReducedMotion) {
+      if (frameRef.current) {
+        cancelAnimationFrame(frameRef.current);
+      }
+      if (trackRef.current) {
+        trackRef.current.style.transform = 'translateX(0px)';
+      }
+      return;
+    }
+
     const step = (timestamp: number) => {
       const track = trackRef.current;
       if (!track) return;
@@ -568,22 +659,67 @@ function BrandCarousel() {
       frameRef.current = requestAnimationFrame(step);
     };
 
+    lastTimestampRef.current = 0;
     frameRef.current = requestAnimationFrame(step);
     return () => {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
     };
-  }, []);
+  }, [prefersReducedMotion]);
 
-  const tweenSpeed = (target: number, duration: number) => {
-    currentSpeedRef.current = currentSpeedRef.current;
+  const tweenSpeed = useCallback((target: number, duration: number) => {
     startSpeedRef.current = currentSpeedRef.current;
     targetSpeedRef.current = target;
     tweenDurationRef.current = duration;
     tweenStartRef.current = performance.now();
+  }, []);
+
+  const startScrollBurst = useCallback(() => {
+    if (prefersReducedMotion) return;
+    tweenSpeed(speedRef.current, 420);
+    if (pauseTimeoutRef.current) {
+      window.clearTimeout(pauseTimeoutRef.current);
+    }
+    pauseTimeoutRef.current = window.setTimeout(() => {
+      if (!hoverRef.current && !prefersReducedMotion) {
+        tweenSpeed(0, 360);
+      }
+    }, SCROLL_ACTIVE_DURATION);
+  }, [prefersReducedMotion, tweenSpeed]);
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      return;
+    }
+    startScrollBurst();
+    autoScrollIntervalRef.current = window.setInterval(() => {
+      if (hoverRef.current) return;
+      startScrollBurst();
+    }, AUTO_SCROLL_INTERVAL);
+
+    return () => {
+      if (autoScrollIntervalRef.current) {
+        window.clearInterval(autoScrollIntervalRef.current);
+      }
+      if (pauseTimeoutRef.current) {
+        window.clearTimeout(pauseTimeoutRef.current);
+      }
+    };
+  }, [prefersReducedMotion, startScrollBurst]);
+
+  const handleMouseEnter = () => {
+    hoverRef.current = true;
+    if (prefersReducedMotion) return;
+    if (pauseTimeoutRef.current) {
+      window.clearTimeout(pauseTimeoutRef.current);
+    }
+    tweenSpeed(0, 280);
   };
 
-  const handleMouseEnter = () => tweenSpeed(0, 500);
-  const handleMouseLeave = () => tweenSpeed(speedRef.current, 500);
+  const handleMouseLeave = () => {
+    hoverRef.current = false;
+    if (prefersReducedMotion) return;
+    startScrollBurst();
+  };
 
   return (
     <div className="space-y-2">
@@ -592,6 +728,7 @@ function BrandCarousel() {
           className="relative mx-auto hidden w-full max-w-7xl overflow-hidden px-6 md:block"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          aria-label="Brand partner carousel"
         >
           <div
             ref={trackRef}
@@ -609,7 +746,7 @@ function BrandCarousel() {
         </div>
       </div>
       <div className="md:hidden">
-        <div className="scrollbar-hidden overflow-x-auto border-b bg-white px-4 py-4">
+        <div className="scrollbar-hidden overflow-x-auto border-b bg-white px-4 py-4" aria-label="Brand partner list">
           <div className="flex w-max items-center" style={{ gap: `${GAP}px` }}>
             {brandLogos.map((brand) => (
               <BrandLogo key={`mobile-${brand.name}`} brand={brand} onLoad={handleImageLoad} />
@@ -625,13 +762,13 @@ function BrandLogo({ brand, onLoad }: { brand: BrandLogo; onLoad?: () => void })
   const [logoSrc, setLogoSrc] = useState(brand.logo);
 
   return (
-    <div className="flex h-10 items-center">
+    <div className="flex h-12 min-h-[48px] items-center justify-center rounded-2xl bg-white/70 px-4 py-2 shadow-soft transition hover:shadow-glow">
       <Image
         src={logoSrc}
         alt={`${brand.name} logo`}
         width={brand.width}
         height={brand.height}
-        className="h-full w-auto object-contain opacity-80 transition-opacity hover:opacity-100"
+        className="max-h-12 w-auto object-contain opacity-85 transition-opacity hover:opacity-100"
         onError={() => setLogoSrc(FALLBACK_BRAND_IMAGE)}
         onLoadingComplete={onLoad}
         loading="lazy"
@@ -779,19 +916,24 @@ function FilterPanel({
             return (
               <label
                 key={brand.id}
-                className="flex cursor-pointer items-center justify-between rounded-2xl border border-indigo-100/60 px-3 py-2 text-sm text-neutral-600 transition hover:border-primary/50 hover:bg-primary/5"
+                className="group relative flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-indigo-100/60 bg-white/70 px-4 py-3 text-sm text-neutral-600 shadow-soft transition hover:border-primary/50 hover:shadow-glow"
               >
                 <span className="flex items-center gap-3">
                   <input
                     type="checkbox"
                     checked={checked}
                     onChange={() => onBrandToggle(brand.id)}
-                    className="h-4 w-4 rounded border-indigo-200 text-secondary focus:ring-secondary"
+                    className="peer sr-only"
                     aria-label={`Filter by ${brand.name}`}
                   />
-                  {brand.name}
+                  <span className="flex h-5 w-5 items-center justify-center rounded-md border border-indigo-200 bg-white text-transparent transition duration-200 peer-checked:border-transparent peer-checked:bg-secondary peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-secondary/40">
+                    <Check className="h-3.5 w-3.5" />
+                  </span>
+                  <span className="font-medium text-neutral-700">{brand.name}</span>
                 </span>
-                <span className="text-xs text-neutral-600">{brand.product_count}</span>
+                <span className="rounded-full bg-neutral-100 px-2 py-1 text-xs font-semibold text-neutral-500 transition group-hover:bg-primary/10 group-hover:text-primary">
+                  {brand.product_count}
+                </span>
               </label>
             );
           })}
@@ -811,13 +953,19 @@ function FilterPanel({
               key={option.id}
               type="button"
               onClick={() => onDeliveryToggle(option.id)}
-              className={`rounded-2xl border px-3 py-2 text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary/40 ${
+              className={`group relative overflow-hidden rounded-2xl border px-3 py-3 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary/40 ${
                 option.active
-                  ? 'border-secondary bg-secondary/10 text-secondary shadow-soft'
-                  : 'border-indigo-100 bg-surface-alt text-neutral-600 hover:border-primary/40 hover:text-primary'
+                  ? 'border-secondary/70 bg-gradient-to-br from-secondary/15 via-secondary/10 to-secondary/5 text-secondary shadow-soft'
+                  : 'border-indigo-100 bg-white/70 text-neutral-600 hover:border-primary/40 hover:text-primary'
               }`}
             >
-              {option.label}
+              <span className="relative z-10">{option.label}</span>
+              <span
+                className={`pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-secondary/20 via-secondary/10 to-secondary/5 opacity-0 transition group-hover:opacity-100 ${
+                  option.active ? 'opacity-100' : ''
+                }`}
+                aria-hidden="true"
+              />
             </button>
           ))}
         </div>
@@ -848,7 +996,11 @@ function FilterSection({
         onClick={onToggle}
         aria-expanded={isOpen}
         aria-controls={`${id}-content`}
-        className="flex w-full items-center justify-between rounded-2xl bg-white/60 px-4 py-3 text-left transition hover:bg-primary/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
+        className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left shadow-soft transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60 ${
+          isOpen
+            ? 'border-primary/40 bg-white/80'
+            : 'border-transparent bg-white/60 hover:border-primary/30 hover:bg-white/80'
+        }`}
       >
         <div>
           <p className="text-sm font-semibold text-neutral-800">{title}</p>
@@ -908,19 +1060,28 @@ function InsightsWidget({
 function KpiCard({ metric }: { metric: OverviewMetric }) {
   const palette = TREND_PALETTE[metric.trend] ?? TREND_PALETTE.steady;
   const TrendIcon = palette.icon;
+  const visual = resolveMetricVisual(metric);
+  const MetricIcon = visual.icon;
 
   return (
-    <div className="flex min-h-[168px] flex-col justify-between rounded-2xl border border-indigo-100/70 bg-white/80 p-5 shadow-soft">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-neutral-600">{metric.label}</p>
-        <p className="mt-2 text-xl font-semibold text-neutral-900">{metric.value}</p>
+    <div className="relative flex min-h-[184px] flex-col justify-between overflow-hidden rounded-2xl border border-indigo-100/70 bg-white/80 p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+      <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${visual.glow} via-white/60 to-white/40`} aria-hidden="true" />
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary/40 via-secondary/40 to-secondary/20" aria-hidden="true" />
+      <div className="relative flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">{metric.label}</p>
+          <p className="mt-3 text-2xl font-semibold text-neutral-900">{metric.value}</p>
+        </div>
+        <span className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ${visual.accent} shadow-inner ring-1 ring-inset ring-white/60`}>
+          <MetricIcon className="h-5 w-5" />
+        </span>
       </div>
-      <div className="mt-3 space-y-1 text-sm text-neutral-600">
-        <span className={`inline-flex items-center gap-1 text-xs font-semibold ${palette.text}`}>
+      <div className="relative mt-5 flex items-center justify-between gap-4">
+        <p className="text-sm text-neutral-600">{metric.description}</p>
+        <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${palette.badge} ${palette.text}`}>
           <TrendIcon className="h-3.5 w-3.5" />
           {formatChange(metric.change)}
         </span>
-        <p className="text-xs leading-relaxed text-neutral-600">{metric.description}</p>
       </div>
     </div>
   );
@@ -949,85 +1110,93 @@ function ProductCard({
 
   return (
     <article
-      className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border border-indigo-100/70 bg-surface-alt p-5 shadow-soft transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-glow ${
+      className={`group relative flex h-full flex-col overflow-hidden rounded-[28px] border border-indigo-100/70 bg-gradient-to-br from-white/95 via-white/80 to-white/60 p-5 shadow-soft transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-glow ${
         isFiltering ? 'opacity-70' : 'opacity-100'
       }`}
       style={{ animationDelay: `${index * 0.12}s` }}
       data-price={product.price}
     >
-      <div className="relative mb-4 overflow-hidden rounded-2xl bg-accent-soft">
-        <Image
-          src={imgSrc}
-          alt={product.name}
-          width={480}
-          height={360}
-          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 360px"
-          className="h-56 w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
-          onError={() => setImgSrc(FALLBACK_IMAGE)}
-          loading="lazy"
-        />
-        <button
-          type="button"
-          className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/90 text-neutral-400 shadow-soft transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
-          aria-label={product.favorite ? 'Saved to favourites' : 'Add to favourites'}
-        >
-          <Heart className={`h-4 w-4 ${product.favorite ? 'fill-primary text-primary' : ''}`} />
-        </button>
-        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-          {discount ? (
-            <Badge tone="bg-rose-100 text-rose-600">-{discount}%</Badge>
-          ) : null}
-          {product.badges.map((badge) => (
-            <Badge key={badge.id} tone={badge.tone}>
-              {badge.label}
-            </Badge>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex flex-1 flex-col">
-        <h3 className="line-clamp-2 text-lg font-semibold text-neutral-900">{product.name}</h3>
-        <div className="mt-3 flex items-baseline gap-2">
-          <p className="text-2xl font-semibold text-neutral-900">{formatCurrency(product.price, product.currency)}</p>
-          {product.original_price ? (
-            <p className="text-sm text-neutral-600 line-through">
-              {formatCurrency(product.original_price, product.currency)}
-            </p>
-          ) : null}
-        </div>
-
-        <div className="mt-3 flex items-center gap-2 text-sm text-neutral-600">
-          <div className="flex items-center gap-1 text-amber-400" aria-hidden="true">
-            <Star className="h-4 w-4 fill-current" />
-            <span className="font-semibold text-neutral-700">{product.rating.toFixed(1)}</span>
+      <div className="pointer-events-none absolute inset-0 rounded-[28px] border border-white/40 opacity-0 transition group-hover:opacity-100" aria-hidden="true" />
+      <div className="relative z-10 flex h-full flex-col">
+        <div className="relative mb-5 overflow-hidden rounded-3xl bg-accent-soft shadow-inner">
+          <Image
+            src={imgSrc}
+            alt={product.name}
+            width={480}
+            height={360}
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 360px"
+            className="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            onError={() => setImgSrc(FALLBACK_IMAGE)}
+            loading="lazy"
+          />
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-neutral-900/20 via-neutral-900/0 to-transparent"
+            aria-hidden="true"
+          />
+          <button
+            type="button"
+            className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/90 text-neutral-400 shadow-soft transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
+            aria-label={product.favorite ? 'Saved to favourites' : 'Add to favourites'}
+          >
+            <Heart className={`h-4 w-4 ${product.favorite ? 'fill-primary text-primary' : ''}`} />
+          </button>
+          <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+            {discount ? (
+              <Badge tone="bg-rose-100/90 text-rose-600">-{discount}%</Badge>
+            ) : null}
+            {product.badges.map((badge) => (
+              <Badge key={badge.id} tone={badge.tone}>
+                {badge.label}
+              </Badge>
+            ))}
           </div>
-          <span aria-label={`${product.rating.toFixed(1)} stars from ${product.reviews} reviews`}>
-            ({product.reviews})
-          </span>
-          {product.rating >= ratingThreshold ? (
-            <Badge tone="bg-primary/10 text-primary">Top rated</Badge>
-          ) : null}
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Badge tone="bg-secondary/10 text-secondary">{product.category_id}</Badge>
-          <Badge tone="bg-primary/10 text-primary">{product.brand_id}</Badge>
-        </div>
+        <div className="flex flex-1 flex-col">
+          <h3 className="line-clamp-2 text-[1.125rem] font-semibold leading-tight text-neutral-900">{product.name}</h3>
+          <div className="mt-4 flex items-baseline gap-2">
+            <p className="text-2xl font-semibold text-neutral-900">{formatCurrency(product.price, product.currency)}</p>
+            {product.original_price ? (
+              <p className="text-sm text-neutral-500 line-through">
+                {formatCurrency(product.original_price, product.currency)}
+              </p>
+            ) : null}
+          </div>
 
-        <div className="mt-6 flex items-center gap-3">
-          <button
-            type="button"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:shadow-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-          >
-            <ShoppingCart className="h-4 w-4" />
-            Add to cart
-          </button>
-          <button
-            type="button"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-primary/40 px-4 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
-          >
-            Quick view
-          </button>
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-neutral-600">
+            <span className="flex items-center gap-1 rounded-full bg-white/70 px-2.5 py-1 text-amber-500 shadow-soft" aria-hidden="true">
+              <Star className="h-4 w-4 fill-current" />
+            </span>
+            <span className="font-semibold text-neutral-700">{product.rating.toFixed(1)}</span>
+            <span aria-hidden="true">•</span>
+            <span aria-label={`${product.rating.toFixed(1)} out of 5 stars from ${product.reviews} reviews`}>
+              {product.reviews} reviews
+            </span>
+            {product.rating >= ratingThreshold ? (
+              <Badge tone="bg-primary/10 text-primary">Top rated</Badge>
+            ) : null}
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Badge tone="bg-secondary/10 text-secondary">{product.category_id}</Badge>
+            <Badge tone="bg-primary/10 text-primary">{product.brand_id}</Badge>
+          </div>
+
+          <div className="mt-6 flex items-center gap-3">
+            <button
+              type="button"
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:shadow-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              Add to cart
+            </button>
+            <button
+              type="button"
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-primary/30 bg-white/80 px-4 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
+            >
+              Quick view
+            </button>
+          </div>
         </div>
       </div>
     </article>
@@ -1035,7 +1204,11 @@ function ProductCard({
 }
 
 function Badge({ tone, children }: { tone: string; children: React.ReactNode }) {
-  return <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${tone}`}>{children}</span>;
+  return (
+    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold shadow-soft backdrop-blur-sm ${tone}`}>
+      {children}
+    </span>
+  );
 }
 
 function ProductGridSkeleton({ count }: { count: number }) {
@@ -1044,14 +1217,14 @@ function ProductGridSkeleton({ count }: { count: number }) {
       {Array.from({ length: count }).map((_, index) => (
         <div
           key={`skeleton-${index}`}
-          className="animate-pulse rounded-3xl border border-indigo-100/60 bg-surface-alt p-5 shadow-soft"
+          className="animate-pulse rounded-[28px] border border-indigo-100/60 bg-gradient-to-br from-white/85 via-white/70 to-white/60 p-5 shadow-soft"
           aria-hidden="true"
         >
-          <div className="mb-4 h-56 rounded-2xl bg-neutral-200/80" />
-          <div className="space-y-3">
-            <div className="h-4 w-3/4 rounded bg-neutral-200" />
-            <div className="h-6 w-1/2 rounded bg-neutral-200" />
-            <div className="h-4 w-2/3 rounded bg-neutral-200" />
+          <div className="mb-5 aspect-[4/3] rounded-3xl bg-neutral-200/70" />
+          <div className="space-y-4">
+            <div className="h-4 w-3/4 rounded-full bg-neutral-200/80" />
+            <div className="h-6 w-2/3 rounded-full bg-neutral-200/70" />
+            <div className="h-4 w-1/2 rounded-full bg-neutral-200/70" />
           </div>
         </div>
       ))}
