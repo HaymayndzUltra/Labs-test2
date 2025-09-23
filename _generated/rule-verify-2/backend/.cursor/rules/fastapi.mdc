@@ -1,0 +1,9 @@
+---
+description: "Stack Rules - FASTAPI"
+globs: **/*.py
+alwaysApply: false
+---
+
+# FASTAPI Local Rules
+
+- Follow framework conventions and testing patterns.

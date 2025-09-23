@@ -1,0 +1,23 @@
+{
+  "name": "rule-verify-2",
+  "industry": "enterprise",
+  "project_type": "fullstack",
+  "stack": {
+    "frontend": "nextjs",
+    "backend": "fastapi",
+    "database": "postgres",
+    "auth": "custom",
+    "deploy": "aws"
+  },
+  "features": [
+    "api_gateway",
+    "audit_logging",
+    "compliance_reporting",
+    "data_governance",
+    "enterprise_auth",
+    "reporting",
+    "role_based_access",
+    "sso_integration"
+  ],
+  "compliance": []
+}

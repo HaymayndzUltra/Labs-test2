@@ -1,0 +1,8 @@
+---
+alwaysApply: false
+description: "TAGS: [api,rest] | TRIGGERS: endpoint,contract | SCOPE: project:rule-verify-2 | DESCRIPTION: Minimal REST API practices."
+---
+
+# REST API Minimal
+
+- Consistent error shape; status codes; idempotent PUT; validation on input.

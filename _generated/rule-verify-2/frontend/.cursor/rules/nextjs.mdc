@@ -1,0 +1,12 @@
+---
+description: "Stack Rules - NEXTJS"
+globs: **/*.tsx
+globs: **/*.ts
+globs: **/*.js
+globs: **/*.jsx
+alwaysApply: false
+---
+
+# NEXTJS Local Rules
+
+- Keep edits scoped to src; prefer official patterns.
