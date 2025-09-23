@@ -1,0 +1,48 @@
+{
+  "frontend": {
+    "requested": "nextjs",
+    "variant_requested": "enterprise",
+    "chosen": "nextjs",
+    "variant": "base",
+    "downgrade_reason": "Downgraded frontend nextjs enterprise \u2192 base"
+  },
+  "backend": {
+    "requested": "fastapi",
+    "variant_requested": "enterprise",
+    "chosen": "fastapi",
+    "variant": "base",
+    "downgrade_reason": "Downgraded backend fastapi enterprise \u2192 base"
+  },
+  "database": {
+    "requested": "postgres",
+    "variant": "base"
+  },
+  "compliance": [
+    "gdpr"
+  ],
+  "engine_checks": [
+    {
+      "engine": "node",
+      "required": ">=20.10.0",
+      "current": "v22.16.0",
+      "ok": true
+    },
+    {
+      "engine": "python",
+      "required": ">=3.11",
+      "current": "Python 3.13.3",
+      "ok": true
+    },
+    {
+      "engine": "docker",
+      "required": ">=20",
+      "current": "",
+      "ok": false
+    }
+  ],
+  "warnings": [
+    "Downgraded frontend nextjs enterprise \u2192 base",
+    "Downgraded backend fastapi enterprise \u2192 base"
+  ],
+  "status": "engine_unmet"
+}
