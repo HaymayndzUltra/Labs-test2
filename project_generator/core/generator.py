@@ -294,10 +294,20 @@ class ProjectGenerator:
         frontmatter_lines = [
             '---',
             f'description: "{description}"',
-            'globs:'
         ]
-        for glob in globs:
-            frontmatter_lines.append(f'  - "{glob}"')
+        # Emit explicit single-line globs for reliable Cursor matching
+        if stack.get('frontend') and str(stack.get('frontend')).lower() != 'none':
+            frontmatter_lines.append('globs: */frontend/**/*.tsx')
+            frontmatter_lines.append('globs: */frontend/**/*.ts')
+            frontmatter_lines.append('globs: */frontend/**/*.js')
+            frontmatter_lines.append('globs: */frontend/**/*.jsx')
+        if stack.get('backend') and str(stack.get('backend')).lower() != 'none':
+            frontmatter_lines.append('globs: */backend/**/*')
+        if stack.get('database') and str(stack.get('database')).lower() != 'none':
+            frontmatter_lines.append('globs: */database/**/*')
+        frontmatter_lines.append('globs: docs/**/*')
+        frontmatter_lines.append('globs: scripts/**/*')
+        frontmatter_lines.append('globs: tests/**/*')
         frontmatter_lines.append('alwaysApply: true')
         frontmatter_lines.append('---')
 
@@ -582,6 +592,12 @@ class ProjectGenerator:
         # Optionally include a minimal set of technology-specific project rules (legacy path)
         if not self.minimal_cursor:
             self._include_selected_project_rules(rules_dir)
+
+        # Emit nested stack-scoped rules so local editors/agents can use file-relative globs
+        try:
+            self._emit_nested_stack_rules()
+        except Exception:
+            pass
 
         # Write rules manifest/telemetry
         try:
@@ -1075,6 +1091,63 @@ class ProjectGenerator:
             "",
         ]
         return "\n".join(frontmatter + body_lines)
+
+    def _emit_nested_stack_rules(self) -> None:
+        """Write minimal rules inside frontend/backend with local globs.
+
+        - frontend/.cursor/rules/<frontend>.mdc
+          globs: **/*.tsx, **/*.ts, **/*.js, **/*.jsx (or appropriate per stack)
+        - backend/.cursor/rules/<backend>.mdc
+          globs: **/*.py | src/**/*.ts | **/*.go depending on backend
+        """
+        if self.no_cursor_assets:
+            return
+
+        # Frontend
+        fe = (getattr(self.args, 'frontend', 'none') or 'none').lower()
+        if fe != 'none':
+            fe_dir = self.project_root / 'frontend' / '.cursor' / 'rules'
+            fe_dir.mkdir(parents=True, exist_ok=True)
+            if fe in {'nextjs', 'react', 'expo', 'react-native', 'nuxt'}:
+                globs_line = 'globs: **/*.tsx,**/*.ts,**/*.js,**/*.jsx'
+            elif fe == 'angular':
+                globs_line = 'globs: **/*.ts,**/*.html,**/*.scss,**/*.css'
+            elif fe == 'vue':
+                globs_line = 'globs: **/*.vue,**/*.ts'
+            else:
+                globs_line = 'globs: **/*'
+            content = (
+                '---\n'
+                f'description: "Stack Rules - {fe.upper()}"\n'
+                f'{globs_line}\n'
+                'alwaysApply: false\n'
+                '---\n\n'
+                f'# {fe.upper()} Local Rules\n\n- Keep edits scoped to src; prefer official patterns.\n'
+            )
+            (fe_dir / f'{fe}.mdc').write_text(content)
+
+        # Backend
+        be = (getattr(self.args, 'backend', 'none') or 'none').lower()
+        if be != 'none':
+            be_dir = self.project_root / 'backend' / '.cursor' / 'rules'
+            be_dir.mkdir(parents=True, exist_ok=True)
+            if be in {'fastapi', 'django', 'flask'}:
+                globs_line = 'globs: **/*.py'
+            elif be == 'nestjs':
+                globs_line = 'globs: src/**/*.ts'
+            elif be in {'go', 'golang'}:
+                globs_line = 'globs: **/*.go'
+            else:
+                globs_line = 'globs: **/*'
+            content = (
+                '---\n'
+                f'description: "Stack Rules - {be.upper()}"\n'
+                f'{globs_line}\n'
+                'alwaysApply: false\n'
+                '---\n\n'
+                f'# {be.upper()} Local Rules\n\n- Follow framework conventions and testing patterns.\n'
+            )
+            (be_dir / f'{be}.mdc').write_text(content)
     
     def _prepare_ai_governor_assets(self):
         """Prepare AI Governor assets (.cursor/tools and router config)"""
