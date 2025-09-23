@@ -18,9 +18,10 @@ This document describes how to configure the environments, wire in secrets, and 
    - Create the execution role (`TASK_EXECUTION_ROLE_ARN`) with permissions for `AmazonECSTaskExecutionRolePolicy` and private registry access if required.  
    - Create the application task role (`TASK_ROLE_ARN`) with the minimal permissions the API needs (database, SSM, etc.).  
    - Provision an ECS cluster and service (`ECS_CLUSTER_NAME`, `ECS_SERVICE_NAME`) pointing at the task family defined in `deploy/aws/task-definition.json`.  
-4. In **GitHub > Settings > Secrets and variables > Actions** configure per-environment secrets:  
-   - **Secrets**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_ECS_EXECUTION_ROLE_ARN`, `AWS_ECS_TASK_ROLE_ARN`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `FRONTEND_URL`, `API_HEALTH_URL`, `DB_HEALTH_URL` (optional), `VERCEL_ROLLBACK_TARGET` (or environment-specific overrides).  
-   - **Variables**: `DEPLOY_TARGET=aws`, `AWS_REGION`, `APP_NAME`, `ECS_CLUSTER_NAME`, `ECS_SERVICE_NAME`, `ECS_DESIRED_COUNT`.  
+4. In **GitHub > Settings > Secrets and variables > Actions** configure per-environment secrets:
+   - **Secrets**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_ECS_EXECUTION_ROLE_ARN`, `AWS_ECS_TASK_ROLE_ARN`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `FRONTEND_URL`, `API_HEALTH_URL`, `DB_HEALTH_URL` (optional), `VERCEL_ROLLBACK_TARGET` (or environment-specific overrides).
+   - **Variables**: `DEPLOY_TARGET=aws`, `AWS_REGION`, `APP_NAME`, `ECS_CLUSTER_NAME`, `ECS_SERVICE_NAME`, `ECS_DESIRED_COUNT`.
+5. In **GitHub > Settings > Environments**, create a `production` environment and require manual approval. The `ci-promote-prod` workflow references this protected environment before any production deployment runs.
 
 > ℹ️ *Secrets should be managed in your password vault (1Password, Bitwarden, etc.). Never commit real credentials to the repository. Share `.env` values via secure channels only.*
 
@@ -33,11 +34,16 @@ make setup
 # Run the build pipeline locally
 make build
 
+# Execute the non-interactive lifecycle (reads workflow.config.json or env overrides)
+NAME=acme INDUSTRY=enterprise PROJECT_TYPE=fullstack FE=nextjs BE=fastapi DB=postgres make lifecycle
+
 # Verify health endpoints (requires staging/prod URLs)
 make pipeline-validate ENV=staging FRONTEND_URL=https://app.staging.example.com API_URL=https://api.staging.example.com/health \
   DB_URL=https://api.staging.example.com/health/db
 
-The pipeline-validate target uses scripts/health/check_deployment.py to hit the public health endpoints and stores results in reports/<env>-pipeline-validation.json.
+The `lifecycle` target wraps `scripts/e2e_from_brief.sh`, passing any stack variables supplied on the command line (and otherwise falling back to `workflow.config.json`). It produces selection.json, generated source, gate evidence, `dist/` submission bundles, and compliance validation logs in `evidence/`.
+
+The `pipeline-validate` target uses `scripts/health/check_deployment.py` to hit the public health endpoints and stores results in `reports/<env>-pipeline-validation.json`.
 
 Deployment workflow
 
@@ -54,6 +60,23 @@ Deploys the AWS backend with scripts/deploy_backend.sh and the frontend via the 
 Executes health verification via scripts/health/check_deployment.py and Postman smoke tests.
 
 On failure, triggers rollback scripts for ECS and Vercel (and optionally posts to Slack).
+
+## Production promotion (`ci-promote-prod.yml`)
+
+Manual production cutovers run through the `ci-promote-prod` workflow. Trigger it with **Run workflow** in GitHub Actions, then complete the required approval in the protected `production` environment. The workflow:
+
+- Re-runs `scripts/install_and_test.sh` and the coverage/perf/dependency collectors before enforcing `scripts/enforce_gates.py`. Promotion aborts if any gate fails.
+- Deploys the frontend through the existing Vercel CLI pattern (reusing `.env.production` when present) and updates ECS with `scripts/deploy_backend.sh production`, targeting the image `ghcr.io/<org>/<repo>-backend:sha-<commit>`.
+- Executes `scripts/health/check_deployment.py` against the production URLs (`FRONTEND_URL_PRODUCTION`, `API_URL_PRODUCTION`, `DB_URL_PRODUCTION`) and writes `reports/production-pipeline-validation.json`.
+- Uploads `reports/`, `evidence/`, and `dist/` as artifacts even when a step fails to preserve release evidence.
+
+## Nightly observability (`nightly-observability.yml`)
+
+Nightly (02:00 UTC) and ad-hoc dispatch runs execute `scripts/health/check_deployment.py` against staging and production using repository variables for the public endpoints. Each job writes `reports/<env>-pipeline-validation.json` and uploads the file as an artifact so the on-call team can review availability evidence the following morning.
+
+## Secrets preflight (`ci-secrets-preflight.yml`)
+
+The `ci-secrets-preflight` workflow runs on every push to `main`, pull request, and manual dispatch. It exports the Vercel tokens, ECS roles, deployment metadata (`APP_NAME`, `ECS_*`), AWS region, and the staging/production health-check URLs into the job environment. If any variable is empty the job fails immediately with a clear message (without echoing secret contents), allowing teams to remediate configuration issues before builds progress.
 
 # Deploy to staging (requires env vars from .env.staging)
 VERCEL_TOKEN=... VERCEL_ORG_ID=... VERCEL_PROJECT_ID=... \

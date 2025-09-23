@@ -1,4 +1,18 @@
-.PHONY: setup dev test lint build deploy clean
+.PHONY: setup dev test lint build deploy clean lifecycle pipeline-validate
+
+ENV ?= staging
+FRONTEND_URL ?=
+API_URL ?=
+DB_URL ?=
+LIFECYCLE_ENV := $(strip \
+  $(if $(NAME),NAME="$(NAME)") \
+  $(if $(INDUSTRY),INDUSTRY="$(INDUSTRY)") \
+  $(if $(PROJECT_TYPE),PROJECT_TYPE="$(PROJECT_TYPE)") \
+  $(if $(FE),FE="$(FE)") \
+  $(if $(BE),BE="$(BE)") \
+  $(if $(DB),DB="$(DB)") \
+  $(if $(COMPLIANCE),COMPLIANCE="$(COMPLIANCE)") \
+)
 
 # Setup project
 setup:
@@ -53,3 +67,19 @@ clean:
 	rm -rf dist/
 	rm -rf build/
 	docker-compose down -v
+
+lifecycle:
+	@$(if $(NAME),:,echo "[lifecycle] NAME not provided; set NAME=<client> or ensure workflow.config.json has it." >&2;)
+	@$(if $(INDUSTRY),:,echo "[lifecycle] INDUSTRY not provided; set INDUSTRY=<sector> or rely on workflow.config.json." >&2;)
+	@$(if $(PROJECT_TYPE),:,echo "[lifecycle] PROJECT_TYPE not provided; set PROJECT_TYPE=<type> or rely on workflow.config.json." >&2;)
+	@$(if $(FE),:,echo "[lifecycle] FE not provided; set FE=<frontend> or rely on workflow.config.json." >&2;)
+	@$(if $(BE),:,echo "[lifecycle] BE not provided; set BE=<backend> or rely on workflow.config.json." >&2;)
+	@$(if $(DB),:,echo "[lifecycle] DB not provided; set DB=<database> or rely on workflow.config.json." >&2;)
+	@$(if $(LIFECYCLE_ENV),env $(LIFECYCLE_ENV) ,) ./scripts/e2e_from_brief.sh
+
+pipeline-validate:
+	@if [ -z "$(FRONTEND_URL)" ]; then echo "FRONTEND_URL is required" >&2; exit 1; fi
+	@if [ -z "$(API_URL)" ]; then echo "API_URL is required" >&2; exit 1; fi
+	@if [ -z "$(DB_URL)" ]; then echo "DB_URL is required" >&2; exit 1; fi
+	@mkdir -p reports
+	@python scripts/health/check_deployment.py --environment $(ENV) --frontend-url $(FRONTEND_URL) --api-url $(API_URL) --db-url $(DB_URL) --out reports/$(ENV)-pipeline-validation.json
