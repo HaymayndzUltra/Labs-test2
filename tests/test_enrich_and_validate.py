@@ -43,17 +43,17 @@ def test_enrich_and_validate(tmp_path: Path):
 
 def test_workflow_documentation_exists():
     """Test that all required workflow documentation files exist."""
-    # Check main workflow documentation
-    assert (ROOT / "WORKFLOW_GUIDE.md").exists(), "WORKFLOW_GUIDE.md should exist"
-    assert (ROOT / "WORKFLOW_QUICK_REFERENCE.md").exists(), "WORKFLOW_QUICK_REFERENCE.md should exist"
-    
-    # Check docs directory
-    assert (ROOT / "docs").exists(), "docs directory should exist"
-    assert (ROOT / "docs" / "README.md").exists(), "docs/README.md should exist"
-    
-    # Check workflow examples and templates
-    assert (ROOT / "docs" / "workflow-examples.md").exists(), "docs/workflow-examples.md should exist"
-    assert (ROOT / "docs" / "workflow-templates.md").exists(), "docs/workflow-templates.md should exist"
+    required_docs = [
+        ROOT / "README.md",
+        ROOT / "docs" / "SYSTEM_OVERVIEW.md",
+        ROOT / "docs" / "LOCAL_DEV_WORKFLOW.md",
+        ROOT / "docs" / "CI_CD_OVERVIEW.md",
+        ROOT / "docs" / "DEPLOYMENT.md",
+        ROOT / "docs" / "COMPLIANCE_EVIDENCE.md",
+    ]
+
+    for path in required_docs:
+        assert path.exists(), f"Required documentation missing: {path}"
 
 
 def test_workflow_scripts_exist():
@@ -97,40 +97,41 @@ def test_template_packs_structure():
 
 def test_workflow_phase_commands():
     """Test that workflow phase commands are properly documented."""
-    # Read workflow guide to check for phase commands
-    workflow_guide = (ROOT / "WORKFLOW_GUIDE.md").read_text(encoding="utf-8")
-    
-    # Check for phase command references
-    phase_commands = [
-        "/0-bootstrap-project",
-        "/1-create-prd", 
-        "/2-generate-tasks",
-        "/sync-tasks",
-        "/3-process-tasks",
-        "/4-quality-control",
-        "/5-implementation-retrospective"
+    local_workflow = (ROOT / "docs" / "LOCAL_DEV_WORKFLOW.md").read_text(encoding="utf-8")
+
+    required_sections = [
+        "Provision an isolated project directory",
+        "Bootstrap tooling",
+        "Plan from the brief",
+        "Validate the task graph",
+        "Preflight stack selection",
+        "Dry-run generation",
+        "Generate the project",
+        "Install dependencies & run tests",
+        "Collect metrics and enforce gates",
+        "Build the submission pack",
+        "Validate compliance assets",
     ]
-    
-    for command in phase_commands:
-        assert command in workflow_guide, f"Phase command {command} should be documented in WORKFLOW_GUIDE.md"
+
+    for section in required_sections:
+        assert section in local_workflow, f"Local workflow is missing section: {section}"
 
 
 def test_workflow_quick_reference_completeness():
     """Test that quick reference contains all essential information."""
-    quick_ref = (ROOT / "WORKFLOW_QUICK_REFERENCE.md").read_text(encoding="utf-8")
-    
-    # Check for essential sections
+    ci_overview = (ROOT / "docs" / "CI_CD_OVERVIEW.md").read_text(encoding="utf-8")
+
     essential_sections = [
-        "Phase Commands Overview",
-        "Quick Start Commands", 
-        "Task States",
-        "Personas",
-        "Quality Gates",
-        "Compliance Mapping"
+        "Supported Workflows",
+        "Secrets Preflight",
+        "Staging Deployment",
+        "Production Promotion",
+        "Nightly Observability",
+        "Adding or Modifying Checks",
     ]
-    
+
     for section in essential_sections:
-        assert section in quick_ref, f"Quick reference should contain section: {section}"
+        assert section in ci_overview, f"CI/CD overview should contain section: {section}"
 
 
 def test_github_integration_files():
@@ -138,29 +139,37 @@ def test_github_integration_files():
     # Check pull request template
     pr_template = ROOT / ".github" / "pull_request_template.md"
     assert pr_template.exists(), "Pull request template should exist"
-    
+
     pr_content = pr_template.read_text(encoding="utf-8")
     assert "Workflow Phase" in pr_content, "PR template should include workflow phase checklist"
-    
-    # Check CI workflow
-    ci_workflow = ROOT / ".github" / "workflows" / "ci.yml"
-    assert ci_workflow.exists(), "CI workflow should exist"
-    
-    ci_content = ci_workflow.read_text(encoding="utf-8")
-    assert "workflow-docs-validation" in ci_content, "CI workflow should include workflow docs validation"
+
+    # Check supported CI workflows
+    required_workflows = [
+        "ci-secrets-preflight.yml",
+        "ci-deploy.yml",
+        "ci-promote-prod.yml",
+        "nightly-observability.yml",
+    ]
+
+    workflows_dir = ROOT / ".github" / "workflows"
+    for workflow in required_workflows:
+        path = workflows_dir / workflow
+        assert path.exists(), f"Expected workflow missing: {workflow}"
 
 
 def test_readme_workflow_integration():
     """Test that README properly integrates workflow documentation."""
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    
-    # Check for workflow documentation links
-    assert "WORKFLOW_GUIDE.md" in readme, "README should link to WORKFLOW_GUIDE.md"
-    assert "WORKFLOW_QUICK_REFERENCE.md" in readme, "README should link to WORKFLOW_QUICK_REFERENCE.md"
-    
-    # Check for workflow badges
-    assert "![Workflow Documentation]" in readme, "README should have workflow documentation badge"
-    assert "![Quick Reference]" in readme, "README should have quick reference badge"
-    
-    # Check for workflow phase overview
-    assert "Phase Overview" in readme, "README should include workflow phase overview"
+
+    required_links = [
+        "docs/SYSTEM_OVERVIEW.md",
+        "docs/LOCAL_DEV_WORKFLOW.md",
+        "docs/CI_CD_OVERVIEW.md",
+        "docs/DEPLOYMENT.md",
+        "docs/COMPLIANCE_EVIDENCE.md",
+    ]
+
+    for link in required_links:
+        assert link in readme, f"README should link to {link}"
+
+    assert "_generated" in readme, "README should mention isolated output directories"

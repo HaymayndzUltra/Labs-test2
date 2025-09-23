@@ -10,6 +10,8 @@ gates: { coverage: ">=80%", perf_p95_ms: "<=500", vulns_critical: 0 }
 owner: "Build Engineer"
 ---
 
+> **Note:** This document reflects a detailed phase breakdown retained for historical context. For the canonical end-to-end instructions, see the [Local Development Workflow](../LOCAL_DEV_WORKFLOW.md).
+
 # Project Generation Workflow
 
 ## Overview
@@ -37,6 +39,17 @@ Generate a production-ready project structure (FE/BE/DB/CI/CD/docs/rules) from p
 - Generated files: `.github/workflows/*`, `docs/*`, `.cursor/*` (if assets included), `Makefile`, `docker-compose.yml`
 
 ## Steps
+
+### Step 0: Provision the output directory (required)
+Before running any generator commands, create an isolated directory for this brief. The default root is `../_generated`, but you can override it via `OUTPUT_ROOT` (or pass a custom `--output-dir`). The `scripts/e2e_from_brief.sh` wrapper now performs this automatically.
+
+Execute:
+- `OUTPUT_ROOT=../_generated PROJ={{NAME}} && mkdir -p "${OUTPUT_ROOT}" && mkdir -p "${OUTPUT_ROOT}/${PROJ}"`
+- For reruns, set `FORCE_OUTPUT=1` (or `E2E_FORCE_OUTPUT=1`) to wipe the old directory before regenerating.
+
+Acceptance:
+- [ ] `../_generated/{{NAME}}` exists (empty unless re-running with `--force`)
+- [ ] No files are created inside the factory repo root
 
 ### Step 1: List Available Templates (Optional)
 Execute:

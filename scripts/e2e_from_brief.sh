@@ -63,16 +63,83 @@ for var in "${required[@]}"; do
   fi
 done
 
+DEFAULT_OUTPUT_ROOT="$ROOT_DIR/../_generated"
+OUTPUT_ROOT_RAW="${OUTPUT_ROOT:-${OUTPUT_DIR:-$DEFAULT_OUTPUT_ROOT}}"
+# trim trailing slash to avoid duplicate path separators
+OUTPUT_ROOT="${OUTPUT_ROOT_RAW%/}"
+PROJECT_DIR="${PROJECT_DIR:-$OUTPUT_ROOT/$NAME}"
+
+FORCE_FLAG_VALUE="${E2E_FORCE_OUTPUT:-${FORCE_OUTPUT:-${FORCE_GENERATION:-${FORCE:-}}}}"
+FORCE_FLAG_NORMALIZED="$(printf '%s' "${FORCE_FLAG_VALUE:-}" | tr '[:upper:]' '[:lower:]')"
+case "$FORCE_FLAG_NORMALIZED" in
+  1|true|yes|on)
+    FORCE_ENABLED=true
+    ;;
+  *)
+    FORCE_ENABLED=false
+    ;;
+esac
+
+echo "[E2E] Provision project output root: $OUTPUT_ROOT"
+mkdir -p "$OUTPUT_ROOT"
+
+if [[ -e "$PROJECT_DIR" && ! -d "$PROJECT_DIR" ]]; then
+  echo "[E2E] Project path exists but is not a directory: $PROJECT_DIR" >&2
+  exit 1
+fi
+
+if [[ -d "$PROJECT_DIR" ]]; then
+  if [[ "$FORCE_ENABLED" == true ]]; then
+    echo "[E2E] FORCE enabled; cleaning existing project directory $PROJECT_DIR"
+    rm -rf "$PROJECT_DIR"
+  else
+    if [[ -n "$(ls -A "$PROJECT_DIR" 2>/dev/null)" ]]; then
+      echo "[E2E] Project directory already exists and is not empty: $PROJECT_DIR" >&2
+      echo "      Set FORCE_OUTPUT=1 (or E2E_FORCE_OUTPUT/ FORCE_GENERATION) to overwrite." >&2
+      exit 1
+    fi
+  fi
+fi
+
+mkdir -p "$PROJECT_DIR" "$PROJECT_DIR/evidence"
+PLAN_PATH="$PROJECT_DIR/PLAN.md"
+PLAN_TASKS_PATH="$PROJECT_DIR/PLAN.tasks.json"
+TASKS_PATH="$PROJECT_DIR/tasks.json"
+SELECTION_PATH="$PROJECT_DIR/selection.json"
+SELECTION_SUMMARY="$PROJECT_DIR/evidence/stack-selection.md"
+
+GENERATOR_COMMON_ARGS=(
+  --name "$NAME"
+  --industry "$INDUSTRY"
+  --project-type "$PROJECT_TYPE"
+  --frontend "$FE"
+  --backend "$BE"
+  --database "$DB"
+  --auth "${AUTH:-}"
+  --deploy "${DEPLOY:-}"
+  --workers 8
+  --output-dir "$OUTPUT_ROOT"
+  --yes
+)
+
+if [[ -n "${COMPLIANCE:-}" ]]; then
+  GENERATOR_COMMON_ARGS+=(--compliance "$COMPLIANCE")
+fi
+
+if [[ "$FORCE_ENABLED" == true ]]; then
+  GENERATOR_COMMON_ARGS+=(--force)
+fi
+
 echo "[E2E] Bootstrap"
 "$PY_BIN" scripts/doctor.py --strict || true
 ./scripts/generate_client_project.py --list-templates \
   --name "${NAME:-demo}" --industry "${INDUSTRY:-healthcare}" --project-type "${PROJECT_TYPE:-fullstack}" | cat
 
 echo "[E2E] Plan from brief"
-"$PY_BIN" scripts/plan_from_brief.py --brief "docs/briefs/${NAME}/brief.md" --out PLAN.md
+"$PY_BIN" scripts/plan_from_brief.py --brief "docs/briefs/${NAME}/brief.md" --out "$PLAN_PATH"
 
 echo "[E2E] Validate tasks graph"
-"$PY_BIN" scripts/validate_tasks.py --input PLAN.tasks.json
+"$PY_BIN" scripts/validate_tasks.py --input "$PLAN_TASKS_PATH"
 
 echo "[E2E] Preflight selection gate"
 selection_cmd=(
@@ -82,8 +149,8 @@ selection_cmd=(
   --frontend "$FE"
   --backend "$BE"
   --database "$DB"
-  --output selection.json
-  --summary evidence/stack-selection.md
+  --output "$SELECTION_PATH"
+  --summary "$SELECTION_SUMMARY"
 )
 
 if [[ -n "${COMPLIANCE:-}" ]]; then
@@ -104,42 +171,39 @@ fi
 
 echo "[E2E] Generator dry-run"
 ./scripts/generate_client_project.py \
-  --name "$NAME" --industry "$INDUSTRY" --project-type "$PROJECT_TYPE" \
-  --frontend "$FE" --backend "$BE" --database "$DB" --auth "${AUTH:-}" --deploy "${DEPLOY:-}" \
-  --workers 8 --dry-run --yes
+  "${GENERATOR_COMMON_ARGS[@]}" \
+  --dry-run
 
 echo "[E2E] Generate"
 ./scripts/generate_client_project.py \
-  --name "$NAME" --industry "$INDUSTRY" --project-type "$PROJECT_TYPE" \
-  --frontend "$FE" --backend "$BE" --database "$DB" --auth "${AUTH:-}" --deploy "${DEPLOY:-}" \
-  --workers 8 --yes
+  "${GENERATOR_COMMON_ARGS[@]}"
 
 echo "[E2E] Install & test"
 chmod +x scripts/install_and_test.sh
-./scripts/install_and_test.sh || true
+PROJECT_ROOT="$PROJECT_DIR" ./scripts/install_and_test.sh || true
 
 echo "[E2E] Sync & validate"
-"$PY_BIN" scripts/sync_from_scaffold.py --input PLAN.tasks.json
-"$PY_BIN" scripts/sync_from_scaffold.py --input PLAN.tasks.json --apply
-"$PY_BIN" scripts/validate_tasks.py --input tasks.json
+"$PY_BIN" scripts/sync_from_scaffold.py --input "$PLAN_TASKS_PATH" --root "$PROJECT_DIR"
+"$PY_BIN" scripts/sync_from_scaffold.py --input "$PLAN_TASKS_PATH" --root "$PROJECT_DIR" --output "$TASKS_PATH" --apply
+"$PY_BIN" scripts/validate_tasks.py --input "$TASKS_PATH"
 
 echo "[E2E] QC metrics & gates"
-"$PY_BIN" scripts/collect_coverage.py || true
-"$PY_BIN" scripts/collect_perf.py || true
-"$PY_BIN" scripts/scan_deps.py || true
-"$PY_BIN" scripts/enforce_gates.py
+PROJECT_ROOT="$PROJECT_DIR" "$PY_BIN" scripts/collect_coverage.py || true
+PROJECT_ROOT="$PROJECT_DIR" "$PY_BIN" scripts/collect_perf.py || true
+PROJECT_ROOT="$PROJECT_DIR" "$PY_BIN" scripts/scan_deps.py || true
+PROJECT_ROOT="$PROJECT_DIR" "$PY_BIN" scripts/enforce_gates.py
 
 echo "[E2E] Build Submission Pack"
 chmod +x scripts/build_submission_pack.sh
-./scripts/build_submission_pack.sh || true
+PROJECT_ROOT="$PROJECT_DIR" NAME="$NAME" ./scripts/build_submission_pack.sh || true
 
 echo "[E2E] Validate compliance assets"
-mkdir -p evidence
+mkdir -p "$PROJECT_DIR/evidence"
 compliance_validate_cmd=("$PY_BIN" scripts/validate_compliance_assets.py)
 if [[ -n "${VALIDATE_COMPLIANCE_WRITE:-}" ]]; then
   compliance_validate_cmd+=(--write)
 fi
-if ! "${compliance_validate_cmd[@]}" | tee evidence/validate_compliance_assets.log; then
+if ! "${compliance_validate_cmd[@]}" | tee "$PROJECT_DIR/evidence/validate_compliance_assets.log"; then
   validate_status=${PIPESTATUS[0]}
   echo "[E2E] Compliance asset validation failed." >&2
   exit "${validate_status:-1}"
@@ -148,5 +212,5 @@ fi
 echo "[E2E] Compliance docs (optional)"
 "$PY_BIN" scripts/check_compliance_docs.py || true
 
-echo "[E2E] Done. See evidence/ and selection.json"
+echo "[E2E] Done. See $PROJECT_DIR"
 

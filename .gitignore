@@ -67,7 +67,7 @@ hs_err_pid*
 # =============================================================================
 # BUILD ARTIFACTS & DISTRIBUTION
 # =============================================================================
-# General build outputs (but keep important dist/ and artifacts/)
+# General build outputs
 build/
 out/
 .output/
@@ -77,22 +77,27 @@ out/
 .expo/
 .expo-shared/
 
-# Keep important distribution and evidence files
-!dist/
-!artifacts/
-!evidence/
-!reports/
-!dist/**/*
-!artifacts/**/*
-!evidence/**/*
-!reports/**/*
-
 # Compiled binaries
 bin/
 *.exe
 *.dll
 *.so
 *.dylib
+
+# Generated project artifacts
+_generated/
+artifacts/
+dist/
+evidence/
+metrics/
+reports/
+submission-pack/
+
+# Run outputs
+selection.json
+analysis_result.json
+rule_optimization_report.json
+system_update_report*.md
 
 # =============================================================================
 # CACHES & TEMPORARY FILES

@@ -385,6 +385,6 @@ chmod +x custom-template.sh
 ## 📚 Additional Resources
 
 - [Workflow Examples](workflow-examples.md)
-- [Complete Workflow Guide](../WORKFLOW_GUIDE.md)
-- [Quick Reference](../WORKFLOW_QUICK_REFERENCE.md)
+- [System Overview](../SYSTEM_OVERVIEW.md)
+- [Local Development Workflow](../LOCAL_DEV_WORKFLOW.md)
 - [Template Documentation](../TEMPLATES.md)
