@@ -1,0 +1,16 @@
+---
+description: Best practices for Next.js v15.5 (React 19.1, TS 5.9) with App Router
+globs: **/*.tsx,**/*.ts,**/*.js,**/*.jsx
+---
+
+- Use the App Router (`app/`) exclusively; do not mix with `pages/`.
+- Default to Server Components; add `"use client"` only when browser APIs/state are required.
+- Data fetching on server with `fetch()` and cache/revalidate; avoid client fetches where possible.
+- Use Server Actions (`"use server"`) for mutations and form actions; keep logic on the server.
+- Define API endpoints via Route Handlers in `app/api/*/route.ts`.
+- Use `generateMetadata()` for SEO; `generateStaticParams()` for static paths.
+- Code split per route; use dynamic imports for heavy client-only libraries.
+- Use `next/image` and `next/font` for optimized assets.
+- Prefer `next/link` and `next/navigation` over raw anchors for internal routing.
+- Never expose secrets to client; keep server-only envs on server side.
+

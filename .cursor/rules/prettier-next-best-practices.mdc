@@ -1,0 +1,10 @@
+---
+description: Prettier formatting practices for Next.js 15 (Prettier v3)
+globs: **/*.tsx,**/*.ts,**/*.js,**/*.jsx
+---
+
+- Use Prettier for all code formatting; avoid custom stylistic ESLint rules.
+- Configure `.prettierrc` minimally; prefer defaults.
+- Ignore build output (`.next`, `dist`) and generated files in `.prettierignore`.
+- Run Prettier in CI to enforce consistent formatting.
+

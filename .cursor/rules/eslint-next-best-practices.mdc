@@ -1,0 +1,11 @@
+---
+description: ESLint practices for Next.js v15 (eslint-config-next ^15.5.3, ESLint ^8)
+globs: **/*.tsx,**/*.ts,**/*.js,**/*.jsx
+---
+
+- Extend `next/core-web-vitals` and project-specific overrides sparingly.
+- Enable TypeScript linting; keep `no-unused-vars`, `no-undef`, and import/order sane.
+- Integrate Prettier via `eslint-config-prettier` to avoid conflicts.
+- Run ESLint in CI; treat errors as blocking.
+- Keep plugin versions aligned with Next/TS versions.
+

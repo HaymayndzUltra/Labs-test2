@@ -1,0 +1,12 @@
+---
+description: Best practices for React 19.1 (with Next.js 15)
+globs: **/*.tsx,**/*.ts,**/*.js,**/*.jsx
+---
+
+- Prefer function components and hooks; avoid legacy lifecycles.
+- Use Actions/form actions patterns where applicable (framework-integrated).
+- Keep client component state minimal; lift server data fetching to server components.
+- Optimize re-renders with memoization (React.memo/useMemo/useCallback) only when measured.
+- Use Suspense boundaries for streaming/async UI.
+- Strictly type props and component contracts with TS 5.9.
+
