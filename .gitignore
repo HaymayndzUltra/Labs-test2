@@ -318,6 +318,7 @@ uv.lock
 # Configuration files
 *.config.js
 !frontend/jest.config.js
+!portfolio-dashboard/frontend/jest.config.js
 *.config.ts
 *.config.json
 tsconfig.json
