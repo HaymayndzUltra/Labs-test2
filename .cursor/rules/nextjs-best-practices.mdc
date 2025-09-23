@@ -1,9 +1,6 @@
 ---
 description: Best practices for Next.js v15.5 (React 19.1, TS 5.9) with App Router
-globs: **/*.tsx
-globs: **/*.ts
-globs: **/*.js
-globs: **/*.jsx
+globs: */src/app/**/*.tsx,*/src/app/**/*.ts,*/app/**/*.tsx,*/app/**/*.ts,*/src/components/**/*.tsx,*/src/components/**/*.ts,*/components/**/*.tsx,*/components/**/*.ts,*/src/hooks/**/*.ts,*/src/hooks/**/*.tsx,*/app/api/**/route.ts,*/src/app/api/**/route.ts,*/src/app/**/*.js,*/src/app/**/*.jsx,*/app/**/*.js,*/app/**/*.jsx,*/src/components/**/*.js,*/src/components/**/*.jsx,*/components/**/*.js,*/components/**/*.jsx
 ---
 
 - Use the App Router (`app/`) exclusively; do not mix with `pages/`.
