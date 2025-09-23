@@ -1,0 +1,11 @@
+---
+description: Best practices for code formatting with Prettier (v3)
+globs: **/*.ts,**/*.html,**/*.scss
+---
+
+- Use Prettier for consistent, opinionated formatting across the repo
+- Configure `.prettierrc` for project conventions; keep rules minimal
+- Integrate with ESLint via `eslint-config-prettier` to avoid conflicts
+- Use `.prettierignore` to exclude build artifacts and generated files
+- Run Prettier in CI to ensure formatting consistency
+

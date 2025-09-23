@@ -1,0 +1,11 @@
+---
+description: Best practices for using RxJS in Angular applications
+globs: **/*.ts
+---
+
+- Use `async` pipe in templates to manage subscriptions automatically
+- Prefer higher-order mapping operators like `switchMap` for handling observables
+- Use `takeUntil` to manage subscriptions and prevent memory leaks
+- Utilize `combineLatest` and `forkJoin` for combining multiple observables
+- Handle errors gracefully with `catchError` and `retry` operators
+

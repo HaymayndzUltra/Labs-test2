@@ -1,0 +1,11 @@
+---
+description: TypeScript coding standards and type safety guidelines (TS 5.9)
+globs: **/*.ts
+---
+
+- Enable strict mode and strict null checks
+- Prefer interfaces over type aliases for object shapes
+- Use discriminated unions and type guards for safe narrowing
+- Avoid `any`; prefer `unknown` + narrowing when needed
+- Keep public APIs fully typed; rely on inference for locals
+

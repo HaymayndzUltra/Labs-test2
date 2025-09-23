@@ -1,0 +1,11 @@
+---
+description: Best practices for using ESLint in Angular projects (@angular-eslint v20, ESLint v8)
+globs: **/*.ts,**/*.html
+---
+
+- Use ESLint with `@angular-eslint` for TypeScript and template linting
+- Extend recommended configs; add project-specific rules minimally
+- Integrate ESLint with IDE and CI; fail builds on lint errors
+- Use `eslint --fix` for auto-fixable issues; keep rule noise low
+- Keep dependencies up to date to match Angular and TS versions
+
