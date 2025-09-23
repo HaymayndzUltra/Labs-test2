@@ -262,6 +262,58 @@ class TestProjectGenerator:
         # Directory should be removed
         assert not project_dir.exists()
 
+    def test_include_selected_project_rules_outputs(self, generator: ProjectGenerator, temp_dir: Path):
+        """Include project rules when requested, using fallbacks for missing sources."""
+        generator.args.include_project_rules = True
+        project_dir = temp_dir / generator.args.name
+        rules_dir = project_dir / '.cursor' / 'rules' / 'project-rules'
+        rules_dir.mkdir(parents=True, exist_ok=True)
+        generator.project_root = project_dir
+
+        generator._include_selected_project_rules(rules_dir)
+
+        fe_map = {
+            'nextjs': ['nextjs.mdc', 'nextjs-formatting.mdc', 'nextjs-rsc-and-client.mdc', 'typescript.mdc'],
+            'angular': ['angular.mdc', 'typescript.mdc'],
+            'expo': ['expo.mdc', 'react-native.mdc', 'typescript.mdc'],
+            'nuxt': ['vue.mdc', 'typescript.mdc'],
+        }
+        be_map = {
+            'fastapi': ['fastapi.mdc', 'python.mdc', 'rest-api.mdc', 'open-api.mdc'],
+            'django': ['django.mdc', 'python.mdc', 'rest-api.mdc', 'open-api.mdc'],
+            'nestjs': ['nodejs.mdc', 'typescript.mdc', 'rest-api.mdc', 'open-api.mdc'],
+            'go': ['golang.mdc', 'nethttp.mdc', 'rest-api.mdc', 'open-api.mdc'],
+        }
+        db_addons: list[str] = []
+        if generator.args.database.lower() == 'mongodb':
+            db_addons.append('mongodb.mdc')
+        elif generator.args.database.lower() == 'firebase':
+            db_addons.append('firebase.mdc')
+
+        expected = []
+        expected += fe_map.get(generator.args.frontend, [])
+        expected += be_map.get(generator.args.backend, [])
+        expected += db_addons
+
+        deduped: list[str] = []
+        for name in expected:
+            if name and name not in deduped:
+                deduped.append(name)
+
+        generated_files = sorted(p.name for p in rules_dir.glob('*.mdc'))
+        assert generated_files, "No project rules were emitted"
+        assert set(generated_files) == set(deduped)
+        for name in deduped:
+            assert (rules_dir / name).exists()
+
+        recorded = {Path(entry).name for entry in generator._rules_selected_includes}
+        assert set(deduped).issubset(recorded)
+
+        rsc_rule = rules_dir / 'nextjs-rsc-and-client.mdc'
+        assert rsc_rule.exists()
+        assert 'SCOPE: project:test-project' in rsc_rule.read_text(encoding='utf-8')
+
+
     def test_get_ignore_patterns(self, generator: ProjectGenerator):
         """Test getting ignore patterns for template copying"""
         patterns = generator.get_ignore_patterns()
