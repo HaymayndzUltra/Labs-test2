@@ -143,11 +143,8 @@
   }
 
   .animate-marquee {
-    animation: marquee 25s linear infinite;
-  }
-
-  .animate-marquee.paused {
-    animation-play-state: paused;
+    animation: marquee 24s linear infinite;
+    will-change: transform;
   }
 
   .scrollbar-hidden {

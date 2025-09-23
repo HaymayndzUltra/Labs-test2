@@ -1,21 +1,27 @@
 'use client';
 
 import Image from 'next/image';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowDownRight,
   ArrowUpRight,
+  BarChart3,
+  Check,
   ChevronDown,
   Heart,
+  LineChart,
   Loader2,
   Package,
+  PieChart,
   RefreshCw,
   Search,
   ShoppingCart,
   SlidersHorizontal,
   Sparkles,
   Star,
+  Users,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
@@ -499,120 +505,42 @@ export default function DashboardPage() {
 }
 
 function BrandCarousel() {
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  const frameRef = useRef<number>();
-  const lastTimestampRef = useRef<number>(0);
-  const offsetRef = useRef<number>(0);
-  const effectiveWidthRef = useRef<number>(0);
-  const speedRef = useRef<number>(80); // px per second
-  const currentSpeedRef = useRef<number>(80);
-  const targetSpeedRef = useRef<number>(80);
-  const tweenStartRef = useRef<number>(0);
-  const tweenDurationRef = useRef<number>(400);
-  const startSpeedRef = useRef<number>(80);
-
-  const GAP = 64;
-
-  const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-
-  const computeWidths = useCallback(() => {
-    const track = trackRef.current;
-    if (!track) return;
-    const total = track.scrollWidth / 2;
-    effectiveWidthRef.current = total;
-  }, []);
-
-  const handleImageLoad = useCallback(() => {
-    computeWidths();
-  }, [computeWidths]);
-
-  useEffect(() => {
-    computeWidths();
-    window.addEventListener('resize', computeWidths);
-    return () => window.removeEventListener('resize', computeWidths);
-  }, [computeWidths]);
-
-  useEffect(() => {
-    const step = (timestamp: number) => {
-      const track = trackRef.current;
-      if (!track) return;
-
-      if (lastTimestampRef.current === 0) {
-        lastTimestampRef.current = timestamp;
-      }
-
-      const delta = (timestamp - lastTimestampRef.current) / 1000;
-      lastTimestampRef.current = timestamp;
-
-      if (currentSpeedRef.current !== targetSpeedRef.current) {
-        const elapsed = timestamp - tweenStartRef.current;
-        const duration = tweenDurationRef.current;
-        if (duration <= 0 || elapsed >= duration) {
-          currentSpeedRef.current = targetSpeedRef.current;
-        } else {
-          const progress = easeOutCubic(elapsed / duration);
-          currentSpeedRef.current =
-            startSpeedRef.current + (targetSpeedRef.current - startSpeedRef.current) * progress;
-        }
-      }
-
-      offsetRef.current -= currentSpeedRef.current * delta;
-      const width = effectiveWidthRef.current;
-      if (width > 0) {
-        while (offsetRef.current <= -width) {
-          offsetRef.current += width;
-        }
-      }
-
-      track.style.transform = `translateX(${offsetRef.current}px)`;
-      frameRef.current = requestAnimationFrame(step);
-    };
-
-    frameRef.current = requestAnimationFrame(step);
-    return () => {
-      if (frameRef.current) cancelAnimationFrame(frameRef.current);
-    };
-  }, []);
-
-  const tweenSpeed = (target: number, duration: number) => {
-    currentSpeedRef.current = currentSpeedRef.current;
-    startSpeedRef.current = currentSpeedRef.current;
-    targetSpeedRef.current = target;
-    tweenDurationRef.current = duration;
-    tweenStartRef.current = performance.now();
-  };
-
-  const handleMouseEnter = () => tweenSpeed(0, 500);
-  const handleMouseLeave = () => tweenSpeed(speedRef.current, 500);
+  const marqueeDuration = Math.max(1, brandLogos.length * 3);
+  const trackStyle: CSSProperties = { animationDuration: `${marqueeDuration}s` };
+  const trackClasses =
+    'flex w-max items-center gap-16 animate-marquee group-hover:[animation-play-state:paused]';
 
   return (
     <div className="space-y-2">
-      <div className="overflow-hidden border-b bg-white py-4">
-        <div
-          className="relative mx-auto hidden w-full max-w-7xl overflow-hidden px-6 md:block"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <div
-            ref={trackRef}
-            className="flex items-center"
-            style={{ gap: `${GAP}px`, willChange: 'transform' }}
-          >
-            {brandLogos.concat(brandLogos).map((brand, index) => (
-              <BrandLogo
-                key={`desktop-${brand.name}-${index}`}
-                brand={brand}
-                onLoad={handleImageLoad}
-              />
-            ))}
+      <div className="overflow-hidden border-y border-indigo-100/70 bg-white/95 py-6 shadow-soft">
+        <div className="mx-auto hidden w-full max-w-7xl px-6 md:block">
+          <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-r from-white via-white/90 to-white">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white via-white/90 to-transparent"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white via-white/90 to-transparent"
+            />
+            <div className={trackClasses} style={trackStyle}>
+              {brandLogos.map((brand) => (
+                <BrandLogo key={`desktop-${brand.name}`} brand={brand} />
+              ))}
+            </div>
+            <div className={trackClasses} style={trackStyle} aria-hidden="true">
+              {brandLogos.map((brand) => (
+                <BrandLogo key={`desktop-duplicate-${brand.name}`} brand={brand} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
       <div className="md:hidden">
-        <div className="scrollbar-hidden overflow-x-auto border-b bg-white px-4 py-4">
-          <div className="flex w-max items-center" style={{ gap: `${GAP}px` }}>
+        <div className="scrollbar-hidden overflow-x-auto border-y border-indigo-100/70 bg-white/95 px-4 py-4">
+          <div className="flex w-max items-center gap-10">
             {brandLogos.map((brand) => (
-              <BrandLogo key={`mobile-${brand.name}`} brand={brand} onLoad={handleImageLoad} />
+              <BrandLogo key={`mobile-${brand.name}`} brand={brand} />
             ))}
           </div>
         </div>
@@ -621,19 +549,18 @@ function BrandCarousel() {
   );
 }
 
-function BrandLogo({ brand, onLoad }: { brand: BrandLogo; onLoad?: () => void }) {
+function BrandLogo({ brand }: { brand: BrandLogo }) {
   const [logoSrc, setLogoSrc] = useState(brand.logo);
 
   return (
-    <div className="flex h-10 items-center">
+    <div className="flex h-12 min-h-[40px] items-center justify-center rounded-2xl bg-white/80 px-6 shadow-soft ring-1 ring-indigo-100/80 transition hover:ring-primary/50">
       <Image
         src={logoSrc}
         alt={`${brand.name} logo`}
         width={brand.width}
         height={brand.height}
-        className="h-full w-auto object-contain opacity-80 transition-opacity hover:opacity-100"
+        className="max-h-10 w-auto object-contain opacity-80 transition-opacity hover:opacity-100"
         onError={() => setLogoSrc(FALLBACK_BRAND_IMAGE)}
-        onLoadingComplete={onLoad}
         loading="lazy"
       />
     </div>
@@ -776,22 +703,30 @@ function FilterPanel({
         <div className="space-y-2">
           {brandFilters.map((brand) => {
             const checked = selectedBrands.length === 0 ? brand.checked : selectedBrands.includes(brand.id);
+            const labelClasses = checked
+              ? 'border-secondary bg-secondary/10 text-secondary shadow-soft'
+              : 'border-indigo-100/60 bg-white/90 text-neutral-600 hover:border-primary/50 hover:bg-primary/5';
             return (
               <label
                 key={brand.id}
-                className="flex cursor-pointer items-center justify-between rounded-2xl border border-indigo-100/60 px-3 py-2 text-sm text-neutral-600 transition hover:border-primary/50 hover:bg-primary/5"
+                className={`group flex cursor-pointer items-center justify-between rounded-2xl border px-3 py-2 text-sm font-medium transition ${labelClasses}`}
               >
                 <span className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => onBrandToggle(brand.id)}
-                    className="h-4 w-4 rounded border-indigo-200 text-secondary focus:ring-secondary"
-                    aria-label={`Filter by ${brand.name}`}
-                  />
-                  {brand.name}
+                  <span className="relative flex h-5 w-5 flex-shrink-0 items-center justify-center">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => onBrandToggle(brand.id)}
+                      className="peer absolute inset-0 h-full w-full cursor-pointer appearance-none rounded-md border border-indigo-200 bg-white transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40 checked:border-secondary checked:bg-secondary"
+                      aria-label={`Filter by ${brand.name}`}
+                    />
+                    <Check className="pointer-events-none h-3 w-3 text-white opacity-0 transition peer-checked:opacity-100" />
+                  </span>
+                  <span className="text-neutral-700 transition group-hover:text-neutral-900">{brand.name}</span>
                 </span>
-                <span className="text-xs text-neutral-600">{brand.product_count}</span>
+                <span className="rounded-full bg-white/80 px-2 py-1 text-[10px] font-semibold text-neutral-500 shadow-soft">
+                  {brand.product_count}
+                </span>
               </label>
             );
           })}
@@ -881,7 +816,11 @@ function InsightsWidget({
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-neutral-600">Customer insight</p>
-          <p className="mt-1 text-3xl font-semibold text-neutral-900">{spotlightMetric.value}</p>
+          <AnimatedMetricValue
+            value={spotlightMetric.value}
+            className="mt-1 block text-3xl font-semibold text-neutral-900"
+            duration={900}
+          />
         </div>
         <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${palette.badge} ${palette.text}`}>
           <TrendIcon className="h-3.5 w-3.5" />
@@ -905,24 +844,44 @@ function InsightsWidget({
   );
 }
 
+const KPI_ICON_MATCHERS: { pattern: RegExp; icon: LucideIcon }[] = [
+  { pattern: /revenue|sales|order|gmv|income/i, icon: BarChart3 },
+  { pattern: /conversion|rate|performance|growth/i, icon: LineChart },
+  { pattern: /customer|client|user|retention|loyalty/i, icon: Users },
+  { pattern: /traffic|visit|view|session|engagement/i, icon: PieChart },
+];
+
+function resolveMetricIcon(metric: OverviewMetric): LucideIcon {
+  const match = KPI_ICON_MATCHERS.find(({ pattern }) => pattern.test(metric.label));
+  return match?.icon ?? BarChart3;
+}
+
 function KpiCard({ metric }: { metric: OverviewMetric }) {
   const palette = TREND_PALETTE[metric.trend] ?? TREND_PALETTE.steady;
   const TrendIcon = palette.icon;
+  const Icon = resolveMetricIcon(metric);
 
   return (
-    <div className="flex min-h-[168px] flex-col justify-between rounded-2xl border border-indigo-100/70 bg-white/80 p-5 shadow-soft">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-neutral-600">{metric.label}</p>
-        <p className="mt-2 text-xl font-semibold text-neutral-900">{metric.value}</p>
-      </div>
-      <div className="mt-3 space-y-1 text-sm text-neutral-600">
-        <span className={`inline-flex items-center gap-1 text-xs font-semibold ${palette.text}`}>
+    <article className="flex min-h-[184px] flex-col justify-between rounded-2xl border border-indigo-100/70 bg-white/90 p-5 shadow-soft transition-transform duration-300 ease-out hover:-translate-y-0.5 hover:shadow-glow">
+      <div className="flex items-start justify-between">
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/10 via-primary/10 to-secondary/5 text-secondary shadow-inner">
+          <Icon className="h-5 w-5" aria-hidden="true" />
+        </span>
+        <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${palette.badge} ${palette.text}`}>
           <TrendIcon className="h-3.5 w-3.5" />
           {formatChange(metric.change)}
         </span>
-        <p className="text-xs leading-relaxed text-neutral-600">{metric.description}</p>
       </div>
-    </div>
+      <div className="mt-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-neutral-600">{metric.label}</p>
+        <AnimatedMetricValue
+          value={metric.value}
+          className="mt-2 block text-xl font-semibold text-neutral-900"
+          duration={720}
+        />
+      </div>
+      <p className="mt-3 text-xs leading-relaxed text-neutral-600">{metric.description}</p>
+    </article>
   );
 }
 
@@ -955,17 +914,18 @@ function ProductCard({
       style={{ animationDelay: `${index * 0.12}s` }}
       data-price={product.price}
     >
-      <div className="relative mb-4 overflow-hidden rounded-2xl bg-accent-soft">
-        <Image
-          src={imgSrc}
-          alt={product.name}
-          width={480}
-          height={360}
-          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 360px"
-          className="h-56 w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
-          onError={() => setImgSrc(FALLBACK_IMAGE)}
-          loading="lazy"
-        />
+      <div className="relative mb-4 overflow-hidden rounded-2xl bg-accent-soft shadow-inner">
+        <div className="relative aspect-[4/3] w-full">
+          <Image
+            src={imgSrc}
+            alt={product.name}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 360px"
+            className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+            onError={() => setImgSrc(FALLBACK_IMAGE)}
+            loading="lazy"
+          />
+        </div>
         <button
           type="button"
           className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/90 text-neutral-400 shadow-soft transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
@@ -1036,6 +996,82 @@ function ProductCard({
 
 function Badge({ tone, children }: { tone: string; children: React.ReactNode }) {
   return <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${tone}`}>{children}</span>;
+}
+
+function AnimatedMetricValue({
+  value,
+  className,
+  duration = 800,
+}: {
+  value: string;
+  className?: string;
+  duration?: number;
+}) {
+  const { prefix, suffix, numericValue, decimals, showPlus } = useMemo(() => {
+    const trimmed = value.trim();
+    const prefixMatch = trimmed.match(/^[^\d+-]*/)?.[0] ?? '';
+    const rest = trimmed.slice(prefixMatch.length);
+    const numberMatch = rest.match(/[-+]?\d*[.,]?\d*/)?.[0] ?? '';
+    const sanitizedNumber = numberMatch.replace(/,/g, '');
+    const numericValue = Number.parseFloat(sanitizedNumber);
+    const suffix = rest.slice(numberMatch.length);
+    const decimals = sanitizedNumber.includes('.')
+      ? sanitizedNumber.split('.')[1]?.length ?? 0
+      : 0;
+    const showPlus = numberMatch.trim().startsWith('+');
+    return { prefix: prefixMatch, suffix, numericValue, decimals, showPlus };
+  }, [value]);
+
+  const isNumeric = Number.isFinite(numericValue);
+  const [current, setCurrent] = useState(() => (isNumeric ? numericValue : 0));
+  const previousValueRef = useRef(isNumeric ? numericValue : 0);
+
+  useEffect(() => {
+    if (!isNumeric) return;
+
+    const startValue = previousValueRef.current;
+    const targetValue = numericValue;
+
+    if (startValue === targetValue) {
+      setCurrent(targetValue);
+      previousValueRef.current = targetValue;
+      return;
+    }
+
+    const durationMs = Math.max(duration, 0);
+    const startTime = performance.now();
+    setCurrent(startValue);
+
+    let frame: number;
+    const step = (timestamp: number) => {
+      const progress = durationMs === 0 ? 1 : Math.min((timestamp - startTime) / durationMs, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const nextValue = startValue + (targetValue - startValue) * eased;
+      setCurrent(nextValue);
+
+      if (progress < 1) {
+        frame = requestAnimationFrame(step);
+      } else {
+        previousValueRef.current = targetValue;
+      }
+    };
+
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [isNumeric, numericValue, duration]);
+
+  if (!isNumeric) {
+    return <span className={className}>{value}</span>;
+  }
+
+  const decimalsToDisplay = Math.min(decimals, 2);
+  const formattedNumber = current.toLocaleString('en-US', {
+    minimumFractionDigits: decimalsToDisplay,
+    maximumFractionDigits: decimalsToDisplay,
+  });
+  const withSign = showPlus && current >= 0 ? `+${formattedNumber}` : formattedNumber;
+
+  return <span className={className}>{`${prefix}${withSign}${suffix}`}</span>;
 }
 
 function ProductGridSkeleton({ count }: { count: number }) {
