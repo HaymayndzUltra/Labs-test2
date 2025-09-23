@@ -232,9 +232,146 @@ class ProjectGenerator:
         }
         
         if not self.no_cursor_assets:
-            (self.project_root / '.cursor' / 'project.json').write_text(
+            cursor_root = self.project_root / '.cursor'
+            cursor_root.mkdir(parents=True, exist_ok=True)
+            (cursor_root / 'project.json').write_text(
                 json.dumps(project_config, indent=2)
             )
+            index_path = cursor_root / 'index.mdc'
+            index_path.write_text(self._render_cursor_index(project_config))
+
+    def _render_cursor_index(self, project_config: Dict[str, Any]) -> str:
+        """Build the contents of .cursor/index.mdc using project metadata."""
+        name = project_config.get('name', 'Project')
+        industry = project_config.get('industry', 'general')
+        project_type = project_config.get('project_type', 'application')
+        stack = project_config.get('stack', {}) or {}
+        features: List[str] = project_config.get('features') or []
+        compliance: List[str] = project_config.get('compliance') or []
+
+        # Build glob list based on generated directories and stack choices
+        stack_glob_map = {
+            'frontend': 'frontend/**/*',
+            'backend': 'backend/**/*',
+            'database': 'database/**/*',
+        }
+        globs: List[str] = []
+        for key, pattern in stack_glob_map.items():
+            value = stack.get(key)
+            if value and str(value).lower() != 'none' and pattern not in globs:
+                globs.append(pattern)
+
+        # Include common directories created during bootstrap
+        for default_glob in ['docs/**/*', 'scripts/**/*', 'tests/**/*']:
+            if default_glob not in globs:
+                globs.append(default_glob)
+
+        if not globs:
+            globs.append('**/*')
+
+        frontend_desc = stack.get('frontend') if stack.get('frontend') else 'no-frontend'
+        backend_desc = stack.get('backend') if stack.get('backend') else 'no-backend'
+        if isinstance(frontend_desc, str) and frontend_desc.lower() == 'none':
+            frontend_desc = 'no-frontend'
+        if isinstance(backend_desc, str) and backend_desc.lower() == 'none':
+            backend_desc = 'no-backend'
+
+        if frontend_desc == 'no-frontend':
+            frontend_phrase = 'without a dedicated frontend'
+        else:
+            frontend_phrase = f"with a {frontend_desc} frontend"
+
+        if backend_desc == 'no-backend':
+            backend_phrase = 'and without a backend service'
+        else:
+            backend_phrase = f"and {backend_desc} backend"
+
+        description = (
+            f"{name} {project_type} project for the {industry} industry "
+            f"{frontend_phrase} {backend_phrase}."
+        )
+
+        frontmatter_lines = [
+            '---',
+            f'description: "{description}"',
+            'globs:'
+        ]
+        for glob in globs:
+            frontmatter_lines.append(f'  - "{glob}"')
+        frontmatter_lines.append('alwaysApply: true')
+        frontmatter_lines.append('---')
+
+        stack_lines = []
+        for label in ['frontend', 'backend', 'database', 'auth', 'deploy']:
+            value = stack.get(label)
+            if value and str(value).strip() and str(value).lower() != 'none':
+                stack_lines.append(f"- **{label.capitalize()}:** {value}")
+
+        if not stack_lines:
+            stack_lines.append("- Stack details were not specified.")
+
+        feature_text = ', '.join(features) if features else 'None specified'
+
+        compliance_lines: List[str] = []
+        if compliance:
+            for flag in compliance:
+                compliance_lines.append(
+                    f"- Adhere to {flag.upper()} controls across all services and data flows."
+                )
+        else:
+            compliance_lines.append("- No additional regulatory frameworks were selected.")
+
+        rule_lines: List[str] = []
+        if stack.get('frontend') and str(stack.get('frontend')).lower() != 'none':
+            rule_lines.append(
+                f"- Keep the `{stack['frontend']}` frontend synchronized with backend contracts and shared APIs."
+            )
+        if stack.get('backend') and str(stack.get('backend')).lower() != 'none':
+            rule_lines.append(
+                f"- Structure the `{stack['backend']}` backend with clear domain boundaries and automated testing."
+            )
+        if stack.get('database') and str(stack.get('database')).lower() != 'none':
+            rule_lines.append(
+                f"- Manage the `{stack['database']}` data layer with migrations and backups aligned to compliance needs."
+            )
+        if features:
+            rule_lines.append(
+                f"- Prioritize delivery of key features: {', '.join(features)}."
+            )
+        if compliance:
+            for flag in compliance:
+                rule_lines.append(
+                    f"- Document how {flag.upper()} obligations are met in infrastructure, code, and operations."
+                )
+        if not rule_lines:
+            rule_lines.append("- Follow established engineering best practices and keep documentation current.")
+
+        body_lines = [
+            f"# {name} Project Overview",
+            '',
+            f"- **Industry:** {industry}",
+            f"- **Project Type:** {project_type}",
+            f"- **Features:** {feature_text}",
+            '',
+            '## Technology Stack',
+            '',
+        ]
+        body_lines.extend(stack_lines)
+        body_lines.extend([
+            '',
+            '## Compliance Considerations',
+            '',
+        ])
+        body_lines.extend(compliance_lines)
+        body_lines.extend([
+            '',
+            '## Project Rules',
+            '',
+        ])
+        body_lines.extend(rule_lines)
+        body_lines.append('')
+
+        return '\n'.join(frontmatter_lines + [''] + body_lines)
     
     def _generate_frontend(self):
         """Generate frontend application"""
@@ -508,6 +645,19 @@ class ProjectGenerator:
         except Exception:
             return
 
+    def _resolve_template_rule_source(self, template_root: Path, fname: str) -> Optional[Path]:
+        """Return a matching rule path from template-packs when available."""
+        mapping: dict[str, Path] = {
+            'nextjs.mdc': template_root / 'frontend' / 'nextjs' / 'nextjs.mdc',
+            'nextjs-formatting.mdc': template_root / 'frontend' / 'nextjs' / 'formatting.mdc',
+            'typescript.mdc': template_root / 'frontend' / 'nextjs' / 'typescript.mdc',
+            'fastapi.mdc': template_root / 'backend' / 'fastapi' / 'fastapi.mdc',
+        }
+        candidate = mapping.get(fname)
+        if candidate and candidate.exists():
+            return candidate
+        return None
+
     def _write_fallback_rule_if_known(self, rules_dir: Path, fname: str) -> None:
         """Write a minimal embedded rule if we recognize the filename."""
         mapping: dict[str, str] = {
@@ -741,16 +891,16 @@ class ProjectGenerator:
         """Copy a minimal set of project rules (.mdc) for the chosen stack into the generated project.
 
         This runs only when the user passes --include-project-rules and .cursor assets are enabled.
-        It selects a small, opinionated subset to avoid ceremony: all files are copied as-is (generally alwaysApply: false).
+        It selects a small, opinionated subset to avoid ceremony. Missing source files fall back to
+        embedded minimal generators or populated template pack rules.
         """
         try:
             if not getattr(self.args, 'include_project_rules', False):
                 return
-            # Locate source rules in the root repo
+            # Locate source rules in the root repo and template fallback locations
             repo_root = Path(__file__).resolve().parents[2]
             source_dir = repo_root / '.cursor' / 'rules' / 'project-rules'
-            if not source_dir.exists():
-                return
+            template_rules_root = repo_root / 'template-packs' / 'rules'
 
             # Frontend minimal sets
             fe = (getattr(self.args, 'frontend', 'none') or 'none').lower()
@@ -772,7 +922,7 @@ class ProjectGenerator:
 
             # Database add-ons
             db = (getattr(self.args, 'database', 'none') or 'none').lower()
-            db_addons = []
+            db_addons: list[str] = []
             if db == 'mongodb':
                 db_addons.append('mongodb.mdc')
             elif db == 'firebase':
@@ -791,20 +941,39 @@ class ProjectGenerator:
                     seen.add(f)
                     filtered.append(f)
 
+            rules_dir.mkdir(parents=True, exist_ok=True)
+
             for fname in filtered:
+                dest = rules_dir / fname
+                dest.parent.mkdir(parents=True, exist_ok=True)
+
+                produced = False
                 src = source_dir / fname
                 if src.exists() and src.is_file():
-                    dest = rules_dir / fname
-                    dest.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy(src, dest)
+                    produced = True
+                else:
+                    template_src = self._resolve_template_rule_source(template_rules_root, fname)
+                    if template_src and template_src.exists():
+                        shutil.copy(template_src, dest)
+                        produced = True
+
+                if not produced:
+                    self._write_fallback_rule_if_known(rules_dir, fname)
+                    produced = dest.exists()
+
+                if produced:
                     try:
-                        self._rules_selected_includes.append(str(Path('project-rules') / fname))
+                        selected_entry = str(Path('project-rules') / fname)
+                        if selected_entry not in self._rules_selected_includes:
+                            self._rules_selected_includes.append(selected_entry)
                     except Exception:
                         pass
         except Exception:
             # Non-fatal: rule inclusion should never break generation
             return
-    
+
+
     def _generate_compliance_rules_content(self, compliance: str) -> str:
         """Generate Cursor-style .mdc content with YAML frontmatter for a compliance standard."""
         c = (compliance or '').strip().lower()

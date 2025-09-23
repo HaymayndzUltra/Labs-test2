@@ -293,7 +293,7 @@ python scripts/write_context_report.py \
 
 ## 📚 Additional Resources
 
-- [Complete Workflow Guide](WORKFLOW_GUIDE.md)
-- [Quick Reference](WORKFLOW_QUICK_REFERENCE.md)
+- [System Overview](SYSTEM_OVERVIEW.md)
+- [Local Development Workflow](LOCAL_DEV_WORKFLOW.md)
 - [Template Documentation](TEMPLATES.md)
 - [Compliance Guide](COMPLIANCE.md)

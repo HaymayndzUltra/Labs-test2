@@ -5,7 +5,11 @@ set -euo pipefail
 # Stack-aware install/build/test runner for generated projects.
 # Detects FE/BE directories and runs appropriate package managers/tests.
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)"
+if [[ -n "${PROJECT_ROOT:-}" ]]; then
+  ROOT_DIR="$PROJECT_ROOT"
+else
+  ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)"
+fi
 cd "$ROOT_DIR"
 
 FRONTEND_DIR=${FRONTEND_DIR:-frontend}

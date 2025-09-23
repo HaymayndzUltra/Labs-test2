@@ -45,3 +45,23 @@ def test_generate_cicd_includes_gates_config(tmp_path):
     (gen.project_root / '.github' / 'workflows').mkdir(parents=True, exist_ok=True)
     gen._generate_cicd_workflows()
     assert (gen.project_root / 'gates_config.yaml').exists()
+
+
+def test_create_base_structure_writes_cursor_index(tmp_path):
+    args = _mk_args()
+    args.output_dir = str(tmp_path)
+    args.no_cursor_assets = False
+    gen = ProjectGenerator(args, ProjectValidator(), IndustryConfig(args.industry))
+    gen.project_root = tmp_path / args.name
+    gen.project_root.mkdir(parents=True, exist_ok=True)
+
+    gen._create_base_structure()
+
+    index_path = gen.project_root / '.cursor' / 'index.mdc'
+    assert index_path.exists()
+
+    content = index_path.read_text()
+    assert 'description: "unit-proj api project for the healthcare industry' in content
+    assert '- **Project Type:** api' in content
+    assert 'alwaysApply: true' in content
+    assert '## Project Rules' in content

@@ -4,7 +4,9 @@ Application configuration
 import secrets
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import AnyHttpUrl, EmailStr, HttpUrl
+from pydantic import AnyHttpUrl, HttpUrl
+
+from app.utils.email import EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import field_validator
 
@@ -78,6 +80,37 @@ class Settings(BaseSettings):
 
     # Debug
     DEBUG: bool = False
+
+    # Compliance / audit logging
+    COMPLIANCE_REGIMES: List[str] = []
+    COMPLIANCE_AUDIT_LOG_ENABLED: bool = False
+    COMPLIANCE_ACCESS_LOG_ENABLED: bool = False
+    COMPLIANCE_LOG_DESTINATION: Optional[str] = None
+    COMPLIANCE_LOG_LEVEL: str = "INFO"
+    COMPLIANCE_REDACT_HEADERS: List[str] = ["authorization", "cookie"]
+
+    @field_validator("COMPLIANCE_REGIMES", mode="before")
+    def parse_compliance_regimes(cls, v: Union[str, List[str], None]) -> List[str]:
+        if not v:
+            return []
+        if isinstance(v, str):
+            items = [item.strip().lower() for item in v.split(",") if item.strip()]
+            return items
+        return [str(item).strip().lower() for item in v if str(item).strip()]
+
+    @field_validator("COMPLIANCE_LOG_LEVEL", mode="before")
+    def normalize_log_level(cls, v: Optional[str]) -> str:
+        if not v:
+            return "INFO"
+        return str(v).upper()
+
+    @field_validator("COMPLIANCE_REDACT_HEADERS", mode="before")
+    def normalize_redact_headers(cls, v: Union[str, List[str], None]) -> List[str]:
+        if not v:
+            return ["authorization", "cookie"]
+        if isinstance(v, str):
+            return [h.strip().lower() for h in v.split(",") if h.strip()]
+        return [str(h).strip().lower() for h in v if str(h).strip()]
 
     # Pydantic v2 settings configuration
     model_config = SettingsConfigDict(case_sensitive=True, env_file=".env")

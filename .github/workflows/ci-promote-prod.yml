@@ -1,0 +1,111 @@
+name: Promote to Production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify-and-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install and test
+        run: ./scripts/install_and_test.sh
+
+      - name: Collect coverage
+        run: python scripts/collect_coverage.py || true
+
+      - name: Collect performance metrics
+        run: python scripts/collect_perf.py || true
+
+      - name: Scan dependencies
+        run: python scripts/scan_deps.py || true
+
+      - name: Enforce quality gates
+        run: python scripts/enforce_gates.py
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: verify-and-gate
+    environment: production
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+      - name: Deploy frontend
+        working-directory: frontend
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "Vercel secrets are required for production deployment" >&2
+            exit 1
+          fi
+          ENV_FILE="../.env.production"
+          if [ -f "$ENV_FILE" ]; then
+            ENV_FLAG="--env-file $ENV_FILE"
+          else
+            ENV_FLAG=""
+          fi
+          DEPLOY_ARGS="--yes --token $VERCEL_TOKEN --prod"
+          npx vercel deploy $DEPLOY_ARGS --scope "$VERCEL_ORG_ID" $ENV_FLAG
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Deploy backend
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          APP_NAME: ${{ vars.APP_NAME }}
+          ECS_CLUSTER_NAME: ${{ vars.ECS_CLUSTER_NAME }}
+          ECS_SERVICE_NAME: ${{ vars.ECS_SERVICE_NAME }}
+          ECS_DESIRED_COUNT: ${{ vars.ECS_DESIRED_COUNT }}
+          TASK_EXECUTION_ROLE_ARN: ${{ secrets.AWS_ECS_EXECUTION_ROLE_ARN }}
+          TASK_ROLE_ARN: ${{ secrets.AWS_ECS_TASK_ROLE_ARN }}
+          BACKEND_IMAGE: ghcr.io/${{ github.repository }}-backend:sha-${{ github.sha }}
+        run: |
+          chmod +x scripts/deploy_backend.sh
+          ./scripts/deploy_backend.sh production
+
+      - name: Post-deploy health check
+        run: |
+          mkdir -p reports
+          python scripts/health/check_deployment.py \
+            --environment production \
+            --frontend-url "${{ vars.FRONTEND_URL_PRODUCTION }}" \
+            --api-url "${{ vars.API_URL_PRODUCTION }}" \
+            --db-url "${{ vars.DB_URL_PRODUCTION }}" \
+            --out reports/production-pipeline-validation.json
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-artifacts-${{ github.run_number }}
+          path: |
+            reports/*
+            evidence/*
+            dist/*
+          if-no-files-found: ignore
