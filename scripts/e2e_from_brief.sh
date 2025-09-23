@@ -74,22 +74,33 @@ echo "[E2E] Plan from brief"
 echo "[E2E] Validate tasks graph"
 "$PY_BIN" scripts/validate_tasks.py --input PLAN.tasks.json
 
-echo "[E2E] Preflight selection gate (SKIPPED - version check bypassed)"
-# "$PY_BIN" scripts/select_stacks.py \
-#   --industry "$INDUSTRY" --project-type "$PROJECT_TYPE" \
-#   --frontend "$FE" --backend "$BE" --database "$DB" \
-#   --compliance "${COMPLIANCE:-}" \
-#   --output selection.json --summary evidence/stack-selection.md
+echo "[E2E] Preflight selection gate"
+selection_cmd=(
+  "$PY_BIN" scripts/select_stacks.py
+  --industry "$INDUSTRY"
+  --project-type "$PROJECT_TYPE"
+  --frontend "$FE"
+  --backend "$BE"
+  --database "$DB"
+  --output selection.json
+  --summary evidence/stack-selection.md
+)
 
-# Create minimal selection.json to bypass version check
-cat > selection.json << 'EOF'
-{
-  "frontend": {"name": "nextjs", "variant": "base"},
-  "backend": {"name": "fastapi", "variant": "base"},
-  "database": {"name": "postgres", "variant": "base"},
-  "compliance": {"name": "gdpr", "variant": "overlay"}
-}
-EOF
+if [[ -n "${COMPLIANCE:-}" ]]; then
+  selection_cmd+=(--compliance "$COMPLIANCE")
+fi
+
+if [[ -n "${NESTJS_ORM:-}" ]]; then
+  selection_cmd+=(--nestjs-orm "$NESTJS_ORM")
+fi
+
+if ! "${selection_cmd[@]}"; then
+  sel_status=$?
+  if [[ $sel_status -eq 3 ]]; then
+    echo "[E2E] Stack selection failed: unmet engine requirements" >&2
+  fi
+  exit "$sel_status"
+fi
 
 echo "[E2E] Generator dry-run"
 ./scripts/generate_client_project.py \
