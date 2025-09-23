@@ -1,7 +1,6 @@
 ---
 description: Guidelines for styling with Tailwind CSS (v3.4)
-globs: **/*.html
-globs: **/*.scss
+globs: */src/**/*.html,*/src/**/*.scss
 ---
 
 - Use utility-first classes for rapid UI development

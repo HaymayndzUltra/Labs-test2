@@ -1,6 +1,6 @@
 ---
 description: Prettier formatting practices for Next.js 15 (Prettier v3)
-globs: **/*.tsx,**/*.ts,**/*.js,**/*.jsx
+globs: */src/app/**/*.tsx,*/src/app/**/*.ts,*/app/**/*.tsx,*/app/**/*.ts,*/src/components/**/*.tsx,*/src/components/**/*.ts,*/components/**/*.tsx,*/components/**/*.ts,*/src/hooks/**/*.ts,*/src/hooks/**/*.tsx,*/src/app/**/*.js,*/src/app/**/*.jsx,*/app/**/*.js,*/app/**/*.jsx,*/src/components/**/*.js,*/src/components/**/*.jsx,*/components/**/*.js,*/components/**/*.jsx
 ---
 
 - Use Prettier for all code formatting; avoid custom stylistic ESLint rules.
