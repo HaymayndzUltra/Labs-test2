@@ -1109,17 +1109,18 @@ class ProjectGenerator:
             fe_dir = self.project_root / 'frontend' / '.cursor' / 'rules'
             fe_dir.mkdir(parents=True, exist_ok=True)
             if fe in {'nextjs', 'react', 'expo', 'react-native', 'nuxt'}:
-                globs_line = 'globs: **/*.tsx,**/*.ts,**/*.js,**/*.jsx'
+                fe_globs = ['**/*.tsx', '**/*.ts', '**/*.js', '**/*.jsx']
             elif fe == 'angular':
-                globs_line = 'globs: **/*.ts,**/*.html,**/*.scss,**/*.css'
+                fe_globs = ['**/*.ts', '**/*.html', '**/*.scss', '**/*.css']
             elif fe == 'vue':
-                globs_line = 'globs: **/*.vue,**/*.ts'
+                fe_globs = ['**/*.vue', '**/*.ts']
             else:
-                globs_line = 'globs: **/*'
+                fe_globs = ['**/*']
+            globs_lines = '\n'.join([f'globs: {p}' for p in fe_globs])
             content = (
                 '---\n'
                 f'description: "Stack Rules - {fe.upper()}"\n'
-                f'{globs_line}\n'
+                f'{globs_lines}\n'
                 'alwaysApply: false\n'
                 '---\n\n'
                 f'# {fe.upper()} Local Rules\n\n- Keep edits scoped to src; prefer official patterns.\n'
@@ -1132,17 +1133,18 @@ class ProjectGenerator:
             be_dir = self.project_root / 'backend' / '.cursor' / 'rules'
             be_dir.mkdir(parents=True, exist_ok=True)
             if be in {'fastapi', 'django', 'flask'}:
-                globs_line = 'globs: **/*.py'
+                be_globs = ['**/*.py']
             elif be == 'nestjs':
-                globs_line = 'globs: src/**/*.ts'
+                be_globs = ['src/**/*.ts']
             elif be in {'go', 'golang'}:
-                globs_line = 'globs: **/*.go'
+                be_globs = ['**/*.go']
             else:
-                globs_line = 'globs: **/*'
+                be_globs = ['**/*']
+            globs_lines = '\n'.join([f'globs: {p}' for p in be_globs])
             content = (
                 '---\n'
                 f'description: "Stack Rules - {be.upper()}"\n'
-                f'{globs_line}\n'
+                f'{globs_lines}\n'
                 'alwaysApply: false\n'
                 '---\n\n'
                 f'# {be.upper()} Local Rules\n\n- Follow framework conventions and testing patterns.\n'
