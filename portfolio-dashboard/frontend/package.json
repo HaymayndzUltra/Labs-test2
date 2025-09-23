@@ -12,9 +12,6 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "@babel/core": "^7.28.4",
-    "@babel/preset-env": "^7.28.3",
-    "@babel/preset-react": "^7.27.1",
     "@hookform/resolvers": "^5.2.2",
     "axios": "^1.12.2",
     "lucide-react": "^0.473.0",
@@ -28,7 +25,6 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.24.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/jest": "^29.5.12",
@@ -36,7 +32,6 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.0",
-    "babel-jest": "^30.0.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^15.5.3",
     "jest": "^30.0.0",
@@ -46,6 +41,6 @@
     "typescript": "^5.9.2"
   },
   "engines": {
-    "node": ">=18.20.0"
+    "node": ">=20.10.0"
   }
 }
