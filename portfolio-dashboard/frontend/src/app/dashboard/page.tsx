@@ -489,12 +489,12 @@ export default function DashboardPage() {
                         </button>
                       </div>
                       <ul className="mt-6 space-y-4">
-                        {(loading && !team.length ? Array.from({ length: 4 }) : team).map((member, index) => (
+                        {(loading && !team.length ? Array.from({ length: 4 }).map(() => null) : team).map((member, index) => (
                           <li
-                            key={typeof member === 'object' ? member.id : index}
+                            key={typeof member === 'object' && member && 'id' in member ? (member as any).id : `team-skel-${index}`}
                             className="flex items-center justify-between gap-4 rounded-2xl border border-slate-100 p-4"
                           >
-                            {typeof member === 'object' ? (
+                            {typeof member === 'object' && member ? (
                               <>
                                 <div className="flex items-center gap-4">
                                   <div
@@ -545,12 +545,12 @@ export default function DashboardPage() {
                         </button>
                       </div>
                       <div className="mt-5 space-y-4">
-                        {(loading && !tasks.length ? Array.from({ length: 4 }) : tasks).map((task, index) => (
+                        {(loading && !tasks.length ? Array.from({ length: 4 }).map(() => null) : tasks).map((task, index) => (
                           <div
-                            key={typeof task === 'object' ? task.id : index}
+                            key={typeof task === 'object' && task && 'id' in task ? (task as any).id : `task-skel-${index}`}
                             className="flex flex-col gap-4 rounded-2xl border border-slate-100 p-4 transition hover:border-emerald-200 hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
                           >
-                            {typeof task === 'object' ? (
+                            {typeof task === 'object' && task ? (
                               <>
                                 <div className="flex items-start gap-3">
                                   <span className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
@@ -594,34 +594,34 @@ export default function DashboardPage() {
                         </button>
                       </div>
                       <div className="mt-5 space-y-4">
-                        {(loading && !reminders.length ? Array.from({ length: 3 }) : reminders).map((reminder, index) => (
+                        {(loading && !reminders.length ? Array.from({ length: 3 }).map(() => null) : reminders).map((reminder, index) => (
                           <div
-                            key={typeof reminder === 'object' ? reminder.id : index}
+                            key={typeof reminder === 'object' && reminder && 'id' in reminder ? (reminder as any).id : `reminder-skel-${index}`}
                             className="rounded-2xl border border-slate-100 p-4"
                           >
-                            {typeof reminder === 'object' ? (
+                            {typeof reminder === 'object' && reminder ? (
                               <>
                                 <div className="flex items-start justify-between gap-3">
                                   <div>
-                                    <p className="text-sm font-semibold text-slate-900">{reminder.title}</p>
-                                    <p className="mt-1 text-xs text-slate-500">{reminder.description}</p>
+                                    <p className="text-sm font-semibold text-slate-900">{(reminder as any).title}</p>
+                                    <p className="mt-1 text-xs text-slate-500">{(reminder as any).description}</p>
                                   </div>
                                   <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold capitalize text-emerald-600">
-                                    {reminder.type}
+                                    {(reminder as any).type}
                                   </span>
                                 </div>
                                 <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
                                   <span>
-                                    {formatDate(reminder.due_date)} • {formatTime(reminder.due_date)}
+                                    {formatDate((reminder as any).due_date)} • {formatTime((reminder as any).due_date)}
                                   </span>
-                                  {reminder.cta_label ? (
+                                  {(reminder as any).cta_label ? (
                                     <a
                                       className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-600 transition hover:text-emerald-700"
-                                      href={reminder.cta_link ?? '#'}
+                                      href={(reminder as any).cta_link ?? '#'}
                                       target="_blank"
                                       rel="noreferrer"
                                     >
-                                      {reminder.cta_label}
+                                      {(reminder as any).cta_label}
                                       <ChevronRight className="h-4 w-4" />
                                     </a>
                                   ) : null}
