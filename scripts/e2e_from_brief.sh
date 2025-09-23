@@ -108,9 +108,9 @@ chmod +x scripts/install_and_test.sh
 ./scripts/install_and_test.sh || true
 
 echo "[E2E] Sync & validate"
-"$PY_BIN" scripts/sync_from_scaffold.py --plan
-"$PY_BIN" scripts/sync_from_scaffold.py --apply
-"$PY_BIN" scripts/validate_tasks.py tasks.json
+"$PY_BIN" scripts/sync_from_scaffold.py --input PLAN.tasks.json
+"$PY_BIN" scripts/sync_from_scaffold.py --input PLAN.tasks.json --apply
+"$PY_BIN" scripts/validate_tasks.py --input tasks.json
 
 echo "[E2E] QC metrics & gates"
 "$PY_BIN" scripts/collect_coverage.py || true
