@@ -1,0 +1,17 @@
+---
+description: Best practices for FastAPI 0.116 (Pydantic v2, SQLAlchemy 2.0)
+globs: */backend/app/**/*.py,*/backend/tests/**/*.py,*/backend/main.py
+---
+
+- Use Pydantic v2 models and validators; avoid legacy pydantic v1 APIs
+- Prefer typing.Annotated for Depends and parameter metadata
+- Keep endpoints async def; avoid blocking I/O on the event loop
+- Manage settings with pydantic-settings; load secrets from env
+- Structure by domain: api, schemas, models, crud, services, core
+- Use response_model on routes; return DTOs instead of dicts
+- SQLAlchemy 2.0: async engine plus async_sessionmaker; 2.0-style queries
+- Transactions: use async with session.begin; single unit-of-work per request
+- Alembic: autogenerate migrations; do not rewrite history
+- Security: bcrypt passwords, JWT via python-jose; configure CORS explicitly
+- Testing: pytest and pytest-asyncio; httpx AsyncClient for integration tests
+

@@ -1,0 +1,15 @@
+---
+description: Best practices for NestJS 11 (TS 5.9, ESLint 8, Jest 30)
+globs: */backend/src/**/*.ts,*/backend/test/**/*.ts
+---
+
+- Use modules/providers/controllers pattern; keep services stateless where possible
+- DTOs with `class-validator` and `class-transformer`; validate incoming payloads
+- Config via `@nestjs/config`; load env schema and validate
+- TypeORM: use data mappers/repositories; handle transactions at service layer
+- RxJS 7.8: use Observables only where needed; prefer async/await for I/O
+- Swagger: decorate DTOs and endpoints for API documentation
+- Health/Throttling: enable `@nestjs/terminus` and `@nestjs/throttler` when applicable
+- Testing: Jest 30, unit tests for services/controllers; e2e tests under `test/`
+- Lint/Format: ESLint 8 + Prettier 3; consistent import order and no unused vars
+
