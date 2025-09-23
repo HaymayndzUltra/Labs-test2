@@ -1,0 +1,28 @@
+{
+  "environment": "staging",
+  "timestamp": "2025-09-23T03:18:55Z",
+  "results": [
+    {
+      "name": "frontend",
+      "target": "http://127.0.0.1:8080",
+      "ok": false,
+      "latency_ms": 3.8773720007156953,
+      "error": "<urlopen error [Errno 111] Connection refused>"
+    },
+    {
+      "name": "api",
+      "target": "http://127.0.0.1:8080",
+      "ok": false,
+      "latency_ms": 0.2140440046787262,
+      "error": "<urlopen error [Errno 111] Connection refused>"
+    },
+    {
+      "name": "database",
+      "target": "http://127.0.0.1:8080",
+      "ok": false,
+      "latency_ms": 0.09449999197386205,
+      "error": "<urlopen error [Errno 111] Connection refused>"
+    }
+  ],
+  "overall_ok": false
+}
