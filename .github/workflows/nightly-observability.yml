@@ -1,0 +1,54 @@
+name: Nightly Observability
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  staging-health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run staging health check
+        run: |
+          mkdir -p reports
+          python scripts/health/check_deployment.py \
+            --environment staging \
+            --frontend-url "${{ vars.FRONTEND_URL_STAGING }}" \
+            --api-url "${{ vars.API_URL_STAGING }}" \
+            --db-url "${{ vars.DB_URL_STAGING }}" \
+            --out reports/staging-pipeline-validation.json
+
+      - name: Upload staging report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-health-${{ github.run_number }}
+          path: reports/staging-pipeline-validation.json
+          if-no-files-found: error
+
+  production-health:
+    runs-on: ubuntu-latest
+    needs: staging-health
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run production health check
+        run: |
+          mkdir -p reports
+          python scripts/health/check_deployment.py \
+            --environment production \
+            --frontend-url "${{ vars.FRONTEND_URL_PRODUCTION }}" \
+            --api-url "${{ vars.API_URL_PRODUCTION }}" \
+            --db-url "${{ vars.DB_URL_PRODUCTION }}" \
+            --out reports/production-pipeline-validation.json
+
+      - name: Upload production report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-health-${{ github.run_number }}
+          path: reports/production-pipeline-validation.json
+          if-no-files-found: error
