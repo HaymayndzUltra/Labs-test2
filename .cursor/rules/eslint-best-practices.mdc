@@ -1,6 +1,7 @@
 ---
 description: Best practices for using ESLint in Angular projects (@angular-eslint v20, ESLint v8)
-globs: **/*.ts,**/*.html
+globs: **/*.ts
+globs: **/*.html
 ---
 
 - Use ESLint with `@angular-eslint` for TypeScript and template linting

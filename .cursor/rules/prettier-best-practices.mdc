@@ -1,6 +1,8 @@
 ---
 description: Best practices for code formatting with Prettier (v3)
-globs: **/*.ts,**/*.html,**/*.scss
+globs: **/*.ts
+globs: **/*.html
+globs: **/*.scss
 ---
 
 - Use Prettier for consistent, opinionated formatting across the repo

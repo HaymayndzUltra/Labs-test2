@@ -1,6 +1,9 @@
 ---
 description: Best practices for React 19.1 (with Next.js 15)
-globs: **/*.tsx,**/*.ts,**/*.js,**/*.jsx
+globs: **/*.tsx
+globs: **/*.ts
+globs: **/*.js
+globs: **/*.jsx
 ---
 
 - Prefer function components and hooks; avoid legacy lifecycles.
