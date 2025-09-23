@@ -1,0 +1,19 @@
+---
+description: Best practices and guidelines for Angular v20 (TS 5.9, RxJS 7.8, Zone.js 0.15)
+globs: **/*.ts
+globs: **/*.html
+globs: **/*.scss
+alwaysApply: false
+---
+
+# Angular v20 Best Practices
+
+  - Prefer Standalone APIs; avoid NgModules for new code. Provide features via `provideRouter`, `provideHttpClient`.
+  - Use built-in control flow (`@if`, `@for`, `@switch`) and `@defer` for deferrable views where appropriate.
+  - Manage reactive state with Signals (`signal`, `computed`, `effect`). Bridge with RxJS via `toSignal()`/`toObservable()`.
+  - Lazy-load features at the route level (`loadComponent`, `loadChildren`) with typed routes.
+  - Use `inject()` for DI in functional code; keep services pure and tree-shakable.
+  - SSR/hydration: use `provideClientHydration()` when enabling SSR; keep side effects out of constructors.
+  - Forms: use Reactive Forms for complex flows; strictly type `FormControl`/`FormGroup`.
+  - Follow the Angular Style Guide for file naming, selectors, and folder-by-feature organization.
+
