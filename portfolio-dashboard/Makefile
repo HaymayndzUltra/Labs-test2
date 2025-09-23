@@ -1,10 +1,13 @@
 .PHONY: setup dev test lint build deploy clean
 
+PYTHON ?= python3
+PIP ?= pip3
+
 # Setup project
 setup:
 	@echo "Setting up portfolio-dashboard..."
 	cd frontend && npm install
-	cd backend && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt
+	cd backend && $(PYTHON) -m venv venv && venv/bin/pip install -r requirements.txt
 
 
 	@echo "Setup complete!"
@@ -13,7 +16,7 @@ setup:
 dev:
 	docker-compose up -d
 	cd frontend && npm run dev &
-	cd backend && python main.py
+	cd backend && venv/bin/python main.py
 
 
 
@@ -21,21 +24,21 @@ dev:
 # Run tests
 test:
 	cd frontend && npm test
-	cd backend && pytest
+	cd backend && venv/bin/pytest
 
 
 
 # Run linters
 lint:
 	cd frontend && npm run lint
-	cd backend && black . && flake8
+	cd backend && venv/bin/black . && venv/bin/flake8
 
 
 
 # Build for production
 build:
 	cd frontend && npm run build
-	cd backend && python -m build
+	cd backend && venv/bin/python -m build
 
 
 

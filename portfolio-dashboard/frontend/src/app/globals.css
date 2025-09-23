@@ -4,48 +4,40 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
+    --color-surface: #f8fafc;
+    --color-surface-alt: #ffffff;
+    --color-muted: #e2e8f0;
+    --color-border: #cbd5f5;
+    --color-neutral-900: #0f172a;
+    --color-neutral-700: #1f2937;
+    --color-neutral-500: #475569;
+    --color-neutral-400: #64748b;
+    --color-neutral-200: #e2e8f0;
+    --color-accent-primary: #3b82f6;
+    --color-accent-secondary: #6366f1;
+    --color-accent-soft: #eef2ff;
+    --color-success: #15803d;
+    --color-warning: #b45309;
+    --radius-lg: 1.5rem;
+    --radius-md: 1rem;
+    --radius-sm: 0.75rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --color-surface: #0b1220;
+    --color-surface-alt: #111827;
+    --color-muted: #1f2937;
+    --color-border: #334155;
+    --color-neutral-900: #f8fafc;
+    --color-neutral-700: #e2e8f0;
+    --color-neutral-500: #cbd5f5;
+    --color-neutral-400: #94a3b8;
+    --color-neutral-200: #475569;
+    --color-accent-primary: #60a5fa;
+    --color-accent-secondary: #8b5cf6;
+    --color-accent-soft: #312e81;
+    --color-success: #34d399;
+    --color-warning: #fbbf24;
   }
 }
 
@@ -54,6 +46,135 @@
     @apply border-border;
   }
   body {
-    @apply bg-[#f4f6f8] text-foreground antialiased;
+    font-family: var(--font-sans, 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+    font-size: 16px;
+    line-height: 1.6;
+    @apply bg-[var(--color-surface)] text-[color:var(--color-neutral-700)] antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Donezo Button Styles */
+  .btn-donezo {
+    @apply bg-donezo-500 hover:bg-donezo-600 text-white font-medium px-4 py-2 rounded-xl transition-all duration-200 shadow-soft;
+  }
+  
+  .btn-donezo-outline {
+    @apply border-2 border-donezo-500 text-donezo-500 hover:bg-donezo-500 hover:text-white font-medium px-4 py-2 rounded-xl transition-all duration-200;
+  }
+  
+  /* Donezo Card Styles */
+  .card-donezo {
+    @apply bg-white rounded-2xl shadow-card border border-gray-100 p-6;
+  }
+  
+  /* Donezo Sidebar Styles */
+  .sidebar-donezo {
+    @apply bg-white border-r border-gray-200 shadow-soft;
+  }
+  
+  /* Donezo Gradient Backgrounds */
+  .gradient-donezo {
+    background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+  }
+  
+  .gradient-mobile-app {
+    background: linear-gradient(135deg, #22c55e 0%, #3b82f6 100%);
+  }
+  
+  /* Donezo Status Badges */
+  .badge-completed {
+    @apply bg-donezo-100 text-donezo-700 px-2 py-1 rounded-lg text-xs font-medium;
+  }
+  
+  .badge-in-progress {
+    @apply bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-xs font-medium;
+  }
+  
+  .badge-pending {
+    @apply bg-gray-100 text-gray-700 px-2 py-1 rounded-lg text-xs font-medium;
+  }
+  
+  /* Donezo KPI Card Styles */
+  .kpi-card {
+    @apply bg-white rounded-2xl p-6 shadow-card border border-gray-100 hover:shadow-lg transition-shadow duration-200;
+  }
+  
+  .kpi-card-primary {
+    @apply bg-gradient-to-br from-donezo-500 to-donezo-600 text-white rounded-2xl p-6 shadow-card;
+  }
+  
+  /* Donezo Navigation Styles */
+  .nav-item {
+    @apply flex items-center px-4 py-3 text-gray-600 hover:text-donezo-600 hover:bg-donezo-50 rounded-xl transition-all duration-200;
+  }
+  
+  .nav-item-active {
+    @apply flex items-center px-4 py-3 text-donezo-600 bg-donezo-50 rounded-xl font-medium;
+  }
+
+  .product-card {
+    @apply transition-all duration-300 ease-in-out;
+    will-change: transform, opacity;
+  }
+
+  .product-card.filtered-in {
+    animation: slideInUp 0.4s ease-out both;
+  }
+
+  .product-card.is-filtering {
+    @apply opacity-80;
+    transform: scale(0.98);
+  }
+
+  .product-card.filtered-out {
+    @apply opacity-0 pointer-events-none;
+    transform: translateY(10px) scale(0.95);
+  }
+
+  .brand-strip {
+    @apply border-none bg-transparent;
+  }
+
+  .animate-marquee {
+    animation: marquee 25s linear infinite;
+  }
+
+  .animate-marquee.paused {
+    animation-play-state: paused;
+  }
+
+  .scrollbar-hidden {
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
   }
 }

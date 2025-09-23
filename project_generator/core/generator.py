@@ -602,46 +602,34 @@ class ProjectGenerator:
     def _include_rules_from_manifest(self, rules_dir: Path) -> None:
         """Copy only rules listed in the JSON manifest from root .cursor/rules/project-rules.
 
-        Manifest format: ["nextjs.mdc", "typescript.mdc", ...]
+        If the manifest path is missing or invalid, fall back to curated stack-based rules.
         """
         try:
             if not self.rules_manifest_path:
+                curated = self._collect_curated_project_rules()
+                if curated:
+                    self._emit_rule_files(rules_dir, curated, self._rules_selected_includes)
                 return
+
             import json as _json
+
             manifest_path = Path(self.rules_manifest_path)
-            if not manifest_path.exists():
+            names: list[str] = []
+            if manifest_path.exists():
+                try:
+                    payload = _json.loads(manifest_path.read_text(encoding='utf-8'))
+                    if isinstance(payload, list):
+                        names = [str(item).strip() for item in payload if str(item).strip().endswith('.mdc')]
+                except Exception:
+                    names = []
+
+            if not names:
+                curated = self._collect_curated_project_rules()
+                if curated:
+                    self._emit_rule_files(rules_dir, curated, self._rules_selected_includes)
                 return
-            names = []
-            try:
-                names = _json.loads(manifest_path.read_text(encoding='utf-8'))
-            except Exception:
-                return
-            if not isinstance(names, list):
-                return
-            repo_root = Path(__file__).resolve().parents[2]
-            source_dir = repo_root / '.cursor' / 'rules' / 'project-rules'
-            if not source_dir.exists():
-                # Fallback: create minimal embedded rules if known
-                rules_dir.mkdir(parents=True, exist_ok=True)
-                for fname in names:
-                    self._write_fallback_rule_if_known(rules_dir, fname)
-                return
-            rules_dir.mkdir(parents=True, exist_ok=True)
-            for fname in names:
-                if not isinstance(fname, str) or not fname.endswith('.mdc'):
-                    continue
-                src = source_dir / fname
-                if src.exists() and src.is_file():
-                    dest = rules_dir / fname
-                    dest.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy(src, dest)
-                    try:
-                        self._rules_included_from_manifest.append(str(Path('project-rules') / fname))
-                    except Exception:
-                        pass
-                else:
-                    # Fallback to embedded minimal content when file missing
-                    self._write_fallback_rule_if_known(rules_dir, fname)
+
+            self._emit_rule_files(rules_dir, names, self._rules_included_from_manifest)
         except Exception:
             return
 
@@ -664,8 +652,11 @@ class ProjectGenerator:
             'nextjs.mdc': self._rule_min_nextjs(),
             'nextjs-formatting.mdc': self._rule_min_nextjs_formatting(),
             'nextjs-rsc-and-client.mdc': self._rule_min_nextjs_rsc(),
+            'nextjs-a11y.mdc': self._rule_min_nextjs_a11y(),
             'typescript.mdc': self._rule_min_typescript(),
+            'accessibility.mdc': self._rule_min_accessibility(),
             'fastapi.mdc': self._rule_min_fastapi(),
+            'django.mdc': self._rule_min_django(),
             'python.mdc': self._rule_min_python(),
             'rest-api.mdc': self._rule_min_rest_api(),
             'open-api.mdc': self._rule_min_open_api(),
@@ -675,6 +666,7 @@ class ProjectGenerator:
             'vue.mdc': self._rule_min_vue(),
             'expo.mdc': self._rule_min_expo(),
             'react-native.mdc': self._rule_min_react_native(),
+            'nodejs.mdc': self._rule_min_nodejs(),
             'mongodb.mdc': self._rule_min_mongodb(),
             'firebase.mdc': self._rule_min_firebase(),
             'best-practices.mdc': self._rule_min_best_practices(),
@@ -736,6 +728,18 @@ class ProjectGenerator:
             '- Default to RSC; use Client only for stateful/interactive UI.\n'
         )
 
+    def _rule_min_nextjs_a11y(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [frontend,nextjs,a11y] | TRIGGERS: accessibility,audit | SCOPE: project-rules | DESCRIPTION: Next.js accessibility guardrails."\n'
+            '---\n\n'
+            '# Next.js Accessibility\n\n'
+            '- Provide visible focus states and keyboard support for interactive components.\n'
+            '- Prefer semantic HTML landmarks; keep aria usage purposeful.\n'
+            '- Run eslint-plugin-jsx-a11y before merging UI changes.\n'
+        )
+
     def _rule_min_typescript(self) -> str:
         return (
             '---\n'
@@ -746,6 +750,18 @@ class ProjectGenerator:
             '- Strict true; no implicit any; clear function and public API types.\n'
         )
 
+    def _rule_min_accessibility(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [frontend,accessibility] | TRIGGERS: audit,a11y | SCOPE: project-rules | DESCRIPTION: Baseline accessibility checklist."\n'
+            '---\n\n'
+            '# Accessibility Checklist\n\n'
+            '- Meet WCAG 2.1 AA contrast and keyboard navigation requirements.\n'
+            '- Supply meaningful alt text and aria labels for non-text UI elements.\n'
+            '- Validate with axe or Lighthouse during QA.\n'
+        )
+
     def _rule_min_fastapi(self) -> str:
         return (
             '---\n'
@@ -754,6 +770,18 @@ class ProjectGenerator:
             '---\n\n'
             '# FastAPI Minimal\n\n'
             '- Pydantic v2; typed request/response models; dependency injection for DB.\n'
+        )
+
+    def _rule_min_django(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [backend,django] | TRIGGERS: view,model | SCOPE: project-rules | DESCRIPTION: Minimal Django service rules."\n'
+            '---\n\n'
+            '# Django Minimal\n\n'
+            '- Use class-based views and DRF viewsets for APIs; keep business logic in services.\n'
+            '- Configure settings via environment variables; enable security middleware in production.\n'
+            '- Maintain migrations per change set and cover critical paths with pytest.\n'
         )
 
     def _rule_min_python(self) -> str:
@@ -798,6 +826,18 @@ class ProjectGenerator:
             '---\nalwaysApply: false\n'
             'description: "TAGS: [nethttp] | TRIGGERS: handler,router | SCOPE: project-rules | DESCRIPTION: Minimal net/http rules."\n---\n\n'
             '# net/http Minimal\n\n- Context cancel checks; timeouts; structured logging.\n'
+        )
+
+    def _rule_min_nodejs(self) -> str:
+        return (
+            '---\n'
+            'alwaysApply: false\n'
+            'description: "TAGS: [backend,nodejs] | TRIGGERS: api,build | SCOPE: project-rules | DESCRIPTION: Minimal Node.js service guidance."\n'
+            '---\n\n'
+            '# Node.js Service\n\n'
+            '- Use structured logging and graceful shutdown hooks for long-lived processes.\n'
+            '- Keep configuration in environment variables with runtime validation.\n'
+            '- Enforce eslint and unit tests via npm scripts before deployment.\n'
         )
 
     def _rule_min_angular(self) -> str:
@@ -888,90 +928,94 @@ class ProjectGenerator:
         )
 
     def _include_selected_project_rules(self, rules_dir: Path):
-        """Copy a minimal set of project rules (.mdc) for the chosen stack into the generated project.
-
-        This runs only when the user passes --include-project-rules and .cursor assets are enabled.
-        It selects a small, opinionated subset to avoid ceremony. Missing source files fall back to
-        embedded minimal generators or populated template pack rules.
-        """
+        """Copy a minimal set of project rules (.mdc) for the chosen stack into the generated project."""
         try:
             if not getattr(self.args, 'include_project_rules', False):
                 return
-            # Locate source rules in the root repo and template fallback locations
-            repo_root = Path(__file__).resolve().parents[2]
-            source_dir = repo_root / '.cursor' / 'rules' / 'project-rules'
-            template_rules_root = repo_root / 'template-packs' / 'rules'
-
-            # Frontend minimal sets
-            fe = (getattr(self.args, 'frontend', 'none') or 'none').lower()
-            fe_map = {
-                'nextjs': ['nextjs.mdc', 'nextjs-formatting.mdc', 'nextjs-rsc-and-client.mdc', 'typescript.mdc'],
-                'angular': ['angular.mdc', 'typescript.mdc'],
-                'expo': ['expo.mdc', 'react-native.mdc', 'typescript.mdc'],
-                'nuxt': ['vue.mdc', 'typescript.mdc'],
-            }
-
-            # Backend minimal sets
-            be = (getattr(self.args, 'backend', 'none') or 'none').lower()
-            be_map = {
-                'fastapi': ['fastapi.mdc', 'python.mdc', 'rest-api.mdc', 'open-api.mdc'],
-                'django': ['django.mdc', 'python.mdc', 'rest-api.mdc', 'open-api.mdc'],
-                'nestjs': ['nodejs.mdc', 'typescript.mdc', 'rest-api.mdc', 'open-api.mdc'],
-                'go': ['golang.mdc', 'nethttp.mdc', 'rest-api.mdc', 'open-api.mdc'],
-            }
-
-            # Database add-ons
-            db = (getattr(self.args, 'database', 'none') or 'none').lower()
-            db_addons: list[str] = []
-            if db == 'mongodb':
-                db_addons.append('mongodb.mdc')
-            elif db == 'firebase':
-                db_addons.append('firebase.mdc')
-
-            selected: list[str] = []
-            selected += fe_map.get(fe, [])
-            selected += be_map.get(be, [])
-            selected += db_addons
-
-            # Deduplicate while preserving order
-            seen = set()
-            filtered: list[str] = []
-            for f in selected:
-                if f and f not in seen:
-                    seen.add(f)
-                    filtered.append(f)
-
-            rules_dir.mkdir(parents=True, exist_ok=True)
-
-            for fname in filtered:
-                dest = rules_dir / fname
-                dest.parent.mkdir(parents=True, exist_ok=True)
-
-                produced = False
-                src = source_dir / fname
-                if src.exists() and src.is_file():
-                    shutil.copy(src, dest)
-                    produced = True
-                else:
-                    template_src = self._resolve_template_rule_source(template_rules_root, fname)
-                    if template_src and template_src.exists():
-                        shutil.copy(template_src, dest)
-                        produced = True
-
-                if not produced:
-                    self._write_fallback_rule_if_known(rules_dir, fname)
-                    produced = dest.exists()
-
-                if produced:
-                    try:
-                        selected_entry = str(Path('project-rules') / fname)
-                        if selected_entry not in self._rules_selected_includes:
-                            self._rules_selected_includes.append(selected_entry)
-                    except Exception:
-                        pass
+            selected = self._collect_curated_project_rules()
+            if not selected:
+                return
+            self._emit_rule_files(rules_dir, selected, self._rules_selected_includes)
         except Exception:
             # Non-fatal: rule inclusion should never break generation
             return
+
+    def _collect_curated_project_rules(self) -> list[str]:
+        fe = (getattr(self.args, 'frontend', 'none') or 'none').lower()
+        be = (getattr(self.args, 'backend', 'none') or 'none').lower()
+        db = (getattr(self.args, 'database', 'none') or 'none').lower()
+
+        frontend_rules = {
+            'nextjs': ['nextjs.mdc', 'nextjs-formatting.mdc', 'nextjs-rsc-and-client.mdc', 'typescript.mdc', 'accessibility.mdc', 'nextjs-a11y.mdc'],
+            'angular': ['angular.mdc', 'typescript.mdc', 'accessibility.mdc'],
+            'expo': ['expo.mdc', 'react-native.mdc', 'typescript.mdc', 'accessibility.mdc'],
+            'nuxt': ['vue.mdc', 'typescript.mdc', 'accessibility.mdc'],
+        }
+
+        backend_rules = {
+            'fastapi': ['fastapi.mdc', 'python.mdc', 'rest-api.mdc', 'open-api.mdc', 'performance.mdc', 'observability.mdc'],
+            'django': ['django.mdc', 'python.mdc', 'rest-api.mdc', 'open-api.mdc', 'performance.mdc', 'observability.mdc'],
+            'nestjs': ['nodejs.mdc', 'typescript.mdc', 'rest-api.mdc', 'open-api.mdc', 'performance.mdc', 'observability.mdc'],
+            'go': ['golang.mdc', 'nethttp.mdc', 'rest-api.mdc', 'open-api.mdc', 'performance.mdc', 'observability.mdc'],
+        }
+
+        db_addons: dict[str, list[str]] = {
+            'mongodb': ['mongodb.mdc'],
+            'firebase': ['firebase.mdc'],
+        }
+
+        selected: list[str] = []
+        selected += frontend_rules.get(fe, [])
+        selected += backend_rules.get(be, [])
+        selected += db_addons.get(db, [])
+
+        # Deduplicate while preserving order
+        seen: set[str] = set()
+        filtered: list[str] = []
+        for name in selected:
+            if name and name not in seen:
+                seen.add(name)
+                filtered.append(name)
+        return filtered
+
+    def _emit_rule_files(self, rules_dir: Path, filenames: list[str], tracking: list[str]) -> None:
+        repo_root = Path(__file__).resolve().parents[2]
+        source_dir = repo_root / '.cursor' / 'rules' / 'project-rules'
+        template_rules_root = repo_root / 'template-packs' / 'rules'
+
+        rules_dir.mkdir(parents=True, exist_ok=True)
+
+        seen: set[str] = set()
+        for fname in filenames:
+            if not fname or fname in seen:
+                continue
+            seen.add(fname)
+
+            dest = rules_dir / fname
+            dest.parent.mkdir(parents=True, exist_ok=True)
+
+            produced = False
+            src = source_dir / fname
+            if src.exists() and src.is_file():
+                shutil.copy(src, dest)
+                produced = True
+            else:
+                template_src = self._resolve_template_rule_source(template_rules_root, fname)
+                if template_src and template_src.exists():
+                    shutil.copy(template_src, dest)
+                    produced = True
+
+            if not produced:
+                self._write_fallback_rule_if_known(rules_dir, fname)
+                produced = dest.exists()
+
+            if produced:
+                try:
+                    entry = str(Path('project-rules') / fname)
+                    if entry not in tracking:
+                        tracking.append(entry)
+                except Exception:
+                    pass
 
 
     def _generate_compliance_rules_content(self, compliance: str) -> str:

@@ -11,6 +11,19 @@ This guide walks through the non-interactive lifecycle that turns a client brief
 
 > ℹ️ Use the [`Makefile`](../Makefile) `lifecycle` target for a single entrypoint once the environment variables are in place. The steps below describe what the script executes under the hood.
 
+## Quick Bootstrap
+
+Invoke the helper to scaffold the brief, sync `workflow.config.json`, and run the full `e2e_from_brief.sh` pipeline in one command:
+
+```bash
+# From the factory repo
+NAME=portfolio-dashboard make bootstrap
+# or
+python3 scripts/bootstrap_project.py --name portfolio-dashboard --update-config
+```
+
+The bootstrapper reads overrides from CLI flags, environment variables, or `workflow.config.json`, ensures the brief folder exists via `scaffold_briefs.py`, then delegates to the lifecycle script. Continue with the detailed steps below when you need fine-grained control or to rerun individual stages.
+
 ## Step-by-Step Lifecycle
 
 ### 0. Provision an isolated project directory

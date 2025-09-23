@@ -1,4 +1,4 @@
-.PHONY: setup dev test lint build deploy clean lifecycle pipeline-validate
+.PHONY: setup dev test lint build deploy clean lifecycle pipeline-validate bootstrap
 
 ENV ?= staging
 FRONTEND_URL ?=
@@ -83,3 +83,6 @@ pipeline-validate:
 	@if [ -z "$(DB_URL)" ]; then echo "DB_URL is required" >&2; exit 1; fi
 	@mkdir -p reports
 	@python scripts/health/check_deployment.py --environment $(ENV) --frontend-url $(FRONTEND_URL) --api-url $(API_URL) --db-url $(DB_URL) --out reports/$(ENV)-pipeline-validation.json
+
+bootstrap:
+	@python3 scripts/bootstrap_project.py $(if $(NAME),--name "$(NAME)") $(if $(INDUSTRY),--industry "$(INDUSTRY)") $(if $(PROJECT_TYPE),--project-type "$(PROJECT_TYPE)") $(if $(FE),--frontend "$(FE)") $(if $(BE),--backend "$(BE)") $(if $(DB),--database "$(DB)") $(if $(AUTH),--auth "$(AUTH)") $(if $(DEPLOY),--deploy "$(DEPLOY)") $(if $(COMPLIANCE),--compliance "$(COMPLIANCE)") $(if $(CONFIG_FILE),--config-file "$(CONFIG_FILE)") $(if $(OUTPUT_ROOT),--output-root "$(OUTPUT_ROOT)") $(if $(FORCE_OUTPUT),--force) $(if $(BOOTSTRAP_UPDATE_CONFIG),--update-config)
