@@ -645,6 +645,19 @@ class ProjectGenerator:
         except Exception:
             return
 
+    def _resolve_template_rule_source(self, template_root: Path, fname: str) -> Optional[Path]:
+        """Return a matching rule path from template-packs when available."""
+        mapping: dict[str, Path] = {
+            'nextjs.mdc': template_root / 'frontend' / 'nextjs' / 'nextjs.mdc',
+            'nextjs-formatting.mdc': template_root / 'frontend' / 'nextjs' / 'formatting.mdc',
+            'typescript.mdc': template_root / 'frontend' / 'nextjs' / 'typescript.mdc',
+            'fastapi.mdc': template_root / 'backend' / 'fastapi' / 'fastapi.mdc',
+        }
+        candidate = mapping.get(fname)
+        if candidate and candidate.exists():
+            return candidate
+        return None
+
     def _write_fallback_rule_if_known(self, rules_dir: Path, fname: str) -> None:
         """Write a minimal embedded rule if we recognize the filename."""
         mapping: dict[str, str] = {
@@ -878,16 +891,16 @@ class ProjectGenerator:
         """Copy a minimal set of project rules (.mdc) for the chosen stack into the generated project.
 
         This runs only when the user passes --include-project-rules and .cursor assets are enabled.
-        It selects a small, opinionated subset to avoid ceremony: all files are copied as-is (generally alwaysApply: false).
+        It selects a small, opinionated subset to avoid ceremony. Missing source files fall back to
+        embedded minimal generators or populated template pack rules.
         """
         try:
             if not getattr(self.args, 'include_project_rules', False):
                 return
-            # Locate source rules in the root repo
+            # Locate source rules in the root repo and template fallback locations
             repo_root = Path(__file__).resolve().parents[2]
             source_dir = repo_root / '.cursor' / 'rules' / 'project-rules'
-            if not source_dir.exists():
-                return
+            template_rules_root = repo_root / 'template-packs' / 'rules'
 
             # Frontend minimal sets
             fe = (getattr(self.args, 'frontend', 'none') or 'none').lower()
@@ -909,7 +922,7 @@ class ProjectGenerator:
 
             # Database add-ons
             db = (getattr(self.args, 'database', 'none') or 'none').lower()
-            db_addons = []
+            db_addons: list[str] = []
             if db == 'mongodb':
                 db_addons.append('mongodb.mdc')
             elif db == 'firebase':
@@ -928,20 +941,39 @@ class ProjectGenerator:
                     seen.add(f)
                     filtered.append(f)
 
+            rules_dir.mkdir(parents=True, exist_ok=True)
+
             for fname in filtered:
+                dest = rules_dir / fname
+                dest.parent.mkdir(parents=True, exist_ok=True)
+
+                produced = False
                 src = source_dir / fname
                 if src.exists() and src.is_file():
-                    dest = rules_dir / fname
-                    dest.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy(src, dest)
+                    produced = True
+                else:
+                    template_src = self._resolve_template_rule_source(template_rules_root, fname)
+                    if template_src and template_src.exists():
+                        shutil.copy(template_src, dest)
+                        produced = True
+
+                if not produced:
+                    self._write_fallback_rule_if_known(rules_dir, fname)
+                    produced = dest.exists()
+
+                if produced:
                     try:
-                        self._rules_selected_includes.append(str(Path('project-rules') / fname))
+                        selected_entry = str(Path('project-rules') / fname)
+                        if selected_entry not in self._rules_selected_includes:
+                            self._rules_selected_includes.append(selected_entry)
                     except Exception:
                         pass
         except Exception:
             # Non-fatal: rule inclusion should never break generation
             return
-    
+
+
     def _generate_compliance_rules_content(self, compliance: str) -> str:
         """Generate Cursor-style .mdc content with YAML frontmatter for a compliance standard."""
         c = (compliance or '').strip().lower()
