@@ -1,8 +1,6 @@
 ---
 description: Best practices and guidelines for Angular v20 (TS 5.9, RxJS 7.8, Zone.js 0.15)
-globs: **/*.ts
-globs: **/*.html
-globs: **/*.scss
+globs: **/*.ts,**/*.html,**/*.scss
 alwaysApply: false
 ---
 
