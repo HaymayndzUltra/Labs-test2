@@ -1,6 +1,6 @@
 ---
 description: Best practices for Next.js v15.5 (React 19.1, TS 5.9) with App Router
-globs: */src/app/**/*.tsx,*/src/app/**/*.ts,*/app/**/*.tsx,*/app/**/*.ts,*/src/components/**/*.tsx,*/src/components/**/*.ts,*/components/**/*.tsx,*/components/**/*.ts,*/src/hooks/**/*.ts,*/src/hooks/**/*.tsx,*/app/api/**/route.ts,*/src/app/api/**/route.ts,*/src/app/**/*.js,*/src/app/**/*.jsx,*/app/**/*.js,*/app/**/*.jsx,*/src/components/**/*.js,*/src/components/**/*.jsx,*/components/**/*.js,*/components/**/*.jsx
+globs: */frontend/src/app/**/*.tsx,*/frontend/src/app/**/*.ts,*/frontend/app/**/*.tsx,*/frontend/app/**/*.ts,*/frontend/src/components/**/*.tsx,*/frontend/src/components/**/*.ts,*/frontend/components/**/*.tsx,*/frontend/components/**/*.ts,*/frontend/src/hooks/**/*.ts,*/frontend/src/hooks/**/*.tsx,*/frontend/app/api/**/route.ts,*/frontend/src/app/api/**/route.ts,*/frontend/src/app/**/*.js,*/frontend/src/app/**/*.jsx,*/frontend/app/**/*.js,*/frontend/app/**/*.jsx,*/frontend/src/components/**/*.js,*/frontend/src/components/**/*.jsx,*/frontend/components/**/*.js,*/frontend/components/**/*.jsx
 ---
 
 - Use the App Router (`app/`) exclusively; do not mix with `pages/`.

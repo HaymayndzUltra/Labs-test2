@@ -1,6 +1,6 @@
 ---
 description: Best practices for React 19.1 (with Next.js 15)
-globs: */src/app/**/*.tsx,*/src/app/**/*.ts,*/app/**/*.tsx,*/app/**/*.ts,*/src/components/**/*.tsx,*/src/components/**/*.ts,*/components/**/*.tsx,*/components/**/*.ts,*/src/hooks/**/*.ts,*/src/hooks/**/*.tsx,*/src/app/**/*.js,*/src/app/**/*.jsx,*/app/**/*.js,*/app/**/*.jsx,*/src/components/**/*.js,*/src/components/**/*.jsx,*/components/**/*.js,*/components/**/*.jsx
+globs: */frontend/src/app/**/*.tsx,*/frontend/src/app/**/*.ts,*/frontend/app/**/*.tsx,*/frontend/app/**/*.ts,*/frontend/src/components/**/*.tsx,*/frontend/src/components/**/*.ts,*/frontend/components/**/*.tsx,*/frontend/components/**/*.ts,*/frontend/src/hooks/**/*.ts,*/frontend/src/hooks/**/*.tsx,*/frontend/src/app/**/*.js,*/frontend/src/app/**/*.jsx,*/frontend/app/**/*.js,*/frontend/app/**/*.jsx,*/frontend/src/components/**/*.js,*/frontend/src/components/**/*.jsx,*/frontend/components/**/*.js,*/frontend/components/**/*.jsx
 ---
 
 - Prefer function components and hooks; avoid legacy lifecycles.
