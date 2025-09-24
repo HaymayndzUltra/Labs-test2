@@ -38,8 +38,20 @@ export function BrandCarousel() {
   }, []);
 
   return (
-    <div className="space-y-2">
-      <div className="overflow-hidden border-y border-indigo-100/70 bg-white/95 py-6 shadow-soft">
+    <section className="space-y-3" aria-labelledby="brand-carousel-heading">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <h2
+          id="brand-carousel-heading"
+          className="text-xs font-semibold uppercase tracking-wide text-neutral-600"
+        >
+          Featured brand shortcuts
+        </h2>
+        <p className="text-xs text-neutral-500">
+          Surface partner campaigns without leaving the catalog workspace.
+        </p>
+      </div>
+
+      <div className="overflow-hidden rounded-3xl border border-indigo-100/70 bg-white/95 py-6 shadow-soft">
         <div className="mx-auto hidden w-full max-w-7xl px-6 md:block">
           <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-r from-white via-white/90 to-white">
             <div
@@ -59,7 +71,7 @@ export function BrandCarousel() {
         </div>
       </div>
       <div className="md:hidden">
-        <div className="scrollbar-hidden overflow-x-auto border-y border-indigo-100/70 bg-white/95 px-4 py-4">
+        <div className="scrollbar-hidden overflow-x-auto rounded-3xl border border-indigo-100/70 bg-white/95 px-4 py-4">
           <div className="flex w-max items-center gap-10">
             {brandLogos.map((brand) => (
               <BrandLogoCard key={`mobile-${brand.name}`} brand={brand} />
@@ -67,6 +79,6 @@ export function BrandCarousel() {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

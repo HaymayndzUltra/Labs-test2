@@ -28,6 +28,11 @@ export function NavigationLayout({
   className = '',
 }: NavigationLayoutProps) {
   const [savedFilterSets, setSavedFilterSets] = useState<FilterSet[]>([]);
+  const workspaceTitle = activeMode === 'catalog' ? 'Product Catalog' : 'Analytics Overview';
+  const workspaceDescription =
+    activeMode === 'catalog'
+      ? 'Browse, filter, and curate products with merchandising context.'
+      : 'Track performance metrics and customer signals for faster decisions.';
 
   const handleSaveFilterSet = useCallback((filterSet: FilterSet) => {
     setSavedFilterSets(prev => [...prev, filterSet]);
@@ -53,18 +58,18 @@ export function NavigationLayout({
       <BreadcrumbNav items={breadcrumbItems} />
 
       {/* Hero Section with Sub-Navigation */}
-      <div className="hero-section">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary/90 via-secondary/80 to-primary/60 text-lg font-semibold text-white shadow-soft">
+      <div className="hero-section" role="presentation">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary/90 via-secondary/80 to-primary/60 text-lg font-semibold text-white shadow-soft" aria-hidden>
               CX
             </div>
             <div>
-              <p className="text-lg font-semibold text-neutral-900">Commerce Experience</p>
-              <p className="text-sm text-neutral-600">Enterprise analytics workspace</p>
+              <h1 className="text-2xl font-bold text-neutral-900 sm:text-3xl">{workspaceTitle}</h1>
+              <p className="mt-1 max-w-xl text-sm text-neutral-600">{workspaceDescription}</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <SaveFilterSet
               currentFilters={currentFilters}

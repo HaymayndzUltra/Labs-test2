@@ -137,8 +137,18 @@ function formatCurrency(value: number, currency: string) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
-    minimumFractionDigits: value % 1 === 0 ? 0 : 2,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(value);
+}
+
+function formatTokenLabel(value: string) {
+  return value
+    .replace(/[_-]+/g, ' ')
+    .split(' ')
+    .filter(Boolean)
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(' ');
 }
 
 function formatChange(change: number) {
@@ -766,6 +776,8 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
     delivery_options: deliveryOptions,
     spotlight_metric: spotlightMetric,
   } = dashboardData;
+  const totalProducts = dashboardData.products.length;
+  const isCatalogMode = navigationMode === 'catalog';
 
   const currentFilters = useMemo(() => ({
     category: activeCategory === 'all' ? undefined : activeCategory,
@@ -890,260 +902,280 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
       </div>
 
       <main className="mx-auto max-w-7xl space-y-6 px-6 pb-12 pt-6">
-        <BrandCarousel />
+        {isCatalogMode ? (
+          <>
+            <BrandCarousel />
 
-        <section className="grid grid-cols-12 gap-6">
-          <aside className="col-span-12 space-y-5 lg:col-span-4 xl:col-span-3">
-            <div className="hidden lg:block">
-              <FilterPanel
-                priceRange={priceRange}
-                priceSelection={priceSelection}
-                setPriceSelection={setPriceSelection}
-                ratingFilter={ratingFilter}
-                brandFilters={brandFilters}
-                selectedBrands={selectedBrands}
-                onBrandToggle={handleBrandToggle}
-                onBrandsReset={handleClearBrands}
-                deliveryOptions={deliveryOptions}
-                onDeliveryToggle={handleDeliveryToggle}
-                onReset={handleResetFilters}
-                onFilterChange={triggerFilteringFeedback}
-                initialFilters={defaultFilters}
-                variant="desktop"
-                activeCount={activeFilterCount}
-              />
-            </div>
-
-            <InsightsWidget spotlightMetric={spotlightMetric} overviewMetrics={overviewMetrics} />
-            
-            {/* Personalization Components */}
-            <div className="space-y-5">
-              <PersonalizationSettings 
-                preferences={preferences}
-                onPreferencesChange={savePreferences}
-              />
-              
-              <PersonalizedInsights 
-                insights={personalizedInsights}
-                isLoading={insightsLoading}
-                onInsightClick={(insight) => {
-                  console.log('Insight clicked:', insight);
-                  // Handle insight click - could navigate to analytics or show details
-                }}
-              />
-              
-              <Recommendations
-                productRecommendations={productRecommendations}
-                insightRecommendations={insightRecommendations}
-                isLoading={recommendationsLoading}
-                onRefresh={refreshRecommendations}
-                onProductClick={(product) => {
-                  console.log('Product recommendation clicked:', product);
-                  // Handle product click - could add to cart or navigate to product
-                }}
-                onInsightClick={(insight) => {
-                  console.log('Insight recommendation clicked:', insight);
-                  // Handle insight click - could navigate to analytics
-                }}
-              />
-            </div>
-          </aside>
-
-          <section className="col-span-12 space-y-5 lg:col-span-8 xl:col-span-9">
-            <div className="rounded-3xl border border-indigo-100/70 bg-surface-alt px-6 py-5 shadow-soft">
-              <div
-                className="scrollbar-hidden -mx-2 overflow-x-auto pb-2"
-                role="tablist"
-                aria-label="Product categories"
-                aria-orientation="horizontal"
-              >
-                <div className="flex w-max items-center gap-2 px-2">
-                  {categoryOptions.map((category, index) => {
-                    const isActive = activeCategory === category.id;
-                    const chipClasses = `inline-flex items-center rounded-full border px-4 py-2 text-sm font-semibold transition-standard focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60 ${
-                      isActive
-                        ? 'border-primary bg-primary text-white shadow-soft'
-                        : 'border-transparent bg-white/90 text-neutral-600 hover:border-primary/40 hover:bg-primary/5 hover:text-primary'
-                    }`;
-
-                    return (
-                      <button
-                        key={`${category.id}-${index}`}
-                        ref={(element) => {
-                          categoryRefs.current[index] = element;
-                        }}
-                        type="button"
-                        data-category-id={category.id}
-                        className={`${chipClasses} category-chip`}
-                        role="tab"
-                        aria-selected={isActive}
-                        tabIndex={isActive ? 0 : -1}
-                        onClick={() => handleCategoryChange(category.id)}
-                        onKeyDown={(event) => handleCategoryKeyDown(event, index)}
-                      >
-                        {category.label}
-                      </button>
-                    );
-                  })}
+            <section className="grid grid-cols-12 gap-6">
+              <aside className="col-span-12 lg:col-span-4 xl:col-span-3">
+                <div className="hidden lg:block">
+                  <FilterPanel
+                    priceRange={priceRange}
+                    priceSelection={priceSelection}
+                    setPriceSelection={setPriceSelection}
+                    ratingFilter={ratingFilter}
+                    brandFilters={brandFilters}
+                    selectedBrands={selectedBrands}
+                    onBrandToggle={handleBrandToggle}
+                    onBrandsReset={handleClearBrands}
+                    deliveryOptions={deliveryOptions}
+                    onDeliveryToggle={handleDeliveryToggle}
+                    onReset={handleResetFilters}
+                    onFilterChange={triggerFilteringFeedback}
+                    initialFilters={defaultFilters}
+                    variant="desktop"
+                    activeCount={activeFilterCount}
+                  />
                 </div>
-              </div>
+              </aside>
 
-              <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold text-neutral-900">Product Catalogue</h2>
-                  <p className="text-sm text-neutral-600">
-                    Showing <span className="font-semibold text-primary">{filteredProducts.length}</span> curated results
+              <section className="col-span-12 space-y-5 lg:col-span-8 xl:col-span-9">
+                <div className="rounded-3xl border border-indigo-100/70 bg-surface-alt px-6 py-5 shadow-soft">
+                  <div
+                    className="scrollbar-hidden -mx-2 overflow-x-auto pb-2"
+                    role="tablist"
+                    aria-label="Product categories"
+                    aria-orientation="horizontal"
+                  >
+                    <div className="flex w-max items-center gap-2 px-2">
+                      {categoryOptions.map((category, index) => {
+                        const isActive = activeCategory === category.id;
+                        const chipClasses = `inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-standard focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60 ${
+                          isActive
+                            ? 'bg-primary text-white shadow-soft'
+                            : 'border border-indigo-100/80 bg-white text-neutral-600 hover:border-primary/50 hover:text-primary'
+                        }`;
+
+                        return (
+                          <button
+                            key={`${category.id}-${index}`}
+                            ref={(element) => {
+                              categoryRefs.current[index] = element;
+                            }}
+                            type="button"
+                            data-category-id={category.id}
+                            className={`${chipClasses} category-chip`}
+                            role="tab"
+                            aria-selected={isActive}
+                            tabIndex={isActive ? 0 : -1}
+                            onClick={() => handleCategoryChange(category.id)}
+                            onKeyDown={(event) => handleCategoryKeyDown(event, index)}
+                          >
+                            {category.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <h2 className="text-xl font-semibold text-neutral-900">Product Catalog</h2>
+                      <p className="text-sm text-neutral-600">
+                        Showing{' '}
+                        <span className="font-semibold text-primary">{filteredProducts.length}</span>
+                        {' '}of {totalProducts} products
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-3">
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-2 rounded-full border border-indigo-100/80 bg-white px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50 lg:hidden"
+                          onClick={() => setIsFilterSheetOpen(true)}
+                          aria-expanded={isFilterSheetOpen}
+                          aria-controls="mobile-filter-sheet"
+                        >
+                          <SlidersHorizontal className="h-4 w-4" />
+                          Filters
+                          {activeFilterCount ? (
+                            <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/15 px-2 text-xs font-semibold text-primary">
+                              {activeFilterCount}
+                            </span>
+                          ) : null}
+                        </button>
+                        {isFiltering ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" /> Filtering
+                          </span>
+                        ) : null}
+                      </div>
+                      <div className="relative">
+                        <button
+                          ref={sortButtonRef}
+                          type="button"
+                          className="inline-flex items-center gap-2 rounded-full border border-indigo-100/80 bg-white px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
+                          aria-haspopup="listbox"
+                          aria-expanded={isSortMenuOpen}
+                          onClick={() => setIsSortMenuOpen((current) => !current)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault();
+                              setIsSortMenuOpen(true);
+                            }
+                          }}
+                        >
+                          <span>
+                            Sort: <span className="text-neutral-900">{activeSort.label}</span>
+                          </span>
+                          <ChevronDown className={`h-4 w-4 transition ${isSortMenuOpen ? 'rotate-180 text-primary' : ''}`} />
+                        </button>
+
+                        {isSortMenuOpen ? (
+                          <div
+                            ref={sortMenuRef}
+                            role="listbox"
+                            tabIndex={-1}
+                            className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-2xl border border-indigo-100/70 bg-white shadow-soft"
+                            onBlur={(event) => {
+                              const nextFocus = event.relatedTarget as Node | null;
+                              if (!nextFocus || !sortMenuRef.current?.contains(nextFocus)) {
+                                setIsSortMenuOpen(false);
+                              }
+                            }}
+                          >
+                            <ul className="divide-y divide-indigo-50/80">
+                              {SORT_OPTIONS.map((option, index) => {
+                                const isSelected = option.id === sortOption;
+                                const optionClasses = `w-full px-4 py-3 text-left text-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50 ${
+                                  isSelected
+                                    ? 'bg-primary/10 font-semibold text-primary'
+                                    : 'hover:bg-neutral-50'
+                                }`;
+
+                                return (
+                                  <li key={option.id}>
+                                    <button
+                                      ref={(element) => {
+                                        sortOptionRefs.current[index] = element;
+                                      }}
+                                      type="button"
+                                      role="option"
+                                      aria-selected={isSelected}
+                                      data-sort-id={option.id}
+                                      className={optionClasses}
+                                      onClick={() => handleSortSelect(option.id)}
+                                      onKeyDown={(event) => {
+                                        if (event.key === 'Escape') {
+                                          event.preventDefault();
+                                          setIsSortMenuOpen(false);
+                                          sortButtonRef.current?.focus();
+                                          return;
+                                        }
+
+                                        const currentIndex = index;
+                                        const last = SORT_OPTIONS.length - 1;
+                                        let next = currentIndex;
+
+                                        if (event.key === 'ArrowDown') {
+                                          event.preventDefault();
+                                          next = currentIndex === last ? 0 : currentIndex + 1;
+                                        }
+
+                                        if (event.key === 'ArrowUp') {
+                                          event.preventDefault();
+                                          next = currentIndex === 0 ? last : currentIndex - 1;
+                                        }
+
+                                        if (event.key === 'Home') {
+                                          event.preventDefault();
+                                          next = 0;
+                                        }
+
+                                        if (event.key === 'End') {
+                                          event.preventDefault();
+                                          next = last;
+                                        }
+
+                                        if (next !== currentIndex) {
+                                          sortOptionRefs.current[next]?.focus();
+                                        }
+
+                                        if (event.key === 'Enter' || event.key === ' ') {
+                                          event.preventDefault();
+                                          handleSortSelect(option.id);
+                                        }
+                                      }}
+                                    >
+                                      <div className="flex flex-col items-start gap-1">
+                                        <span>{option.label}</span>
+                                        <span className="text-xs text-neutral-500">{option.description}</span>
+                                      </div>
+                                    </button>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        ) : null}
+                      </div>
+                      <p className="text-xs text-neutral-500 sm:text-right">{activeSort.description}</p>
+                    </div>
+                  </div>
+
+                  <FilterSummaryBar
+                    items={filterSummaryItems}
+                    onClearAll={handleResetFilters}
+                  />
+                </div>
+
+                <VirtualizedProductGrid
+                  products={filteredProducts}
+                  ratingThreshold={ratingFilter.minimum_rating}
+                  isFiltering={isFiltering}
+                  animationSeed={productAnimationSeed}
+                  onAddToCart={handleAddToCart}
+                  onQuickView={handleQuickView}
+                />
+              </section>
+            </section>
+          </>
+        ) : (
+          <section className="space-y-6">
+            <InsightsWidget spotlightMetric={spotlightMetric} overviewMetrics={overviewMetrics} />
+
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+              <div className="space-y-6 lg:col-span-7">
+                <PersonalizedInsights
+                  insights={personalizedInsights}
+                  isLoading={insightsLoading}
+                  onInsightClick={(insight) => {
+                    console.log('Insight clicked:', insight);
+                  }}
+                  className="rounded-3xl border border-indigo-100/70 bg-white p-6 shadow-soft"
+                />
+              </div>
+              <div className="space-y-6 lg:col-span-5">
+                <div className="rounded-3xl border border-indigo-100/70 bg-white p-6 shadow-soft">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <h2 className="text-lg font-semibold text-neutral-900">Personalization controls</h2>
+                      <p className="mt-1 text-sm text-neutral-600">
+                        Adjust the preferences that power catalog recommendations and analytics highlights.
+                      </p>
+                    </div>
+                    <PersonalizationSettings
+                      preferences={preferences}
+                      onPreferencesChange={savePreferences}
+                      className="self-start rounded-full border border-indigo-100/80 bg-white px-4 py-2 font-semibold text-neutral-600 shadow-sm transition hover:border-primary/50 hover:text-primary"
+                    />
+                  </div>
+                  <p className="mt-4 text-xs text-neutral-500">
+                    Changes apply instantly across both Product Catalog and Analytics workspaces.
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-2 rounded-full border border-indigo-100/80 bg-white px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50 lg:hidden"
-                      onClick={() => setIsFilterSheetOpen(true)}
-                      aria-expanded={isFilterSheetOpen}
-                      aria-controls="mobile-filter-sheet"
-                    >
-                      <SlidersHorizontal className="h-4 w-4" />
-                      Filters
-                      {activeFilterCount ? (
-                        <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/15 px-2 text-xs font-semibold text-primary">
-                          {activeFilterCount}
-                        </span>
-                      ) : null}
-                    </button>
-                    {isFiltering ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" /> Filtering
-                      </span>
-                    ) : null}
-                  <div className="relative">
-                    <button
-                      ref={sortButtonRef}
-                      type="button"
-                      className="inline-flex items-center gap-2 rounded-full border border-indigo-100/80 bg-white px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
-                      aria-haspopup="listbox"
-                      aria-expanded={isSortMenuOpen}
-                      onClick={() => setIsSortMenuOpen((current) => !current)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
-                          event.preventDefault();
-                          setIsSortMenuOpen(true);
-                        }
-                      }}
-                    >
-                      <span>
-                        Sort: <span className="text-neutral-900">{activeSort.label}</span>
-                      </span>
-                      <ChevronDown className={`h-4 w-4 transition ${isSortMenuOpen ? 'rotate-180 text-primary' : ''}`} />
-                    </button>
 
-                    {isSortMenuOpen ? (
-                      <div
-                        ref={sortMenuRef}
-                        role="listbox"
-                        tabIndex={-1}
-                        className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-2xl border border-indigo-100/70 bg-white shadow-soft"
-                        onBlur={(event) => {
-                          const nextFocus = event.relatedTarget as Node | null;
-                          if (!nextFocus || !sortMenuRef.current?.contains(nextFocus)) {
-                            setIsSortMenuOpen(false);
-                          }
-                        }}
-                      >
-                        <ul className="divide-y divide-indigo-50/80">
-                          {SORT_OPTIONS.map((option, index) => {
-                            const isSelected = option.id === sortOption;
-                            const optionClasses = `w-full px-4 py-3 text-left text-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50 ${
-                              isSelected
-                                ? 'bg-primary/10 font-semibold text-primary'
-                                : 'hover:bg-neutral-50'
-                            }`;
-
-                            return (
-                              <li key={option.id}>
-                                <button
-                                  ref={(element) => {
-                                    sortOptionRefs.current[index] = element;
-                                  }}
-                                  type="button"
-                                  role="option"
-                                  aria-selected={isSelected}
-                                  data-sort-id={option.id}
-                                  className={optionClasses}
-                                  onClick={() => handleSortSelect(option.id)}
-                                  onKeyDown={(event) => {
-                                    if (event.key === 'Escape') {
-                                      event.preventDefault();
-                                      setIsSortMenuOpen(false);
-                                      sortButtonRef.current?.focus();
-                                      return;
-                                    }
-
-                                    const currentIndex = index;
-                                    const last = SORT_OPTIONS.length - 1;
-                                    let next = currentIndex;
-
-                                    if (event.key === 'ArrowDown') {
-                                      event.preventDefault();
-                                      next = currentIndex === last ? 0 : currentIndex + 1;
-                                    }
-
-                                    if (event.key === 'ArrowUp') {
-                                      event.preventDefault();
-                                      next = currentIndex === 0 ? last : currentIndex - 1;
-                                    }
-
-                                    if (event.key === 'Home') {
-                                      event.preventDefault();
-                                      next = 0;
-                                    }
-
-                                    if (event.key === 'End') {
-                                      event.preventDefault();
-                                      next = last;
-                                    }
-
-                                    if (next !== currentIndex) {
-                                      sortOptionRefs.current[next]?.focus();
-                                    }
-
-                                    if (event.key === 'Enter' || event.key === ' ') {
-                                      event.preventDefault();
-                                      handleSortSelect(option.id);
-                                    }
-                                  }}
-                                >
-                                  <div className="flex flex-col items-start gap-1">
-                                    <span>{option.label}</span>
-                                    <span className="text-xs text-neutral-500">{option.description}</span>
-                                  </div>
-                                </button>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
+                <Recommendations
+                  productRecommendations={productRecommendations}
+                  insightRecommendations={insightRecommendations}
+                  isLoading={recommendationsLoading}
+                  onRefresh={refreshRecommendations}
+                  className="rounded-3xl border border-indigo-100/70 bg-white p-0 shadow-soft"
+                />
               </div>
-
-              <FilterSummaryBar
-                items={filterSummaryItems}
-                onClearAll={handleResetFilters}
-              />
             </div>
-
-            <VirtualizedProductGrid
-              products={filteredProducts}
-              ratingThreshold={ratingFilter.minimum_rating}
-              isFiltering={isFiltering}
-              animationSeed={productAnimationSeed}
-              onAddToCart={handleAddToCart}
-              onQuickView={handleQuickView}
-            />
           </section>
-        </section>
+        )}
       </main>
 
       {isFilterSheetVisible ? (
@@ -1331,6 +1363,10 @@ function FilterPanel({
   const maxPercent = ((priceSelection[1] - priceRange.minimum) / priceSpan) * 100;
   const clampedMinPercent = Math.min(100, Math.max(0, minPercent));
   const clampedMaxPercent = Math.min(100, Math.max(0, maxPercent));
+  const averagePercent = Math.min(
+    100,
+    Math.max(0, ((priceRange.average - priceRange.minimum) / priceSpan) * 100),
+  );
 
   const defaultSelectedBrandIds = useMemo(() => {
     if (initialFilters?.brands) {
@@ -1380,7 +1416,7 @@ function FilterPanel({
           <button
             type="button"
             onClick={onReset}
-            className="text-sm font-semibold text-primary transition hover:text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
+            className="inline-flex items-center gap-2 rounded-full border border-transparent px-3 py-1 text-sm font-semibold text-primary transition hover:border-primary/40 hover:bg-primary/5 hover:text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
           >
             Reset
           </button>
@@ -1443,6 +1479,11 @@ function FilterPanel({
                     right: `${100 - Math.max(clampedMinPercent, clampedMaxPercent)}%`,
                   }}
                 />
+                <div
+                  className="absolute top-1/2 h-8 -translate-y-1/2 border-l border-dashed border-primary/40"
+                  style={{ left: `${averagePercent}%` }}
+                  aria-hidden="true"
+                />
                 <span
                   className="absolute top-0 inline-flex -translate-y-full -translate-x-1/2 items-center gap-1 rounded-full bg-neutral-900 px-3 py-1 text-xs font-semibold text-white shadow-[0_10px_25px_-15px_rgba(15,23,42,0.9)]"
                   style={{ left: `${clampedMinPercent}%` }}
@@ -1454,6 +1495,12 @@ function FilterPanel({
                   style={{ left: `${clampedMaxPercent}%` }}
                 >
                   {formattedMax}
+                </span>
+                <span
+                  className="absolute left-1/2 top-full mt-2 inline-flex -translate-x-1/2 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary"
+                  style={{ left: `${averagePercent}%` }}
+                >
+                  Avg {formattedAverage}
                 </span>
                 <input
                   type="range"
@@ -1513,14 +1560,18 @@ function FilterPanel({
             aria-labelledby="filter-rating-header"
             className={openSections.rating ? 'mt-4' : 'mt-4 hidden'}
           >
-            <div className="flex items-center gap-1 text-amber-400">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Star
-                  key={String(index)}
-                  className={`h-5 w-5 ${index < Math.round(ratingFilter.minimum_rating) ? 'fill-current text-amber-400' : 'text-neutral-200'}`}
-                  aria-hidden="true"
-                />
-              ))}
+            <div className="rounded-2xl border border-indigo-100/70 bg-white/90 p-4 shadow-inner">
+              <div className="flex items-center gap-1 text-amber-400" aria-hidden="true">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star
+                    key={String(index)}
+                    className={`h-5 w-5 ${index < Math.round(ratingFilter.minimum_rating) ? 'fill-current text-amber-400' : 'text-neutral-200'}`}
+                  />
+                ))}
+              </div>
+              <p className="mt-3 text-xs font-semibold text-neutral-600">
+                Minimum rating {ratingFilter.minimum_rating.toFixed(1)}★ & up
+              </p>
             </div>
           </div>
         </section>
@@ -1585,7 +1636,9 @@ function FilterPanel({
                       <span className="text-sm font-semibold text-neutral-800 group-hover:text-neutral-900">
                         {brand.name}
                       </span>
-                      <span className="text-[11px] font-medium text-neutral-400">{brand.product_count} items</span>
+                      <span className="text-[11px] font-medium text-neutral-500 tabular-nums">
+                        {brand.product_count.toLocaleString()} products
+                      </span>
                     </div>
                   </div>
                   <span
@@ -1648,23 +1701,26 @@ function FilterPanel({
             id="filter-delivery-content"
             role="region"
             aria-labelledby="filter-delivery-header"
-            className={openSections.delivery ? 'mt-4 flex flex-wrap gap-3' : 'mt-4 hidden'}
+            className={openSections.delivery ? 'mt-4' : 'mt-4 hidden'}
           >
-            {deliveryOptions.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => onDeliveryToggle(option.id)}
-                className={`inline-flex min-w-[120px] items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary/40 ${
-                  option.active
-                    ? 'bg-primary text-white shadow-soft'
-                    : 'bg-indigo-50/60 text-neutral-600 hover:bg-indigo-100 hover:text-primary'
-                }`}
-                aria-pressed={option.active}
-              >
-                {option.label}
-              </button>
-            ))}
+            <div className="flex flex-wrap gap-3" role="radiogroup" aria-label="Delivery options">
+              {deliveryOptions.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => onDeliveryToggle(option.id)}
+                  role="radio"
+                  aria-checked={option.active}
+                  className={`inline-flex min-w-[120px] items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary/40 ${
+                    option.active
+                      ? 'bg-primary text-white shadow-soft'
+                      : 'bg-indigo-50/60 text-neutral-600 hover:bg-indigo-100 hover:text-primary'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </div>
         </section>
       </div>
@@ -1903,12 +1959,12 @@ function ProductCard({
         </div>
         <button
           type="button"
-          className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/90 text-neutral-400 shadow-soft transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
+          className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/95 text-neutral-400 shadow-soft transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
           aria-label={product.favorite ? 'Saved to favourites' : 'Add to favourites'}
         >
           <Heart className={`h-4 w-4 ${product.favorite ? 'fill-primary text-primary' : ''}`} />
         </button>
-        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+        <div className="absolute left-3 top-3 flex flex-wrap gap-2">
           {discount ? (
             <Badge tone="bg-rose-100 text-rose-600">-{discount}%</Badge>
           ) : null}
@@ -1925,19 +1981,20 @@ function ProductCard({
         <div className="mt-3 flex items-baseline gap-2">
           <p className="text-2xl font-semibold text-neutral-900">{formatCurrency(product.price, product.currency)}</p>
           {product.original_price ? (
-            <p className="text-sm text-neutral-600 line-through">
+            <p className="text-sm text-neutral-500 line-through">
               {formatCurrency(product.original_price, product.currency)}
             </p>
           ) : null}
         </div>
 
-        <div className="mt-3 flex items-center gap-2 text-sm text-neutral-600">
-          <div className="flex items-center gap-1 text-amber-400" aria-hidden="true">
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-neutral-600">
+          <span className="inline-flex items-center gap-1 text-amber-400" aria-hidden="true">
             <Star className="h-4 w-4 fill-current" />
-            <span className="font-semibold text-neutral-700">{product.rating.toFixed(1)}</span>
-          </div>
-          <span aria-label={`${product.rating.toFixed(1)} stars from ${product.reviews} reviews`}>
-            ({product.reviews})
+            <span className="font-semibold text-neutral-800">{product.rating.toFixed(1)}</span>
+          </span>
+          <span className="text-neutral-500" aria-hidden="true">•</span>
+          <span aria-label={`${product.rating.toFixed(1)} stars from ${product.reviews} reviews`} className="text-neutral-700">
+            {product.reviews.toLocaleString()} reviews
           </span>
           {product.rating >= ratingThreshold ? (
             <Badge tone="bg-primary/10 text-primary">Top rated</Badge>
@@ -1945,11 +2002,11 @@ function ProductCard({
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          <Badge tone="bg-secondary/10 text-secondary">{product.category_id}</Badge>
-          <Badge tone="bg-primary/10 text-primary">{product.brand_id}</Badge>
+          <Badge tone="bg-secondary/10 text-secondary">{formatTokenLabel(product.category_id)}</Badge>
+          <Badge tone="bg-primary/10 text-primary">{formatTokenLabel(product.brand_id)}</Badge>
         </div>
 
-        <div className="mt-6 flex items-center gap-3">
+        <div className="mt-auto flex items-center gap-3 pt-6">
           <button
             type="button"
             className={`inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-soft transition-all transition-standard hover:shadow-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60 ${

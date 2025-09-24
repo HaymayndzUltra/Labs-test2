@@ -95,22 +95,34 @@ export function Recommendations({
         </div>
         
         <div className="flex items-center gap-2">
-          <div className="flex bg-neutral-100 rounded-lg p-1">
+          <div
+            className="flex rounded-full bg-neutral-100 p-1"
+            role="tablist"
+            aria-label="Recommendation type"
+          >
             <button
+              id="recommendations-products-tab"
+              role="tab"
+              aria-selected={activeTab === 'products'}
+              aria-controls="recommendations-products-panel"
               onClick={() => setActiveTab('products')}
-              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+              className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
                 activeTab === 'products'
-                  ? 'bg-white text-primary shadow-sm'
+                  ? 'bg-primary text-white shadow-soft'
                   : 'text-neutral-600 hover:text-neutral-900'
               }`}
             >
               Products ({productRecommendations.length})
             </button>
             <button
+              id="recommendations-insights-tab"
+              role="tab"
+              aria-selected={activeTab === 'insights'}
+              aria-controls="recommendations-insights-panel"
               onClick={() => setActiveTab('insights')}
-              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+              className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
                 activeTab === 'insights'
-                  ? 'bg-white text-primary shadow-sm'
+                  ? 'bg-primary text-white shadow-soft'
                   : 'text-neutral-600 hover:text-neutral-900'
               }`}
             >
@@ -140,7 +152,12 @@ export function Recommendations({
         ) : (
           <>
             {activeTab === 'products' && (
-              <div className="space-y-3">
+              <div
+                className="space-y-3"
+                id="recommendations-products-panel"
+                role="tabpanel"
+                aria-labelledby="recommendations-products-tab"
+              >
                 {productRecommendations.length === 0 ? (
                   <div className="text-center py-8">
                     <Sparkles className="w-8 h-8 text-neutral-400 mx-auto mb-3" />
@@ -193,7 +210,12 @@ export function Recommendations({
             )}
 
             {activeTab === 'insights' && (
-              <div className="space-y-3">
+              <div
+                className="space-y-3"
+                id="recommendations-insights-panel"
+                role="tabpanel"
+                aria-labelledby="recommendations-insights-tab"
+              >
                 {insightRecommendations.length === 0 ? (
                   <div className="text-center py-8">
                     <Sparkles className="w-8 h-8 text-neutral-400 mx-auto mb-3" />
