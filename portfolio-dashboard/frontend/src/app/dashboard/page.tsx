@@ -1,7 +1,31 @@
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 import DashboardClient from './DashboardClient';
 import { getCommerceDashboard } from './data';
 import type { EcommerceDashboardResponse } from './types';
+import { generateMetadata, generateDashboardStructuredData, generateBreadcrumbStructuredData } from '../../lib/seo';
+import { StructuredData } from '../../components/seo';
+
+export const metadata: Metadata = generateMetadata({
+  title: 'Dashboard - Portfolio Analytics',
+  description: 'Comprehensive portfolio analytics dashboard with real-time metrics, advanced filtering, personalized insights, and interactive data visualization. Track performance, analyze trends, and make data-driven decisions.',
+  keywords: [
+    'portfolio analytics',
+    'dashboard',
+    'real-time metrics',
+    'data visualization',
+    'performance tracking',
+    'business intelligence',
+    'analytics',
+    'metrics',
+    'insights',
+    'filtering'
+  ],
+  canonical: '/dashboard',
+  ogImage: '/dashboard-og.jpg',
+  ogType: 'website',
+  twitterCard: 'summary_large_image',
+});
 
 function DashboardPageSkeleton() {
   return (
@@ -53,10 +77,21 @@ async function DashboardDataResolver({
 
 export default function DashboardPage() {
   const dashboardPromise = getCommerceDashboard();
+  
+  // Generate structured data
+  const dashboardData = generateDashboardStructuredData();
+  const breadcrumbData = generateBreadcrumbStructuredData([
+    { name: 'Home', url: '/' },
+    { name: 'Dashboard', url: '/dashboard' },
+  ]);
 
   return (
-    <Suspense fallback={<DashboardPageSkeleton />}>
-      <DashboardDataResolver promise={dashboardPromise} />
-    </Suspense>
+    <>
+      <StructuredData data={dashboardData} />
+      <StructuredData data={breadcrumbData} />
+      <Suspense fallback={<DashboardPageSkeleton />}>
+        <DashboardDataResolver promise={dashboardPromise} />
+      </Suspense>
+    </>
   );
 }

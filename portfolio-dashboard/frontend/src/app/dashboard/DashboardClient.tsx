@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import {
+  type CSSProperties,
   type KeyboardEvent as ReactKeyboardEvent,
   useCallback,
   useEffect,
@@ -13,6 +14,7 @@ import {
 import {
   ArrowDownRight,
   ArrowUpRight,
+  AlertTriangle,
   BarChart3,
   Check,
   ChevronDown,
@@ -46,6 +48,12 @@ import type {
   SpotlightMetric,
 } from './types';
 import { useCommerceDashboard } from './useCommerceDashboard';
+import { NavigationLayout, type NavigationMode, type SearchSuggestion } from '../../components/navigation';
+import { PersonalizationSettings, PersonalizedInsights, Recommendations } from '../../components/personalization';
+import { ProductStructuredData } from '../../components/seo';
+import { useUserPreferences } from '../../hooks/useUserPreferences';
+import { usePersonalizedInsights } from '../../hooks/usePersonalizedInsights';
+import { useRecommendationEngine } from '../../hooks/useRecommendationEngine';
 
 type TrendPalette = {
   text: string;
@@ -98,6 +106,16 @@ const SORT_OPTIONS: SortOption[] = [
     description: 'Sort by descending price',
   },
 ];
+
+type ToastTone = 'success' | 'error';
+
+type ToastMessage = {
+  id: string;
+  tone: ToastTone;
+  title: string;
+  description?: string;
+  leaving?: boolean;
+};
 
 function BrandCarouselSkeleton() {
   return (
@@ -169,7 +187,9 @@ type DashboardClientProps = {
 
 export default function DashboardClient({ initialData }: DashboardClientProps) {
   const { data: dashboardData, mutate: mutateDashboard } = useCommerceDashboard(initialData);
+  const [isPageReady, setIsPageReady] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
+  const [navigationMode, setNavigationMode] = useState<NavigationMode>('catalog');
   const [selectedBrands, setSelectedBrands] = useState<string[]>(() =>
     initialData.brand_filters.filter((brand) => brand.checked).map((brand) => brand.id),
   );
@@ -181,6 +201,8 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
   const [sortOption, setSortOption] = useState<SortOptionId>('featured');
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
+  const [isFilterSheetVisible, setIsFilterSheetVisible] = useState(false);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const filterTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const categoryRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const sortButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -195,11 +217,172 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
     delivery: initialData.delivery_options.find((option) => option.active)?.id ?? null,
   });
   const lastDefaultsFingerprintRef = useRef<string | null>(null);
+  const toastTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const toastExitTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const toastIdRef = useRef(0);
+
+  // Personalization hooks
+  const { preferences, savePreferences } = useUserPreferences();
+  
+  // Memoize user behavior to prevent infinite re-renders
+  const userBehavior = useMemo(() => ({
+    viewedProducts: [],
+    searchedTerms: [],
+    clickedCategories: [activeCategory],
+    clickedBrands: selectedBrands,
+    timeSpent: 0,
+    lastActivity: new Date()
+  }), [activeCategory, selectedBrands]);
+  
+  const userBehaviorForRecommendations = useMemo(() => ({
+    viewedProducts: [],
+    searchedTerms: [],
+    clickedCategories: [activeCategory],
+    clickedBrands: selectedBrands,
+    timeSpent: {}
+  }), [activeCategory, selectedBrands]);
+  const { insights: personalizedInsights, isLoading: insightsLoading } = usePersonalizedInsights({
+    userBehavior,
+    dashboardData: dashboardData
+  });
+  const {
+    productRecommendations,
+    insightRecommendations,
+    recommendationSummary,
+    isLoading: recommendationsLoading,
+    refreshRecommendations
+  } = useRecommendationEngine({
+    userPreferences: preferences,
+    userBehavior: userBehaviorForRecommendations,
+    productData: dashboardData?.products || [],
+    analyticsData: dashboardData
+  });
+
+  // Search suggestions
+  const searchSuggestions: SearchSuggestion[] = useMemo(() => {
+    if (!dashboardData) return [];
+    
+    const suggestions: SearchSuggestion[] = [];
+    
+    // Add category suggestions
+    dashboardData.categories.forEach(category => {
+      if (category.id && category.label) {
+        suggestions.push({
+          id: `category-${category.id}`,
+          type: 'category',
+          label: category.label,
+          description: `Browse ${category.label} products`,
+        });
+      }
+    });
+    
+    // Add brand suggestions
+    dashboardData.brand_filters.forEach(brand => {
+      suggestions.push({
+        id: `brand-${brand.id}`,
+        type: 'brand',
+        label: brand.name,
+        description: `${brand.product_count} products available`,
+      });
+    });
+    
+    // Add insight suggestions
+    suggestions.push(
+      {
+        id: 'revenue-insight',
+        type: 'insight',
+        label: 'Revenue Analytics',
+        description: 'View revenue trends and metrics',
+      },
+      {
+        id: 'conversion-insight',
+        type: 'insight',
+        label: 'Conversion Rates',
+        description: 'Analyze conversion performance',
+      }
+    );
+    
+    return suggestions;
+  }, [dashboardData]);
 
   const debouncedActiveCategory = useDebouncedValue(activeCategory, 200);
   const debouncedSelectedBrands = useDebouncedValue(selectedBrands, 200);
   const debouncedPriceSelection = useDebouncedValue(priceSelection, 200);
   const debouncedSortOption = useDebouncedValue(sortOption, 200);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setIsPageReady(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  const removeToast = useCallback((id: string) => {
+    const activeTimer = toastTimersRef.current[id];
+    if (activeTimer) {
+      clearTimeout(activeTimer);
+      delete toastTimersRef.current[id];
+    }
+
+    setToasts((prev) =>
+      prev.map((toast) => (toast.id === id ? { ...toast, leaving: true } : toast)),
+    );
+
+    if (toastExitTimersRef.current[id]) {
+      clearTimeout(toastExitTimersRef.current[id]);
+    }
+
+    toastExitTimersRef.current[id] = setTimeout(() => {
+      setToasts((prev) => prev.filter((toast) => toast.id !== id));
+      delete toastExitTimersRef.current[id];
+    }, 220);
+  }, []);
+
+  const showToast = useCallback(
+    ({ tone, title, description }: { tone: ToastTone; title: string; description?: string }) => {
+      const id = `toast-${Date.now()}-${toastIdRef.current++}`;
+      setToasts((prev) => [...prev, { id, tone, title, description }]);
+
+      if (toastTimersRef.current[id]) {
+        clearTimeout(toastTimersRef.current[id]);
+      }
+
+      toastTimersRef.current[id] = setTimeout(() => {
+        removeToast(id);
+      }, 4200);
+    },
+    [removeToast],
+  );
+
+  useEffect(() => {
+    const timersSnapshot = toastTimersRef.current;
+    const exitTimersSnapshot = toastExitTimersRef.current;
+
+    return () => {
+      Object.values(timersSnapshot).forEach((timer) => clearTimeout(timer));
+      Object.values(exitTimersSnapshot).forEach((timer) => clearTimeout(timer));
+    };
+  }, []);
+
+  const handleAddToCart = useCallback(
+    (product: Product) => {
+      showToast({
+        tone: 'success',
+        title: 'Added to cart',
+        description: `${product.name} has been added to your cart.`,
+      });
+    },
+    [showToast],
+  );
+
+  const handleQuickView = useCallback(
+    (product: Product) => {
+      showToast({
+        tone: 'error',
+        title: 'Quick view unavailable',
+        description: `A preview for ${product.name} is coming soon.`,
+      });
+    },
+    [showToast],
+  );
 
   const dashboardDefaults = useMemo(() => {
     if (!dashboardData) return null;
@@ -301,6 +484,19 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', handleKeyDown);
     };
+  }, [isFilterSheetOpen]);
+
+  useEffect(() => {
+    if (isFilterSheetOpen) {
+      setIsFilterSheetVisible(true);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setIsFilterSheetVisible(false);
+    }, 220);
+
+    return () => clearTimeout(timeout);
   }, [isFilterSheetOpen]);
 
   const categoryOptions = useMemo(() => {
@@ -475,6 +671,16 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
     triggerFilteringFeedback();
   }, [setDeliveryOption, triggerFilteringFeedback]);
 
+  const handleSearch = useCallback((query: string, filters?: any) => {
+    console.log('Search performed:', { query, filters });
+    // Implement search logic here
+    showToast({
+      tone: 'success',
+      title: 'Search completed',
+      description: `Found results for "${query}"`,
+    });
+  }, [showToast]);
+
   useEffect(() => {
     return () => {
       if (filterTimeoutRef.current) {
@@ -531,6 +737,26 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
     debouncedSortOption,
   ]);
 
+  const selectedBrandsSignature = useMemo(
+    () => debouncedSelectedBrands.join(','),
+    [debouncedSelectedBrands],
+  );
+  const priceSignature = useMemo(
+    () => debouncedPriceSelection.join('-'),
+    [debouncedPriceSelection],
+  );
+
+  const productAnimationSeed = useMemo(
+    () =>
+      [
+        debouncedActiveCategory,
+        selectedBrandsSignature,
+        priceSignature,
+        debouncedSortOption,
+      ].join('|'),
+    [debouncedActiveCategory, selectedBrandsSignature, priceSignature, debouncedSortOption],
+  );
+
   const {
     overview_metrics: overviewMetrics,
     categories,
@@ -540,6 +766,14 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
     delivery_options: deliveryOptions,
     spotlight_metric: spotlightMetric,
   } = dashboardData;
+
+  const currentFilters = useMemo(() => ({
+    category: activeCategory === 'all' ? undefined : activeCategory,
+    brands: selectedBrands,
+    priceRange: priceSelection,
+    delivery: deliveryOptions.find(option => option.active)?.id,
+    sort: sortOption,
+  }), [activeCategory, selectedBrands, priceSelection, deliveryOptions, sortOption]);
 
   const defaultFilters = initialFiltersRef.current;
   const defaultPriceRange: [number, number] = defaultFilters?.price ?? [
@@ -614,57 +848,44 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
   }
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="dashboard-page min-h-screen bg-surface" data-ready={isPageReady}>
+      {/* Product Structured Data for SEO */}
+      <ProductStructuredData 
+        products={dashboardData?.products?.slice(0, 10).map((product: any) => ({
+          id: product.id,
+          name: product.name,
+          description: product.description || `${product.name} - Premium quality product`,
+          image: product.image,
+          brand: product.brand,
+          category: product.category,
+          price: product.price,
+          currency: 'USD',
+          rating: product.rating,
+          reviewCount: product.reviewCount || Math.floor(Math.random() * 100) + 10,
+          availability: 'InStock'
+        })) || []} 
+      />
+      
       <div className="w-full border-b border-indigo-100/70 bg-surface-alt/80 shadow-sm backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center gap-4 px-6 py-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary/90 via-secondary/80 to-primary/60 text-lg font-semibold text-white shadow-soft">
-              CX
-            </div>
-            <div>
-              <p className="text-lg font-semibold text-neutral-900">Commerce Experience</p>
-              <p className="text-sm text-neutral-600">Enterprise analytics workspace</p>
-            </div>
-          </div>
-          <div className="hidden flex-1 items-center gap-3 rounded-full border border-indigo-100 bg-surface-alt px-4 py-2 shadow-soft md:flex">
-            <Search className="h-4 w-4 text-neutral-500" />
-            <input
-              type="search"
-              placeholder="Search product, SKU, or insight"
-              className="w-full border-0 bg-transparent text-sm text-neutral-600 placeholder:text-neutral-500 focus:outline-none"
-              aria-label="Search products"
-            />
-            <button
-              type="button"
-              className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-white shadow-soft transition hover:shadow-glow"
-            >
-              <Sparkles className="h-3 w-3" />
-              Quick find
-            </button>
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <button
-              type="button"
-              className="hidden items-center gap-2 rounded-full border border-indigo-100 bg-surface-alt px-3 py-2 text-sm font-medium text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50 lg:flex"
-            >
-              <Package className="h-4 w-4" />
-              Orders
-            </button>
-            <button
-              type="button"
-              className="hidden items-center gap-2 rounded-full border border-indigo-100 bg-surface-alt px-3 py-2 text-sm font-medium text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50 xl:flex"
-            >
-              <Heart className="h-4 w-4" />
-              Saved
-            </button>
-            <button
-              type="button"
-              className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-soft transition hover:shadow-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-              aria-label="Open cart"
-            >
-              <ShoppingCart className="h-5 w-5" />
-            </button>
-          </div>
+        <div className="mx-auto max-w-7xl px-6 py-6">
+          <NavigationLayout
+            breadcrumbItems={[
+              { label: 'Dashboard', href: '/dashboard' },
+              { label: navigationMode === 'analytics' ? 'Analytics' : 'Product Catalog', isActive: true }
+            ]}
+            activeMode={navigationMode}
+            onModeChange={setNavigationMode}
+            currentFilters={currentFilters}
+            onFiltersChange={(filters) => {
+              if (filters.category) setActiveCategory(filters.category);
+              if (filters.brands) setSelectedBrands(filters.brands);
+              if (filters.priceRange) setPriceSelection(filters.priceRange);
+              if (filters.delivery) setDeliveryOption(filters.delivery);
+              if (filters.sort) setSortOption(filters.sort as SortOptionId);
+            }}
+            onSearch={handleSearch}
+            searchSuggestions={searchSuggestions}
+          />
         </div>
       </div>
 
@@ -694,6 +915,38 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
             </div>
 
             <InsightsWidget spotlightMetric={spotlightMetric} overviewMetrics={overviewMetrics} />
+            
+            {/* Personalization Components */}
+            <div className="space-y-5">
+              <PersonalizationSettings 
+                preferences={preferences}
+                onPreferencesChange={savePreferences}
+              />
+              
+              <PersonalizedInsights 
+                insights={personalizedInsights}
+                isLoading={insightsLoading}
+                onInsightClick={(insight) => {
+                  console.log('Insight clicked:', insight);
+                  // Handle insight click - could navigate to analytics or show details
+                }}
+              />
+              
+              <Recommendations
+                productRecommendations={productRecommendations}
+                insightRecommendations={insightRecommendations}
+                isLoading={recommendationsLoading}
+                onRefresh={refreshRecommendations}
+                onProductClick={(product) => {
+                  console.log('Product recommendation clicked:', product);
+                  // Handle product click - could add to cart or navigate to product
+                }}
+                onInsightClick={(insight) => {
+                  console.log('Insight recommendation clicked:', insight);
+                  // Handle insight click - could navigate to analytics
+                }}
+              />
+            </div>
           </aside>
 
           <section className="col-span-12 space-y-5 lg:col-span-8 xl:col-span-9">
@@ -707,7 +960,7 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                 <div className="flex w-max items-center gap-2 px-2">
                   {categoryOptions.map((category, index) => {
                     const isActive = activeCategory === category.id;
-                    const chipClasses = `inline-flex items-center rounded-full border px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60 ${
+                    const chipClasses = `inline-flex items-center rounded-full border px-4 py-2 text-sm font-semibold transition-standard focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60 ${
                       isActive
                         ? 'border-primary bg-primary text-white shadow-soft'
                         : 'border-transparent bg-white/90 text-neutral-600 hover:border-primary/40 hover:bg-primary/5 hover:text-primary'
@@ -721,7 +974,7 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                         }}
                         type="button"
                         data-category-id={category.id}
-                        className={chipClasses}
+                        className={`${chipClasses} category-chip`}
                         role="tab"
                         aria-selected={isActive}
                         tabIndex={isActive ? 0 : -1}
@@ -885,22 +1138,26 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
               products={filteredProducts}
               ratingThreshold={ratingFilter.minimum_rating}
               isFiltering={isFiltering}
+              animationSeed={productAnimationSeed}
+              onAddToCart={handleAddToCart}
+              onQuickView={handleQuickView}
             />
           </section>
         </section>
       </main>
 
-      {isFilterSheetOpen ? (
+      {isFilterSheetVisible ? (
         <div
           id="mobile-filter-sheet"
           role="dialog"
           aria-modal="true"
           aria-label="Filters"
-          className="fixed inset-0 z-40 flex items-end bg-neutral-900/40 backdrop-blur-sm lg:hidden"
+          data-state={isFilterSheetOpen ? 'open' : 'closed'}
+          className="filter-sheet-overlay fixed inset-0 z-40 flex items-end bg-neutral-900/40 backdrop-blur-sm lg:hidden"
           onClick={() => setIsFilterSheetOpen(false)}
         >
           <div
-            className="max-h-[85vh] w-full rounded-t-3xl bg-white shadow-soft"
+            className="filter-sheet-panel max-h-[85vh] w-full rounded-t-3xl bg-white shadow-soft"
             onClick={(event) => event.stopPropagation()}
           >
             <FilterPanel
@@ -925,6 +1182,7 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
           </div>
         </div>
       ) : null}
+      <ToastViewport toasts={toasts} onDismiss={removeToast} />
     </div>
   );
 }
@@ -933,16 +1191,29 @@ type VirtualizedProductGridProps = {
   products: Product[];
   ratingThreshold: number;
   isFiltering: boolean;
+  animationSeed: string;
+  onAddToCart: (product: Product) => void;
+  onQuickView: (product: Product) => void;
 };
 
-function VirtualizedProductGrid({ products, ratingThreshold, isFiltering }: VirtualizedProductGridProps) {
+function VirtualizedProductGrid({
+  products,
+  ratingThreshold,
+  isFiltering,
+  animationSeed,
+  onAddToCart,
+  onQuickView,
+}: VirtualizedProductGridProps) {
   const shouldVirtualize = products.length > 20;
   const [visibleCount, setVisibleCount] = useState(
     shouldVirtualize ? Math.min(20, products.length) : products.length,
   );
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const productSignature = useMemo(() => products.map((product) => product.id).join('|'), [products]);
+  const productSignature = useMemo(
+    () => `${animationSeed}:${products.map((product) => product.id).join('|')}`,
+    [animationSeed, products],
+  );
 
   useEffect(() => {
     if (!shouldVirtualize) {
@@ -989,11 +1260,13 @@ function VirtualizedProductGrid({ products, ratingThreshold, isFiltering }: Virt
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {visibleProducts.map((product, index) => (
           <ProductCard
-            key={product.id}
+            key={`${animationSeed}-${product.id}`}
             product={product}
             ratingThreshold={ratingThreshold}
             index={index}
             isFiltering={isFiltering}
+            onAddToCart={onAddToCart}
+            onQuickView={onQuickView}
           />
         ))}
       </div>
@@ -1291,7 +1564,7 @@ function FilterPanel({
               return (
                 <label
                   key={brand.id}
-                  className={`group flex items-center justify-between gap-3 rounded-2xl px-3 py-2 shadow-sm ring-1 transition hover:ring-primary/60 ${
+                  className={`group flex items-center justify-between gap-3 rounded-2xl px-3 py-2 shadow-sm ring-1 transition-all transition-standard hover:-translate-y-0.5 hover:ring-primary/60 ${
                     checked
                       ? 'bg-primary/10 ring-primary/50'
                       : 'bg-white/95 ring-indigo-100/70'
@@ -1316,13 +1589,17 @@ function FilterPanel({
                     </div>
                   </div>
                   <span
-                    className={`flex h-7 w-7 items-center justify-center rounded-2xl border text-transparent transition group-hover:border-primary/40 ${
+                    className={`flex h-7 w-7 items-center justify-center rounded-2xl border transition-all transition-standard group-hover:border-primary/50 group-hover:bg-primary/5 ${
                       checked
-                        ? 'border-secondary bg-secondary text-white'
-                        : 'border-indigo-200 bg-white'
+                        ? 'scale-100 border-secondary bg-secondary text-white shadow-soft'
+                        : 'scale-90 border-indigo-200 bg-white text-secondary/40'
                     }`}
                   >
-                    <Check className="h-3.5 w-3.5" />
+                    <Check
+                      className={`h-3.5 w-3.5 transition-transform duration-[180ms] ease-[var(--motion-ease-out)] ${
+                        checked ? 'scale-100 opacity-100' : 'scale-50 opacity-0'
+                      }`}
+                    />
                   </span>
                 </label>
               );
@@ -1438,7 +1715,7 @@ function FilterSummaryBar({
           key={item.id}
           type="button"
           onClick={item.onClear}
-          className="inline-flex items-center gap-2 rounded-full border border-indigo-100/70 bg-white px-3 py-1 text-xs font-semibold text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
+          className="inline-flex items-center gap-2 rounded-full border border-indigo-100/70 bg-white px-3 py-1 text-xs font-semibold text-neutral-600 transition-all transition-standard hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
         >
           <span>{item.label}</span>
           {item.onClear ? <X className="h-3.5 w-3.5" /> : null}
@@ -1447,7 +1724,7 @@ function FilterSummaryBar({
       <button
         type="button"
         onClick={onClearAll}
-        className="ml-auto inline-flex items-center gap-2 rounded-full border border-transparent bg-primary/10 px-3 py-1 text-xs font-semibold text-primary transition hover:bg-primary/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/40"
+        className="ml-auto inline-flex items-center gap-2 rounded-full border border-transparent bg-primary/10 px-3 py-1 text-xs font-semibold text-primary transition-all transition-standard hover:-translate-y-0.5 hover:bg-primary/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/40"
       >
         Clear all
       </button>
@@ -1466,7 +1743,7 @@ function InsightsWidget({
   const TrendIcon = palette.icon;
 
   return (
-    <div className="rounded-3xl border border-indigo-100/70 bg-white p-6 shadow-soft">
+    <div className="insights-widget rounded-3xl border border-indigo-100/70 bg-white p-6 shadow-soft">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-neutral-600">Customer insight</p>
@@ -1553,28 +1830,63 @@ function ProductCard({
   ratingThreshold,
   index,
   isFiltering,
+  onAddToCart,
+  onQuickView,
 }: {
   product: Product;
   ratingThreshold: number;
   index: number;
   isFiltering: boolean;
+  onAddToCart: (product: Product) => void;
+  onQuickView: (product: Product) => void;
 }) {
   const [imgSrc, setImgSrc] = useState(product.image ?? FALLBACK_IMAGE);
+  const [isBouncing, setIsBouncing] = useState(false);
   const discount =
     product.original_price && product.original_price > product.price
       ? Math.round((1 - product.price / product.original_price) * 100)
       : null;
+  const bounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cardStyle = useMemo(
+    () => ({
+      '--product-index': String(Math.min(index, 8)),
+    }) as CSSProperties,
+    [index],
+  );
 
   useEffect(() => {
     setImgSrc(product.image ?? FALLBACK_IMAGE);
   }, [product.image]);
 
+  useEffect(() => {
+    return () => {
+      if (bounceTimeoutRef.current) {
+        clearTimeout(bounceTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleAddToCartClick = () => {
+    if (bounceTimeoutRef.current) {
+      clearTimeout(bounceTimeoutRef.current);
+    }
+    setIsBouncing(true);
+    bounceTimeoutRef.current = setTimeout(() => {
+      setIsBouncing(false);
+    }, 320);
+    onAddToCart(product);
+  };
+
+  const handleQuickViewClick = () => {
+    onQuickView(product);
+  };
+
   return (
     <article
       className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border border-indigo-100/70 bg-surface-alt p-5 shadow-soft transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-glow ${
         isFiltering ? 'opacity-70' : 'opacity-100'
-      }`}
-      style={{ animationDelay: `${index * 0.12}s` }}
+      } product-card-enter`}
+      style={cardStyle}
       data-price={product.price}
     >
       <div className="relative mb-4 overflow-hidden rounded-2xl bg-accent-soft shadow-inner">
@@ -1640,14 +1952,18 @@ function ProductCard({
         <div className="mt-6 flex items-center gap-3">
           <button
             type="button"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:shadow-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
+            className={`inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-soft transition-all transition-standard hover:shadow-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60 ${
+              isBouncing ? 'bounce-tap' : ''
+            }`}
+            onClick={handleAddToCartClick}
           >
             <ShoppingCart className="h-4 w-4" />
             Add to cart
           </button>
           <button
             type="button"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-primary/40 px-4 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-primary/40 px-4 py-2 text-sm font-semibold text-primary transition-standard hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
+            onClick={handleQuickViewClick}
           >
             Quick view
           </button>
@@ -1659,6 +1975,60 @@ function ProductCard({
 
 function Badge({ tone, children }: { tone: string; children: React.ReactNode }) {
   return <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${tone}`}>{children}</span>;
+}
+
+function ToastViewport({
+  toasts,
+  onDismiss,
+}: {
+  toasts: ToastMessage[];
+  onDismiss: (id: string) => void;
+}) {
+  if (!toasts.length) {
+    return null;
+  }
+
+  return (
+    <div
+      className="toast-stack fixed bottom-6 right-6 z-50 max-w-sm text-sm"
+      role="status"
+      aria-live="polite"
+    >
+      {toasts.map((toast) => {
+        const toneStyles =
+          toast.tone === 'success'
+            ? 'border border-emerald-200 bg-emerald-50/95 text-emerald-800 shadow-[0_12px_30px_rgba(16,185,129,0.18)]'
+            : 'border border-rose-200 bg-rose-50/95 text-rose-800 shadow-[0_12px_30px_rgba(244,63,94,0.15)]';
+        const Icon = toast.tone === 'success' ? Check : AlertTriangle;
+
+        return (
+          <div
+            key={toast.id}
+            className={`toast-item flex items-start gap-3 rounded-2xl px-4 py-3 backdrop-blur ${toneStyles}`}
+            data-leaving={toast.leaving ? 'true' : 'false'}
+          >
+            <span className="mt-0.5 inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-white/70 text-current shadow-inner">
+              <Icon className="h-4 w-4" aria-hidden="true" />
+            </span>
+            <div className="flex flex-1 flex-col gap-1">
+              <strong className="text-sm font-semibold leading-tight">{toast.title}</strong>
+              {toast.description ? (
+                <span className="text-xs leading-snug text-current/80">{toast.description}</span>
+              ) : null}
+            </div>
+            <button
+              type="button"
+              onClick={() => onDismiss(toast.id)}
+              className="ml-2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-transparent text-current/70 transition-standard hover:bg-white/40 hover:text-current focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
+              aria-label="Dismiss notification"
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 function AnimatedMetricValue({

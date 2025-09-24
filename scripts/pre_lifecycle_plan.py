@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Dict, List
 
 ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS_DIR = ROOT / "scripts"
 sys.path.insert(0, str(ROOT))
 
 from project_generator.core.brief_parser import BriefParser  # type: ignore[misc]
@@ -147,8 +148,30 @@ def main() -> int:
     spec = BriefParser(str(brief_path)).parse()
     lanes = build_plan(spec)
 
-    output_root = Path(args.output_root)
+    arg_output_root = Path(args.output_root)
+    if not arg_output_root.is_absolute():
+        output_root = (ROOT / arg_output_root).resolve()
+    else:
+        output_root = arg_output_root
     project_dir = (output_root / name).resolve()
+
+    # Pre-compute absolute script paths for friendly copy/paste commands.
+    plan_from_brief = str(SCRIPTS_DIR / "plan_from_brief.py")
+    validate_tasks_script = str(SCRIPTS_DIR / "validate_tasks.py")
+    doctor_script = str(SCRIPTS_DIR / "doctor.py")
+    generate_script = str(SCRIPTS_DIR / "generate_client_project.py")
+    select_stacks_script = str(SCRIPTS_DIR / "select_stacks.py")
+    install_and_test_script = str(SCRIPTS_DIR / "install_and_test.sh")
+    collect_coverage_script = str(SCRIPTS_DIR / "collect_coverage.py")
+    collect_perf_script = str(SCRIPTS_DIR / "collect_perf.py")
+    scan_deps_script = str(SCRIPTS_DIR / "scan_deps.py")
+    enforce_gates_script = str(SCRIPTS_DIR / "enforce_gates.py")
+    build_submission_pack_script = str(SCRIPTS_DIR / "build_submission_pack.sh")
+    validate_compliance_script = str(SCRIPTS_DIR / "validate_compliance_assets.py")
+    check_compliance_docs_script = str(SCRIPTS_DIR / "check_compliance_docs.py")
+    health_check_script = str(SCRIPTS_DIR / "health" / "check_deployment.py")
+    rollback_backend_script = str(SCRIPTS_DIR / "rollback_backend.sh")
+    rollback_frontend_script = str(SCRIPTS_DIR / "rollback_frontend.sh")
 
     frontend_lane = format_lane(lanes["frontend"])
     backend_lane = format_lane(lanes["backend"])

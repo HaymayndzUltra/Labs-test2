@@ -21,6 +21,12 @@
     --radius-lg: 1.5rem;
     --radius-md: 1rem;
     --radius-sm: 0.75rem;
+    --motion-duration-quick: 180ms;
+    --motion-duration-medium: 240ms;
+    --motion-duration-slow: 360ms;
+    --motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --motion-ease-soft: cubic-bezier(0.33, 1, 0.68, 1);
+    --motion-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .dark {
@@ -60,6 +66,11 @@
 }
 
 @layer components {
+  .transition-standard {
+    transition-duration: var(--motion-duration-quick);
+    transition-timing-function: var(--motion-ease-out);
+  }
+
   .product-card {
     @apply transition-all duration-300 ease-in-out;
     will-change: transform, opacity;
@@ -79,6 +90,11 @@
     transform: translateY(10px) scale(0.95);
   }
 
+  .product-card-enter {
+    animation: product-card-reveal var(--motion-duration-medium) var(--motion-ease-out) both;
+    animation-delay: calc(var(--product-index, 0) * 120ms);
+  }
+
   .brand-strip {
     @apply border-none bg-transparent;
   }
@@ -95,6 +111,93 @@
   .scrollbar-hidden::-webkit-scrollbar {
     display: none;
   }
+
+  .category-chip {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .category-chip::after {
+    content: '';
+    position: absolute;
+    inset-inline: 16px;
+    bottom: 10px;
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(99,102,241,0.1), rgba(79,70,229,0.9));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--motion-duration-quick) var(--motion-ease-out);
+  }
+
+  .category-chip[aria-selected='true']::after,
+  .category-chip:hover::after,
+  .category-chip:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  .dashboard-page {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+    transition: opacity var(--motion-duration-medium) var(--motion-ease-out),
+      transform var(--motion-duration-medium) var(--motion-ease-out);
+  }
+
+  .dashboard-page[data-ready='true'] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .filter-sheet-overlay {
+    animation: sheet-fade-out var(--motion-duration-medium) var(--motion-ease-soft) forwards;
+  }
+
+  .filter-sheet-overlay[data-state='open'] {
+    animation: sheet-fade-in var(--motion-duration-medium) var(--motion-ease-soft) forwards;
+  }
+
+  .filter-sheet-panel {
+    transform: translateY(100%);
+    animation: sheet-slide-out var(--motion-duration-medium) var(--motion-ease-out) forwards;
+  }
+
+  .filter-sheet-overlay[data-state='open'] .filter-sheet-panel {
+    animation: sheet-slide-in var(--motion-duration-medium) var(--motion-ease-out) forwards;
+  }
+
+  .insights-widget {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .insights-widget::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.4) 45%, rgba(255,255,255,0) 60%);
+    transform: translateX(-100%);
+    animation: shimmer var(--motion-duration-slow) linear infinite;
+    pointer-events: none;
+  }
+
+  .toast-stack {
+    pointer-events: none;
+    display: grid;
+    gap: 12px;
+  }
+
+  .toast-item {
+    pointer-events: auto;
+    animation: toast-in var(--motion-duration-medium) var(--motion-ease-out) forwards;
+  }
+
+  .toast-item[data-leaving='true'] {
+    animation: toast-out var(--motion-duration-medium) var(--motion-ease-out) forwards;
+  }
+
+  .bounce-tap {
+    animation: bounce-tap var(--motion-duration-medium) var(--motion-ease-bounce) forwards;
+  }
 }
 
 @keyframes slideInUp {
@@ -108,11 +211,126 @@
   }
 }
 
+@keyframes product-card-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes sheet-slide-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes sheet-slide-out {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes sheet-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sheet-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes bounce-tap {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 @keyframes marquee {
   0% {
     transform: translateX(0);
   }
   100% {
     transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .transition-standard,
+  .product-card,
+  .product-card-enter,
+  .dashboard-page,
+  .filter-sheet-overlay,
+  .filter-sheet-panel,
+  .insights-widget::after,
+  .toast-item,
+  .bounce-tap {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .insights-widget::after {
+    display: none;
+  }
+
+  .dashboard-page,
+  .filter-sheet-panel {
+    transform: none !important;
   }
 }
