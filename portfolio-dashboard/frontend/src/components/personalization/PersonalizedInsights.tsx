@@ -89,7 +89,7 @@ export function PersonalizedInsights({
         <Sparkles className="w-8 h-8 text-neutral-400 mx-auto mb-3" />
         <h3 className="text-lg font-medium text-neutral-900 mb-2">No Personalized Insights</h3>
         <p className="text-sm text-neutral-600">
-          We're analyzing your data to provide personalized insights. Check back soon!
+          We&apos;re analyzing your data to provide personalized insights. Check back soon!
         </p>
       </div>
     );

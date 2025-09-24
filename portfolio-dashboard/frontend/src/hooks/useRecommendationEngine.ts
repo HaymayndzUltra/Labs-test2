@@ -239,7 +239,8 @@ export function useRecommendationEngine({
     userPreferences.analytics.showAdvancedMetrics,
     userPreferences.dashboard.defaultView,
     userBehavior.viewedProducts.length,
-    userBehavior.searchedTerms.length
+    userBehavior.searchedTerms.length,
+    generateRecommendations
   ]);
 
   // Refresh recommendations manually

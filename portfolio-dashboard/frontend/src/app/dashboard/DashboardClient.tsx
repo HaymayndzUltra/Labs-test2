@@ -137,8 +137,22 @@ function formatCurrency(value: number, currency: string) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
-    minimumFractionDigits: value % 1 === 0 ? 0 : 2,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(value);
+}
+
+function formatLabel(value: string) {
+  return value
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((segment) => {
+      if (segment.length <= 2) {
+        return segment.toUpperCase();
+      }
+      return segment.charAt(0).toUpperCase() + segment.slice(1);
+    })
+    .join(' ');
 }
 
 function formatChange(change: number) {
@@ -990,9 +1004,12 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
 
               <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-neutral-900">Product Catalogue</h2>
+                  <h2 className="text-xl font-semibold text-neutral-900">Product Catalog</h2>
                   <p className="text-sm text-neutral-600">
-                    Showing <span className="font-semibold text-primary">{filteredProducts.length}</span> curated results
+                    Showing <span className="font-semibold text-primary">{filteredProducts.length}</span> curated products
+                  </p>
+                  <p className="mt-1 text-xs text-neutral-500">
+                    Sorted by <span className="font-medium text-neutral-700">{activeSort.label}</span> · {activeSort.description}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -1380,8 +1397,10 @@ function FilterPanel({
           <button
             type="button"
             onClick={onReset}
-            className="text-sm font-semibold text-primary transition hover:text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
+            className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 px-3 py-1.5 text-xs font-semibold text-primary shadow-sm transition hover:bg-primary/10 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
+            aria-label="Reset all filters"
           >
+            <X className="h-3.5 w-3.5" aria-hidden="true" />
             Reset
           </button>
         </header>
@@ -1470,6 +1489,10 @@ function FilterPanel({
                   }}
                   className="absolute inset-0 z-10 h-full w-full appearance-none bg-transparent focus:outline-none focus-visible:outline-none [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-secondary [&::-moz-range-track]:bg-transparent [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:-mt-[6px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-secondary"
                   aria-label="Minimum price"
+                  aria-valuemin={priceRange.minimum}
+                  aria-valuemax={priceRange.maximum}
+                  aria-valuenow={priceSelection[0]}
+                  aria-valuetext={formattedMin}
                 />
                 <input
                   type="range"
@@ -1486,7 +1509,18 @@ function FilterPanel({
                   }}
                   className="absolute inset-0 z-20 h-full w-full appearance-none bg-transparent focus:outline-none focus-visible:outline-none [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-secondary [&::-moz-range-track]:bg-transparent [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:-mt-[6px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-secondary"
                   aria-label="Maximum price"
+                  aria-valuemin={priceRange.minimum}
+                  aria-valuemax={priceRange.maximum}
+                  aria-valuenow={priceSelection[1]}
+                  aria-valuetext={formattedMax}
                 />
+              </div>
+              <div className="mt-4 flex items-center justify-between text-[11px] font-medium text-neutral-500">
+                <span>{formatCurrency(priceRange.minimum, priceRange.currency)}</span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-1 text-[10px] font-semibold text-primary">
+                  Avg {formattedAverage}
+                </span>
+                <span>{formatCurrency(priceRange.maximum, priceRange.currency)}</span>
               </div>
             </div>
           </div>
@@ -1513,15 +1547,18 @@ function FilterPanel({
             aria-labelledby="filter-rating-header"
             className={openSections.rating ? 'mt-4' : 'mt-4 hidden'}
           >
-            <div className="flex items-center gap-1 text-amber-400">
+            <div className="flex items-center gap-2 rounded-2xl border border-amber-200 bg-amber-50/60 px-4 py-3 text-amber-500 shadow-inner">
               {Array.from({ length: 5 }).map((_, index) => (
                 <Star
                   key={String(index)}
-                  className={`h-5 w-5 ${index < Math.round(ratingFilter.minimum_rating) ? 'fill-current text-amber-400' : 'text-neutral-200'}`}
+                  className={`h-5 w-5 ${index < Math.round(ratingFilter.minimum_rating) ? 'fill-current text-amber-500' : 'text-neutral-200'}`}
                   aria-hidden="true"
                 />
               ))}
             </div>
+            <p className="mt-2 text-xs text-neutral-600">
+              Showing products rated {ratingFilter.minimum_rating.toFixed(1)}★ and above.
+            </p>
           </div>
         </section>
 
@@ -1560,6 +1597,7 @@ function FilterPanel({
                 ? brand.checked
                 : selectedBrands.includes(brand.id);
               const initial = brand.name.charAt(0).toUpperCase();
+              const normalisedBrandName = formatLabel(brand.name);
 
               return (
                 <label
@@ -1578,14 +1616,14 @@ function FilterPanel({
                     aria-label={`Filter by ${brand.name}`}
                   />
                   <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-primary shadow-inner">
+                    <span className={`flex h-9 w-9 items-center justify-center rounded-xl text-sm font-semibold shadow-inner ${checked ? 'bg-primary text-white' : 'bg-indigo-100 text-neutral-600'}`}>
                       {initial}
                     </span>
                     <div className="flex flex-col">
                       <span className="text-sm font-semibold text-neutral-800 group-hover:text-neutral-900">
-                        {brand.name}
+                        {normalisedBrandName}
                       </span>
-                      <span className="text-[11px] font-medium text-neutral-400">{brand.product_count} items</span>
+                      <span className="text-[11px] font-medium text-neutral-400 tabular-nums">{brand.product_count} items</span>
                     </div>
                   </div>
                   <span
@@ -1648,23 +1686,26 @@ function FilterPanel({
             id="filter-delivery-content"
             role="region"
             aria-labelledby="filter-delivery-header"
-            className={openSections.delivery ? 'mt-4 flex flex-wrap gap-3' : 'mt-4 hidden'}
+            className={openSections.delivery ? 'mt-4' : 'mt-4 hidden'}
           >
-            {deliveryOptions.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => onDeliveryToggle(option.id)}
-                className={`inline-flex min-w-[120px] items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary/40 ${
-                  option.active
-                    ? 'bg-primary text-white shadow-soft'
-                    : 'bg-indigo-50/60 text-neutral-600 hover:bg-indigo-100 hover:text-primary'
-                }`}
-                aria-pressed={option.active}
-              >
-                {option.label}
-              </button>
-            ))}
+            <div role="radiogroup" aria-label="Delivery options" className="flex flex-wrap gap-3">
+              {deliveryOptions.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={option.active}
+                  onClick={() => onDeliveryToggle(option.id)}
+                  className={`inline-flex min-w-[132px] items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary/40 ${
+                    option.active
+                      ? 'border-primary bg-primary text-white shadow-soft'
+                      : 'border-indigo-100/80 bg-indigo-50/80 text-neutral-600 hover:border-primary/40 hover:bg-white hover:text-primary'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </div>
         </section>
       </div>
@@ -1759,6 +1800,7 @@ function InsightsWidget({
         </span>
       </div>
       <p className="mt-3 text-sm text-neutral-600">{spotlightMetric.label}</p>
+      <p className="mt-1 text-xs text-neutral-500">Comparison period: trailing 30 days.</p>
       <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-0">
         {overviewMetrics.map((metric, index) => {
           const extraClasses = [
@@ -1881,6 +1923,11 @@ function ProductCard({
     onQuickView(product);
   };
 
+  const formattedCategory = formatLabel(product.category_id);
+  const formattedBrand = formatLabel(product.brand_id);
+  const formattedRating = product.rating.toFixed(1);
+  const formattedReviews = product.reviews.toLocaleString('en-US');
+
   return (
     <article
       className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border border-indigo-100/70 bg-surface-alt p-5 shadow-soft transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-glow ${
@@ -1903,12 +1950,13 @@ function ProductCard({
         </div>
         <button
           type="button"
-          className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/90 text-neutral-400 shadow-soft transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
+          className="absolute right-4 top-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/90 text-neutral-400 shadow-soft transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
           aria-label={product.favorite ? 'Saved to favourites' : 'Add to favourites'}
+          aria-pressed={product.favorite}
         >
           <Heart className={`h-4 w-4 ${product.favorite ? 'fill-primary text-primary' : ''}`} />
         </button>
-        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+        <div className="absolute left-4 top-4 z-10 flex flex-wrap gap-2">
           {discount ? (
             <Badge tone="bg-rose-100 text-rose-600">-{discount}%</Badge>
           ) : null}
@@ -1931,13 +1979,17 @@ function ProductCard({
           ) : null}
         </div>
 
-        <div className="mt-3 flex items-center gap-2 text-sm text-neutral-600">
-          <div className="flex items-center gap-1 text-amber-400" aria-hidden="true">
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-neutral-600">
+          <div className="flex items-center gap-1 text-amber-500" aria-hidden="true">
             <Star className="h-4 w-4 fill-current" />
-            <span className="font-semibold text-neutral-700">{product.rating.toFixed(1)}</span>
+            <span className="font-semibold text-neutral-800">{formattedRating}</span>
           </div>
-          <span aria-label={`${product.rating.toFixed(1)} stars from ${product.reviews} reviews`}>
-            ({product.reviews})
+          <span className="sr-only">Rated {formattedRating} out of 5 stars</span>
+          <span aria-hidden="true" className="text-neutral-400">
+            •
+          </span>
+          <span aria-label={`${formattedRating} stars from ${formattedReviews} reviews`} className="text-neutral-500">
+            {formattedReviews} reviews
           </span>
           {product.rating >= ratingThreshold ? (
             <Badge tone="bg-primary/10 text-primary">Top rated</Badge>
@@ -1945,11 +1997,11 @@ function ProductCard({
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          <Badge tone="bg-secondary/10 text-secondary">{product.category_id}</Badge>
-          <Badge tone="bg-primary/10 text-primary">{product.brand_id}</Badge>
+          <Badge tone="bg-secondary/10 text-secondary">{formattedCategory}</Badge>
+          <Badge tone="bg-primary/10 text-primary">{formattedBrand}</Badge>
         </div>
 
-        <div className="mt-6 flex items-center gap-3">
+        <div className="mt-auto flex items-center gap-3 pt-6">
           <button
             type="button"
             className={`inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-soft transition-all transition-standard hover:shadow-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60 ${

@@ -29,6 +29,19 @@ export function NavigationLayout({
 }: NavigationLayoutProps) {
   const [savedFilterSets, setSavedFilterSets] = useState<FilterSet[]>([]);
 
+  const modeMetadata: Record<NavigationMode, { title: string; subtitle: string }> = {
+    analytics: {
+      title: 'Analytics workspace',
+      subtitle: 'Monitor customer performance, revenue trends, and health metrics.',
+    },
+    catalog: {
+      title: 'Product catalog workspace',
+      subtitle: 'Merchandise inventory, refine filters, and curate product selections.',
+    },
+  };
+
+  const activeModeMetadata = modeMetadata[activeMode];
+
   const handleSaveFilterSet = useCallback((filterSet: FilterSet) => {
     setSavedFilterSets(prev => [...prev, filterSet]);
     // You could also show a toast notification here
@@ -60,11 +73,16 @@ export function NavigationLayout({
               CX
             </div>
             <div>
-              <p className="text-lg font-semibold text-neutral-900">Commerce Experience</p>
-              <p className="text-sm text-neutral-600">Enterprise analytics workspace</p>
+              <span className="text-xs font-medium uppercase tracking-wide text-primary">Commerce experience</span>
+              <h1 className="mt-1 text-2xl font-semibold text-neutral-900 md:text-3xl">
+                {activeModeMetadata.title}
+              </h1>
+              <p className="mt-1 text-sm text-neutral-600">
+                {activeModeMetadata.subtitle}
+              </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <SaveFilterSet
               currentFilters={currentFilters}
