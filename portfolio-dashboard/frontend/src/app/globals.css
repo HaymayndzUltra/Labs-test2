@@ -60,65 +60,6 @@
 }
 
 @layer components {
-  /* Donezo Button Styles */
-  .btn-donezo {
-    @apply bg-donezo-500 hover:bg-donezo-600 text-white font-medium px-4 py-2 rounded-xl transition-all duration-200 shadow-soft;
-  }
-  
-  .btn-donezo-outline {
-    @apply border-2 border-donezo-500 text-donezo-500 hover:bg-donezo-500 hover:text-white font-medium px-4 py-2 rounded-xl transition-all duration-200;
-  }
-  
-  /* Donezo Card Styles */
-  .card-donezo {
-    @apply bg-white rounded-2xl shadow-card border border-gray-100 p-6;
-  }
-  
-  /* Donezo Sidebar Styles */
-  .sidebar-donezo {
-    @apply bg-white border-r border-gray-200 shadow-soft;
-  }
-  
-  /* Donezo Gradient Backgrounds */
-  .gradient-donezo {
-    background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
-  }
-  
-  .gradient-mobile-app {
-    background: linear-gradient(135deg, #22c55e 0%, #3b82f6 100%);
-  }
-  
-  /* Donezo Status Badges */
-  .badge-completed {
-    @apply bg-donezo-100 text-donezo-700 px-2 py-1 rounded-lg text-xs font-medium;
-  }
-  
-  .badge-in-progress {
-    @apply bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-xs font-medium;
-  }
-  
-  .badge-pending {
-    @apply bg-gray-100 text-gray-700 px-2 py-1 rounded-lg text-xs font-medium;
-  }
-  
-  /* Donezo KPI Card Styles */
-  .kpi-card {
-    @apply bg-white rounded-2xl p-6 shadow-card border border-gray-100 hover:shadow-lg transition-shadow duration-200;
-  }
-  
-  .kpi-card-primary {
-    @apply bg-gradient-to-br from-donezo-500 to-donezo-600 text-white rounded-2xl p-6 shadow-card;
-  }
-  
-  /* Donezo Navigation Styles */
-  .nav-item {
-    @apply flex items-center px-4 py-3 text-gray-600 hover:text-donezo-600 hover:bg-donezo-50 rounded-xl transition-all duration-200;
-  }
-  
-  .nav-item-active {
-    @apply flex items-center px-4 py-3 text-donezo-600 bg-donezo-50 rounded-xl font-medium;
-  }
-
   .product-card {
     @apply transition-all duration-300 ease-in-out;
     will-change: transform, opacity;
@@ -143,7 +84,7 @@
   }
 
   .animate-marquee {
-    animation: marquee 24s linear infinite;
+    animation: marquee 20s linear infinite;
     will-change: transform;
   }
 
@@ -168,10 +109,10 @@
 }
 
 @keyframes marquee {
-  from {
+  0% {
     transform: translateX(0);
   }
-  to {
+  100% {
     transform: translateX(-50%);
   }
 }

@@ -1,0 +1,68 @@
+---
+alwaysApply: true
+description: Portfolio Dashboard project structure and architecture guide
+---
+
+# Portfolio Dashboard Project Structure
+
+This is an enterprise fullstack application with the following architecture:
+
+## Project Overview
+- **Frontend**: Next.js 15 with TypeScript, Tailwind CSS, and React 19
+- **Backend**: FastAPI with Python 3.x, SQLAlchemy, and PostgreSQL
+- **Database**: PostgreSQL with Alembic migrations
+- **Deployment**: Docker Compose for development, AWS for production
+- **Authentication**: Enterprise-grade authentication system
+
+## Directory Structure
+```
+portfolio-dashboard/
+├── frontend/                 # Next.js frontend application
+│   ├── src/
+│   │   ├── app/             # Next.js App Router pages and layouts
+│   │   ├── hooks/           # Custom React hooks
+│   │   └── lib/             # Utility functions and configurations
+│   ├── package.json         # Frontend dependencies
+│   └── tailwind.config.js   # Tailwind CSS configuration
+├── backend/                  # FastAPI backend application
+│   ├── app/
+│   │   ├── api/             # API route handlers
+│   │   ├── core/            # Core application logic
+│   │   ├── crud/            # Database CRUD operations
+│   │   ├── models/          # SQLAlchemy models
+│   │   ├── schemas/         # Pydantic schemas
+│   │   ├── services/        # Business logic services
+│   │   └── utils/           # Utility functions
+│   ├── alembic/             # Database migrations
+│   ├── tests/               # Backend tests
+│   └── requirements.txt     # Python dependencies
+├── database/                 # Database-related files
+├── docs/                    # Project documentation
+├── docker-compose.yml       # Development environment setup
+├── Makefile                 # Development commands
+└── README.md               # Project overview
+```
+
+## Key Files
+- [Makefile](mdc:Makefile) - Development commands (`make setup`, `make dev`, `make test`)
+- [docker-compose.yml](mdc:docker-compose.yml) - Development environment
+- [frontend/package.json](mdc:frontend/package.json) - Frontend dependencies and scripts
+- [backend/requirements.txt](mdc:backend/requirements.txt) - Backend dependencies
+- [frontend/tsconfig.json](mdc:frontend/tsconfig.json) - TypeScript configuration
+- [frontend/tailwind.config.js](mdc:frontend/tailwind.config.js) - Tailwind CSS configuration
+
+## Development Workflow
+1. Use `make setup` to install dependencies
+2. Use `make dev` to start development environment
+3. Use `make test` to run tests
+4. Use `make lint` to run linters
+5. Use `make build` to build for production
+
+## Enterprise Features
+- API Gateway integration
+- Audit logging
+- Compliance reporting
+- Data governance
+- Enterprise authentication
+- Role-based access control
+- SSO integration

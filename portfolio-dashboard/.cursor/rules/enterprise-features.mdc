@@ -1,0 +1,67 @@
+---
+description: Enterprise features and compliance guidelines
+---
+
+# Enterprise Features & Compliance
+
+## Enterprise Architecture
+This portfolio dashboard is designed as an enterprise-grade application with the following key features:
+
+### Core Enterprise Features
+- **API Gateway**: Centralized API management and routing
+- **Audit Logging**: Comprehensive logging of all user actions and system events
+- **Compliance Reporting**: Automated reporting for regulatory compliance
+- **Data Governance**: Data quality, lineage, and privacy controls
+- **Enterprise Authentication**: Multi-factor authentication and SSO integration
+- **Role-Based Access Control**: Granular permissions and access management
+- **SSO Integration**: Single sign-on with enterprise identity providers
+
+### Security Requirements
+- Implement proper authentication and authorization
+- Use JWT tokens with appropriate expiration
+- Implement rate limiting and DDoS protection
+- Encrypt sensitive data at rest and in transit
+- Follow OWASP security guidelines
+- Implement proper session management
+
+### Data Governance
+- Implement data quality checks
+- Maintain data lineage tracking
+- Ensure data privacy compliance
+- Implement data retention policies
+- Use proper data classification
+
+### Compliance Considerations
+- Audit all user actions and system changes
+- Implement proper logging and monitoring
+- Ensure data integrity and availability
+- Follow industry-specific compliance requirements
+- Implement proper backup and recovery procedures
+
+### Performance & Scalability
+- Design for horizontal scaling
+- Implement proper caching strategies
+- Use database connection pooling
+- Monitor performance metrics
+- Implement proper load balancing
+
+### Monitoring & Observability
+- Implement comprehensive logging
+- Use application performance monitoring
+- Set up alerting for critical issues
+- Monitor system health and availability
+- Track business metrics and KPIs
+
+### Integration Requirements
+- Design APIs for external system integration
+- Implement proper error handling and retry logic
+- Use message queues for asynchronous processing
+- Implement proper API versioning
+- Ensure backward compatibility
+
+### Deployment & Operations
+- Use containerization for consistent deployments
+- Implement proper CI/CD pipelines
+- Use infrastructure as code
+- Implement proper environment management
+- Ensure high availability and disaster recovery

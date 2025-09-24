@@ -1,0 +1,109 @@
+---
+globs: backend/**/*.py
+description: Backend development guidelines for FastAPI and Python
+---
+
+# Backend Development Guidelines
+
+## Technology Stack
+- **Framework**: FastAPI 0.104.1
+- **Language**: Python 3.x
+- **Database**: PostgreSQL with SQLAlchemy 2.0.23
+- **Migrations**: Alembic 1.13.1
+- **Authentication**: python-jose with cryptography
+- **Password Hashing**: passlib with bcrypt
+- **Caching**: Redis 5.0.1
+- **Rate Limiting**: slowapi
+- **HTTP Client**: httpx
+
+## Project Structure
+```
+backend/app/
+├── api/                    # API route handlers
+│   ├── deps.py             # Dependency injection
+│   ├── v1/                 # API version 1
+│   └── __init__.py
+├── core/                   # Core application logic
+│   ├── config.py           # Configuration settings
+│   ├── security.py         # Authentication & security
+│   └── __init__.py
+├── crud/                   # Database CRUD operations
+├── models/                 # SQLAlchemy models
+├── schemas/                # Pydantic schemas
+├── services/               # Business logic services
+├── utils/                  # Utility functions
+├── config.py               # Application configuration
+├── database.py             # Database connection
+└── __init__.py
+```
+
+## Code Organization
+- **Models**: SQLAlchemy models in `models/` directory
+- **Schemas**: Pydantic schemas in `schemas/` directory
+- **CRUD**: Database operations in `crud/` directory
+- **Services**: Business logic in `services/` directory
+- **API Routes**: FastAPI routers in `api/` directory
+- **Dependencies**: Shared dependencies in `api/deps.py`
+
+## Database Guidelines
+- Use SQLAlchemy 2.0+ syntax
+- Define models with proper relationships
+- Use Alembic for database migrations
+- Follow naming conventions:
+  - Tables: snake_case
+  - Columns: snake_case
+  - Foreign keys: `{table}_id`
+
+## API Design
+- Follow RESTful principles
+- Use proper HTTP status codes
+- Implement proper error handling
+- Use Pydantic for request/response validation
+- Document APIs with OpenAPI/Swagger
+
+## Authentication & Security
+- Use JWT tokens for authentication
+- Implement proper password hashing with bcrypt
+- Use dependency injection for security
+- Implement rate limiting with slowapi
+- Follow OWASP security guidelines
+
+## Configuration Management
+- Use pydantic-settings for configuration
+- Environment-based configuration
+- Secure handling of secrets
+- Proper logging configuration
+
+## Testing
+- Use pytest for testing
+- Write unit tests for business logic
+- Write integration tests for API endpoints
+- Use pytest-asyncio for async testing
+- Aim for good test coverage
+
+## Code Quality
+- Use Black for code formatting
+- Use isort for import sorting
+- Use mypy for type checking
+- Use flake8 for linting
+- Use bandit for security linting
+
+## Performance
+- Use async/await for I/O operations
+- Implement proper database connection pooling
+- Use Redis for caching
+- Optimize database queries
+- Implement proper pagination
+
+## Error Handling
+- Use FastAPI's HTTPException
+- Implement custom exception handlers
+- Log errors properly
+- Return meaningful error messages
+- Handle validation errors gracefully
+
+## Dependencies
+- Keep dependencies up to date
+- Use virtual environments
+- Pin dependency versions in requirements.txt
+- Document dependency purposes

@@ -1,0 +1,123 @@
+---
+alwaysApply: true
+description: Code quality standards and best practices
+---
+
+# Code Quality Standards & Best Practices
+
+## General Principles
+- Write clean, readable, and maintainable code
+- Follow the DRY (Don't Repeat Yourself) principle
+- Use meaningful variable and function names
+- Write self-documenting code with clear comments
+- Follow consistent formatting and style guidelines
+
+## Frontend Code Quality
+
+### TypeScript Standards
+- Use TypeScript interfaces for type definitions
+- Prefer `interface` over `type` for object shapes
+- Use proper typing for props, state, and API responses
+- Avoid `any` type; use `unknown` when type is truly unknown
+- Use path aliases (`@/*`) for imports
+
+### React Best Practices
+- Use functional components with hooks
+- Implement proper error boundaries
+- Use React.memo() for performance optimization when needed
+- Follow the single responsibility principle for components
+- Use custom hooks for reusable logic
+
+### Styling Standards
+- Use Tailwind CSS utility classes
+- Follow the design system defined in [tailwind.config.js](mdc:frontend/tailwind.config.js)
+- Use CSS custom properties for theming
+- Keep styles consistent across components
+- Use responsive design principles
+
+### Testing Standards
+- Write unit tests for components and utilities
+- Use React Testing Library for component testing
+- Aim for meaningful test coverage
+- Test user interactions and edge cases
+- Mock external dependencies appropriately
+
+## Backend Code Quality
+
+### Python Standards
+- Follow PEP 8 style guidelines
+- Use type hints for function parameters and return values
+- Use docstrings for functions and classes
+- Follow the single responsibility principle
+- Use dependency injection for better testability
+
+### FastAPI Best Practices
+- Use Pydantic models for request/response validation
+- Implement proper error handling with HTTPException
+- Use dependency injection for shared resources
+- Document APIs with OpenAPI/Swagger
+- Follow RESTful API design principles
+
+### Database Standards
+- Use SQLAlchemy 2.0+ syntax
+- Define proper relationships between models
+- Use Alembic for database migrations
+- Follow naming conventions (snake_case)
+- Implement proper indexing for performance
+
+### Security Standards
+- Use proper password hashing (bcrypt)
+- Implement JWT token authentication
+- Use HTTPS in production
+- Validate and sanitize all inputs
+- Follow OWASP security guidelines
+
+## Code Organization
+
+### File Structure
+- Keep related functionality together
+- Use clear directory structure
+- Separate concerns (models, services, controllers)
+- Use consistent naming conventions
+- Group related files in appropriate directories
+
+### Import Organization
+- Use absolute imports when possible
+- Group imports: standard library, third-party, local
+- Use path aliases for cleaner imports
+- Avoid circular dependencies
+
+## Documentation Standards
+- Write clear README files
+- Document API endpoints
+- Use meaningful commit messages
+- Document complex business logic
+- Keep documentation up to date
+
+## Performance Standards
+- Optimize database queries
+- Use proper caching strategies
+- Implement lazy loading where appropriate
+- Monitor and profile performance
+- Use async/await for I/O operations
+
+## Error Handling
+- Implement proper error boundaries
+- Use meaningful error messages
+- Log errors appropriately
+- Handle edge cases gracefully
+- Provide user-friendly error feedback
+
+## Testing Standards
+- Write tests before or alongside code
+- Use descriptive test names
+- Test both happy path and edge cases
+- Mock external dependencies
+- Maintain good test coverage
+
+## Code Review Standards
+- Review code for functionality and style
+- Check for security vulnerabilities
+- Ensure proper error handling
+- Verify test coverage
+- Look for performance issues

@@ -1,0 +1,82 @@
+---
+globs: frontend/**/*.ts,frontend/**/*.tsx,frontend/**/*.js,frontend/**/*.jsx
+description: Frontend development guidelines for Next.js, TypeScript, and Tailwind CSS
+---
+
+# Frontend Development Guidelines
+
+## Technology Stack
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript (strict mode disabled for flexibility)
+- **Styling**: Tailwind CSS with custom design system
+- **State Management**: Zustand for global state
+- **Data Fetching**: SWR for server state
+- **Forms**: React Hook Form with Zod validation
+- **Charts**: Recharts for data visualization
+- **Icons**: Lucide React
+
+## TypeScript Configuration
+- Base URL: `./` with path mapping `@/*` to `src/*`
+- Target: ES2017
+- Strict mode: Disabled (can be enabled per file)
+- JSX: Preserve mode for Next.js
+
+## File Organization
+```
+frontend/src/
+├── app/                    # Next.js App Router
+│   ├── layout.tsx         # Root layout
+│   ├── page.tsx           # Home page
+│   └── (routes)/          # Route groups
+├── hooks/                  # Custom React hooks
+├── lib/                    # Utilities and configurations
+└── components/            # Reusable components
+```
+
+## Styling Guidelines
+- Use Tailwind CSS utility classes
+- Follow the custom design system defined in [tailwind.config.js](mdc:frontend/tailwind.config.js)
+- Use CSS custom properties for theming:
+  - `--color-surface`, `--color-surface-alt`
+  - `--color-neutral-*` for grays
+  - `--color-accent-primary`, `--color-accent-secondary`
+  - `--color-success`, `--color-warning`, `--color-destructive`
+- Use custom shadows: `shadow-soft`, `shadow-card`, `shadow-glow`
+- Use custom border radius: `rounded-xl`, `rounded-2xl`, `rounded-3xl`
+
+## Component Guidelines
+- Use functional components with hooks
+- Prefer composition over inheritance
+- Use TypeScript interfaces for props
+- Implement proper error boundaries
+- Use React.memo() for performance optimization when needed
+
+## State Management
+- Use Zustand for global state management
+- Use SWR for server state and caching
+- Use React Hook Form for form state
+- Keep component state local when possible
+
+## API Integration
+- Use Axios for HTTP requests
+- Implement proper error handling
+- Use SWR for data fetching and caching
+- Follow RESTful API patterns
+
+## Testing
+- Use Jest and React Testing Library
+- Write unit tests for components
+- Write integration tests for user flows
+- Aim for good test coverage
+
+## Performance
+- Use Next.js Image component for optimized images
+- Implement proper loading states
+- Use dynamic imports for code splitting
+- Optimize bundle size with tree shaking
+
+## Code Quality
+- Follow ESLint configuration
+- Use Prettier for code formatting
+- Write meaningful commit messages
+- Document complex logic

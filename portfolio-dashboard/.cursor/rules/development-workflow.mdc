@@ -1,0 +1,98 @@
+---
+alwaysApply: true
+description: Development workflow and tooling guidelines
+---
+
+# Development Workflow & Tooling
+
+## Development Environment Setup
+The project uses Docker Compose for development environment with the following services:
+- **Frontend**: Next.js development server on port 3000
+- **Backend**: FastAPI development server on port 8000
+- **Database**: PostgreSQL on port 5432
+
+## Make Commands
+Use the [Makefile](mdc:Makefile) for common development tasks:
+
+### Setup
+```bash
+make setup          # Install all dependencies
+```
+- Installs Node.js dependencies in frontend
+- Creates Python virtual environment in backend
+- Installs Python dependencies
+
+### Development
+```bash
+make dev            # Start development environment
+```
+- Starts Docker Compose services
+- Runs frontend development server
+- Runs backend development server
+
+### Testing
+```bash
+make test           # Run all tests
+```
+- Runs frontend Jest tests
+- Runs backend pytest tests
+
+### Code Quality
+```bash
+make lint           # Run linters
+```
+- Runs ESLint for frontend
+- Runs Black, flake8 for backend
+
+### Production
+```bash
+make build          # Build for production
+make deploy         # Deploy to AWS
+make clean          # Clean build artifacts
+```
+
+## Docker Development
+The [docker-compose.yml](mdc:docker-compose.yml) provides:
+- PostgreSQL database with persistent volumes
+- Development environment with hot reloading
+- Port mapping for all services
+
+## Version Requirements
+- **Node.js**: >= 20.10.0 (specified in frontend package.json)
+- **Python**: 3.x (recommended 3.9+)
+- **PostgreSQL**: 15+
+
+## Environment Variables
+- Development environment variables are set in docker-compose.yml
+- Production environment variables should be configured in AWS
+- Use pydantic-settings for backend configuration management
+
+## Database Management
+- Use Alembic for database migrations
+- Database schema is defined in SQLAlchemy models
+- Run migrations with: `alembic upgrade head`
+- Create new migrations with: `alembic revision --autogenerate -m "description"`
+
+## Git Workflow
+- Use meaningful commit messages
+- Follow conventional commit format when possible
+- Create feature branches for new development
+- Use pull requests for code review
+
+## Debugging
+- Frontend: Use browser dev tools and React DevTools
+- Backend: Use FastAPI's automatic API documentation at `/docs`
+- Database: Connect to PostgreSQL directly for debugging
+- Logs: Check Docker Compose logs with `docker-compose logs`
+
+## Performance Monitoring
+- Use Next.js built-in performance monitoring
+- Monitor FastAPI performance with built-in metrics
+- Use PostgreSQL query analysis tools
+- Implement proper caching strategies
+
+## Security Considerations
+- Never commit secrets to version control
+- Use environment variables for sensitive configuration
+- Implement proper authentication and authorization
+- Follow security best practices for both frontend and backend
