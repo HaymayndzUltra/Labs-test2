@@ -1,93 +1,157 @@
-export type MetricTrend = 'up' | 'down' | 'steady';
+export type TrendDirection = 'up' | 'down' | 'steady';
 
-export type OverviewMetric = {
+export type PortfolioMetric = {
   id: string;
   label: string;
   value: string;
   change: number;
-  trend: MetricTrend;
+  trend: TrendDirection;
   description: string;
+  icon: string;
 };
 
-export type Category = {
-  id: string;
-  label: string;
-  active: boolean;
-};
-
-export type PriceRange = {
-  currency: string;
-  minimum: number;
-  maximum: number;
-  average: number;
-  selected_min: number;
-  selected_max: number;
-};
-
-export type RatingFilter = {
-  label: string;
-  minimum_rating: number;
-};
-
-export type BrandFilter = {
+export type ChartSeries = {
   id: string;
   name: string;
-  checked: boolean;
-  product_count: number;
+  dataKey: string;
+  color: string;
+  stackId?: string;
 };
 
-export type DeliveryOption = {
+export type CartesianChartConfig = {
+  id: string;
+  type: 'line' | 'bar' | 'stacked-bar';
+  title: string;
+  description: string;
+  data: Record<string, string | number>[];
+  xKey: string;
+  series: ChartSeries[];
+};
+
+export type DonutChartConfig = {
+  id: string;
+  type: 'donut';
+  title: string;
+  description: string;
+  data: { name: string; value: number; color?: string }[];
+};
+
+export type ChartConfig = CartesianChartConfig | DonutChartConfig;
+
+export type HeatmapConfig = {
+  id: string;
+  title: string;
+  description: string;
+  days: string[];
+  hours: string[];
+  values: number[][];
+};
+
+export type FunnelStage = {
   id: string;
   label: string;
-  description?: string | null;
-  active: boolean;
+  value: number;
+  conversion: string;
 };
 
-export type ProductBadge = {
+export type LeaderboardEntry = {
   id: string;
   label: string;
-  tone: string;
-};
-
-export type Product = {
-  id: string;
-  name: string;
-  category_id: string;
-  brand_id: string;
-  image: string;
-  price: number;
-  currency: string;
-  rating: number;
-  reviews: number;
-  favorite: boolean;
-  badges: ProductBadge[];
-  original_price?: number;
-};
-
-export type SpotlightMetric = {
-  id: string;
-  label: string;
+  sublabel?: string;
   value: string;
-  change: number;
-  trend: MetricTrend;
+  change?: number;
+  trend?: TrendDirection;
 };
 
-export type EcommerceDashboardResponse = {
-  generated_at: string;
-  overview_metrics: OverviewMetric[];
-  categories: Category[];
-  price_range: PriceRange;
-  rating_filter: RatingFilter;
-  brand_filters: BrandFilter[];
-  delivery_options: DeliveryOption[];
-  spotlight_metric: SpotlightMetric;
-  products: Product[];
-};
-
-export type SortOptionId = 'featured' | 'price-asc' | 'price-desc' | 'rating-desc' | 'popularity-desc';
-
-export type SortOption = {
-  id: SortOptionId;
-  label: string;
+export type LeaderboardConfig = {
+  id: string;
+  title: string;
   description: string;
+  columns: string[];
+  rows: LeaderboardEntry[];
+};
+
+export type AutomationJob = {
+  id: string;
+  title: string;
+  status: 'active' | 'paused' | 'draft';
+  cadence: string;
+  trigger: string;
+  actions: string[];
+  owner: string;
+  workflowId: string;
+};
+
+export type WorkflowStep = {
+  id: string;
+  name: string;
+  detail: string;
+  owner: string;
+};
+
+export type WorkflowBlueprint = {
+  id: string;
+  title: string;
+  description: string;
+  steps: WorkflowStep[];
+};
+
+export type FormField = {
+  id: string;
+  label: string;
+  type: 'text' | 'email' | 'select' | 'number' | 'datetime-local' | 'toggle';
+  placeholder?: string;
+  options?: string[];
+};
+
+export type FormDefinition = {
+  id: string;
+  title: string;
+  description: string;
+  cta: string;
+  fields: FormField[];
+};
+
+export type TableColumn = {
+  id: string;
+  label: string;
+};
+
+export type TableRow = {
+  id: string;
+  cells: string[];
+};
+
+export type TableDefinition = {
+  id: string;
+  title: string;
+  description: string;
+  columns: TableColumn[];
+  rows: TableRow[];
+};
+
+export type PortfolioCategory = {
+  id: string;
+  name: string;
+  tagline: string;
+  description: string;
+  heroMetric: PortfolioMetric;
+  metrics: PortfolioMetric[];
+  highlights: string[];
+  charts: ChartConfig[];
+  heatmap?: HeatmapConfig;
+  funnel?: FunnelStage[];
+  leaderboards?: LeaderboardConfig[];
+  tables: TableDefinition[];
+  forms: FormDefinition[];
+  automation: {
+    summary: string;
+    jobs: AutomationJob[];
+    workflows: WorkflowBlueprint[];
+  };
+};
+
+export type PortfolioDashboard = {
+  generatedAt: string;
+  categories: PortfolioCategory[];
 };
