@@ -60,27 +60,48 @@ export async function GET() {
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     start(controller) {
+      let isClosed = false;
+      
       function pushEvent() {
-        const moduleId = modules[Math.floor(Math.random() * modules.length)];
-        const metricList = metricsByModule[moduleId];
-        const metricId = metricList[Math.floor(Math.random() * metricList.length)];
-        const payload = {
-          module: moduleId,
-          metricId,
-          value: randomMetricValue(metricId),
-          change: Number((Math.random() * 4).toFixed(1)),
-        };
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(payload)}\n\n`));
+        if (isClosed) return;
+        
+        try {
+          const moduleId = modules[Math.floor(Math.random() * modules.length)];
+          const metricList = metricsByModule[moduleId];
+          const metricId = metricList[Math.floor(Math.random() * metricList.length)];
+          const payload = {
+            module: moduleId,
+            metricId,
+            value: randomMetricValue(metricId),
+            change: Number((Math.random() * 4).toFixed(1)),
+          };
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(payload)}\n\n`));
+        } catch (error) {
+          // Controller is closed, stop trying to enqueue
+          isClosed = true;
+        }
+      }
+
+      function keepAlive() {
+        if (isClosed) return;
+        
+        try {
+          controller.enqueue(encoder.encode(': keep-alive\n\n'));
+        } catch (error) {
+          // Controller is closed, stop trying to enqueue
+          isClosed = true;
+        }
       }
 
       const interval = setInterval(pushEvent, 4000);
-      const keepAlive = setInterval(() => controller.enqueue(encoder.encode(': keep-alive\n\n')), 15_000);
+      const keepAliveInterval = setInterval(keepAlive, 15_000);
 
       pushEvent();
 
       return () => {
+        isClosed = true;
         clearInterval(interval);
-        clearInterval(keepAlive);
+        clearInterval(keepAliveInterval);
       };
     },
     cancel() {},
