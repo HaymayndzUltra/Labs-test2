@@ -7,8 +7,10 @@ from __future__ import annotations
 
 import argparse
 import json
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List
+import re
+from typing import Dict, Iterable, List, Optional
 
 from project_generator.core.brief_parser import BriefParser
 
@@ -16,203 +18,321 @@ from project_generator.core.brief_parser import BriefParser
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Generate FE/BE plan artifacts from brief.md")
     p.add_argument("--brief", required=True, help="Path to brief.md")
-    p.add_argument("--out", default="PLAN.md", help="Path to write PLAN.md (tasks.json will be co-located)")
+    p.add_argument(
+        "--out",
+        default="PLAN.md",
+        help="Path to write PLAN.md (tasks.json will be co-located)",
+    )
+    p.add_argument(
+        "--config",
+        help="Optional workflow.config.json to merge capability flags with the parsed brief",
+    )
     return p.parse_args()
 
 
-def task(
-    id_: str,
-    title: str,
-    area: str,
-    blocked_by: List[str] | None = None,
-    labels: List[str] | None = None,
-    estimate: str = "1d",
-    acceptance: List[str] | None = None,
-    dod: List[str] | None = None,
-) -> Dict:
-    return {
-        "id": id_,
-        "title": title,
-        "area": area,
-        "estimate": estimate,
-        "blocked_by": blocked_by or [],
-        "labels": labels or [],
-        "acceptance": acceptance or [],
-        "dod": dod or [],
-        "state": "pending",
+@dataclass
+class Task:
+    id: str
+    title: str
+    area: str
+    blocked_by: Iterable[str] = field(default_factory=list)
+    labels: Iterable[str] = field(default_factory=list)
+    estimate: str = "1d"
+    acceptance: Iterable[str] = field(default_factory=list)
+    dod: Iterable[str] = field(default_factory=list)
+
+    def as_dict(self) -> Dict:
+        return {
+            "id": self.id,
+            "title": self.title,
+            "area": self.area,
+            "estimate": self.estimate,
+            "blocked_by": list(self.blocked_by),
+            "labels": list(self.labels),
+            "acceptance": list(self.acceptance),
+            "dod": list(self.dod),
+            "state": "pending",
+        }
+
+
+def _slugify(prefix: str, value: str, max_tokens: int = 3) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
+    tokens = [tok for tok in slug.split("-") if tok]
+    if not tokens:
+        tokens = ["feature"]
+    tokens = tokens[:max_tokens]
+    joined = "-".join(tok.upper() for tok in tokens)
+    return f"{prefix}-{joined}"
+
+
+def _feature_area(feature: str, project_type: str, frontend: str, backend: str) -> str:
+    backend_signals = {
+        "api",
+        "service",
+        "checkout",
+        "payment",
+        "billing",
+        "analytics",
+        "report",
+        "data",
+        "inventory",
+        "integration",
+        "workflow",
+        "automation",
+    }
+    frontend_signals = {
+        "page",
+        "dashboard",
+        "ui",
+        "layout",
+        "portal",
+        "form",
+        "component",
+        "screen",
+    }
+    feature_lower = feature.lower()
+    if backend != "none" and (
+        project_type in {"api", "microservices"}
+        or any(sig in feature_lower for sig in backend_signals)
+    ):
+        return "backend"
+    if frontend != "none" and any(sig in feature_lower for sig in frontend_signals):
+        return "frontend"
+    # Default to backend for data-heavy features, frontend otherwise
+    return "backend" if backend != "none" else "frontend"
+
+
+def _feature_tasks(
+    features: Iterable[str],
+    project_type: str,
+    frontend: str,
+    backend: str,
+) -> Dict[str, List[Task]]:
+    buckets: Dict[str, List[Task]] = {"backend": [], "frontend": []}
+    for feature in features:
+        area = _feature_area(feature, project_type, frontend, backend)
+        task_id = _slugify("BE-FTR" if area == "backend" else "FE-FTR", feature)
+        title = f"Implement feature: {feature}"
+        acceptance = ["acceptance criteria captured from brief"]
+        if area == "backend":
+            acceptance.append("API contract documented")
+        else:
+            acceptance.append("UI reviewed with design requirements")
+        buckets[area].append(
+            Task(
+                id=task_id,
+                title=title,
+                area=area,
+                acceptance=acceptance,
+                labels=["feature"],
+            )
+        )
+    return buckets
+
+
+def _normalize_compliance(values: Optional[Iterable[str]]) -> List[str]:
+    if not values:
+        return []
+    if isinstance(values, str):  # type: ignore[arg-type]
+        return [v.strip().lower() for v in values.split(",") if v.strip()]
+    return [str(v).strip().lower() for v in values if str(v).strip()]
+
+
+def _compliance_tasks(compliance: Iterable[str], area: str) -> List[Task]:
+    tasks: List[Task] = []
+    for item in compliance:
+        label = item.upper()
+        if label == "":
+            continue
+        prefix = "BE" if area == "backend" else "FE"
+        task_id = f"{prefix}-COMP-{label.replace('-', '_')}"
+        title = f"Ensure {item.upper()} controls ({area})"
+        acceptance = [f"{item.upper()} requirements validated"]
+        tasks.append(
+            Task(
+                id=task_id,
+                title=title,
+                area=area,
+                acceptance=acceptance,
+                labels=["compliance"],
+            )
+        )
+    return tasks
+
+
+def _backend_core_tasks(spec, workflow: Optional[Dict]) -> List[Task]:
+    if spec.backend == "none":
+        return []
+
+    capabilities = workflow or {}
+    database_enabled = spec.database != "none"
+    auth_enabled = (spec.auth != "none") or bool(capabilities.get("auth"))
+    observability_required = capabilities.get("observability", True)
+
+    tasks: List[Task] = []
+    if database_enabled:
+        tasks.append(
+            Task(
+                id="BE-SCHEMA",
+                title="Design and document database schema",
+                area="backend",
+                acceptance=["ERD drafted", "tables + relationships defined"],
+            )
+        )
+        tasks.append(
+            Task(
+                id="BE-SEED",
+                title="Create seed loaders / fixtures",
+                area="backend",
+                blocked_by=["BE-SCHEMA"],
+                acceptance=["seed scripts execute", "sample data available"],
+            )
+        )
+
+    if spec.project_type in {"api", "fullstack", "microservices"}:
+        tasks.append(
+            Task(
+                id="BE-DOMAIN",
+                title="Model domain services & aggregates",
+                area="backend",
+                blocked_by=["BE-SEED"] if database_enabled else [],
+                acceptance=["domain models stable", "business invariants captured"],
+            )
+        )
+        tasks.append(
+            Task(
+                id="BE-API-CONTRACT",
+                title="Define API contract & versioning strategy",
+                area="backend",
+                blocked_by=["BE-DOMAIN"],
+                acceptance=["OpenAPI drafted", "error models documented"],
+            )
+        )
+
+    if auth_enabled:
+        tasks.append(
+            Task(
+                id="BE-AUTH",
+                title=f"Implement auth integration ({spec.auth})",
+                area="backend",
+                acceptance=["role policies enforced", "token validation in place"],
+                labels=["security"],
+            )
+        )
+
+    if observability_required:
+        tasks.append(
+            Task(
+                id="BE-OBS",
+                title="Instrument logging/metrics/tracing",
+                area="backend",
+                acceptance=["structured logs", "trace ids propagated"],
+                labels=["observability"],
+            )
+        )
+
+    tasks.append(
+        Task(
+            id="BE-TESTS",
+            title="Unit/integration test suite",
+            area="backend",
+            acceptance=["tests passing", "coverage threshold met"],
+            labels=["testing"],
+        )
+    )
+    return tasks
+
+
+def _frontend_core_tasks(spec, workflow: Optional[Dict]) -> List[Task]:
+    if spec.frontend == "none":
+        return []
+
+    capabilities = workflow or {}
+    design_system_required = capabilities.get("design_system", True)
+    accessibility_required = capabilities.get("accessibility", True)
+
+    tasks: List[Task] = [
+        Task(
+            id="FE-SCAFFOLD",
+            title="Bootstrap routing/layout",
+            area="frontend",
+            acceptance=["routes wired", "shared layout established"],
+        ),
+        Task(
+            id="FE-DATA",
+            title="Configure API client / data layer",
+            area="frontend",
+            blocked_by=["FE-SCAFFOLD"],
+            acceptance=["client typed", "error states handled"],
+        ),
+    ]
+
+    if design_system_required:
+        tasks.append(
+            Task(
+                id="FE-DESIGN",
+                title="Apply design system & theming",
+                area="frontend",
+                blocked_by=["FE-SCAFFOLD"],
+                acceptance=["base styles applied", "token usage documented"],
+            )
+        )
+
+    if accessibility_required:
+        tasks.append(
+            Task(
+                id="FE-A11Y",
+                title="Accessibility + performance audit",
+                area="frontend",
+                acceptance=["WCAG AA checklist", "lighthouse ≥ 90"],
+                labels=["a11y", "performance"],
+            )
+        )
+
+    tasks.append(
+        Task(
+            id="FE-TESTS",
+            title="Component/e2e smoke tests",
+            area="frontend",
+            blocked_by=["FE-DATA"],
+            acceptance=["tests passing"],
+            labels=["testing"],
+        )
+    )
+    return tasks
+
+
+def build_plan(spec, workflow_config: Optional[Dict] = None) -> Dict[str, List[Dict]]:
+    """Build a plan that adapts to the parsed brief and workflow flags."""
+
+    workflow_config = workflow_config or {}
+    backend_lane: List[Task] = _backend_core_tasks(spec, workflow_config)
+    frontend_lane: List[Task] = _frontend_core_tasks(spec, workflow_config)
+
+    feature_tasks = _feature_tasks(spec.features, spec.project_type, spec.frontend, spec.backend)
+    backend_lane.extend(feature_tasks["backend"])
+    frontend_lane.extend(feature_tasks["frontend"])
+
+    compliance_sources = _normalize_compliance(workflow_config.get("compliance"))
+    if not compliance_sources:
+        compliance_sources = _normalize_compliance(spec.compliance)
+    if spec.backend != "none":
+        backend_lane.extend(_compliance_tasks(compliance_sources, "backend"))
+    if spec.frontend != "none":
+        frontend_lane.extend(_compliance_tasks(compliance_sources, "frontend"))
+
+    plan = {
+        "backend": [task.as_dict() for task in backend_lane],
+        "frontend": [task.as_dict() for task in frontend_lane],
     }
 
+    # Ensure empty lanes are represented for downstream consumers
+    if not plan["backend"]:
+        plan["backend"] = []
+    if not plan["frontend"]:
+        plan["frontend"] = []
 
-def build_plan(spec) -> Dict[str, List[Dict]]:
-    be: List[Dict] = []
-    fe: List[Dict] = []
-
-    # Backend lane
-    be.append(
-        task(
-            "BE-SCH",
-            "Design DB schema",
-            "backend",
-            acceptance=["ERD drafted", "tables defined", "naming conventions applied"],
-        )
-    )
-    be.append(
-        task(
-            "BE-SEED",
-            "Seed loaders (CSV/mock)",
-            "backend",
-            blocked_by=["BE-SCH"],
-            acceptance=["seed scripts run", "sample rows present"],
-        )
-    )
-    be.append(
-        task(
-            "BE-MDL",
-            "Aggregates/MatViews (funnel, revenue, etc.)",
-            "backend",
-            blocked_by=["BE-SEED"],
-            acceptance=["views created", "query p95 < 400ms (seed)"],
-        )
-    )
-    be += [
-        task(
-            "BE-API-KPI",
-            "GET /api/v1/kpis",
-            "backend",
-            blocked_by=["BE-MDL"],
-            acceptance=["returns totals/deltas", "OpenAPI updated"],
-        ),
-        task(
-            "BE-API-REV",
-            "GET /api/v1/revenue",
-            "backend",
-            blocked_by=["BE-MDL"],
-            acceptance=["time series ok", "OpenAPI updated"],
-        ),
-        task("BE-API-CAT", "GET /api/v1/categories", "backend", blocked_by=["BE-MDL"]),
-        task("BE-API-PLT", "GET /api/v1/platforms", "backend", blocked_by=["BE-MDL"]),
-        task("BE-API-CUS", "GET /api/v1/customers/insights", "backend", blocked_by=["BE-MDL"]),
-        task("BE-API-FDB", "GET /api/v1/feedback", "backend", blocked_by=["BE-MDL"]),
-        task(
-            "BE-EXP",
-            "GET /api/v1/export/csv",
-            "backend",
-            blocked_by=[
-                "BE-API-KPI",
-                "BE-API-REV",
-                "BE-API-CAT",
-                "BE-API-PLT",
-                "BE-API-CUS",
-                "BE-API-FDB",
-            ],
-        ),
-    ]
-    be.append(
-        task(
-            "BE-AUTH",
-            "Auth0/RBAC skeleton",
-            "backend",
-            labels=["security"],
-            acceptance=["role checks present"],
-        )
-    )
-    be.append(
-        task(
-            "BE-OBS",
-            "Structured logs + correlation IDs",
-            "backend",
-            labels=["observability"],
-            acceptance=["request id on logs"],
-        )
-    )
-    be.append(
-        task(
-            "BE-TST",
-            "Unit+Integration tests (Testcontainers)",
-            "backend",
-            blocked_by=["BE-API-KPI", "BE-API-REV"],
-            acceptance=["pytest green", ">= minimal coverage"],
-        )
-    )
-
-    # Frontend lane
-    fe.append(
-        task(
-            "FE-DSN",
-            "Shell/Layout/Routes",
-            "frontend",
-            acceptance=["routes wired", "base theme applied"],
-        )
-    )
-    fe.append(
-        task(
-            "FE-TYPES",
-            "openapi-typescript client",
-            "frontend",
-            acceptance=["types.ts generated", "typed client compiles"],
-        )
-    )
-    fe.append(
-        task(
-            "FE-MOCKS",
-            "MSW/Prism mocks",
-            "frontend",
-            acceptance=["mocks respond", "dev proxy configured"],
-        )
-    )
-    fe += [
-        task(
-            "FE-KPI",
-            "KPI cards + filters",
-            "frontend",
-            blocked_by=["FE-DSN", "FE-TYPES"],
-            acceptance=["renders", "no console errors"],
-        ),
-        task(
-            "FE-REV",
-            "Revenue chart + range selectors",
-            "frontend",
-            blocked_by=["FE-DSN", "FE-TYPES"],
-            acceptance=["renders", "no console errors"],
-        ),
-        task("FE-PLT", "Platform distribution (bars)", "frontend", blocked_by=["FE-DSN", "FE-TYPES"]),
-        task("FE-CAT", "Category ranks (bars)", "frontend", blocked_by=["FE-DSN", "FE-TYPES"]),
-        task("FE-CUS", "Customer insights panel", "frontend", blocked_by=["FE-DSN", "FE-TYPES"]),
-        task("FE-FDB", "Feedback timeline", "frontend", blocked_by=["FE-DSN", "FE-TYPES"]),
-        task(
-            "FE-EXP",
-            "Exports (CSV/PNG)",
-            "frontend",
-            blocked_by=[
-                "FE-KPI",
-                "FE-REV",
-                "FE-PLT",
-                "FE-CAT",
-                "FE-CUS",
-                "FE-FDB",
-            ],
-            acceptance=["CSV downloads"],
-        ),
-    ]
-    fe.append(
-        task(
-            "FE-A11Y-PERF",
-            "WCAG AA + code-split/memoize",
-            "frontend",
-            labels=["a11y", "performance"],
-        )
-    )
-    fe.append(
-        task(
-            "FE-TST",
-            "Component + E2E smoke",
-            "frontend",
-            blocked_by=["FE-KPI", "FE-REV"],
-            acceptance=["tests green"],
-        )
-    )
-
-    return {"backend": be, "frontend": fe}
+    return plan
 
 
 def render_plan_md(spec, plan: Dict[str, List[Dict]]) -> str:
@@ -242,7 +362,14 @@ def render_plan_md(spec, plan: Dict[str, List[Dict]]) -> str:
 def main() -> None:
     args = parse_args()
     spec = BriefParser(args.brief).parse()
-    plan = build_plan(spec)
+    workflow_config = None
+    if args.config:
+        config_path = Path(args.config)
+        if config_path.exists():
+            workflow_config = json.loads(config_path.read_text(encoding="utf-8"))
+        else:
+            print(f"[plan_from_brief] config not found: {config_path}")
+    plan = build_plan(spec, workflow_config)
 
     # Write tasks.json
     tasks_json_path = Path(args.out).with_suffix(".tasks.json")
