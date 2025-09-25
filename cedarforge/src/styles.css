@@ -28,7 +28,5 @@ body {
 }
 
 [data-grid='12'] {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 8px;
+  display: block;
 }

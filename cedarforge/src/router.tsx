@@ -1,3 +1,4 @@
+import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ShellLayout } from './shared/components/ShellLayout';
 import { moduleRoutes } from './shared/utils/module-routes';
