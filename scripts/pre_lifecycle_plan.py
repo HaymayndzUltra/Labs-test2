@@ -10,7 +10,7 @@ import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,6 +37,7 @@ class PlanContext:
     brief_path: Path
     output_root: Path
     project_dir: Path
+    metadata: Dict[str, Any] = field(default_factory=dict)
     root: Path = ROOT
 
     def script_path(self, *parts: str) -> Path:
@@ -48,40 +49,81 @@ class PlanContext:
         except ValueError:
             return str(path)
 
-    # Capability flags -----------------------------------------------------
-    @property
-    def has_frontend(self) -> bool:
-        return (self.config.get("frontend") or self.spec.frontend) not in {None, "", "none"}
+    # Resolved configuration -------------------------------------------------
+    def _is_missing(self, value: Any) -> bool:
+        if value is None:
+            return True
+        if isinstance(value, str):
+            return value.strip().lower() in {"", "none", "n/a"}
+        if isinstance(value, (list, tuple, set, dict)):
+            return len(value) == 0
+        return False
+
+    def resolved(self, key: str, default: Any | None = None) -> Any:
+        value = self.config.get(key)
+        if not self._is_missing(value):
+            return value
+        spec_value = getattr(self.spec, key, default)
+        if not self._is_missing(spec_value):
+            return spec_value
+        return default
 
     @property
-    def has_backend(self) -> bool:
-        return (self.config.get("backend") or self.spec.backend) not in {None, "", "none"}
+    def industry(self) -> str:
+        return str(self.resolved("industry", "")).lower()
 
     @property
-    def has_database(self) -> bool:
-        return (self.config.get("database") or self.spec.database) not in {None, "", "none"}
+    def project_type(self) -> str:
+        return str(self.resolved("project_type", "")).lower()
 
     @property
-    def requires_auth(self) -> bool:
-        return (self.config.get("auth") or self.spec.auth) not in {None, "", "none"}
+    def frontend_stack(self) -> str:
+        return str(self.resolved("frontend", "none")).lower()
+
+    @property
+    def backend_stack(self) -> str:
+        return str(self.resolved("backend", "none")).lower()
+
+    @property
+    def database_stack(self) -> str:
+        return str(self.resolved("database", "none")).lower()
+
+    @property
+    def auth_provider(self) -> str:
+        return str(self.resolved("auth", "none")).lower()
+
+    @property
+    def deploy_target(self) -> str:
+        deploy = self.resolved("deploy", "none")
+        return str(deploy).lower()
 
     @property
     def compliance_labels(self) -> List[str]:
-        compliance = self.config.get("compliance", self.spec.compliance)
+        compliance = self.resolved("compliance", [])
         if isinstance(compliance, str):
             return [c.strip().lower() for c in compliance.split(",") if c.strip()]
-        return [str(c).strip().lower() for c in compliance or []]
+        return [str(c).strip().lower() for c in compliance]
+
+    # Capability flags -----------------------------------------------------
+    @property
+    def has_frontend(self) -> bool:
+        return self.frontend_stack not in {"", "none"}
+
+    @property
+    def has_backend(self) -> bool:
+        return self.backend_stack not in {"", "none"}
+
+    @property
+    def has_database(self) -> bool:
+        return self.database_stack not in {"", "none"}
+
+    @property
+    def requires_auth(self) -> bool:
+        return self.auth_provider not in {"", "none"}
 
     @property
     def requires_compliance(self) -> bool:
         return bool(self.compliance_labels)
-
-    @property
-    def deploy_target(self) -> str:
-        deploy = self.config.get("deploy", self.spec.deploy)
-        if isinstance(deploy, str):
-            return deploy.lower()
-        return str(deploy).lower()
 
     @property
     def requires_deploy(self) -> bool:
@@ -156,19 +198,20 @@ def environment_stage(ctx: PlanContext) -> PlanStep:
             ),
             PlanItem(
                 "Verify workflow.config.json values "
-                f"(industry={ctx.config.get('industry', ctx.spec.industry)}, "
-                f"project_type={ctx.config.get('project_type', ctx.spec.project_type)}, "
-                f"frontend={ctx.config.get('frontend', ctx.spec.frontend)}, "
-                f"backend={ctx.config.get('backend', ctx.spec.backend)}, "
-                f"database={ctx.config.get('database', ctx.spec.database)}, "
-                f"auth={ctx.config.get('auth', ctx.spec.auth)}, "
-                f"deploy={ctx.config.get('deploy', ctx.spec.deploy)}, "
-                f"compliance={ctx.config.get('compliance', ctx.spec.compliance)}).",
+                f"(industry={ctx.industry}, "
+                f"project_type={ctx.project_type}, "
+                f"frontend={ctx.frontend_stack}, "
+                f"backend={ctx.backend_stack}, "
+                f"database={ctx.database_stack}, "
+                f"auth={ctx.auth_provider}, "
+                f"deploy={ctx.deploy_target}, "
+                f"compliance={ctx.compliance_labels}).",
             ),
             PlanItem(
                 "Export automation variables before running lifecycle: "
-                f"NAME={ctx.name} INDUSTRY={ctx.spec.industry} PROJECT_TYPE={ctx.spec.project_type} "
-                f"FE={ctx.spec.frontend} BE={ctx.spec.backend} DB={ctx.spec.database} OUTPUT_ROOT={ctx.output_root} "
+                f"NAME={ctx.name} INDUSTRY={ctx.industry} PROJECT_TYPE={ctx.project_type} "
+                f"FE={ctx.frontend_stack} BE={ctx.backend_stack} DB={ctx.database_stack} "
+                f"OUTPUT_ROOT={ctx.display_path(ctx.output_root)} "
                 "Optional: AUTH, DEPLOY, COMPLIANCE, NESTJS_ORM, FORCE_OUTPUT=1.",
             ),
         ],
@@ -214,8 +257,15 @@ def stack_preflight_stage(ctx: PlanContext) -> PlanStep:
     generator_script = ctx.script_path("generate_client_project.py")
     selector_script = ctx.script_path("select_stacks.py")
     compliance_flag = ctx.config.get("compliance") or ""
-    auth_flag = ctx.config.get("auth") or ctx.spec.auth
-    deploy_flag = ctx.config.get("deploy") or ctx.spec.deploy
+    if isinstance(compliance_flag, (list, tuple, set)):
+        compliance_flag = ",".join(
+            str(item).strip().lower() for item in compliance_flag if str(item).strip()
+        )
+    elif not isinstance(compliance_flag, str):
+        compliance_flag = str(compliance_flag).strip()
+
+    auth_flag = ctx.auth_provider
+    deploy_flag = ctx.deploy_target
     return PlanStep(
         title="Stack Preflight & Generation Prep",
         items=[
@@ -227,22 +277,22 @@ def stack_preflight_stage(ctx: PlanContext) -> PlanStep:
                 command=(
                     f"python {doctor_script} --strict && "
                     f"{generator_script} --list-templates --name '{ctx.name}' "
-                    f"--industry '{ctx.spec.industry}' --project-type '{ctx.spec.project_type}'"
+                    f"--industry '{ctx.industry}' --project-type '{ctx.project_type}'"
                 ),
                 artifacts=[_artifact(doctor_script), _artifact(generator_script)],
             ),
             PlanItem(
                 "Preflight stack selection and capture evidence: "
-                f"python {ctx.display_path(selector_script)} --industry '{ctx.spec.industry}' "
-                f"--project-type '{ctx.spec.project_type}' --frontend '{ctx.spec.frontend}' "
-                f"--backend '{ctx.spec.backend}' --database '{ctx.spec.database}' "
+                f"python {ctx.display_path(selector_script)} --industry '{ctx.industry}' "
+                f"--project-type '{ctx.project_type}' --frontend '{ctx.frontend_stack}' "
+                f"--backend '{ctx.backend_stack}' --database '{ctx.database_stack}' "
                 f"--output '{ctx.display_path(ctx.project_dir / 'selection.json')}' "
                 f"--summary '{ctx.display_path(ctx.project_dir / 'evidence' / 'stack-selection.md')}' "
                 f"{('--compliance ' + compliance_flag) if compliance_flag else ''}".strip(),
                 command=(
-                    f"python {selector_script} --industry '{ctx.spec.industry}' "
-                    f"--project-type '{ctx.spec.project_type}' --frontend '{ctx.spec.frontend}' "
-                    f"--backend '{ctx.spec.backend}' --database '{ctx.spec.database}' "
+                    f"python {selector_script} --industry '{ctx.industry}' "
+                    f"--project-type '{ctx.project_type}' --frontend '{ctx.frontend_stack}' "
+                    f"--backend '{ctx.backend_stack}' --database '{ctx.database_stack}' "
                     f"--output '{ctx.project_dir / 'selection.json'}' "
                     f"--summary '{ctx.project_dir / 'evidence' / 'stack-selection.md'}' "
                     f"{('--compliance ' + compliance_flag) if compliance_flag else ''}".strip()
@@ -255,16 +305,16 @@ def stack_preflight_stage(ctx: PlanContext) -> PlanStep:
             PlanItem(
                 "Preview scaffold (no writes): "
                 f"./{ctx.display_path(generator_script)} --dry-run --workers 8 --yes --name '{ctx.name}' "
-                f"--industry '{ctx.spec.industry}' --project-type '{ctx.spec.project_type}' "
-                f"--frontend '{ctx.spec.frontend}' --backend '{ctx.spec.backend}' --database '{ctx.spec.database}' "
+                f"--industry '{ctx.industry}' --project-type '{ctx.project_type}' "
+                f"--frontend '{ctx.frontend_stack}' --backend '{ctx.backend_stack}' --database '{ctx.database_stack}' "
                 f"{('--auth ' + auth_flag) if ctx.requires_auth else ''} "
                 f"{('--deploy ' + deploy_flag) if ctx.requires_deploy else ''} "
                 f"{('--compliance ' + compliance_flag) if ctx.requires_compliance else ''} "
                 f"--output-dir '{ctx.output_root}'",
                 command=(
                     f"{generator_script} --dry-run --workers 8 --yes --name '{ctx.name}' "
-                    f"--industry '{ctx.spec.industry}' --project-type '{ctx.spec.project_type}' "
-                    f"--frontend '{ctx.spec.frontend}' --backend '{ctx.spec.backend}' --database '{ctx.spec.database}' "
+                    f"--industry '{ctx.industry}' --project-type '{ctx.project_type}' "
+                    f"--frontend '{ctx.frontend_stack}' --backend '{ctx.backend_stack}' --database '{ctx.database_stack}' "
                     f"{('--auth ' + auth_flag) if ctx.requires_auth else ''} "
                     f"{('--deploy ' + deploy_flag) if ctx.requires_deploy else ''} "
                     f"{('--compliance ' + compliance_flag) if ctx.requires_compliance else ''} "
@@ -283,8 +333,9 @@ def generation_stage(ctx: PlanContext) -> PlanStep:
         items=[
             PlanItem(
                 "When ready, run the one-shot generator (stops on any failure): "
-                f"NAME={ctx.name} INDUSTRY={ctx.spec.industry} PROJECT_TYPE={ctx.spec.project_type} "
-                f"FE={ctx.spec.frontend} BE={ctx.spec.backend} DB={ctx.spec.database} OUTPUT_ROOT={ctx.output_root} make lifecycle",
+                f"NAME={ctx.name} INDUSTRY={ctx.industry} PROJECT_TYPE={ctx.project_type} "
+                f"FE={ctx.frontend_stack} BE={ctx.backend_stack} DB={ctx.database_stack} "
+                f"OUTPUT_ROOT={ctx.display_path(ctx.output_root)} make lifecycle",
             ),
             PlanItem(
                 f"Inspect generated project at {ctx.display_path(ctx.project_dir)}; confirm evidence/, PLAN.*, tasks.json, dist/ artifacts exist.",
@@ -614,15 +665,160 @@ def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Print pre-lifecycle execution plan.")
     ap.add_argument("--name", help="Client/project name override")
     ap.add_argument("--config", default="workflow.config.json")
-    ap.add_argument("--output-root", default="../_generated")
+    ap.add_argument("--output-root", default=None)
     ap.add_argument("--execute", action="store_true", help="Execute commands and report statuses")
     return ap.parse_args()
 
 
+BASELINE_CONFIG: Dict[str, Any] = {
+    "industry": "saas",
+    "project_type": "fullstack",
+    "frontend": "nextjs",
+    "backend": "fastapi",
+    "database": "postgres",
+    "auth": "auth0",
+    "deploy": "vercel",
+    "output_root": "../_generated",
+}
+
+
 def load_config(path: Path) -> Dict:
     if not path.exists():
-        raise FileNotFoundError(f"config not found: {path}")
-    return json.loads(path.read_text(encoding="utf-8"))
+        # Gracefully fall back to the baseline profile if the file is missing.
+        return BASELINE_CONFIG.copy()
+
+    loaded = json.loads(path.read_text(encoding="utf-8"))
+    # Ensure any missing defaults inherit from the baseline profile while
+    # still allowing explicit overrides via the config file itself.
+    cfg = BASELINE_CONFIG.copy()
+    cfg.update(loaded)
+    return cfg
+
+
+def _parse_frontmatter(text: str) -> Dict[str, Any]:
+    if not text.startswith("---\n"):
+        return {}
+    end = text.find("\n---\n", 4)
+    if end == -1:
+        return {}
+    fm = text[4:end]
+    meta: Dict[str, Any] = {}
+    for raw_line in fm.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        key = key.strip().lower()
+        value = value.strip().strip('\"\'')
+        if not value:
+            continue
+        if value.startswith("[") or value.startswith("{"):
+            try:
+                meta[key] = json.loads(value)
+                continue
+            except json.JSONDecodeError:
+                pass
+        if "," in value:
+            parts = [v.strip() for v in value.split(",") if v.strip()]
+            if len(parts) > 1:
+                meta[key] = parts
+                continue
+        meta[key] = value
+    return meta
+
+
+def _normalise_metadata(metadata: Dict[str, Any]) -> Dict[str, Any]:
+    normalised: Dict[str, Any] = {}
+    aliases = {
+        "deployment": "deploy",
+        "deployment_target": "deploy",
+        "frontend_framework": "frontend",
+        "backend_framework": "backend",
+        "database_engine": "database",
+    }
+    lower_keys = {
+        "industry",
+        "project_type",
+        "frontend",
+        "backend",
+        "database",
+        "auth",
+        "deploy",
+    }
+    list_keys = {"compliance", "features"}
+
+    for key, value in metadata.items():
+        key_lower = key.lower()
+        key_mapped = aliases.get(key_lower, key_lower)
+
+        if key_mapped in lower_keys and isinstance(value, str):
+            normalised[key_mapped] = value.strip().lower()
+            continue
+
+        if key_mapped in list_keys:
+            if isinstance(value, str):
+                items = [v.strip().lower() for v in value.split(",") if v.strip()]
+            else:
+                items = [str(v).strip().lower() for v in value if str(v).strip()]
+            normalised[key_mapped] = items
+            continue
+
+        normalised[key_mapped] = value
+
+    return normalised
+
+
+def load_brief_metadata(brief_path: Path) -> Dict[str, Any]:
+    metadata: Dict[str, Any] = {}
+    json_path = brief_path.with_name("metadata.json")
+    if json_path.exists():
+        try:
+            metadata.update(json.loads(json_path.read_text(encoding="utf-8")))
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"invalid metadata JSON at {json_path}: {exc}") from exc
+
+    text = brief_path.read_text(encoding="utf-8")
+    metadata.update(_parse_frontmatter(text))
+
+    return _normalise_metadata(metadata)
+
+
+def merge_configuration(
+    name: str,
+    base_config: Dict[str, Any],
+    metadata: Dict[str, Any],
+    spec: ScaffoldSpec,
+) -> Dict[str, Any]:
+    config = base_config.copy()
+    config["name"] = name
+
+    spec_overrides: Dict[str, Any] = {
+        "industry": spec.industry,
+        "project_type": spec.project_type,
+        "frontend": spec.frontend,
+        "backend": spec.backend,
+        "database": spec.database,
+        "auth": spec.auth,
+        "deploy": spec.deploy,
+        "compliance": spec.compliance,
+        "features": spec.features,
+    }
+
+    for key, value in spec_overrides.items():
+        if value is None:
+            continue
+        if isinstance(value, str) and not value.strip():
+            continue
+        if isinstance(value, (list, tuple, set)) and not value:
+            continue
+        config[key] = value
+
+    for key, value in metadata.items():
+        config[key] = value
+
+    return config
 
 
 def ensure_brief_exists(path: Path) -> None:
@@ -682,11 +878,7 @@ def main() -> int:
     args = parse_args()
 
     cfg_path = ROOT / args.config
-    try:
-        cfg = load_config(cfg_path)
-    except FileNotFoundError as exc:
-        print(f"[plan] {exc}", file=sys.stderr)
-        return 2
+    cfg = load_config(cfg_path)
 
     name = args.name or os.environ.get("NAME") or cfg.get("name")
     if not name:
@@ -700,10 +892,24 @@ def main() -> int:
         print(f"[plan] {exc}", file=sys.stderr)
         return 2
 
-    spec = BriefParser(str(brief_path)).parse()
-    lanes = build_plan(spec, cfg)
+    try:
+        metadata = load_brief_metadata(brief_path)
+    except ValueError as exc:
+        print(f"[plan] {exc}", file=sys.stderr)
+        return 2
 
-    output_root = Path(args.output_root)
+    spec = BriefParser(str(brief_path)).parse()
+    effective_config = merge_configuration(name, cfg, metadata, spec)
+    lanes = build_plan(spec, effective_config)
+
+    output_root_value = (
+        args.output_root
+        or effective_config.get("output_root")
+        or BASELINE_CONFIG["output_root"]
+    )
+    output_root = Path(output_root_value)
+    if not output_root.is_absolute():
+        output_root = (ROOT / output_root).resolve()
     project_dir = (output_root / name).resolve()
 
     frontend_lane = format_lane(lanes.get("frontend", []))
@@ -711,11 +917,12 @@ def main() -> int:
 
     ctx = PlanContext(
         name=name,
-        config=cfg,
+        config=effective_config,
         spec=spec,
         brief_path=brief_path,
         output_root=output_root,
         project_dir=project_dir,
+        metadata=metadata,
     )
 
     steps = build_steps(ctx, frontend_lane, backend_lane)

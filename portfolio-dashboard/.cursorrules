@@ -1,0 +1,264 @@
+# Portfolio Dashboard - Cursor Rules
+
+## Project Overview
+Enterprise fullstack application with Next.js frontend, FastAPI backend, and PostgreSQL database.
+
+## Technology Stack
+- **Frontend**: Next.js 15, TypeScript, Tailwind CSS, React 19
+- **Backend**: FastAPI, Python 3.x, SQLAlchemy, Alembic
+- **Database**: PostgreSQL 15+
+- **Deployment**: Docker Compose (dev), AWS (production)
+
+## General Guidelines
+- Write clean, readable, and maintainable code
+- Follow DRY (Don't Repeat Yourself) principle
+- Use meaningful variable and function names
+- Write self-documenting code with clear comments
+- Follow consistent formatting and style guidelines
+- Never commit secrets to version control
+- Use environment variables for sensitive configuration
+
+## Frontend Standards (TypeScript/React)
+- Use TypeScript interfaces for type definitions
+- Prefer `interface` over `type` for object shapes
+- Use proper typing for props, state, and API responses
+- Avoid `any` type; use `unknown` when type is truly unknown
+- Use path aliases (`@/*`) for imports
+- Use functional components with hooks
+- Implement proper error boundaries
+- Use React.memo() for performance optimization when needed
+- Follow single responsibility principle for components
+- Use custom hooks for reusable logic
+
+## Styling Guidelines
+- Use Tailwind CSS utility classes
+- Follow the design system defined in tailwind.config.js
+- Use CSS custom properties for theming
+- Keep styles consistent across components
+- Use responsive design principles
+
+## Backend Standards (Python/FastAPI)
+- Follow PEP 8 style guidelines
+- Use type hints for function parameters and return values
+- Use docstrings for functions and classes
+- Follow single responsibility principle
+- Use dependency injection for better testability
+- Use Pydantic models for request/response validation
+- Implement proper error handling with HTTPException
+- Document APIs with OpenAPI/Swagger
+- Follow RESTful API design principles
+
+## Database Standards
+- Use SQLAlchemy 2.0+ syntax
+- Define proper relationships between models
+- Use Alembic for database migrations
+- Follow naming conventions (snake_case)
+- Implement proper indexing for performance
+
+## Security Standards
+- Use proper password hashing (bcrypt)
+- Implement JWT token authentication
+- Use HTTPS in production
+- Validate and sanitize all inputs
+- Follow OWASP security guidelines
+
+## Testing Standards
+- Write unit tests for components and utilities
+- Use React Testing Library for component testing
+- Use Jest for frontend testing
+- Use pytest for backend testing
+- Aim for meaningful test coverage
+- Test user interactions and edge cases
+- Mock external dependencies appropriately
+- Write tests before or alongside code
+- Use descriptive test names
+- Test both happy path and edge cases
+
+## Code Organization
+- Keep related functionality together
+- Use clear directory structure
+- Separate concerns (models, services, controllers)
+- Use consistent naming conventions
+- Group related files in appropriate directories
+- Use absolute imports when possible
+- Group imports: standard library, third-party, local
+- Use path aliases for cleaner imports
+- Avoid circular dependencies
+
+## Documentation Standards
+- Write clear README files
+- Document API endpoints
+- Use meaningful commit messages
+- Document complex business logic
+- Keep documentation up to date
+- Update docs as you work
+
+## Performance Standards
+- Optimize database queries
+- Use proper caching strategies
+- Implement lazy loading where appropriate
+- Monitor and profile performance
+- Use async/await for I/O operations
+- Use Next.js Image component for optimized images
+- Implement proper loading states
+- Use dynamic imports for code splitting
+
+## Error Handling
+- Implement proper error boundaries
+- Use meaningful error messages
+- Log errors appropriately
+- Handle edge cases gracefully
+- Provide user-friendly error feedback
+
+## Development Workflow
+- Use Docker Compose for development environment
+- Use Makefile commands for common tasks
+- Use meaningful commit messages
+- Follow conventional commit format when possible
+- Create feature branches for new development
+- Use pull requests for code review
+- Run tests before committing
+- Use linters (ESLint, Black, flake8)
+
+## Enterprise Features
+- Implement audit logging
+- Follow compliance reporting requirements
+- Maintain data governance standards
+- Use role-based access control
+- Implement SSO integration where applicable
+
+## File Structure Expectations
+```
+portfolio-dashboard/
+├── frontend/                 # Next.js frontend
+│   ├── src/
+│   │   ├── app/             # App Router pages
+│   │   ├── hooks/           # Custom hooks
+│   │   └── lib/             # Utilities
+├── backend/                  # FastAPI backend
+│   ├── app/
+│   │   ├── api/             # API routes
+│   │   ├── models/          # SQLAlchemy models
+│   │   ├── schemas/         # Pydantic schemas
+│   │   └── services/        # Business logic
+├── database/                 # Database files
+├── docs/                    # Documentation
+└── docker-compose.yml       # Development environment
+```
+
+## Communication Style
+- Be direct and concise
+- Provide specific examples
+- Explain the "why" behind recommendations
+- Focus on practical solutions
+- Maintain professional tone
+- Ask clarifying questions when needed
+
+## Code Review Focus Areas
+- Functionality and correctness
+- Security vulnerabilities
+- Performance implications
+- Error handling completeness
+- Test coverage adequacy
+- Documentation updates
+- Code style consistency
+
+## API Development Patterns
+- Use RESTful API design principles
+- Implement proper HTTP status codes (200, 201, 400, 401, 404, 500)
+- Use Pydantic models for request/response validation
+- Implement rate limiting for public endpoints
+- Use OpenAPI/Swagger documentation
+- Follow REST resource naming conventions (/api/v1/users, /api/v1/users/{id})
+- Implement proper pagination for list endpoints
+- Use query parameters for filtering and sorting
+
+## Database Patterns
+- Use repository pattern for data access
+- Implement proper indexing for frequently queried fields
+- Use database transactions for multi-table operations
+- Implement soft deletes instead of hard deletes
+- Use database migrations for schema changes
+- Implement proper foreign key constraints
+- Use database connection pooling
+- Implement database query optimization
+
+## Authentication & Authorization Patterns
+- Use JWT tokens for stateless authentication
+- Implement refresh token mechanism
+- Use bcrypt for password hashing
+- Implement role-based access control (RBAC)
+- Use middleware for authentication checks
+- Implement proper session management
+- Use HTTPS for all authentication endpoints
+- Implement proper logout functionality
+
+## Error Handling Patterns
+- Use specific exception types instead of generic Exception
+- Implement proper error logging with context
+- Use structured error responses with error codes
+- Implement global error handlers
+- Use try-catch blocks for external API calls
+- Implement proper validation error handling
+- Use custom exception classes for business logic errors
+- Implement proper error monitoring and alerting
+
+## Testing Patterns
+- Write unit tests for all business logic
+- Use test-driven development (TDD) approach
+- Implement integration tests for API endpoints
+- Use mocking for external dependencies
+- Implement end-to-end tests for critical user flows
+- Use test fixtures for consistent test data
+- Implement proper test coverage reporting
+- Use test databases for integration tests
+
+## Performance Optimization Patterns
+- Implement proper caching strategies (Redis, Memcached)
+- Use database query optimization
+- Implement lazy loading for large datasets
+- Use connection pooling for database connections
+- Implement proper pagination for large result sets
+- Use CDN for static assets
+- Implement proper image optimization
+- Use async/await for I/O operations
+
+## Security Patterns
+- Implement input validation and sanitization
+- Use parameterized queries to prevent SQL injection
+- Implement proper CORS configuration
+- Use environment variables for sensitive configuration
+- Implement proper file upload validation
+- Use HTTPS for all communications
+- Implement proper session security
+- Use security headers (CSP, HSTS, etc.)
+
+## Deployment & DevOps Patterns
+- Use Docker for containerization
+- Implement proper environment configuration
+- Use CI/CD pipelines for automated deployment
+- Implement proper health checks
+- Use proper logging and monitoring
+- Implement proper backup strategies
+- Use infrastructure as code (IaC)
+- Implement proper rollback procedures
+
+## Code Organization Patterns
+- Use dependency injection for better testability
+- Implement proper separation of concerns
+- Use design patterns (Factory, Singleton, Observer)
+- Implement proper abstraction layers
+- Use proper module organization
+- Implement proper interface definitions
+- Use proper configuration management
+- Implement proper logging strategies
+
+## Communication Patterns
+- Use meaningful commit messages
+- Implement proper code review processes
+- Use proper documentation standards
+- Implement proper API documentation
+- Use proper error messages for users
+- Implement proper logging for debugging
+- Use proper naming conventions
+- Implement proper code comments
