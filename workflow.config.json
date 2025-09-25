@@ -1,0 +1,21 @@
+{
+  "name": "baseline-saas",
+  "industry": "saas",
+  "project_type": "fullstack",
+  "frontend": "nextjs",
+  "backend": "fastapi",
+  "database": "postgres",
+  "auth": "auth0",
+  "deploy": "aws",
+  "compliance": ["soc2"],
+  "defaults": {
+    "industry": "saas",
+    "project_type": "fullstack",
+    "frontend": "nextjs",
+    "backend": "fastapi",
+    "database": "postgres",
+    "auth": "auth0",
+    "deploy": "aws",
+    "compliance": ["soc2"]
+  }
+}

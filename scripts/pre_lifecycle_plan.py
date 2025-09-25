@@ -8,9 +8,9 @@ import json
 import os
 import subprocess
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
-from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -90,6 +90,167 @@ class PlanContext:
 
 ArtifactProvider = Callable[[PlanContext], Path]
 Condition = Callable[[PlanContext], bool]
+
+
+# ---------------------------------------------------------------------------
+# Metadata helpers
+
+
+def _normalize_key(key: str) -> str:
+    return key.strip().lower().replace("-", "_")
+
+
+def _is_missing(value: Any) -> bool:
+    if value is None:
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() in {"", "none", "n/a"}
+    if isinstance(value, Iterable) and not isinstance(value, (str, bytes, dict)):
+        return not any(True for _ in value)
+    return False
+
+
+def _as_list(value: Any) -> List[str]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        parts = [part.strip() for part in value.replace(";", ",").split(",")]
+        return [part for part in parts if part]
+    if isinstance(value, Iterable) and not isinstance(value, (str, bytes, dict)):
+        return [str(item).strip() for item in value if str(item).strip()]
+    return [str(value).strip()]
+
+
+def _normalize_value(key: str, value: Any) -> Any:
+    if value is None:
+        return None
+    if key in {"industry", "project_type", "frontend", "backend", "database", "auth", "deploy"}:
+        return str(value).strip().lower()
+    if key == "compliance":
+        return [item.lower() for item in _as_list(value)]
+    if key == "features":
+        return _as_list(value)
+    return value
+
+
+def _parse_frontmatter(brief_text: str) -> Dict[str, Any]:
+    if not brief_text.startswith("---\n"):
+        return {}
+    end = brief_text.find("\n---\n", 4)
+    if end == -1:
+        return {}
+    block = brief_text[4:end]
+    data: Dict[str, Any] = {}
+    for line in block.splitlines():
+        if ":" not in line:
+            continue
+        key, raw_value = line.split(":", 1)
+        data[_normalize_key(key)] = _normalize_value(_normalize_key(key), raw_value.strip().strip("\"'"))
+    return data
+
+
+def load_brief_metadata(brief_path: Path) -> Dict[str, Any]:
+    """Return metadata declared in the brief frontmatter or adjacent metadata files."""
+
+    metadata: Dict[str, Any] = {}
+    if brief_path.exists():
+        text = brief_path.read_text(encoding="utf-8")
+        metadata.update(_parse_frontmatter(text))
+
+    for candidate in ("metadata.json", "brief.metadata.json"):
+        json_path = brief_path.with_name(candidate)
+        if not json_path.exists():
+            continue
+        try:
+            payload = json.loads(json_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"invalid metadata JSON at {json_path}: {exc}") from exc
+        for key, value in payload.items():
+            norm_key = _normalize_key(key)
+            metadata[norm_key] = _normalize_value(norm_key, value)
+
+    return metadata
+
+
+CANONICAL_FIELDS = (
+    "industry",
+    "project_type",
+    "frontend",
+    "backend",
+    "database",
+    "auth",
+    "deploy",
+    "compliance",
+    "features",
+)
+
+
+def apply_metadata_to_spec(spec: ScaffoldSpec, metadata: Dict[str, Any]) -> ScaffoldSpec:
+    updates: Dict[str, Any] = {}
+    for field in CANONICAL_FIELDS:
+        if field not in metadata or _is_missing(metadata[field]):
+            continue
+        updates[field] = metadata[field]
+    if updates:
+        return replace(spec, **updates)
+    return spec
+
+
+def _lookup_project_overrides(raw_config: Dict[str, Any], name: str) -> Dict[str, Any]:
+    projects = raw_config.get("projects")
+    if not isinstance(projects, dict):
+        return {}
+    for candidate in {name, name.lower(), name.replace("_", "-"), name.replace("-", "_")}:  # simple variants
+        override = projects.get(candidate)
+        if isinstance(override, dict):
+            return override.copy()
+    return {}
+
+
+def build_effective_config(
+    raw_config: Dict[str, Any], metadata: Dict[str, Any], name: str, spec: ScaffoldSpec
+) -> Dict[str, Any]:
+    base: Dict[str, Any] = {}
+    if raw_config:
+        defaults = raw_config.get("defaults")
+        if isinstance(defaults, dict):
+            base.update(defaults)
+        for key, value in raw_config.items():
+            if key in {"defaults", "projects"}:
+                continue
+            base[key] = value
+
+    project_overrides = _lookup_project_overrides(raw_config, name)
+
+    effective: Dict[str, Any] = {**base}
+
+    # Preserve non-canonical metadata for downstream consumers if not already provided.
+    for key, value in metadata.items():
+        if key not in CANONICAL_FIELDS:
+            effective.setdefault(key, value)
+
+    for field in CANONICAL_FIELDS:
+        base_value = effective.get(field)
+        spec_value = getattr(spec, field)
+        metadata_value = metadata.get(field)
+        override_value = project_overrides.get(field)
+
+        value = base_value
+        if not _is_missing(spec_value):
+            value = spec_value
+        if metadata_value is not None and not _is_missing(metadata_value):
+            value = metadata_value
+        if override_value is not None and not _is_missing(override_value):
+            value = override_value
+
+        effective[field] = _normalize_value(field, value)
+
+    for key, value in project_overrides.items():
+        if key not in CANONICAL_FIELDS:
+            effective[key] = value
+
+    effective["name"] = name
+    return effective
 
 
 @dataclass
@@ -683,12 +844,16 @@ def main() -> int:
 
     cfg_path = ROOT / args.config
     try:
-        cfg = load_config(cfg_path)
+        raw_cfg = load_config(cfg_path)
     except FileNotFoundError as exc:
         print(f"[plan] {exc}", file=sys.stderr)
         return 2
 
-    name = args.name or os.environ.get("NAME") or cfg.get("name")
+    defaults_name = None
+    if isinstance(raw_cfg.get("defaults"), dict):
+        defaults_name = raw_cfg["defaults"].get("name")
+
+    name = args.name or os.environ.get("NAME") or raw_cfg.get("name") or defaults_name
     if not name:
         print("[plan] NAME is required (pass --name, export NAME, or set workflow.config.json)", file=sys.stderr)
         return 2
@@ -701,6 +866,15 @@ def main() -> int:
         return 2
 
     spec = BriefParser(str(brief_path)).parse()
+    try:
+        metadata = load_brief_metadata(brief_path)
+    except ValueError as exc:
+        print(f"[plan] {exc}", file=sys.stderr)
+        return 2
+
+    spec = apply_metadata_to_spec(spec, metadata)
+    cfg = build_effective_config(raw_cfg, metadata, name, spec)
+
     lanes = build_plan(spec, cfg)
 
     output_root = Path(args.output_root)

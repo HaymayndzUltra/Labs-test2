@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -11,7 +12,10 @@ from scripts.lifecycle_tasks import build_plan
 from scripts.pre_lifecycle_plan import (
     PlanContext,
     PlanItem,
+    apply_metadata_to_spec,
+    build_effective_config,
     build_steps,
+    load_brief_metadata,
 )
 
 
@@ -91,3 +95,59 @@ def test_planitem_execute(tmp_path: Path, exit_code: int, expected: str):
     item = PlanItem("Execute command", command=command)
     status, _ = item.evaluate(ctx, execute=True)
     assert status == expected
+
+
+def test_load_brief_metadata_merges_frontmatter_and_json(tmp_path: Path):
+    brief_dir = tmp_path / "briefs" / "demo"
+    brief_dir.mkdir(parents=True)
+    brief_path = brief_dir / "brief.md"
+    brief_path.write_text(
+        """---
+name: Demo
+frontend: nextjs
+backend: fastapi
+compliance: soc2
+---
+
+# Demo Brief
+""",
+        encoding="utf-8",
+    )
+    (brief_dir / "metadata.json").write_text(
+        json.dumps({"deploy": "aws", "features": ["analytics", "auditing"]}),
+        encoding="utf-8",
+    )
+
+    metadata = load_brief_metadata(brief_path)
+    assert metadata["frontend"] == "nextjs"
+    assert metadata["deploy"] == "aws"
+    assert metadata["features"] == ["analytics", "auditing"]
+
+
+def test_apply_metadata_to_spec_overrides_fields():
+    spec = make_spec(frontend="nextjs", backend="fastapi", compliance=["soc2"])
+    metadata = {"frontend": "nuxt", "compliance": ["hipaa", "soc2"]}
+
+    new_spec = apply_metadata_to_spec(spec, metadata)
+    assert new_spec.frontend == "nuxt"
+    assert new_spec.compliance == ["hipaa", "soc2"]
+
+
+def test_build_effective_config_prioritizes_overrides():
+    spec = make_spec(frontend="nuxt", backend="django")
+    raw_config = {
+        "defaults": {
+            "frontend": "nextjs",
+            "backend": "fastapi",
+            "industry": "saas",
+        },
+        "projects": {"demo": {"backend": "go"}},
+    }
+    metadata = {"frontend": "nuxt", "backend": "django", "compliance": ["soc2"]}
+
+    cfg = build_effective_config(raw_config, metadata, "demo", spec)
+    assert cfg["frontend"] == "nuxt"
+    # project override wins over metadata/spec
+    assert cfg["backend"] == "go"
+    # ensure compliance normalized
+    assert cfg["compliance"] == ["soc2"]
