@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+.theme-dark {
+  color-scheme: dark;
+}
+
+body {
+  font-family: "General Sans", "Inter", system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+.focus-ring {
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+[data-grid="12"] {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  [data-grid="12"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
