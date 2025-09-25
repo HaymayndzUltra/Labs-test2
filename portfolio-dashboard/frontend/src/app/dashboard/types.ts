@@ -1,204 +1,224 @@
-import type { LucideIcon } from 'lucide-react';
-
 export type TrendDirection = 'up' | 'down' | 'steady';
+
+export type IconName =
+  | 'rocket'
+  | 'users'
+  | 'credit-card'
+  | 'cpu'
+  | 'bar-chart'
+  | 'shopping-cart'
+  | 'target'
+  | 'chart-line'
+  | 'clock'
+  | 'mail'
+  | 'alert'
+  | 'sparkles'
+  | 'shield'
+  | 'bookmark'
+  | 'video'
+  | 'graduation'
+  | 'pill'
+  | 'building'
+  | 'briefcase'
+  | 'database'
+  | 'stethoscope'
+  | 'calendar'
+  | 'zap'
+  | 'list'
+  | 'globe'
+  | 'clipboard';
 
 export type MetricCard = {
   id: string;
   label: string;
   value: string;
-  change: number;
-  trend: TrendDirection;
-  helper: string;
+  change?: number;
+  trend?: TrendDirection;
+  caption?: string;
+  icon: IconName;
 };
 
-export type SpotlightStat = {
+export type LineSeries = {
+  key: string;
   label: string;
-  value: string;
-  helper: string;
+  color: string;
 };
 
-type BaseChart = {
+export type LineChartDefinition = {
   id: string;
-  title: string;
-  description: string;
-};
-
-type LineSeries = {
-  period: string;
-  value: number;
-  secondary?: number;
-};
-
-type CategoryValue = {
-  name: string;
-  value: number;
-};
-
-type DonutSegment = CategoryValue & {
-  color?: string;
-};
-
-type FunnelStep = {
-  id: string;
-  label: string;
-  value: number;
-  conversion: number;
-};
-
-type HeatmapWeek = {
-  week: string;
-  days: {
-    day: string;
-    value: number;
-  }[];
-};
-
-type StackedSlice = {
-  name: string;
-  value: number;
-  fill?: string;
-};
-
-type WorkloadEntry = {
-  member: string;
-  backlog: number;
-  inProgress: number;
-  completed: number;
-};
-
-export type LineChartBlock = BaseChart & {
   type: 'line';
-  data: LineSeries[];
-  valueKey: keyof LineSeries;
-  secondaryKey?: keyof LineSeries;
-  format?: 'currency' | 'percent' | 'numeric';
+  title: string;
+  description?: string;
+  data: Array<Record<string, string | number>>;
+  series: LineSeries[];
+  valuePrefix?: string;
+  valueSuffix?: string;
 };
 
-export type BarChartBlock = BaseChart & {
+export type BarSeries = {
+  key: string;
+  label: string;
+  color: string;
+};
+
+export type BarChartDefinition = {
+  id: string;
   type: 'bar';
-  data: CategoryValue[];
-  format?: 'currency' | 'percent' | 'numeric';
+  title: string;
+  description?: string;
+  data: Array<Record<string, string | number>>;
+  series: BarSeries[];
+  valuePrefix?: string;
+  valueSuffix?: string;
 };
 
-export type DonutChartBlock = BaseChart & {
+export type DonutSegment = {
+  label: string;
+  value: number;
+  color: string;
+};
+
+export type DonutChartDefinition = {
+  id: string;
   type: 'donut';
+  title: string;
+  description?: string;
   segments: DonutSegment[];
-  format?: 'percent' | 'numeric';
+  centerLabel?: string;
 };
 
-export type FunnelChartBlock = BaseChart & {
+export type FunnelStep = {
+  label: string;
+  value: number;
+  annotation?: string;
+};
+
+export type FunnelChartDefinition = {
+  id: string;
   type: 'funnel';
+  title: string;
+  description?: string;
   steps: FunnelStep[];
 };
 
-export type HeatmapChartBlock = BaseChart & {
+export type HeatmapCell = {
+  label: string;
+  value: number;
+};
+
+export type HeatmapRow = {
+  label: string;
+  values: HeatmapCell[];
+};
+
+export type HeatmapDefinition = {
+  id: string;
   type: 'heatmap';
-  weeks: HeatmapWeek[];
+  title: string;
+  description?: string;
+  rows: HeatmapRow[];
+  valueRange: [number, number];
   legend: string[];
 };
 
-export type WorkloadChartBlock = BaseChart & {
-  type: 'workload';
-  data: WorkloadEntry[];
-};
+export type ChartDefinition =
+  | LineChartDefinition
+  | BarChartDefinition
+  | DonutChartDefinition
+  | FunnelChartDefinition
+  | HeatmapDefinition;
 
-export type RadialChartBlock = BaseChart & {
-  type: 'radial';
-  segments: StackedSlice[];
-  total: number;
-};
-
-export type ChartBlock =
-  | LineChartBlock
-  | BarChartBlock
-  | DonutChartBlock
-  | FunnelChartBlock
-  | HeatmapChartBlock
-  | WorkloadChartBlock
-  | RadialChartBlock;
-
-export type TableColumn = {
+export type TableRow = {
   id: string;
-  label: string;
-  align?: 'left' | 'center' | 'right';
+  cells: (string | number)[];
+  status?: TrendDirection;
+  note?: string;
 };
 
-export type TableRow = Record<string, string>;
-
-export type TableBlock = {
+export type TableDefinition = {
   id: string;
   title: string;
-  description: string;
-  columns: TableColumn[];
+  description?: string;
+  columns: string[];
   rows: TableRow[];
 };
 
-export type AutomationPlay = {
-  id: string;
-  name: string;
-  trigger: string;
-  action: string;
-  channel: string;
-  cadence: string;
-};
-
-export type WorkflowStep = {
+export type AutomationWorkflow = {
   id: string;
   title: string;
   description: string;
+  trigger: string;
+  actions: string[];
+  cadence: string;
+  owner: string;
+  status: 'active' | 'paused' | 'draft';
+  lastRun: string;
+  nextRun: string;
 };
 
-export type WorkflowDiagram = {
+export type KanbanItem = {
   id: string;
   title: string;
-  steps: WorkflowStep[];
+  assignee: string;
+  badge: string;
+  dueDate: string;
+  effort: number;
 };
 
 export type KanbanColumn = {
   id: string;
-  name: string;
-  sla: string;
-  count: number;
-  tasks: {
-    id: string;
-    title: string;
-    assignee: string;
+  title: string;
+  items: KanbanItem[];
+};
+
+export type WorkloadDistribution = {
+  team: {
+    name: string;
+    role: string;
+    allocation: number;
+    capacity: number;
   }[];
 };
 
-export type CategorySubsection = {
-  id: string;
-  name: string;
-  metrics: MetricCard[];
-  summary: string;
-  chart: ChartBlock;
-  automations: AutomationPlay[];
+export type CategoryExtras = {
+  kanban?: {
+    columns: KanbanColumn[];
+    workload: WorkloadDistribution;
+    summary: string;
+  };
+  highlights?: {
+    title: string;
+    items: { label: string; value: string }[];
+  }[];
 };
 
 export type PortfolioCategory = {
   id: string;
   name: string;
-  icon: string;
-  tagline: string;
+  badge: string;
   description: string;
-  surface: {
-    accent: string;
-    from: string;
-    to: string;
-  };
-  spotlight: SpotlightStat;
+  summary: string;
   metrics: MetricCard[];
-  charts: ChartBlock[];
-  tables?: TableBlock[];
-  automations: AutomationPlay[];
-  workflows?: WorkflowDiagram[];
-  kanban?: {
-    columns: KanbanColumn[];
-  };
-  subsections?: CategorySubsection[];
+  charts: ChartDefinition[];
+  tables: TableDefinition[];
+  automations: AutomationWorkflow[];
+  extras?: CategoryExtras;
+};
+
+export type QuickAction = {
+  id: string;
+  title: string;
+  description: string;
+  ctaLabel: string;
+  icon: IconName;
+  badge?: string;
 };
 
 export type PortfolioDashboardResponse = {
   generatedAt: string;
+  headline: string;
+  intro: string;
+  portfolioHighlights: MetricCard[];
+  quickActions: QuickAction[];
   categories: PortfolioCategory[];
 };
