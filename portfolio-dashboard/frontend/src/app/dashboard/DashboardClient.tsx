@@ -263,7 +263,10 @@ function renderFunnelChart(chart: ChartBlock & { type: 'funnel' }) {
 }
 
 function renderHeatmap(chart: ChartBlock & { type: 'heatmap' }) {
-  const max = Math.max(...chart.weeks.flatMap((week) => week.days.map((day) => day.value)));
+  // Safely calculate max value with validation
+  const allValues = chart.weeks.flatMap((week) => week.days.map((day) => day.value));
+  const numericValues = allValues.filter((value) => typeof value === 'number' && !isNaN(value));
+  const max = numericValues.length > 0 ? Math.max(...numericValues) : 1;
 
   return (
     <div className="space-y-6">
@@ -288,7 +291,8 @@ function renderHeatmap(chart: ChartBlock & { type: 'heatmap' }) {
               <tr key={week.week}>
                 <td className="px-2 py-2 text-xs font-semibold text-slate-600">{week.week}</td>
                 {week.days.map((day) => {
-                  const intensity = day.value / max;
+                  const safeValue = typeof day.value === 'number' && !isNaN(day.value) ? day.value : 0;
+                  const intensity = max > 0 ? safeValue / max : 0;
                   const bg = `rgba(99,102,241,${0.15 + intensity * 0.7})`;
                   return (
                     <td key={`${week.week}-${day.day}`} className="px-2 py-2">
@@ -296,7 +300,7 @@ function renderHeatmap(chart: ChartBlock & { type: 'heatmap' }) {
                         className="flex h-10 w-10 items-center justify-center rounded-2xl text-xs font-semibold text-indigo-900"
                         style={{ background: bg }}
                       >
-                        {day.value}
+                        {safeValue}
                       </div>
                     </td>
                   );
