@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Area,
   AreaChart,
@@ -1140,6 +1140,11 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
   const { selectedModule, setModule, filters, setFilters } = useDashboardStore();
   const { push } = useToast();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const { data } = useQuery({
     queryKey: ['portfolio-dashboard'],
@@ -1229,14 +1234,16 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
             </div>
             <div className="flex flex-col items-end gap-3">
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
-                  onClick={toggleTheme}
-                >
-                  {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden /> : <Moon className="h-4 w-4" aria-hidden />}
-                  {theme === 'dark' ? 'Light mode' : 'Dark mode'}
-                </button>
+                {mounted && (
+                  <button
+                    type="button"
+                    className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+                    onClick={toggleTheme}
+                  >
+                    {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden /> : <Moon className="h-4 w-4" aria-hidden />}
+                    {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+                  </button>
+                )}
                 <button
                   type="button"
                   className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"

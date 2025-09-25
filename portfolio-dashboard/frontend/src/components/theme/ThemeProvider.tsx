@@ -37,8 +37,23 @@ export function ThemeProvider({
   defaultTheme?: ThemeMode;
   defaultDirection?: Direction;
 }) {
-  const [theme, setThemeState] = useState<ThemeMode>(defaultTheme ?? getInitialTheme());
-  const [direction, setDirectionState] = useState<Direction>(defaultDirection ?? getInitialDirection());
+  const [theme, setThemeState] = useState<ThemeMode>(defaultTheme ?? 'light');
+  const [direction, setDirectionState] = useState<Direction>(defaultDirection ?? 'ltr');
+  const [mounted, setMounted] = useState(false);
+
+  // Handle client-side hydration
+  useEffect(() => {
+    setMounted(true);
+    const initialTheme = getInitialTheme();
+    const initialDirection = getInitialDirection();
+    
+    if (initialTheme !== theme) {
+      setThemeState(initialTheme);
+    }
+    if (initialDirection !== direction) {
+      setDirectionState(initialDirection);
+    }
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
