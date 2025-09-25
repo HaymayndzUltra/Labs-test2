@@ -1,1759 +1,851 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import Image from 'next/image';
+import { type FormEvent, useMemo, useState } from 'react';
 import {
-  type KeyboardEvent as ReactKeyboardEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import {
+  Activity,
   ArrowDownRight,
   ArrowUpRight,
   BarChart3,
-  Check,
-  ChevronDown,
-  Heart,
-  LineChart,
-  Loader2,
+  Bell,
+  BellRing,
+  Cable,
+  CheckCheck,
+  ClipboardCheck,
+  CreditCard,
+  Film,
+  Globe,
+  GraduationCap,
+  Handshake,
+  Home,
+  Layers,
+  LucideIcon,
+  Medal,
+  Minus,
+  Newspaper,
   Package,
-  PieChart,
-  Search,
+  PiggyBank,
+  Rocket,
+  Share2,
+  Shield,
+  ShieldCheck,
   ShoppingCart,
-  SlidersHorizontal,
   Sparkles,
-  Star,
+  Stethoscope,
+  Target,
+  Timeline,
+  Timer,
+  TrendingUp,
+  Trophy,
   Users,
+  Wallet,
+  Workflow,
   X,
 } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
-import { FALLBACK_IMAGE } from './constants';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import type {
-  BrandFilter,
-  Category,
-  DeliveryOption,
-  EcommerceDashboardResponse,
-  MetricTrend,
-  OverviewMetric,
-  PriceRange,
-  Product,
-  RatingFilter,
-  SortOption,
-  SortOptionId,
-  SpotlightMetric,
+  AutomationJob,
+  ChartConfig,
+  DonutChartConfig,
+  FunnelStage,
+  HeatmapConfig,
+  LeaderboardConfig,
+  PortfolioCategory,
+  PortfolioDashboard,
+  PortfolioMetric,
+  TableDefinition,
+  WorkflowBlueprint,
 } from './types';
-import { useCommerceDashboard } from './useCommerceDashboard';
+
+const iconMap: Record<string, LucideIcon> = {
+  Activity,
+  ArrowDownRight,
+  ArrowUpRight,
+  BarChart3,
+  Bell,
+  BellRing,
+  Cable,
+  CheckCheck,
+  ClipboardCheck,
+  CreditCard,
+  Film,
+  Globe,
+  GraduationCap,
+  Handshake,
+  Home,
+  Layers,
+  Medal,
+  Minus,
+  Newspaper,
+  Package,
+  PiggyBank,
+  Rocket,
+  Share2,
+  Shield,
+  ShieldCheck,
+  ShoppingCart,
+  Sparkles,
+  Stethoscope,
+  Target,
+  Timeline,
+  Timer,
+  TrendingUp,
+  Trophy,
+  Users,
+  Wallet,
+  Workflow,
+  X,
+};
+
+const chartCardClass =
+  'rounded-3xl border border-indigo-100/60 bg-white/80 shadow-[0_18px_48px_rgba(79,70,229,0.08)] backdrop-blur-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(79,70,229,0.12)]';
+
+const badgeClass =
+  'inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50/70 px-3 py-1 text-sm font-medium text-indigo-600';
+
+type DashboardClientProps = {
+  initialData: PortfolioDashboard;
+};
+
+type SelectedWorkflow = {
+  category: PortfolioCategory;
+  workflow: WorkflowBlueprint;
+};
 
 type TrendPalette = {
   text: string;
-  badge: string;
-  icon: typeof ArrowUpRight;
+  bg: string;
+  icon: LucideIcon;
 };
 
-const TREND_PALETTE: Record<MetricTrend, TrendPalette> = {
-  up: {
-    text: 'text-emerald-600',
-    badge: 'bg-emerald-50/80',
-    icon: ArrowUpRight,
-  },
-  down: {
-    text: 'text-rose-600',
-    badge: 'bg-rose-50/80',
-    icon: ArrowDownRight,
-  },
-  steady: {
-    text: 'text-neutral-600',
-    badge: 'bg-neutral-200/70',
-    icon: ArrowUpRight,
-  },
+const TREND_VARIANTS: Record<'up' | 'down' | 'steady', TrendPalette> = {
+  up: { text: 'text-emerald-600', bg: 'bg-emerald-50', icon: ArrowUpRight },
+  down: { text: 'text-rose-600', bg: 'bg-rose-50', icon: ArrowDownRight },
+  steady: { text: 'text-slate-600', bg: 'bg-slate-100', icon: Minus },
 };
 
-const SORT_OPTIONS: SortOption[] = [
-  {
-    id: 'featured',
-    label: 'Featured',
-    description: 'Default merchandising order',
-  },
-  {
-    id: 'popularity-desc',
-    label: 'Most Popular',
-    description: 'Highest number of reviews first',
-  },
-  {
-    id: 'rating-desc',
-    label: 'Top Rated',
-    description: 'Highest rated products first',
-  },
-  {
-    id: 'price-asc',
-    label: 'Price: Low to High',
-    description: 'Sort by ascending price',
-  },
-  {
-    id: 'price-desc',
-    label: 'Price: High to Low',
-    description: 'Sort by descending price',
-  },
-];
-
-function BrandCarouselSkeleton() {
-  return (
-    <div className="mx-auto w-full max-w-7xl px-6">
-      <div className="h-32 animate-pulse rounded-3xl border border-indigo-100/70 bg-white/80 shadow-soft" />
-    </div>
-  );
-}
-
-const BrandCarousel = dynamic(
-  () => import('./BrandCarousel').then((mod) => mod.BrandCarousel),
-  {
-    loading: () => <BrandCarouselSkeleton />,
-    ssr: false,
-  },
-);
-
-function formatCurrency(value: number, currency: string) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: value % 1 === 0 ? 0 : 2,
-  }).format(value);
-}
-
-function formatChange(change: number) {
-  const prefix = change > 0 ? '+' : '';
-  return `${prefix}${change.toFixed(1)}%`;
-}
-
-function getSliderBackground([selectedMin, selectedMax]: [number, number], priceRange: PriceRange) {
-  const span = priceRange.maximum - priceRange.minimum;
-  if (span <= 0) return undefined;
-
-  const minPercent = ((selectedMin - priceRange.minimum) / span) * 100;
-  const maxPercent = ((selectedMax - priceRange.minimum) / span) * 100;
-
-  const clampedMin = Math.max(0, Math.min(100, minPercent));
-  const clampedMax = Math.max(0, Math.min(100, maxPercent));
-
-  return `linear-gradient(90deg, rgba(99,102,241,0.12) ${clampedMin}%, #4f46e5 ${clampedMin}%, #4f46e5 ${clampedMax}%, rgba(99,102,241,0.12) ${clampedMax}%)`;
-}
-
-function areStringSetsEqual(a: string[], b: string[]) {
-  if (a.length !== b.length) return false;
-  const reference = new Set(a);
-  return b.every((value) => reference.has(value));
-}
-
-function useDebouncedValue<T>(value: T, delay: number) {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handle = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handle);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-}
-
-type DashboardClientProps = {
-  initialData: EcommerceDashboardResponse;
-};
-
-export default function DashboardClient({ initialData }: DashboardClientProps) {
-  const { data: dashboardData, mutate: mutateDashboard } = useCommerceDashboard(initialData);
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [selectedBrands, setSelectedBrands] = useState<string[]>(() =>
-    initialData.brand_filters.filter((brand) => brand.checked).map((brand) => brand.id),
-  );
-  const [priceSelection, setPriceSelection] = useState<[number, number]>([
-    initialData.price_range.selected_min,
-    initialData.price_range.selected_max,
-  ]);
-  const [isFiltering, setIsFiltering] = useState(false);
-  const [sortOption, setSortOption] = useState<SortOptionId>('featured');
-  const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
-  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
-  const filterTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const categoryRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const sortButtonRef = useRef<HTMLButtonElement | null>(null);
-  const sortMenuRef = useRef<HTMLDivElement | null>(null);
-  const sortOptionRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const initialFiltersRef = useRef({
-    price: [
-      initialData.price_range.selected_min,
-      initialData.price_range.selected_max,
-    ] as [number, number],
-    brands: initialData.brand_filters.filter((brand) => brand.checked).map((brand) => brand.id),
-    delivery: initialData.delivery_options.find((option) => option.active)?.id ?? null,
-  });
-  const lastDefaultsFingerprintRef = useRef<string | null>(null);
-
-  const debouncedActiveCategory = useDebouncedValue(activeCategory, 200);
-  const debouncedSelectedBrands = useDebouncedValue(selectedBrands, 200);
-  const debouncedPriceSelection = useDebouncedValue(priceSelection, 200);
-  const debouncedSortOption = useDebouncedValue(sortOption, 200);
-
-  const dashboardDefaults = useMemo(() => {
-    if (!dashboardData) return null;
-
-    const defaultBrandIds = dashboardData.brand_filters
-      .filter((brand) => brand.checked)
-      .map((brand) => brand.id);
-
-    return {
-      fingerprint: dashboardData.generated_at,
-      price: [
-        dashboardData.price_range.selected_min,
-        dashboardData.price_range.selected_max,
-      ] as [number, number],
-      brands: defaultBrandIds,
-      delivery: dashboardData.delivery_options.find((option) => option.active)?.id ?? null,
-    };
-  }, [dashboardData]);
-
-  useEffect(() => {
-    if (!dashboardDefaults) return;
-
-    if (lastDefaultsFingerprintRef.current === dashboardDefaults.fingerprint) {
-      return;
-    }
-
-    lastDefaultsFingerprintRef.current = dashboardDefaults.fingerprint;
-
-    setActiveCategory('all');
-    setSelectedBrands([...dashboardDefaults.brands]);
-    setPriceSelection([
-      dashboardDefaults.price[0],
-      dashboardDefaults.price[1],
-    ]);
-    initialFiltersRef.current = {
-      price: [dashboardDefaults.price[0], dashboardDefaults.price[1]],
-      brands: [...dashboardDefaults.brands],
-      delivery: dashboardDefaults.delivery,
-    };
-  }, [dashboardDefaults]);
-
-  useEffect(() => {
-    if (!isSortMenuOpen) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (!sortMenuRef.current && !sortButtonRef.current) return;
-      if (
-        sortMenuRef.current?.contains(target) ||
-        sortButtonRef.current?.contains(target)
-      ) {
-        return;
-      }
-      setIsSortMenuOpen(false);
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsSortMenuOpen(false);
-        sortButtonRef.current?.focus();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isSortMenuOpen]);
-
-  useEffect(() => {
-    if (!isSortMenuOpen) return;
-    const frame = requestAnimationFrame(() => {
-      sortOptionRefs.current[0]?.focus();
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [isSortMenuOpen]);
-
-  useEffect(() => {
-    if (!isFilterSheetOpen) {
-      document.body.style.removeProperty('overflow');
-      return;
-    }
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsFilterSheetOpen(false);
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isFilterSheetOpen]);
-
-  const categoryOptions = useMemo(() => {
-    if (!dashboardData) {
-      return [{ id: 'all', label: 'All Products' }];
-    }
-
-    const seen = new Set<string>();
-    const options = dashboardData.categories
-      .filter((category) => {
-        if (!category.id || !category.label) return false;
-        if (seen.has(category.id)) return false;
-        seen.add(category.id);
-        return true;
-      })
-      .map((category) => ({ id: category.id, label: category.label }));
-
-    return [{ id: 'all', label: 'All Products' }, ...options];
-  }, [dashboardData]);
-
-  const activeSort = useMemo(
-    () => SORT_OPTIONS.find((option) => option.id === sortOption) ?? SORT_OPTIONS[0],
-    [sortOption],
-  );
-
-  useEffect(() => {
-    categoryRefs.current = categoryRefs.current.slice(0, categoryOptions.length);
-  }, [categoryOptions.length]);
-
-  useEffect(() => {
-    sortOptionRefs.current = sortOptionRefs.current.slice(0, SORT_OPTIONS.length);
-  }, []);
-
-  const triggerFilteringFeedback = useCallback(() => {
-    setIsFiltering(true);
-    if (filterTimeoutRef.current) {
-      clearTimeout(filterTimeoutRef.current);
-    }
-    filterTimeoutRef.current = setTimeout(() => {
-      setIsFiltering(false);
-    }, 420);
-  }, []);
-
-  const handleCategoryChange = useCallback(
-    (categoryId: string) => {
-      setActiveCategory(categoryId);
-      triggerFilteringFeedback();
-    },
-    [triggerFilteringFeedback],
-  );
-
-  const handleCategoryKeyDown = useCallback(
-    (event: ReactKeyboardEvent<HTMLButtonElement>, index: number) => {
-      if (!categoryOptions.length) return;
-
-      const lastIndex = categoryOptions.length - 1;
-      let nextIndex = index;
-
-      switch (event.key) {
-        case 'ArrowRight':
-        case 'ArrowDown':
-          nextIndex = index === lastIndex ? 0 : index + 1;
-          break;
-        case 'ArrowLeft':
-        case 'ArrowUp':
-          nextIndex = index === 0 ? lastIndex : index - 1;
-          break;
-        case 'Home':
-          nextIndex = 0;
-          break;
-        case 'End':
-          nextIndex = lastIndex;
-          break;
-        default:
-          return;
-      }
-
-      event.preventDefault();
-
-      const nextButton = categoryRefs.current[nextIndex];
-      if (nextButton) {
-        nextButton.focus();
-        const nextId = nextButton.dataset.categoryId;
-        if (nextId) {
-          handleCategoryChange(nextId);
-        }
-      }
-    },
-    [categoryOptions.length, handleCategoryChange],
-  );
-
-  const setDeliveryOption = useCallback(
-    (optionId: string | null) => {
-      mutateDashboard(
-        (current) => {
-          if (!current) return current;
-
-          const updated = current.delivery_options.map((option) => ({
-            ...option,
-            active: optionId ? option.id === optionId : false,
-          }));
-
-          return { ...current, delivery_options: updated };
-        },
-        { revalidate: false },
-      );
-    },
-    [mutateDashboard],
-  );
-
-  const handleBrandToggle = useCallback(
-    (brandId: string) => {
-      setSelectedBrands((prev) =>
-        prev.includes(brandId) ? prev.filter((id) => id !== brandId) : [...prev, brandId],
-      );
-      triggerFilteringFeedback();
-    },
-    [triggerFilteringFeedback],
-  );
-
-  const handleDeliveryToggle = useCallback(
-    (optionId: string) => {
-      setDeliveryOption(optionId);
-      triggerFilteringFeedback();
-    },
-    [setDeliveryOption, triggerFilteringFeedback],
-  );
-
-  const handleSortSelect = useCallback(
-    (optionId: SortOptionId) => {
-      setSortOption(optionId);
-      setIsSortMenuOpen(false);
-      triggerFilteringFeedback();
-    },
-    [triggerFilteringFeedback],
-  );
-
-  const handleClearCategory = useCallback(() => {
-    setActiveCategory('all');
-    triggerFilteringFeedback();
-  }, [triggerFilteringFeedback]);
-
-  const handleClearPrice = useCallback(() => {
-    const defaults = initialFiltersRef.current;
-    if (!defaults) return;
-    setPriceSelection([defaults.price[0], defaults.price[1]]);
-    triggerFilteringFeedback();
-  }, [triggerFilteringFeedback]);
-
-  const handleClearBrands = useCallback(() => {
-    const defaults = initialFiltersRef.current;
-    if (!defaults) return;
-    setSelectedBrands([...defaults.brands]);
-    triggerFilteringFeedback();
-  }, [triggerFilteringFeedback]);
-
-  const handleClearDelivery = useCallback(() => {
-    const defaults = initialFiltersRef.current;
-    const fallbackId = defaults?.delivery ?? null;
-    setDeliveryOption(fallbackId);
-    triggerFilteringFeedback();
-  }, [setDeliveryOption, triggerFilteringFeedback]);
-
-  const handleResetFilters = useCallback(() => {
-    const defaults = initialFiltersRef.current;
-    setActiveCategory('all');
-    if (defaults) {
-      setSelectedBrands([...defaults.brands]);
-      setPriceSelection([defaults.price[0], defaults.price[1]]);
-      setDeliveryOption(defaults.delivery);
-    }
-    triggerFilteringFeedback();
-  }, [setDeliveryOption, triggerFilteringFeedback]);
-
-  useEffect(() => {
-    return () => {
-      if (filterTimeoutRef.current) {
-        clearTimeout(filterTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  const filteredProducts = useMemo(() => {
-    if (!dashboardData) return [];
-
-    const filtered = dashboardData.products.filter((product) => {
-      const matchesCategory =
-        debouncedActiveCategory === 'all' || product.category_id === debouncedActiveCategory;
-      const matchesBrand =
-        debouncedSelectedBrands.length === 0 || debouncedSelectedBrands.includes(product.brand_id);
-      const matchesRating = product.rating >= dashboardData.rating_filter.minimum_rating;
-      const matchesPrice =
-        product.price >= debouncedPriceSelection[0] && product.price <= debouncedPriceSelection[1];
-      return matchesCategory && matchesBrand && matchesRating && matchesPrice;
-    });
-
-    const sorted = [...filtered];
-    switch (debouncedSortOption) {
-      case 'price-asc':
-        sorted.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-desc':
-        sorted.sort((a, b) => b.price - a.price);
-        break;
-      case 'rating-desc':
-        sorted.sort((a, b) => {
-          if (b.rating === a.rating) return b.reviews - a.reviews;
-          return b.rating - a.rating;
-        });
-        break;
-      case 'popularity-desc':
-        sorted.sort((a, b) => {
-          if (b.reviews === a.reviews) return b.rating - a.rating;
-          return b.reviews - a.reviews;
-        });
-        break;
-      case 'featured':
-      default:
-        break;
-    }
-
-    return sorted;
-  }, [
-    dashboardData,
-    debouncedActiveCategory,
-    debouncedSelectedBrands,
-    debouncedPriceSelection,
-    debouncedSortOption,
-  ]);
-
-  const {
-    overview_metrics: overviewMetrics,
-    categories,
-    price_range: priceRange,
-    rating_filter: ratingFilter,
-    brand_filters: brandFilters,
-    delivery_options: deliveryOptions,
-    spotlight_metric: spotlightMetric,
-  } = dashboardData;
-
-  const defaultFilters = initialFiltersRef.current;
-  const defaultPriceRange: [number, number] = defaultFilters?.price ?? [
-    priceRange.selected_min,
-    priceRange.selected_max,
-  ];
-  const priceFilterActive =
-    priceSelection[0] !== defaultPriceRange[0] || priceSelection[1] !== defaultPriceRange[1];
-  const defaultBrandIds = defaultFilters?.brands ?? [];
-  const appliedBrandIds = selectedBrands.length === 0 ? defaultBrandIds : selectedBrands;
-  const brandFilterActive = defaultBrandIds.length
-    ? !areStringSetsEqual(appliedBrandIds, defaultBrandIds)
-    : appliedBrandIds.length > 0;
-  const defaultDeliveryId = defaultFilters?.delivery ?? null;
-  const activeDeliveryOption = deliveryOptions.find((option) => option.active) ?? null;
-  const deliveryFilterActive = activeDeliveryOption
-    ? activeDeliveryOption.id !== defaultDeliveryId && activeDeliveryOption.id !== null
-    : false;
-  const activeCategoryOption = categoryOptions.find((category) => category.id === activeCategory);
-  const categoryIsNotDefault = activeCategory !== 'all';
-  const activeFilterCount = [
-    categoryIsNotDefault,
-    priceFilterActive,
-    brandFilterActive,
-    deliveryFilterActive,
-  ].filter(Boolean).length;
-
-  const brandNameById = new Map<string, string>();
-  brandFilters.forEach((brand) => {
-    brandNameById.set(brand.id, brand.name);
-  });
-
-  const filterSummaryItems: FilterSummaryItem[] = [];
-
-  if (categoryIsNotDefault && activeCategoryOption) {
-    filterSummaryItems.push({
-      id: 'category',
-      label: activeCategoryOption.label,
-      onClear: handleClearCategory,
-    });
+function formatTick(value: number) {
+  if (Math.abs(value) >= 1_000_000) {
+    return `${(value / 1_000_000).toFixed(1)}M`;
   }
-
-  if (priceFilterActive) {
-    filterSummaryItems.push({
-      id: 'price',
-      label: `${formatCurrency(priceSelection[0], priceRange.currency)} – ${formatCurrency(priceSelection[1], priceRange.currency)}`,
-      onClear: handleClearPrice,
-    });
+  if (Math.abs(value) >= 1_000) {
+    return `${(value / 1_000).toFixed(0)}k`;
   }
+  return value;
+}
 
-  if (brandFilterActive) {
-    const resolvedNames = appliedBrandIds
-      .map((id) => brandNameById.get(id) ?? id)
-      .slice(0, 2);
-    const brandLabel =
-      appliedBrandIds.length > 2
-        ? `${resolvedNames.join(', ')} +${appliedBrandIds.length - 2}`
-        : resolvedNames.join(', ');
-    filterSummaryItems.push({
-      id: 'brand',
-      label: brandLabel || `${appliedBrandIds.length} brands`,
-      onClear: handleClearBrands,
-    });
-  }
-
-  if (deliveryFilterActive && activeDeliveryOption) {
-    filterSummaryItems.push({
-      id: 'delivery',
-      label: activeDeliveryOption.label,
-      onClear: handleClearDelivery,
-    });
-  }
+function MetricCard({ metric }: { metric: PortfolioMetric }) {
+  const Icon = iconMap[metric.icon] ?? Sparkles;
+  const palette = TREND_VARIANTS[metric.trend] ?? TREND_VARIANTS.steady;
 
   return (
-    <div className="min-h-screen bg-surface">
-      <div className="w-full border-b border-indigo-100/70 bg-surface-alt/80 shadow-sm backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center gap-4 px-6 py-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary/90 via-secondary/80 to-primary/60 text-lg font-semibold text-white shadow-soft">
-              CX
-            </div>
-            <div>
-              <p className="text-lg font-semibold text-neutral-900">Commerce Experience</p>
-              <p className="text-sm text-neutral-600">Enterprise analytics workspace</p>
-            </div>
-          </div>
-          <div className="hidden flex-1 items-center gap-3 rounded-full border border-indigo-100 bg-surface-alt px-4 py-2 shadow-soft md:flex">
-            <Search className="h-4 w-4 text-neutral-500" />
-            <input
-              type="search"
-              placeholder="Search product, SKU, or insight"
-              className="w-full border-0 bg-transparent text-sm text-neutral-600 placeholder:text-neutral-500 focus:outline-none"
-              aria-label="Search products"
-            />
-            <button
-              type="button"
-              className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-white shadow-soft transition hover:shadow-glow"
-            >
-              <Sparkles className="h-3 w-3" />
-              Quick find
-            </button>
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <button
-              type="button"
-              className="hidden items-center gap-2 rounded-full border border-indigo-100 bg-surface-alt px-3 py-2 text-sm font-medium text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50 lg:flex"
-            >
-              <Package className="h-4 w-4" />
-              Orders
-            </button>
-            <button
-              type="button"
-              className="hidden items-center gap-2 rounded-full border border-indigo-100 bg-surface-alt px-3 py-2 text-sm font-medium text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50 xl:flex"
-            >
-              <Heart className="h-4 w-4" />
-              Saved
-            </button>
-            <button
-              type="button"
-              className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-soft transition hover:shadow-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-              aria-label="Open cart"
-            >
-              <ShoppingCart className="h-5 w-5" />
-            </button>
-          </div>
+    <div className={`${chartCardClass} h-full p-6`}> 
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm font-medium text-indigo-500">{metric.label}</p>
+          <h3 className="mt-3 text-3xl font-semibold text-slate-900">{metric.value}</h3>
         </div>
+        <span className="rounded-2xl bg-indigo-100/70 p-3 text-indigo-600">
+          <Icon className="h-6 w-6" aria-hidden="true" />
+        </span>
       </div>
-
-      <main className="mx-auto max-w-7xl space-y-6 px-6 pb-12 pt-6">
-        <BrandCarousel />
-
-        <section className="grid grid-cols-12 gap-6">
-          <aside className="col-span-12 space-y-5 lg:col-span-4 xl:col-span-3">
-            <div className="hidden lg:block">
-              <FilterPanel
-                priceRange={priceRange}
-                priceSelection={priceSelection}
-                setPriceSelection={setPriceSelection}
-                ratingFilter={ratingFilter}
-                brandFilters={brandFilters}
-                selectedBrands={selectedBrands}
-                onBrandToggle={handleBrandToggle}
-                onBrandsReset={handleClearBrands}
-                deliveryOptions={deliveryOptions}
-                onDeliveryToggle={handleDeliveryToggle}
-                onReset={handleResetFilters}
-                onFilterChange={triggerFilteringFeedback}
-                initialFilters={defaultFilters}
-                variant="desktop"
-                activeCount={activeFilterCount}
-              />
-            </div>
-
-            <InsightsWidget spotlightMetric={spotlightMetric} overviewMetrics={overviewMetrics} />
-          </aside>
-
-          <section className="col-span-12 space-y-5 lg:col-span-8 xl:col-span-9">
-            <div className="rounded-3xl border border-indigo-100/70 bg-surface-alt px-6 py-5 shadow-soft">
-              <div
-                className="scrollbar-hidden -mx-2 overflow-x-auto pb-2"
-                role="tablist"
-                aria-label="Product categories"
-                aria-orientation="horizontal"
-              >
-                <div className="flex w-max items-center gap-2 px-2">
-                  {categoryOptions.map((category, index) => {
-                    const isActive = activeCategory === category.id;
-                    const chipClasses = `inline-flex items-center rounded-full border px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60 ${
-                      isActive
-                        ? 'border-primary bg-primary text-white shadow-soft'
-                        : 'border-transparent bg-white/90 text-neutral-600 hover:border-primary/40 hover:bg-primary/5 hover:text-primary'
-                    }`;
-
-                    return (
-                      <button
-                        key={`${category.id}-${index}`}
-                        ref={(element) => {
-                          categoryRefs.current[index] = element;
-                        }}
-                        type="button"
-                        data-category-id={category.id}
-                        className={chipClasses}
-                        role="tab"
-                        aria-selected={isActive}
-                        tabIndex={isActive ? 0 : -1}
-                        onClick={() => handleCategoryChange(category.id)}
-                        onKeyDown={(event) => handleCategoryKeyDown(event, index)}
-                      >
-                        {category.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold text-neutral-900">Product Catalogue</h2>
-                  <p className="text-sm text-neutral-600">
-                    Showing <span className="font-semibold text-primary">{filteredProducts.length}</span> curated results
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-2 rounded-full border border-indigo-100/80 bg-white px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50 lg:hidden"
-                      onClick={() => setIsFilterSheetOpen(true)}
-                      aria-expanded={isFilterSheetOpen}
-                      aria-controls="mobile-filter-sheet"
-                    >
-                      <SlidersHorizontal className="h-4 w-4" />
-                      Filters
-                      {activeFilterCount ? (
-                        <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/15 px-2 text-xs font-semibold text-primary">
-                          {activeFilterCount}
-                        </span>
-                      ) : null}
-                    </button>
-                    {isFiltering ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" /> Filtering
-                      </span>
-                    ) : null}
-                  <div className="relative">
-                    <button
-                      ref={sortButtonRef}
-                      type="button"
-                      className="inline-flex items-center gap-2 rounded-full border border-indigo-100/80 bg-white px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
-                      aria-haspopup="listbox"
-                      aria-expanded={isSortMenuOpen}
-                      onClick={() => setIsSortMenuOpen((current) => !current)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
-                          event.preventDefault();
-                          setIsSortMenuOpen(true);
-                        }
-                      }}
-                    >
-                      <span>
-                        Sort: <span className="text-neutral-900">{activeSort.label}</span>
-                      </span>
-                      <ChevronDown className={`h-4 w-4 transition ${isSortMenuOpen ? 'rotate-180 text-primary' : ''}`} />
-                    </button>
-
-                    {isSortMenuOpen ? (
-                      <div
-                        ref={sortMenuRef}
-                        role="listbox"
-                        tabIndex={-1}
-                        className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-2xl border border-indigo-100/70 bg-white shadow-soft"
-                        onBlur={(event) => {
-                          const nextFocus = event.relatedTarget as Node | null;
-                          if (!nextFocus || !sortMenuRef.current?.contains(nextFocus)) {
-                            setIsSortMenuOpen(false);
-                          }
-                        }}
-                      >
-                        <ul className="divide-y divide-indigo-50/80">
-                          {SORT_OPTIONS.map((option, index) => {
-                            const isSelected = option.id === sortOption;
-                            const optionClasses = `w-full px-4 py-3 text-left text-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50 ${
-                              isSelected
-                                ? 'bg-primary/10 font-semibold text-primary'
-                                : 'hover:bg-neutral-50'
-                            }`;
-
-                            return (
-                              <li key={option.id}>
-                                <button
-                                  ref={(element) => {
-                                    sortOptionRefs.current[index] = element;
-                                  }}
-                                  type="button"
-                                  role="option"
-                                  aria-selected={isSelected}
-                                  data-sort-id={option.id}
-                                  className={optionClasses}
-                                  onClick={() => handleSortSelect(option.id)}
-                                  onKeyDown={(event) => {
-                                    if (event.key === 'Escape') {
-                                      event.preventDefault();
-                                      setIsSortMenuOpen(false);
-                                      sortButtonRef.current?.focus();
-                                      return;
-                                    }
-
-                                    const currentIndex = index;
-                                    const last = SORT_OPTIONS.length - 1;
-                                    let next = currentIndex;
-
-                                    if (event.key === 'ArrowDown') {
-                                      event.preventDefault();
-                                      next = currentIndex === last ? 0 : currentIndex + 1;
-                                    }
-
-                                    if (event.key === 'ArrowUp') {
-                                      event.preventDefault();
-                                      next = currentIndex === 0 ? last : currentIndex - 1;
-                                    }
-
-                                    if (event.key === 'Home') {
-                                      event.preventDefault();
-                                      next = 0;
-                                    }
-
-                                    if (event.key === 'End') {
-                                      event.preventDefault();
-                                      next = last;
-                                    }
-
-                                    if (next !== currentIndex) {
-                                      sortOptionRefs.current[next]?.focus();
-                                    }
-
-                                    if (event.key === 'Enter' || event.key === ' ') {
-                                      event.preventDefault();
-                                      handleSortSelect(option.id);
-                                    }
-                                  }}
-                                >
-                                  <div className="flex flex-col items-start gap-1">
-                                    <span>{option.label}</span>
-                                    <span className="text-xs text-neutral-500">{option.description}</span>
-                                  </div>
-                                </button>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-              </div>
-
-              <FilterSummaryBar
-                items={filterSummaryItems}
-                onClearAll={handleResetFilters}
-              />
-            </div>
-
-            <VirtualizedProductGrid
-              products={filteredProducts}
-              ratingThreshold={ratingFilter.minimum_rating}
-              isFiltering={isFiltering}
-            />
-          </section>
-        </section>
-      </main>
-
-      {isFilterSheetOpen ? (
-        <div
-          id="mobile-filter-sheet"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Filters"
-          className="fixed inset-0 z-40 flex items-end bg-neutral-900/40 backdrop-blur-sm lg:hidden"
-          onClick={() => setIsFilterSheetOpen(false)}
-        >
-          <div
-            className="max-h-[85vh] w-full rounded-t-3xl bg-white shadow-soft"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <FilterPanel
-              priceRange={priceRange}
-              priceSelection={priceSelection}
-              setPriceSelection={setPriceSelection}
-              ratingFilter={ratingFilter}
-              brandFilters={brandFilters}
-              selectedBrands={selectedBrands}
-              onBrandToggle={handleBrandToggle}
-              onBrandsReset={handleClearBrands}
-              deliveryOptions={deliveryOptions}
-              onDeliveryToggle={handleDeliveryToggle}
-              onReset={handleResetFilters}
-              onFilterChange={triggerFilteringFeedback}
-              initialFilters={defaultFilters}
-              variant="modal"
-              activeCount={activeFilterCount}
-              onClose={() => setIsFilterSheetOpen(false)}
-              onApply={() => setIsFilterSheetOpen(false)}
-            />
-          </div>
-        </div>
-      ) : null}
+      <div className="mt-4 flex items-center gap-2">
+        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${palette.bg} ${palette.text}`}>
+          <palette.icon className="h-3.5 w-3.5" aria-hidden="true" />
+          {metric.change > 0 ? `+${metric.change.toFixed(1)}%` : `${metric.change.toFixed(1)}%`}
+        </span>
+        <span className="text-sm text-slate-500">{metric.description}</span>
+      </div>
     </div>
   );
 }
 
-type VirtualizedProductGridProps = {
-  products: Product[];
-  ratingThreshold: number;
-  isFiltering: boolean;
-};
+function ChartCard({ chart }: { chart: ChartConfig }) {
+  const tooltipFormatter = (value: unknown) =>
+    typeof value === 'number' ? value.toLocaleString() : value;
 
-function VirtualizedProductGrid({ products, ratingThreshold, isFiltering }: VirtualizedProductGridProps) {
-  const shouldVirtualize = products.length > 20;
-  const [visibleCount, setVisibleCount] = useState(
-    shouldVirtualize ? Math.min(20, products.length) : products.length,
-  );
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
-
-  const productSignature = useMemo(() => products.map((product) => product.id).join('|'), [products]);
-
-  useEffect(() => {
-    if (!shouldVirtualize) {
-      setVisibleCount(products.length);
-      return;
-    }
-
-    setVisibleCount(Math.min(20, products.length));
-  }, [productSignature, products.length, shouldVirtualize]);
-
-  useEffect(() => {
-    if (!shouldVirtualize) return;
-
-    const sentinel = loadMoreRef.current;
-    if (!sentinel) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setVisibleCount((current) => {
-              if (current >= products.length) return current;
-              return Math.min(current + 12, products.length);
-            });
-          }
-        });
-      },
-      { rootMargin: '200px 0px' },
-    );
-
-    observer.observe(sentinel);
-    return () => {
-      observer.disconnect();
-    };
-  }, [products.length, shouldVirtualize]);
-
-  const visibleProducts = useMemo(
-    () => (shouldVirtualize ? products.slice(0, visibleCount) : products),
-    [products, shouldVirtualize, visibleCount],
-  );
-
-  return (
-    <div className="relative">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-        {visibleProducts.map((product, index) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            ratingThreshold={ratingThreshold}
-            index={index}
-            isFiltering={isFiltering}
+  const renderCartesian = () => (
+    <ResponsiveContainer width="100%" height={260}>
+      <BarChart data={(chart as Exclude<ChartConfig, DonutChartConfig>).data}>
+        <CartesianGrid strokeDasharray="3 3" className="stroke-indigo-100/60" />
+        <XAxis dataKey={(chart as Exclude<ChartConfig, DonutChartConfig>).xKey} tickLine={false} axisLine={false} />
+        <YAxis tickFormatter={formatTick} tickLine={false} axisLine={false} />
+        <Tooltip formatter={tooltipFormatter} cursor={{ fill: 'rgba(99,102,241,0.08)' }} />
+        <Legend wrapperStyle={{ paddingTop: 12 }} />
+        {(chart as Exclude<ChartConfig, DonutChartConfig>).series.map((series) => (
+          <Bar
+            key={series.id}
+            dataKey={series.dataKey}
+            name={series.name}
+            fill={series.color}
+            stackId={chart.type === 'stacked-bar' ? series.stackId ?? 'stack' : undefined}
+            radius={chart.type === 'bar' || chart.type === 'stacked-bar' ? [12, 12, 12, 12] : undefined}
           />
         ))}
+      </BarChart>
+    </ResponsiveContainer>
+  );
+
+  const renderLine = () => (
+    <ResponsiveContainer width="100%" height={260}>
+      <LineChart data={(chart as Exclude<ChartConfig, DonutChartConfig>).data}>
+        <CartesianGrid strokeDasharray="3 3" className="stroke-indigo-100/60" />
+        <XAxis dataKey={(chart as Exclude<ChartConfig, DonutChartConfig>).xKey} tickLine={false} axisLine={false} />
+        <YAxis tickFormatter={formatTick} tickLine={false} axisLine={false} />
+        <Tooltip formatter={tooltipFormatter} cursor={{ stroke: 'rgba(79,70,229,0.28)' }} />
+        <Legend wrapperStyle={{ paddingTop: 12 }} />
+        {(chart as Exclude<ChartConfig, DonutChartConfig>).series.map((series) => (
+          <Line
+            key={series.id}
+            type="monotone"
+            dataKey={series.dataKey}
+            name={series.name}
+            stroke={series.color}
+            strokeWidth={2.6}
+            dot={{ r: 3.2 }}
+            activeDot={{ r: 4.2 }}
+          />
+        ))}
+      </LineChart>
+    </ResponsiveContainer>
+  );
+
+  const renderDonut = () => (
+    <ResponsiveContainer width="100%" height={260}>
+      <PieChart>
+        <Tooltip formatter={tooltipFormatter} />
+        <Pie
+          data={(chart as DonutChartConfig).data}
+          innerRadius={70}
+          outerRadius={100}
+          paddingAngle={6}
+          dataKey="value"
+        >
+          {(chart as DonutChartConfig).data.map((entry) => (
+            <Cell key={entry.name} fill={entry.color ?? '#4f46e5'} />
+          ))}
+        </Pie>
+        <Legend layout="vertical" align="right" verticalAlign="middle" />
+      </PieChart>
+    </ResponsiveContainer>
+  );
+
+  let visualization: JSX.Element;
+  if (chart.type === 'donut') {
+    visualization = renderDonut();
+  } else if (chart.type === 'line') {
+    visualization = renderLine();
+  } else {
+    visualization = renderCartesian();
+  }
+
+  return (
+    <section className={`${chartCardClass} p-6`}>
+      <div className="mb-4 flex items-start justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">{chart.title}</h3>
+          <p className="mt-1 text-sm text-slate-500">{chart.description}</p>
+        </div>
+        <span className={badgeClass}>{chart.type === 'donut' ? 'Distribution' : 'Performance'}</span>
       </div>
-      {shouldVirtualize ? (
-        <div ref={loadMoreRef} className="h-2 w-full" aria-hidden="true" />
-      ) : null}
-      {isFiltering ? (
-        <ProductGridSkeleton count={Math.max(visibleProducts.length, 3)} />
-      ) : null}
-    </div>
+      <div className="h-64">{visualization}</div>
+    </section>
   );
 }
 
-function FilterPanel({
-  priceRange,
-  priceSelection,
-  setPriceSelection,
-  ratingFilter,
-  brandFilters,
-  selectedBrands,
-  onBrandToggle,
-  onBrandsReset,
-  deliveryOptions,
-  onDeliveryToggle,
-  onReset,
-  onFilterChange,
-  initialFilters,
-  variant = 'desktop',
-  activeCount,
-  onClose,
-  onApply,
-}: {
-  priceRange: PriceRange;
-  priceSelection: [number, number];
-  setPriceSelection: React.Dispatch<React.SetStateAction<[number, number]>>;
-  ratingFilter: RatingFilter;
-  brandFilters: BrandFilter[];
-  selectedBrands: string[];
-  onBrandToggle: (brandId: string) => void;
-  onBrandsReset: () => void;
-  deliveryOptions: DeliveryOption[];
-  onDeliveryToggle: (optionId: string) => void;
-  onReset: () => void;
-  onFilterChange: () => void;
-  initialFilters: { price: [number, number]; brands: string[]; delivery: string | null } | null;
-  variant?: 'desktop' | 'modal';
-  activeCount: number;
-  onClose?: () => void;
-  onApply?: () => void;
-}) {
-  const [showAllBrands, setShowAllBrands] = useState(false);
-  const [openSections, setOpenSections] = useState({
-    price: true,
-    rating: true,
-    brand: true,
-    delivery: true,
-  });
-  const isDesktop = variant === 'desktop';
+function HeatmapCard({ heatmap }: { heatmap: HeatmapConfig }) {
+  const flat = heatmap.values.flat();
+  const max = Math.max(...flat);
 
-  const priceSpan = Math.max(priceRange.maximum - priceRange.minimum, 1);
-  const minPercent = ((priceSelection[0] - priceRange.minimum) / priceSpan) * 100;
-  const maxPercent = ((priceSelection[1] - priceRange.minimum) / priceSpan) * 100;
-  const clampedMinPercent = Math.min(100, Math.max(0, minPercent));
-  const clampedMaxPercent = Math.min(100, Math.max(0, maxPercent));
+  return (
+    <section className={`${chartCardClass} p-6`}>
+      <div className="mb-4 flex items-start justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">{heatmap.title}</h3>
+          <p className="mt-1 text-sm text-slate-500">{heatmap.description}</p>
+        </div>
+        <span className={badgeClass}>Heatmap</span>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-separate border-spacing-2">
+          <thead>
+            <tr>
+              <th className="w-16 text-left text-xs font-medium uppercase tracking-wide text-slate-500">&nbsp;</th>
+              {heatmap.hours.map((hour) => (
+                <th key={hour} className="text-center text-xs font-semibold text-slate-500">
+                  {hour}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {heatmap.days.map((day, rowIndex) => (
+              <tr key={day}>
+                <th className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">{day}</th>
+                {heatmap.values[rowIndex].map((value, columnIndex) => {
+                  const intensity = value / max;
+                  const background = `rgba(79,70,229,${0.15 + intensity * 0.55})`;
+                  return (
+                    <td key={`${day}-${columnIndex}`}>
+                      <div
+                        className="flex h-12 w-12 items-center justify-center rounded-2xl text-xs font-semibold text-indigo-900"
+                        style={{ background }}
+                      >
+                        {value}
+                      </div>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
 
-  const defaultSelectedBrandIds = useMemo(() => {
-    if (initialFilters?.brands) {
-      return initialFilters.brands;
-    }
-    return brandFilters.filter((brand) => brand.checked).map((brand) => brand.id);
-  }, [initialFilters, brandFilters]);
+function FunnelCard({ stages }: { stages: FunnelStage[] }) {
+  const max = Math.max(...stages.map((stage) => stage.value));
 
-  const displayedBrands = showAllBrands ? brandFilters : brandFilters.slice(0, 7);
-  const hasAdditionalBrands = brandFilters.length > displayedBrands.length;
+  return (
+    <section className={`${chartCardClass} p-6`}>
+      <div className="mb-4 flex items-start justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">Conversion Funnel</h3>
+          <p className="mt-1 text-sm text-slate-500">Track progression from awareness through closed revenue.</p>
+        </div>
+        <span className={badgeClass}>Funnel</span>
+      </div>
+      <ol className="space-y-3">
+        {stages.map((stage, index) => (
+          <li key={stage.id} className="space-y-2">
+            <div className="flex items-center justify-between text-sm text-slate-500">
+              <span className="font-medium text-slate-700">{stage.label}</span>
+              <span className="text-slate-500">{stage.value.toLocaleString()} · {stage.conversion}</span>
+            </div>
+            <div className="h-3 rounded-full bg-indigo-100">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-sky-500 to-emerald-400"
+                style={{ width: `${(stage.value / max) * 100}%` }}
+              />
+            </div>
+            <div className="text-xs text-slate-400">Stage {index + 1}</div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
 
-  const appliedBrandIds = selectedBrands.length === 0 ? defaultSelectedBrandIds : selectedBrands;
-  const brandBadge = appliedBrandIds.length > 0 ? String(appliedBrandIds.length) : null;
-  const priceBadge = initialFilters
-    ? priceSelection[0] !== initialFilters.price[0] || priceSelection[1] !== initialFilters.price[1]
-      ? '1'
-      : null
-    : null;
-  const activeDeliveryId = deliveryOptions.find((option) => option.active)?.id ?? null;
-  const deliveryBadge = initialFilters && activeDeliveryId && activeDeliveryId !== initialFilters.delivery ? '1' : null;
+function LeaderboardCard({ board }: { board: LeaderboardConfig }) {
+  return (
+    <section className={`${chartCardClass} p-6`}>
+      <div className="mb-4 flex items-start justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">{board.title}</h3>
+          <p className="mt-1 text-sm text-slate-500">{board.description}</p>
+        </div>
+        <span className={badgeClass}>Leaderboard</span>
+      </div>
+      <div className="space-y-4">
+        {board.rows.map((row) => {
+          const trendPalette = row.trend ? TREND_VARIANTS[row.trend] : undefined;
+          return (
+            <div
+              key={row.id}
+              className="flex items-center justify-between rounded-2xl border border-indigo-100/60 bg-indigo-50/40 p-4"
+            >
+              <div>
+                <p className="text-sm font-semibold text-slate-800">{row.label}</p>
+                {row.sublabel ? <p className="text-xs text-slate-500">{row.sublabel}</p> : null}
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-semibold text-slate-700">{row.value}</p>
+                {trendPalette && typeof row.change === 'number' ? (
+                  <span className={`inline-flex items-center gap-1 text-xs font-medium ${trendPalette.text}`}>
+                    <trendPalette.icon className="h-3 w-3" />
+                    {row.change > 0 ? `+${row.change.toFixed(1)}%` : `${row.change.toFixed(1)}%`}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
 
-  const formattedAverage = formatCurrency(priceRange.average, priceRange.currency);
-  const formattedMin = formatCurrency(priceSelection[0], priceRange.currency);
-  const formattedMax = formatCurrency(priceSelection[1], priceRange.currency);
+function DataTable({ table }: { table: TableDefinition }) {
+  return (
+    <section className={`${chartCardClass} overflow-hidden`}>
+      <div className="flex items-start justify-between border-b border-indigo-100/60 px-6 py-5">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">{table.title}</h3>
+          <p className="mt-1 text-sm text-slate-500">{table.description}</p>
+        </div>
+        <span className={badgeClass}>Table</span>
+      </div>
+      <div className="overflow-x-auto px-6 pb-4">
+        <table className="min-w-full text-left">
+          <thead>
+            <tr className="text-xs uppercase tracking-wide text-slate-500">
+              {table.columns.map((column) => (
+                <th key={column.id} className="py-3 pr-4 font-semibold">
+                  {column.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {table.rows.map((row, rowIndex) => (
+              <tr
+                key={row.id}
+                className={`text-sm text-slate-600 ${rowIndex % 2 === 0 ? 'bg-white/80' : 'bg-indigo-50/40'}`}
+              >
+                {row.cells.map((cell, cellIndex) => (
+                  <td key={`${row.id}-${cellIndex}`} className="py-3 pr-4 font-medium text-slate-700">
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
 
-  const containerClasses =
-    variant === 'desktop'
-      ? 'flex flex-col gap-4 rounded-[32px] bg-white p-6 shadow-soft ring-1 ring-indigo-100/70 lg:sticky lg:top-24'
-      : 'flex h-full flex-col overflow-hidden rounded-t-3xl bg-white p-4 shadow-soft';
+type FormCardProps = {
+  categoryId: string;
+  formId: string;
+  title: string;
+  description: string;
+  cta: string;
+  fields: PortfolioCategory['forms'][number]['fields'];
+  onSubmit: (formId: string) => void;
+  submittedAt?: string;
+  toggleValues: Record<string, boolean>;
+  onToggleChange: (key: string) => void;
+};
 
-  const scrollAreaClasses = variant === 'desktop' ? 'space-y-4' : 'flex-1 space-y-4 overflow-y-auto pr-1';
-
-  const toggleSection = (section: keyof typeof openSections) => {
-    setOpenSections((current) => ({ ...current, [section]: !current[section] }));
+function FormCard({
+  categoryId,
+  formId,
+  title,
+  description,
+  cta,
+  fields,
+  onSubmit,
+  submittedAt,
+  toggleValues,
+  onToggleChange,
+}: FormCardProps) {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    onSubmit(formId);
   };
 
   return (
-    <div className={containerClasses}>
-      {variant === 'desktop' ? (
-        <header className="flex items-center justify-between gap-3">
+    <section className={`${chartCardClass} p-6`}> 
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
+          <p className="mt-1 text-sm text-slate-500">{description}</p>
+        </div>
+        <span className={badgeClass}>Automation Form</span>
+      </div>
+      <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
+        {fields.map((field) => {
+          const fieldKey = `${categoryId}-${formId}-${field.id}`;
+          if (field.type === 'toggle') {
+            const toggled = toggleValues[fieldKey] ?? false;
+            return (
+              <div key={field.id} className="flex items-center justify-between rounded-2xl bg-indigo-50/60 px-4 py-3">
+                <label className="text-sm font-medium text-slate-700" htmlFor={fieldKey}>
+                  {field.label}
+                </label>
+                <button
+                  type="button"
+                  id={fieldKey}
+                  className={`relative inline-flex h-7 w-14 items-center rounded-full transition-all duration-200 ${
+                    toggled ? 'bg-indigo-500' : 'bg-slate-300'
+                  }`}
+                  onClick={() => onToggleChange(fieldKey)}
+                  aria-pressed={toggled}
+                >
+                  <span
+                    className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition ${
+                      toggled ? 'translate-x-7' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+                <input type="hidden" name={field.id} value={toggled ? 'on' : 'off'} />
+              </div>
+            );
+          }
+
+          if (field.type === 'select') {
+            return (
+              <div key={field.id} className="space-y-1.5">
+                <label className="text-sm font-medium text-slate-700" htmlFor={fieldKey}>
+                  {field.label}
+                </label>
+                <select
+                  id={fieldKey}
+                  name={field.id}
+                  className="w-full rounded-2xl border border-indigo-100/80 bg-white px-4 py-3 text-sm text-slate-700 shadow-inner focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                >
+                  {field.options?.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            );
+          }
+
+          return (
+            <div key={field.id} className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700" htmlFor={fieldKey}>
+                {field.label}
+              </label>
+              <input
+                id={fieldKey}
+                name={field.id}
+                type={field.type}
+                placeholder={field.placeholder}
+                className="w-full rounded-2xl border border-indigo-100/80 bg-white px-4 py-3 text-sm text-slate-700 shadow-inner focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                required={field.type !== 'datetime-local'}
+              />
+            </div>
+          );
+        })}
+        <button
+          type="submit"
+          className="w-full rounded-2xl bg-gradient-to-r from-indigo-500 to-sky-500 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:from-indigo-600 hover:to-sky-600"
+        >
+          {cta}
+        </button>
+        {submittedAt ? (
+          <p className="text-xs text-slate-500">Last submitted · {submittedAt}</p>
+        ) : (
+          <p className="text-xs text-slate-400">Submission saves workflow configuration locally.</p>
+        )}
+      </form>
+    </section>
+  );
+}
+
+function AutomationJobCard({ job, onOpenWorkflow }: { job: AutomationJob; onOpenWorkflow: () => void }) {
+  const statusStyles: Record<AutomationJob['status'], { label: string; className: string }> = {
+    active: { label: 'Active', className: 'bg-emerald-50 text-emerald-600 border border-emerald-100' },
+    paused: { label: 'Paused', className: 'bg-amber-50 text-amber-600 border border-amber-100' },
+    draft: { label: 'Draft', className: 'bg-indigo-50 text-indigo-600 border border-indigo-100' },
+  };
+
+  const palette = statusStyles[job.status];
+
+  return (
+    <article className={`${chartCardClass} p-5`}> 
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h4 className="text-base font-semibold text-slate-900">{job.title}</h4>
+          <p className="mt-1 text-sm text-slate-500">Owner · {job.owner}</p>
+        </div>
+        <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${palette.className}`}>
+          {palette.label}
+        </span>
+      </div>
+      <dl className="mt-4 space-y-2 text-sm text-slate-600">
+        <div className="flex gap-2">
+          <dt className="w-24 font-medium text-slate-500">Cadence</dt>
+          <dd className="flex-1">{job.cadence}</dd>
+        </div>
+        <div className="flex gap-2">
+          <dt className="w-24 font-medium text-slate-500">Trigger</dt>
+          <dd className="flex-1">{job.trigger}</dd>
+        </div>
+        <div className="flex gap-2">
+          <dt className="w-24 font-medium text-slate-500">Actions</dt>
+          <dd className="flex-1 space-y-1">
+            {job.actions.map((action, index) => (
+              <div key={`${job.id}-action-${index}`} className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-indigo-400" />
+                {action}
+              </div>
+            ))}
+          </dd>
+        </div>
+      </dl>
+      <button
+        type="button"
+        onClick={onOpenWorkflow}
+        className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 transition hover:text-indigo-700"
+      >
+        View workflow blueprint
+        <ArrowUpRight className="h-4 w-4" />
+      </button>
+    </article>
+  );
+}
+
+function WorkflowModal({ selection, onClose }: { selection: SelectedWorkflow; onClose: () => void }) {
+  const { category, workflow } = selection;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative z-10 w-full max-w-3xl rounded-3xl border border-indigo-100/80 bg-white/95 p-8 shadow-[0_24px_80px_rgba(15,23,42,0.24)]">
+        <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-neutral-900">Filters</h2>
-            <p className="text-xs text-neutral-500">
-              {activeCount ? `${activeCount} active filter${activeCount > 1 ? 's' : ''}` : 'Refine product results'}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onReset}
-            className="text-sm font-semibold text-primary transition hover:text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-          >
-            Reset
-          </button>
-        </header>
-      ) : (
-        <header className="flex items-center justify-between gap-3 pb-2">
-          <div>
-            <h2 className="text-lg font-semibold text-neutral-900">Filters</h2>
-            <p className="text-xs text-neutral-500">
-              {activeCount ? `${activeCount} active filter${activeCount > 1 ? 's' : ''}` : 'Refine product results'}
-            </p>
+            <p className="text-xs uppercase tracking-[0.3em] text-indigo-400">Workflow Blueprint</p>
+            <h3 className="mt-2 text-2xl font-semibold text-slate-900">{workflow.title}</h3>
+            <p className="mt-2 text-sm text-slate-500">{workflow.description}</p>
+            <p className="mt-3 text-xs font-medium uppercase tracking-wide text-indigo-500">{category.name}</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-indigo-100/70 text-neutral-500 transition hover:text-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
-            aria-label="Close filters"
+            className="rounded-full border border-slate-200 bg-white p-2 text-slate-500 transition hover:text-slate-700"
+            aria-label="Close modal"
           >
-            <X className="h-4 w-4" />
-          </button>
-        </header>
-      )}
-
-      <div className={scrollAreaClasses}>
-        <section className="rounded-3xl border border-indigo-100/70 bg-white p-5 shadow-soft">
-          <button
-            type="button"
-            className="flex w-full items-center justify-between gap-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-            id="filter-price-header"
-            aria-expanded={openSections.price}
-            aria-controls="filter-price-content"
-            onClick={() => toggleSection('price')}
-          >
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-neutral-900">Price Range</span>
-              <span className="text-xs text-neutral-500">Average price {formattedAverage}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              {priceBadge ? (
-                <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
-                  {priceBadge}
-                </span>
-              ) : null}
-              <ChevronDown className={`h-4 w-4 transition-transform ${openSections.price ? 'rotate-180 text-primary' : 'text-neutral-400'}`} />
-            </div>
-          </button>
-          <div
-            id="filter-price-content"
-            role="region"
-            aria-labelledby="filter-price-header"
-            className={openSections.price ? 'mt-4 space-y-4' : 'mt-4 space-y-4 hidden'}
-          >
-            <div className="rounded-3xl border border-indigo-100/70 bg-white/90 p-5 shadow-inner">
-              <div className="relative h-16">
-                <div className="absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-indigo-100" />
-                <div
-                  className="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-gradient-to-r from-primary via-secondary to-primary"
-                  style={{
-                    left: `${Math.min(clampedMinPercent, clampedMaxPercent)}%`,
-                    right: `${100 - Math.max(clampedMinPercent, clampedMaxPercent)}%`,
-                  }}
-                />
-                <span
-                  className="absolute top-0 inline-flex -translate-y-full -translate-x-1/2 items-center gap-1 rounded-full bg-neutral-900 px-3 py-1 text-xs font-semibold text-white shadow-[0_10px_25px_-15px_rgba(15,23,42,0.9)]"
-                  style={{ left: `${clampedMinPercent}%` }}
-                >
-                  {formattedMin}
-                </span>
-                <span
-                  className="absolute top-0 inline-flex -translate-y-full -translate-x-1/2 items-center gap-1 rounded-full bg-neutral-900 px-3 py-1 text-xs font-semibold text-white shadow-[0_10px_25px_-15px_rgba(15,23,42,0.9)]"
-                  style={{ left: `${clampedMaxPercent}%` }}
-                >
-                  {formattedMax}
-                </span>
-                <input
-                  type="range"
-                  min={priceRange.minimum}
-                  max={priceRange.maximum}
-                  value={priceSelection[0]}
-                  onChange={(event) => {
-                    const value = Number(event.target.value);
-                    setPriceSelection(([currentMin, currentMax]) => {
-                      const requested = Math.min(value, currentMax - 10);
-                      return [Math.max(requested, priceRange.minimum), currentMax];
-                    });
-                    onFilterChange();
-                  }}
-                  className="absolute inset-0 z-10 h-full w-full appearance-none bg-transparent focus:outline-none focus-visible:outline-none [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-secondary [&::-moz-range-track]:bg-transparent [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:-mt-[6px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-secondary"
-                  aria-label="Minimum price"
-                />
-                <input
-                  type="range"
-                  min={priceRange.minimum}
-                  max={priceRange.maximum}
-                  value={priceSelection[1]}
-                  onChange={(event) => {
-                    const value = Number(event.target.value);
-                    setPriceSelection(([currentMin, currentMax]) => {
-                      const requested = Math.max(value, currentMin + 10);
-                      return [currentMin, Math.min(requested, priceRange.maximum)];
-                    });
-                    onFilterChange();
-                  }}
-                  className="absolute inset-0 z-20 h-full w-full appearance-none bg-transparent focus:outline-none focus-visible:outline-none [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-secondary [&::-moz-range-track]:bg-transparent [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:-mt-[6px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-secondary"
-                  aria-label="Maximum price"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="rounded-3xl border border-indigo-100/70 bg-white p-5 shadow-soft">
-          <button
-            type="button"
-            className="flex w-full items-center justify-between gap-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-            id="filter-rating-header"
-            aria-expanded={openSections.rating}
-            aria-controls="filter-rating-content"
-            onClick={() => toggleSection('rating')}
-          >
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-neutral-900">Star Rating</span>
-              <span className="text-xs text-neutral-500">{ratingFilter.label}</span>
-            </div>
-            <ChevronDown className={`h-4 w-4 transition-transform ${openSections.rating ? 'rotate-180 text-primary' : 'text-neutral-400'}`} />
-          </button>
-          <div
-            id="filter-rating-content"
-            role="region"
-            aria-labelledby="filter-rating-header"
-            className={openSections.rating ? 'mt-4' : 'mt-4 hidden'}
-          >
-            <div className="flex items-center gap-1 text-amber-400">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Star
-                  key={String(index)}
-                  className={`h-5 w-5 ${index < Math.round(ratingFilter.minimum_rating) ? 'fill-current text-amber-400' : 'text-neutral-200'}`}
-                  aria-hidden="true"
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="rounded-3xl border border-indigo-100/70 bg-white p-5 shadow-soft">
-          <button
-            type="button"
-            className="flex w-full items-center justify-between gap-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-            id="filter-brand-header"
-            aria-expanded={openSections.brand}
-            aria-controls="filter-brand-content"
-            onClick={() => toggleSection('brand')}
-          >
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-neutral-900">Brand</span>
-              <span className="text-xs text-neutral-500">
-                {appliedBrandIds.length ? `${appliedBrandIds.length} selected` : 'Select preferred brands'}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              {brandBadge ? (
-                <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
-                  {brandBadge}
-                </span>
-              ) : null}
-              <ChevronDown className={`h-4 w-4 transition-transform ${openSections.brand ? 'rotate-180 text-primary' : 'text-neutral-400'}`} />
-            </div>
-          </button>
-          <div
-            id="filter-brand-content"
-            role="region"
-            aria-labelledby="filter-brand-header"
-            className={openSections.brand ? 'mt-4 space-y-3' : 'mt-4 space-y-3 hidden'}
-          >
-            {displayedBrands.map((brand) => {
-              const checked = selectedBrands.length === 0
-                ? brand.checked
-                : selectedBrands.includes(brand.id);
-              const initial = brand.name.charAt(0).toUpperCase();
-
-              return (
-                <label
-                  key={brand.id}
-                  className={`group flex items-center justify-between gap-3 rounded-2xl px-3 py-2 shadow-sm ring-1 transition hover:ring-primary/60 ${
-                    checked
-                      ? 'bg-primary/10 ring-primary/50'
-                      : 'bg-white/95 ring-indigo-100/70'
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => onBrandToggle(brand.id)}
-                    className="peer sr-only"
-                    aria-label={`Filter by ${brand.name}`}
-                  />
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-primary shadow-inner">
-                      {initial}
-                    </span>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-semibold text-neutral-800 group-hover:text-neutral-900">
-                        {brand.name}
-                      </span>
-                      <span className="text-[11px] font-medium text-neutral-400">{brand.product_count} items</span>
-                    </div>
-                  </div>
-                  <span
-                    className={`flex h-7 w-7 items-center justify-center rounded-2xl border text-transparent transition group-hover:border-primary/40 ${
-                      checked
-                        ? 'border-secondary bg-secondary text-white'
-                        : 'border-indigo-200 bg-white'
-                    }`}
-                  >
-                    <Check className="h-3.5 w-3.5" />
-                  </span>
-                </label>
-              );
-            })}
-
-            {hasAdditionalBrands ? (
-              <button
-                type="button"
-                onClick={() => setShowAllBrands((current) => !current)}
-                className="text-sm font-semibold text-primary transition hover:text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-              >
-                {showAllBrands ? 'Show fewer brands' : 'Show more brands'}
-              </button>
-            ) : null}
-
-            <button
-              type="button"
-              onClick={onBrandsReset}
-              className="inline-flex items-center gap-2 text-xs font-semibold text-primary transition hover:text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-            >
-              Reset brands
-            </button>
-          </div>
-        </section>
-
-        <section className="rounded-3xl border border-indigo-100/70 bg-white p-5 shadow-soft">
-          <button
-            type="button"
-            className="flex w-full items-center justify-between gap-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-            id="filter-delivery-header"
-            aria-expanded={openSections.delivery}
-            aria-controls="filter-delivery-content"
-            onClick={() => toggleSection('delivery')}
-          >
-            <span className="text-sm font-semibold text-neutral-900">Delivery Options</span>
-            <div className="flex items-center gap-2">
-              {deliveryBadge ? (
-                <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
-                  {deliveryBadge}
-                </span>
-              ) : null}
-              <ChevronDown className={`h-4 w-4 transition-transform ${openSections.delivery ? 'rotate-180 text-primary' : 'text-neutral-400'}`} />
-            </div>
-          </button>
-          <div
-            id="filter-delivery-content"
-            role="region"
-            aria-labelledby="filter-delivery-header"
-            className={openSections.delivery ? 'mt-4 flex flex-wrap gap-3' : 'mt-4 hidden'}
-          >
-            {deliveryOptions.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => onDeliveryToggle(option.id)}
-                className={`inline-flex min-w-[120px] items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary/40 ${
-                  option.active
-                    ? 'bg-primary text-white shadow-soft'
-                    : 'bg-indigo-50/60 text-neutral-600 hover:bg-indigo-100 hover:text-primary'
-                }`}
-                aria-pressed={option.active}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </section>
-      </div>
-
-      {variant === 'desktop' ? null : (
-        <div className="mt-4 flex items-center justify-between gap-3 border-t border-indigo-100/70 pt-4">
-          <button
-            type="button"
-            onClick={onReset}
-            className="text-sm font-semibold text-neutral-600 transition hover:text-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
-          >
-            Clear all
-          </button>
-          <button
-            type="button"
-            onClick={onApply}
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:shadow-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-          >
-            Show results
+            <X className="h-5 w-5" />
           </button>
         </div>
-      )}
+        <ol className="mt-6 space-y-4">
+          {workflow.steps.map((step, index) => (
+            <li key={step.id} className="flex gap-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-500/15 text-sm font-semibold text-indigo-600">
+                {index + 1}
+              </div>
+              <div className="flex-1 rounded-2xl border border-indigo-100/70 bg-indigo-50/40 p-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold text-slate-800">{step.name}</p>
+                  <span className="text-xs font-medium uppercase tracking-wide text-indigo-500">{step.owner}</span>
+                </div>
+                <p className="mt-1 text-sm text-slate-600">{step.detail}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <div className="mt-6 flex justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-2xl border border-indigo-200 px-5 py-2 text-sm font-semibold text-indigo-600 transition hover:border-indigo-300 hover:text-indigo-700"
+          >
+            Close blueprint
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
 
-type FilterSummaryItem = {
-  id: string;
-  label: string;
-  onClear?: () => void;
-};
+export default function DashboardClient({ initialData }: DashboardClientProps) {
+  const categories = initialData.categories;
+  const [activeCategoryId, setActiveCategoryId] = useState(categories[0]?.id ?? '');
+  const [selectedWorkflow, setSelectedWorkflow] = useState<SelectedWorkflow | null>(null);
+  const [formSubmissions, setFormSubmissions] = useState<Record<string, string>>({});
+  const [toggleValues, setToggleValues] = useState<Record<string, boolean>>({});
 
-function FilterSummaryBar({
-  items,
-  onClearAll,
-}: {
-  items: FilterSummaryItem[];
-  onClearAll: () => void;
-}) {
-  if (items.length === 0) {
+  const activeCategory = useMemo(
+    () => categories.find((category) => category.id === activeCategoryId) ?? categories[0],
+    [categories, activeCategoryId],
+  );
+
+  const handleFormSubmit = (formId: string) => {
+    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setFormSubmissions((previous) => ({ ...previous, [formId]: timestamp }));
+  };
+
+  const handleToggleChange = (key: string) => {
+    setToggleValues((previous) => ({ ...previous, [key]: !(previous[key] ?? false) }));
+  };
+
+  const openWorkflow = (workflow: WorkflowBlueprint) => {
+    if (activeCategory) {
+      setSelectedWorkflow({ category: activeCategory, workflow });
+    }
+  };
+
+  const generatedAt = useMemo(() => new Date(initialData.generatedAt).toLocaleString(), [initialData.generatedAt]);
+
+  if (!activeCategory) {
     return null;
   }
 
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-2 rounded-3xl border border-indigo-100/70 bg-white/80 p-3 shadow-soft backdrop-blur lg:sticky lg:top-24">
-      {items.map((item) => (
-        <button
-          key={item.id}
-          type="button"
-          onClick={item.onClear}
-          className="inline-flex items-center gap-2 rounded-full border border-indigo-100/70 bg-white px-3 py-1 text-xs font-semibold text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
-        >
-          <span>{item.label}</span>
-          {item.onClear ? <X className="h-3.5 w-3.5" /> : null}
-        </button>
-      ))}
-      <button
-        type="button"
-        onClick={onClearAll}
-        className="ml-auto inline-flex items-center gap-2 rounded-full border border-transparent bg-primary/10 px-3 py-1 text-xs font-semibold text-primary transition hover:bg-primary/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/40"
-      >
-        Clear all
-      </button>
-    </div>
-  );
-}
-
-function InsightsWidget({
-  spotlightMetric,
-  overviewMetrics,
-}: {
-  spotlightMetric: SpotlightMetric;
-  overviewMetrics: OverviewMetric[];
-}) {
-  const palette = TREND_PALETTE[spotlightMetric.trend] ?? TREND_PALETTE.steady;
-  const TrendIcon = palette.icon;
-
-  return (
-    <div className="rounded-3xl border border-indigo-100/70 bg-white p-6 shadow-soft">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-medium text-neutral-600">Customer insight</p>
-          <AnimatedMetricValue
-            value={spotlightMetric.value}
-            className="mt-1 block text-3xl font-semibold text-neutral-900"
-            duration={900}
-          />
-        </div>
-        <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${palette.badge} ${palette.text}`}>
-          <TrendIcon className="h-3.5 w-3.5" />
-          {formatChange(spotlightMetric.change)}
-        </span>
-      </div>
-      <p className="mt-3 text-sm text-neutral-600">{spotlightMetric.label}</p>
-      <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-0">
-        {overviewMetrics.map((metric, index) => {
-          const extraClasses = [
-            index >= 2 ? 'sm:border-t sm:border-indigo-100/60 sm:pt-5' : '',
-            index % 2 === 0 ? 'sm:pr-5' : 'sm:pl-5',
-          ]
-            .filter(Boolean)
-            .join(' ');
-
-          return <KpiCard key={metric.id} metric={metric} className={extraClasses} />;
-        })}
-      </div>
-      <button
-        type="button"
-        className="mt-6 inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-white/70 px-4 py-2 text-sm font-semibold text-secondary shadow-soft transition hover:border-secondary hover:bg-secondary/10 hover:text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary/40"
-      >
-        <SlidersHorizontal className="h-4 w-4" />
-        Personalise insights
-      </button>
-    </div>
-  );
-}
-
-const KPI_ICON_MATCHERS: { pattern: RegExp; icon: LucideIcon }[] = [
-  { pattern: /revenue|sales|order|gmv|income/i, icon: BarChart3 },
-  { pattern: /conversion|rate|performance|growth/i, icon: LineChart },
-  { pattern: /customer|client|user|retention|loyalty/i, icon: Users },
-  { pattern: /traffic|visit|view|session|engagement/i, icon: PieChart },
-];
-
-function resolveMetricIcon(metric: OverviewMetric): LucideIcon {
-  const match = KPI_ICON_MATCHERS.find(({ pattern }) => pattern.test(metric.label));
-  return match?.icon ?? BarChart3;
-}
-
-function KpiCard({ metric, className }: { metric: OverviewMetric; className?: string }) {
-  const palette = TREND_PALETTE[metric.trend] ?? TREND_PALETTE.steady;
-  const TrendIcon = palette.icon;
-  const Icon = resolveMetricIcon(metric);
-
-  return (
-    <article
-      className={`flex min-h-[184px] flex-col justify-between rounded-2xl border border-indigo-100/70 bg-white/90 p-5 shadow-soft transition-transform duration-300 ease-out hover:-translate-y-0.5 hover:shadow-glow ${className ?? ''}`}
-    >
-      <div className="flex items-start justify-between">
-        <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/10 via-primary/10 to-secondary/5 text-secondary shadow-inner">
-          <Icon className="h-5 w-5" aria-hidden="true" />
-        </span>
-        <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${palette.badge} ${palette.text}`}>
-          <TrendIcon className="h-3.5 w-3.5" />
-          {formatChange(metric.change)}
-        </span>
-      </div>
-      <div className="mt-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-neutral-600">{metric.label}</p>
-        <AnimatedMetricValue
-          value={metric.value}
-          className="mt-2 block text-xl font-semibold text-neutral-900"
-          duration={720}
-        />
-      </div>
-      <p className="mt-3 text-xs leading-relaxed text-neutral-600">{metric.description}</p>
-    </article>
-  );
-}
-
-function ProductCard({
-  product,
-  ratingThreshold,
-  index,
-  isFiltering,
-}: {
-  product: Product;
-  ratingThreshold: number;
-  index: number;
-  isFiltering: boolean;
-}) {
-  const [imgSrc, setImgSrc] = useState(product.image ?? FALLBACK_IMAGE);
-  const discount =
-    product.original_price && product.original_price > product.price
-      ? Math.round((1 - product.price / product.original_price) * 100)
-      : null;
-
-  useEffect(() => {
-    setImgSrc(product.image ?? FALLBACK_IMAGE);
-  }, [product.image]);
-
-  return (
-    <article
-      className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border border-indigo-100/70 bg-surface-alt p-5 shadow-soft transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-glow ${
-        isFiltering ? 'opacity-70' : 'opacity-100'
-      }`}
-      style={{ animationDelay: `${index * 0.12}s` }}
-      data-price={product.price}
-    >
-      <div className="relative mb-4 overflow-hidden rounded-2xl bg-accent-soft shadow-inner">
-        <div className="relative aspect-[4/3] w-full">
-          <Image
-            src={imgSrc}
-            alt={product.name}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 360px"
-            className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
-            onError={() => setImgSrc(FALLBACK_IMAGE)}
-            loading="lazy"
-          />
-        </div>
-        <button
-          type="button"
-          className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/90 text-neutral-400 shadow-soft transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
-          aria-label={product.favorite ? 'Saved to favourites' : 'Add to favourites'}
-        >
-          <Heart className={`h-4 w-4 ${product.favorite ? 'fill-primary text-primary' : ''}`} />
-        </button>
-        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-          {discount ? (
-            <Badge tone="bg-rose-100 text-rose-600">-{discount}%</Badge>
-          ) : null}
-          {product.badges.map((badge) => (
-            <Badge key={badge.id} tone={badge.tone}>
-              {badge.label}
-            </Badge>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex flex-1 flex-col">
-        <h3 className="line-clamp-2 text-lg font-semibold text-neutral-900">{product.name}</h3>
-        <div className="mt-3 flex items-baseline gap-2">
-          <p className="text-2xl font-semibold text-neutral-900">{formatCurrency(product.price, product.currency)}</p>
-          {product.original_price ? (
-            <p className="text-sm text-neutral-600 line-through">
-              {formatCurrency(product.original_price, product.currency)}
+    <div className="min-h-screen bg-[var(--color-surface)] pb-16">
+      <header className="border-b border-indigo-100/70 bg-white/80 shadow-sm backdrop-blur">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6 px-6 py-8">
+          <div>
+            <p className="text-xs uppercase tracking-[0.4em] text-indigo-400">Portfolio Showcase</p>
+            <h1 className="mt-2 text-3xl font-semibold text-slate-900">Unified Multi-Product Dashboard</h1>
+            <p className="mt-2 max-w-2xl text-sm text-slate-500">
+              Premium SaaS-inspired cockpit demonstrating analytics, automation, and workflow storytelling across seven digital
+              product categories.
             </p>
-          ) : null}
-        </div>
-
-        <div className="mt-3 flex items-center gap-2 text-sm text-neutral-600">
-          <div className="flex items-center gap-1 text-amber-400" aria-hidden="true">
-            <Star className="h-4 w-4 fill-current" />
-            <span className="font-semibold text-neutral-700">{product.rating.toFixed(1)}</span>
           </div>
-          <span aria-label={`${product.rating.toFixed(1)} stars from ${product.reviews} reviews`}>
-            ({product.reviews})
-          </span>
-          {product.rating >= ratingThreshold ? (
-            <Badge tone="bg-primary/10 text-primary">Top rated</Badge>
-          ) : null}
-        </div>
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Badge tone="bg-secondary/10 text-secondary">{product.category_id}</Badge>
-          <Badge tone="bg-primary/10 text-primary">{product.brand_id}</Badge>
-        </div>
-
-        <div className="mt-6 flex items-center gap-3">
-          <button
-            type="button"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:shadow-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-          >
-            <ShoppingCart className="h-4 w-4" />
-            Add to cart
-          </button>
-          <button
-            type="button"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-primary/40 px-4 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
-          >
-            Quick view
-          </button>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function Badge({ tone, children }: { tone: string; children: React.ReactNode }) {
-  return <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${tone}`}>{children}</span>;
-}
-
-function AnimatedMetricValue({
-  value,
-  className,
-  duration = 800,
-}: {
-  value: string;
-  className?: string;
-  duration?: number;
-}) {
-  const { prefix, suffix, numericValue, decimals, showPlus } = useMemo(() => {
-    const trimmed = value.trim();
-    const prefixMatch = trimmed.match(/^[^\d+-]*/)?.[0] ?? '';
-    const rest = trimmed.slice(prefixMatch.length);
-    const numberMatch = rest.match(/[-+]?\d*[.,]?\d*/)?.[0] ?? '';
-    const sanitizedNumber = numberMatch.replace(/,/g, '');
-    const numericValue = Number.parseFloat(sanitizedNumber);
-    const suffix = rest.slice(numberMatch.length);
-    const decimals = sanitizedNumber.includes('.')
-      ? sanitizedNumber.split('.')[1]?.length ?? 0
-      : 0;
-    const showPlus = numberMatch.trim().startsWith('+');
-    return { prefix: prefixMatch, suffix, numericValue, decimals, showPlus };
-  }, [value]);
-
-  const isNumeric = Number.isFinite(numericValue);
-  const [current, setCurrent] = useState(() => (isNumeric ? numericValue : 0));
-  const previousValueRef = useRef(isNumeric ? numericValue : 0);
-
-  useEffect(() => {
-    if (!isNumeric) return;
-
-    const startValue = previousValueRef.current;
-    const targetValue = numericValue;
-
-    if (startValue === targetValue) {
-      setCurrent(targetValue);
-      previousValueRef.current = targetValue;
-      return;
-    }
-
-    const durationMs = Math.max(duration, 0);
-    const startTime = performance.now();
-    setCurrent(startValue);
-
-    let frame: number;
-    const step = (timestamp: number) => {
-      const progress = durationMs === 0 ? 1 : Math.min((timestamp - startTime) / durationMs, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const nextValue = startValue + (targetValue - startValue) * eased;
-      setCurrent(nextValue);
-
-      if (progress < 1) {
-        frame = requestAnimationFrame(step);
-      } else {
-        previousValueRef.current = targetValue;
-      }
-    };
-
-    frame = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(frame);
-  }, [isNumeric, numericValue, duration]);
-
-  if (!isNumeric) {
-    return <span className={className}>{value}</span>;
-  }
-
-  const decimalsToDisplay = Math.min(decimals, 2);
-  const formattedNumber = current.toLocaleString('en-US', {
-    minimumFractionDigits: decimalsToDisplay,
-    maximumFractionDigits: decimalsToDisplay,
-  });
-  const withSign = showPlus && current >= 0 ? `+${formattedNumber}` : formattedNumber;
-
-  return <span className={className}>{`${prefix}${withSign}${suffix}`}</span>;
-}
-
-function ProductGridSkeleton({ count }: { count: number }) {
-  return (
-    <div className="pointer-events-none absolute inset-0 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-      {Array.from({ length: count }).map((_, index) => (
-        <div
-          key={`skeleton-${index}`}
-          className="animate-pulse rounded-3xl border border-indigo-100/60 bg-surface-alt p-5 shadow-soft"
-          aria-hidden="true"
-        >
-          <div className="mb-4 h-56 rounded-2xl bg-neutral-200/80" />
-          <div className="space-y-3">
-            <div className="h-4 w-3/4 rounded bg-neutral-200" />
-            <div className="h-6 w-1/2 rounded bg-neutral-200" />
-            <div className="h-4 w-2/3 rounded bg-neutral-200" />
+          <div className="space-y-2 text-sm text-slate-500">
+            <div className={badgeClass}>Updated · {generatedAt}</div>
+            <div className="text-xs text-slate-400">{categories.length} categories, {categories.reduce((sum, cat) => sum + cat.metrics.length, 0)} key KPIs</div>
           </div>
         </div>
-      ))}
+      </header>
+
+      <nav className="border-b border-indigo-100/70 bg-white/70 backdrop-blur-sm">
+        <div className="mx-auto max-w-7xl px-6 py-4">
+          <div className="flex flex-wrap gap-3" role="tablist" aria-label="Dashboard categories">
+            {categories.map((category) => {
+              const isActive = category.id === activeCategory.id;
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActiveCategoryId(category.id)}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                    isActive
+                      ? 'bg-gradient-to-r from-indigo-500 to-sky-500 text-white shadow-lg shadow-indigo-200'
+                      : 'border border-indigo-100/70 bg-white/70 text-slate-600 hover:border-indigo-200 hover:text-indigo-600'
+                  }`}
+                >
+                  {category.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </nav>
+
+      <main className="mx-auto mt-8 grid max-w-7xl gap-6 px-6 lg:grid-cols-12">
+        <aside className="space-y-6 lg:col-span-3">
+          <section className={`${chartCardClass} p-6`}>
+            <p className="text-xs uppercase tracking-[0.3em] text-indigo-400">Automation Summary</p>
+            <h2 className="mt-2 text-xl font-semibold text-slate-900">{activeCategory.name}</h2>
+            <p className="mt-3 text-sm text-slate-600">{activeCategory.automation.summary}</p>
+            <ul className="mt-4 space-y-3 text-sm text-slate-600">
+              {activeCategory.highlights.map((highlight, index) => (
+                <li key={`highlight-${index}`} className="flex gap-2">
+                  <span className="h-1.5 w-1.5 translate-y-2 rounded-full bg-indigo-400" />
+                  <span>{highlight}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+          <div className="space-y-4">
+            {activeCategory.automation.jobs.map((job) => {
+              const workflow = activeCategory.automation.workflows.find((wf) => wf.id === job.workflowId);
+              return (
+                <AutomationJobCard
+                  key={job.id}
+                  job={job}
+                  onOpenWorkflow={() => workflow && openWorkflow(workflow)}
+                />
+              );
+            })}
+          </div>
+        </aside>
+
+        <section className="space-y-6 lg:col-span-9">
+          <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-sky-500 p-8 text-white shadow-[0_28px_80px_rgba(79,70,229,0.28)]">
+            <div className="relative z-10 flex flex-wrap items-start justify-between gap-6">
+              <div className="max-w-xl">
+                <p className="text-xs uppercase tracking-[0.3em] text-indigo-200">{activeCategory.tagline}</p>
+                <h2 className="mt-3 text-3xl font-semibold">{activeCategory.name}</h2>
+                <p className="mt-3 text-sm text-indigo-100">{activeCategory.description}</p>
+                <div className="mt-6 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 text-sm">
+                  <span className="font-medium text-white">Hero metric</span>
+                  <span className="text-indigo-100">{activeCategory.heroMetric.label}</span>
+                </div>
+              </div>
+              <div className="rounded-3xl bg-white/15 p-6 text-center">
+                <p className="text-sm font-medium text-indigo-100">{activeCategory.heroMetric.label}</p>
+                <p className="mt-2 text-4xl font-semibold">{activeCategory.heroMetric.value}</p>
+                <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-100">
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                  {activeCategory.heroMetric.change > 0
+                    ? `+${activeCategory.heroMetric.change.toFixed(1)}%`
+                    : `${activeCategory.heroMetric.change.toFixed(1)}%`}
+                </div>
+                <p className="mt-3 text-xs text-indigo-100">{activeCategory.heroMetric.description}</p>
+              </div>
+            </div>
+            <div className="absolute right-10 top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" aria-hidden="true" />
+          </section>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {activeCategory.metrics.map((metric) => (
+              <MetricCard key={metric.id} metric={metric} />
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+            {activeCategory.charts.map((chart) => (
+              <ChartCard key={chart.id} chart={chart} />
+            ))}
+            {activeCategory.heatmap ? <HeatmapCard heatmap={activeCategory.heatmap} /> : null}
+            {activeCategory.funnel ? <FunnelCard stages={activeCategory.funnel} /> : null}
+          </div>
+
+          {activeCategory.leaderboards?.length ? (
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+              {activeCategory.leaderboards.map((board) => (
+                <LeaderboardCard key={board.id} board={board} />
+              ))}
+            </div>
+          ) : null}
+
+          {activeCategory.tables.length ? (
+            <div className="grid grid-cols-1 gap-5">
+              {activeCategory.tables.map((table) => (
+                <DataTable key={table.id} table={table} />
+              ))}
+            </div>
+          ) : null}
+
+          {activeCategory.forms.length ? (
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+              {activeCategory.forms.map((form) => (
+                <FormCard
+                  key={form.id}
+                  categoryId={activeCategory.id}
+                  formId={form.id}
+                  title={form.title}
+                  description={form.description}
+                  cta={form.cta}
+                  fields={form.fields}
+                  onSubmit={handleFormSubmit}
+                  submittedAt={formSubmissions[form.id]}
+                  toggleValues={toggleValues}
+                  onToggleChange={handleToggleChange}
+                />
+              ))}
+            </div>
+          ) : null}
+        </section>
+      </main>
+
+      {selectedWorkflow ? <WorkflowModal selection={selectedWorkflow} onClose={() => setSelectedWorkflow(null)} /> : null}
     </div>
   );
 }

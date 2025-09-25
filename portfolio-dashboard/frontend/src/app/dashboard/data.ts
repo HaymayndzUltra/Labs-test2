@@ -1,48 +1,1501 @@
 import { cache } from 'react';
-import type { EcommerceDashboardResponse } from './types';
-import { enrichDashboardPayload } from './transforms';
+import type { PortfolioDashboard } from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
-export const COMMERCE_DASHBOARD_ENDPOINT = '/api/v1/commerce-dashboard';
-const COMMERCE_DASHBOARD_URL = `${API_BASE_URL}${COMMERCE_DASHBOARD_ENDPOINT}`;
-
-type NextRequestOptions = {
-  revalidate?: number;
-  tags?: string[];
-};
-
-type CommerceDashboardFetchOptions = RequestInit & {
-  next?: NextRequestOptions;
-};
-
-export async function fetchCommerceDashboard(
-  options: CommerceDashboardFetchOptions = {},
-): Promise<EcommerceDashboardResponse> {
-  const { next, headers, ...rest } = options;
-
-  const requestInit: CommerceDashboardFetchOptions = {
-    ...rest,
-    cache: rest.cache ?? 'no-store',
-    headers: {
-      Accept: 'application/json',
-      ...(headers ?? {}),
+const portfolioDashboardData: PortfolioDashboard = {
+  generatedAt: '2025-01-08T09:32:00Z',
+  categories: [
+    {
+      id: 'saas',
+      name: 'SaaS Growth Suite',
+      tagline: 'Subscription intelligence for high-velocity teams',
+      description:
+        'Track subscription health, automate retention workflows, and surface product signals that drive net revenue retention.',
+      heroMetric: {
+        id: 'mrr',
+        label: 'Monthly Recurring Revenue',
+        value: '$182K',
+        change: 6.4,
+        trend: 'up',
+        description: 'Growth over the last 30 days across all plans.',
+        icon: 'CreditCard',
+      },
+      metrics: [
+        {
+          id: 'arr',
+          label: 'Annual Run Rate',
+          value: '$2.18M',
+          change: 11.2,
+          trend: 'up',
+          description: 'Projected annual revenue based on current MRR.',
+          icon: 'BarChart3',
+        },
+        {
+          id: 'active-users',
+          label: 'Active Accounts',
+          value: '4,932',
+          change: 3.1,
+          trend: 'up',
+          description: 'Accounts with product activity in the last 14 days.',
+          icon: 'Users',
+        },
+        {
+          id: 'api-usage',
+          label: 'API Throughput',
+          value: '18.4M calls',
+          change: 12.6,
+          trend: 'up',
+          description: 'Requests served across customer integrations this month.',
+          icon: 'Cable',
+        },
+        {
+          id: 'churn-rate',
+          label: 'Logo Churn',
+          value: '1.4%',
+          change: -0.6,
+          trend: 'down',
+          description: 'Customer churn rate over the last quarter.',
+          icon: 'ShieldCheck',
+        },
+      ],
+      highlights: [
+        'Billing orchestration runs nightly, reconciling Stripe, Chargebee, and NetSuite exports.',
+        'Usage anomaly detector alerts on API spikes over 30% within a one-hour window.',
+        'Lifecycle emails adapt content from customer health segments and product signals.',
+      ],
+      charts: [
+        {
+          id: 'saas-growth-line',
+          type: 'line',
+          title: 'MRR vs Active Accounts',
+          description: 'Monthly recurring revenue mapped against active account volume.',
+          data: [
+            { month: 'Jan', revenue: 126000, accounts: 3610 },
+            { month: 'Feb', revenue: 134500, accounts: 3740 },
+            { month: 'Mar', revenue: 141800, accounts: 3980 },
+            { month: 'Apr', revenue: 153200, accounts: 4225 },
+            { month: 'May', revenue: 168900, accounts: 4510 },
+            { month: 'Jun', revenue: 182000, accounts: 4932 },
+          ],
+          xKey: 'month',
+          series: [
+            { id: 'revenue', name: 'MRR', dataKey: 'revenue', color: '#4f46e5' },
+            { id: 'accounts', name: 'Active Accounts', dataKey: 'accounts', color: '#22d3ee' },
+          ],
+        },
+        {
+          id: 'saas-churn-donut',
+          type: 'donut',
+          title: 'Churn Composition',
+          description: 'Voluntary versus involuntary churn patterns with downgrade context.',
+          data: [
+            { name: 'Voluntary', value: 38, color: '#f97316' },
+            { name: 'Involuntary', value: 22, color: '#f43f5e' },
+            { name: 'Downgrades', value: 18, color: '#6366f1' },
+            { name: 'Contraction', value: 22, color: '#0ea5e9' },
+          ],
+        },
+        {
+          id: 'saas-api-bar',
+          type: 'bar',
+          title: 'API Consumption by Plan',
+          description: 'Request volumes segmented by subscription tier with webhook dispatch counts.',
+          data: [
+            { plan: 'Starter', requests: 2.4, webhooks: 0.6 },
+            { plan: 'Growth', requests: 6.8, webhooks: 1.8 },
+            { plan: 'Scale', requests: 9.6, webhooks: 2.4 },
+            { plan: 'Enterprise', requests: 12.2, webhooks: 3.1 },
+          ],
+          xKey: 'plan',
+          series: [
+            { id: 'requests', name: 'API Calls (M)', dataKey: 'requests', color: '#4f46e5' },
+            { id: 'webhooks', name: 'Webhook Events (M)', dataKey: 'webhooks', color: '#22c55e' },
+          ],
+        },
+      ],
+      tables: [
+        {
+          id: 'saas-api-table',
+          title: 'Top API Consumers',
+          description: 'Accounts driving the highest request volume and their retention posture.',
+          columns: [
+            { id: 'account', label: 'Account' },
+            { id: 'requests', label: 'Requests (30d)' },
+            { id: 'plan', label: 'Plan' },
+            { id: 'health', label: 'Health Score' },
+          ],
+          rows: [
+            { id: 'atlas', cells: ['Atlas Analytics', '2.1M', 'Enterprise', '96'] },
+            { id: 'bloom', cells: ['Bloom Robotics', '1.6M', 'Scale', '92'] },
+            { id: 'cloudkitchen', cells: ['CloudKitchen', '1.2M', 'Growth', '89'] },
+            { id: 'futurelab', cells: ['FutureLab', '1.1M', 'Enterprise', '95'] },
+          ],
+        },
+      ],
+      forms: [
+        {
+          id: 'saas-automation-form',
+          title: 'Launch Retention Automation',
+          description: 'Configure a workflow to re-engage customers showing declining product signals.',
+          cta: 'Activate Workflow',
+          fields: [
+            { id: 'segment', label: 'Customer Segment', type: 'select', options: ['Onboarding', 'Expansion', 'Enterprise'] },
+            { id: 'threshold', label: 'Usage Drop Threshold (%)', type: 'number', placeholder: '20' },
+            { id: 'email', label: 'Success Manager Email', type: 'email', placeholder: 'cs@domain.com' },
+            { id: 'sync', label: 'Sync to CRM', type: 'toggle' },
+          ],
+        },
+      ],
+      automation: {
+        summary:
+          'Automated billing cycles reconcile subscriptions nightly, trigger revenue recognition entries, and issue proactive churn alerts for accounts trending downward.',
+        jobs: [
+          {
+            id: 'billing-cycle',
+            title: 'Billing Cycle Close',
+            status: 'active',
+            cadence: 'Daily · 02:00 UTC',
+            trigger: 'Stripe invoice finalized',
+            actions: ['Sync ledger entries to NetSuite', 'Generate ARR snapshots', 'Notify finance on anomalies'],
+            owner: 'Finance Ops',
+            workflowId: 'wf-billing',
+          },
+          {
+            id: 'churn-alerts',
+            title: 'Churn Prediction Alerts',
+            status: 'active',
+            cadence: 'Hourly streaming job',
+            trigger: 'Health score drops below 70',
+            actions: ['Open Gainsight CTA', 'Send Slack alert to CSM', 'Schedule playbook email drip'],
+            owner: 'Lifecycle Marketing',
+            workflowId: 'wf-churn',
+          },
+          {
+            id: 'api-monitor',
+            title: 'API Spike Monitor',
+            status: 'paused',
+            cadence: 'Real-time watcher',
+            trigger: 'Traffic deviation > 30%',
+            actions: ['Throttle offending key', 'Notify platform on-call', 'Capture trace sample'],
+            owner: 'Platform SRE',
+            workflowId: 'wf-api-spike',
+          },
+        ],
+        workflows: [
+          {
+            id: 'wf-billing',
+            title: 'Billing Close Automation',
+            description: 'Ensures every invoice reconciliation completes before reporting snapshots execute.',
+            steps: [
+              { id: '1', name: 'Collect invoices', detail: 'Pull previous-day invoices from Stripe + Chargebee.', owner: 'Finance Bot' },
+              { id: '2', name: 'Reconcile subscriptions', detail: 'Match invoice line items to subscription metadata.', owner: 'Revenue Engine' },
+              { id: '3', name: 'Generate ARR rollups', detail: 'Aggregate plan ARR, net retention, expansion cohorts.', owner: 'Analytics Service' },
+              { id: '4', name: 'Notify finance', detail: 'Post summary to #finance-ops with exceptions list.', owner: 'Finance Bot' },
+            ],
+          },
+          {
+            id: 'wf-churn',
+            title: 'Predictive Churn Flow',
+            description: 'Scores accounts based on product activity and automates outreach playbooks.',
+            steps: [
+              { id: '1', name: 'Score account', detail: 'Blend product signals, NPS, and support sentiment.', owner: 'ML Service' },
+              { id: '2', name: 'Segment', detail: 'Route to risk bands with tailored playbooks.', owner: 'Lifecycle Ops' },
+              { id: '3', name: 'Trigger outreach', detail: 'Launch email + in-app messaging sequences.', owner: 'Marketing Ops' },
+              { id: '4', name: 'Follow-up task', detail: 'Create CRM task for CSM with recommended actions.', owner: 'CRM Sync' },
+            ],
+          },
+          {
+            id: 'wf-api-spike',
+            title: 'API Spike Mitigation',
+            description: 'Guards against abuse and enforces SLA adherence when usage anomalies occur.',
+            steps: [
+              { id: '1', name: 'Detect anomaly', detail: 'Streaming job compares traffic to baseline per key.', owner: 'Observability' },
+              { id: '2', name: 'Apply guardrail', detail: 'Rate-limit or sandbox offending integration.', owner: 'API Gateway' },
+              { id: '3', name: 'Notify stakeholders', detail: 'Slack + PagerDuty message with context + GraphQL trace.', owner: 'Platform SRE' },
+              { id: '4', name: 'Auto report', detail: 'Log case + attach telemetry to incident workspace.', owner: 'Incident Bot' },
+            ],
+          },
+        ],
+      },
     },
-    ...(next ? { next } : {}),
-  };
+    {
+      id: 'commerce',
+      name: 'Omni-channel Commerce',
+      tagline: 'Operational clarity for modern storefronts',
+      description:
+        'Blend catalog performance, fulfillment accuracy, and retention automations to grow lifetime value.',
+      heroMetric: {
+        id: 'gmv',
+        label: 'Gross Merchandise Volume',
+        value: '$1.46M',
+        change: 8.9,
+        trend: 'up',
+        description: 'Total revenue processed across channels this month.',
+        icon: 'ShoppingCart',
+      },
+      metrics: [
+        {
+          id: 'orders',
+          label: 'Orders Shipped',
+          value: '28,410',
+          change: 5.2,
+          trend: 'up',
+          description: 'Completed orders with successful delivery confirmation.',
+          icon: 'Package',
+        },
+        {
+          id: 'aov',
+          label: 'Average Order Value',
+          value: '$68.40',
+          change: 2.1,
+          trend: 'up',
+          description: 'Average cart value across all channels.',
+          icon: 'Wallet',
+        },
+        {
+          id: 'cart',
+          label: 'Abandoned Carts',
+          value: '1,208',
+          change: -4.5,
+          trend: 'down',
+          description: 'Dropped checkouts that triggered recovery workflows.',
+          icon: 'BellRing',
+        },
+        {
+          id: 'inventory',
+          label: 'Low Stock Alerts',
+          value: '38',
+          change: -12.0,
+          trend: 'down',
+          description: 'SKUs nearing safety stock after automation updates.',
+          icon: 'Layers',
+        },
+      ],
+      highlights: [
+        'Automated webhooks restock priority SKUs directly from supplier ERPs.',
+        'Segmented SMS flows recover 19% of abandoned carts within two hours.',
+        'Merchandising AI boosts search conversion by 23% via personalized ordering.',
+      ],
+      charts: [
+        {
+          id: 'commerce-sales-bar',
+          type: 'bar',
+          title: 'Weekly Sales by Channel',
+          description: 'Comparative revenue from direct, marketplace, and retail channels.',
+          data: [
+            { week: 'Wk 1', direct: 210, marketplace: 128, retail: 82 },
+            { week: 'Wk 2', direct: 238, marketplace: 134, retail: 96 },
+            { week: 'Wk 3', direct: 256, marketplace: 142, retail: 104 },
+            { week: 'Wk 4', direct: 278, marketplace: 158, retail: 118 },
+          ],
+          xKey: 'week',
+          series: [
+            { id: 'direct', name: 'Direct', dataKey: 'direct', color: '#4f46e5' },
+            { id: 'marketplace', name: 'Marketplace', dataKey: 'marketplace', color: '#22d3ee' },
+            { id: 'retail', name: 'Retail', dataKey: 'retail', color: '#10b981' },
+          ],
+        },
+        {
+          id: 'commerce-orders-line',
+          type: 'line',
+          title: 'Order Lifecycle Velocity',
+          description: 'Processing throughput from payment capture to delivery confirmation.',
+          data: [
+            { week: 'Wk 1', processing: 6.1, fulfillment: 4.4 },
+            { week: 'Wk 2', processing: 5.7, fulfillment: 4.1 },
+            { week: 'Wk 3', processing: 5.3, fulfillment: 3.8 },
+            { week: 'Wk 4', processing: 4.8, fulfillment: 3.5 },
+          ],
+          xKey: 'week',
+          series: [
+            { id: 'processing', name: 'Processing (hrs)', dataKey: 'processing', color: '#f97316' },
+            { id: 'fulfillment', name: 'Fulfillment (hrs)', dataKey: 'fulfillment', color: '#6366f1' },
+          ],
+        },
+        {
+          id: 'commerce-donut',
+          type: 'donut',
+          title: 'Customer Acquisition Mix',
+          description: 'Channel contribution to net-new customer cohorts.',
+          data: [
+            { name: 'Paid Social', value: 28, color: '#0ea5e9' },
+            { name: 'Email', value: 22, color: '#6366f1' },
+            { name: 'Organic Search', value: 18, color: '#22c55e' },
+            { name: 'Marketplaces', value: 16, color: '#f97316' },
+            { name: 'Retail Partnerships', value: 16, color: '#a855f7' },
+          ],
+        },
+      ],
+      leaderboards: [
+        {
+          id: 'top-products',
+          title: 'Top Performing Products',
+          description: 'Revenue leaders with conversion uplift from recommendations.',
+          columns: ['Product', 'Category', 'Revenue', 'Conversion'],
+          rows: [
+            { id: 'aurora', label: 'Aurora Lamp', sublabel: 'Home', value: '$186K · 12.8%', change: 4.1, trend: 'up' },
+            { id: 'stride', label: 'Stride Sneakers', sublabel: 'Footwear', value: '$152K · 9.4%', change: 3.3, trend: 'up' },
+            { id: 'pulse', label: 'Pulse Tracker', sublabel: 'Wearables', value: '$138K · 7.1%', change: 2.7, trend: 'up' },
+          ],
+        },
+      ],
+      tables: [
+        {
+          id: 'commerce-automation-table',
+          title: 'Fulfillment SLAs',
+          description: 'Service-level performance across fulfillment partners.',
+          columns: [
+            { id: 'partner', label: 'Partner' },
+            { id: 'orders', label: 'Orders (30d)' },
+            { id: 'sla', label: 'SLA Met' },
+            { id: 'returns', label: 'Return Rate' },
+          ],
+          rows: [
+            { id: 'shipjoy', cells: ['ShipJoy', '12,430', '98%', '2.3%'] },
+            { id: 'fulfillx', cells: ['FulfillX', '8,912', '96%', '1.8%'] },
+            { id: 'swiftpost', cells: ['SwiftPost', '6,102', '94%', '2.9%'] },
+          ],
+        },
+      ],
+      forms: [
+        {
+          id: 'commerce-recovery-form',
+          title: 'Abandoned Cart Journey',
+          description: 'Fine-tune the multi-channel recovery series for dormant carts.',
+          cta: 'Update Journey',
+          fields: [
+            { id: 'delay', label: 'Initial Reminder Delay (min)', type: 'number', placeholder: '45' },
+            { id: 'channel', label: 'Reminder Channel', type: 'select', options: ['Email + SMS', 'Email only', 'Push notification'] },
+            { id: 'incentive', label: 'Offer Incentive', type: 'toggle' },
+            { id: 'owner', label: 'Workflow Owner Email', type: 'email', placeholder: 'ops@brand.com' },
+          ],
+        },
+      ],
+      automation: {
+        summary:
+          'Orchestrated recoveries target abandoned carts, sync inventory buffers to Shopify and NetSuite, and keep the merchandising engine aligned with real-time demand.',
+        jobs: [
+          {
+            id: 'cart-drip',
+            title: 'Cart Recovery Drip',
+            status: 'active',
+            cadence: 'Every 15 minutes',
+            trigger: 'Checkout started but not completed',
+            actions: ['Send dynamic email + SMS', 'Issue limited incentive code', 'Schedule retargeting audience sync'],
+            owner: 'Lifecycle Marketing',
+            workflowId: 'wf-cart',
+          },
+          {
+            id: 'inventory-sync',
+            title: 'Inventory Buffer Sync',
+            status: 'active',
+            cadence: 'Hourly',
+            trigger: 'Stock level < safety threshold',
+            actions: ['Reserve units in ERP', 'Notify sourcing agent', 'Pause paid ads for SKU'],
+            owner: 'Supply Chain',
+            workflowId: 'wf-inventory',
+          },
+          {
+            id: 'review-nudge',
+            title: 'Post-Purchase Review Nudge',
+            status: 'draft',
+            cadence: 'Daily',
+            trigger: 'Order delivered + 3 days',
+            actions: ['Send personalized review request', 'Offer loyalty points', 'Escalate low CSAT to CX team'],
+            owner: 'Customer Experience',
+            workflowId: 'wf-review',
+          },
+        ],
+        workflows: [
+          {
+            id: 'wf-cart',
+            title: 'Abandoned Cart Journey',
+            description: 'Multi-stage reminders with channel branching based on prior engagement.',
+            steps: [
+              { id: '1', name: 'Detect abandonment', detail: 'Listen for checkout inactivity > 12 minutes.', owner: 'Event Stream' },
+              { id: '2', name: 'Evaluate segment', detail: 'Identify VIP, new, or returning customer status.', owner: 'CDP' },
+              { id: '3', name: 'Personalize offer', detail: 'Assemble incentives and creative variations.', owner: 'Merch Ops' },
+              { id: '4', name: 'Orchestrate reminders', detail: 'Email, SMS, and push scheduled with throttling.', owner: 'Journey Builder' },
+            ],
+          },
+          {
+            id: 'wf-inventory',
+            title: 'Inventory Replenishment Loop',
+            description: 'Guarantees stock health through just-in-time supplier automations.',
+            steps: [
+              { id: '1', name: 'Detect low stock', detail: 'Real-time inventory feed monitors buffer thresholds.', owner: 'Inventory Engine' },
+              { id: '2', name: 'Reserve supply', detail: 'Create PO drafts and reserve inbound units.', owner: 'ERP Sync' },
+              { id: '3', name: 'Notify logistics', detail: 'Slack + email digest for operations managers.', owner: 'Supply Ops' },
+              { id: '4', name: 'Update storefront', detail: 'Pause paid spend + update merchandising badges.', owner: 'Merchandising' },
+            ],
+          },
+          {
+            id: 'wf-review',
+            title: 'Customer Review Amplifier',
+            description: 'Automates review outreach while routing detractors to support.',
+            steps: [
+              { id: '1', name: 'Request review', detail: 'Personalized message with product-specific imagery.', owner: 'CX Automations' },
+              { id: '2', name: 'Incentivize', detail: 'Offer loyalty points or referral credits based on segment.', owner: 'Loyalty Engine' },
+              { id: '3', name: 'Route feedback', detail: 'Notify CX pods if rating < 4 stars.', owner: 'Zendesk Sync' },
+              { id: '4', name: 'Amplify advocates', detail: 'Publish 5-star reviews to onsite carousel automatically.', owner: 'Content Ops' },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      id: 'corporate',
+      name: 'Enterprise Analytics',
+      tagline: 'Marketing-to-revenue visibility',
+      description:
+        'Give growth, revenue, and executive teams a single pane for pipeline health, channel attribution, and automation readiness.',
+      heroMetric: {
+        id: 'qualified-leads',
+        label: 'Qualified Leads',
+        value: '1,248',
+        change: 9.3,
+        trend: 'up',
+        description: 'Marketing qualified leads accepted by sales this quarter.',
+        icon: 'Handshake',
+      },
+      metrics: [
+        {
+          id: 'pipeline',
+          label: 'Pipeline Coverage',
+          value: '3.4×',
+          change: 1.1,
+          trend: 'up',
+          description: 'Pipeline coverage against quarterly quota.',
+          icon: 'Target',
+        },
+        {
+          id: 'win-rate',
+          label: 'Win Rate',
+          value: '28.6%',
+          change: 1.9,
+          trend: 'up',
+          description: 'Closed-won opportunities relative to proposals.',
+          icon: 'Trophy',
+        },
+        {
+          id: 'touchpoints',
+          label: 'Average Touchpoints',
+          value: '7.4',
+          change: -0.8,
+          trend: 'down',
+          description: 'Engagements per opportunity before sales-accepted.',
+          icon: 'Timeline',
+        },
+        {
+          id: 'web-traffic',
+          label: 'Site Sessions',
+          value: '312K',
+          change: 4.5,
+          trend: 'up',
+          description: 'Rolling 30-day organic and paid traffic combined.',
+          icon: 'Globe',
+        },
+      ],
+      highlights: [
+        'Lead scoring combines intent data with website engagement for predictive routing.',
+        'CRM sync automation pushes enriched accounts to SDR pods every 30 minutes.',
+        'Executive summary updates in Slack with dynamic PowerPoint exports nightly.',
+      ],
+      charts: [
+        {
+          id: 'corp-traffic-line',
+          type: 'line',
+          title: 'Marketing Traffic & SQL Velocity',
+          description: 'Weekly site sessions versus sales qualified opportunities.',
+          data: [
+            { week: 'W1', sessions: 62, sql: 42 },
+            { week: 'W2', sessions: 68, sql: 44 },
+            { week: 'W3', sessions: 71, sql: 48 },
+            { week: 'W4', sessions: 74, sql: 52 },
+            { week: 'W5', sessions: 79, sql: 55 },
+            { week: 'W6', sessions: 82, sql: 58 },
+          ],
+          xKey: 'week',
+          series: [
+            { id: 'sessions', name: 'Site Sessions (K)', dataKey: 'sessions', color: '#6366f1' },
+            { id: 'sql', name: 'SQLs', dataKey: 'sql', color: '#ef4444' },
+          ],
+        },
+        {
+          id: 'corp-pie',
+          type: 'donut',
+          title: 'Lead Source Attribution',
+          description: 'Distribution of qualified leads by originating channel.',
+          data: [
+            { name: 'Paid', value: 26, color: '#f97316' },
+            { name: 'Organic', value: 32, color: '#22c55e' },
+            { name: 'Events', value: 18, color: '#6366f1' },
+            { name: 'Partner', value: 14, color: '#0ea5e9' },
+            { name: 'Outbound', value: 10, color: '#a855f7' },
+          ],
+        },
+      ],
+      funnel: [
+        { id: 'visitors', label: 'Website Visitors', value: 312000, conversion: '100%' },
+        { id: 'leads', label: 'Leads Captured', value: 48200, conversion: '15.4%' },
+        { id: 'mql', label: 'Marketing Qualified', value: 18600, conversion: '38.6%' },
+        { id: 'sql', label: 'Sales Qualified', value: 6400, conversion: '34.4%' },
+        { id: 'pipeline', label: 'Pipeline Created', value: 3200, conversion: '50.0%' },
+        { id: 'won', label: 'Closed Won', value: 916, conversion: '28.6%' },
+      ],
+      leaderboards: [
+        {
+          id: 'campaigns',
+          title: 'Highest Performing Campaigns',
+          description: 'Campaigns sorted by pipeline influenced this quarter.',
+          columns: ['Campaign', 'Stage', 'Pipeline', 'Influenced ARR'],
+          rows: [
+            { id: 'ai-summit', label: 'AI Summit Roadshow', sublabel: 'Event', value: '$3.4M · $1.1M', change: 12.2, trend: 'up' },
+            { id: 'intent-drip', label: 'Intent Nurture Drip', sublabel: 'Email', value: '$2.1M · $760K', change: 8.9, trend: 'up' },
+            { id: 'partner-amp', label: 'Partner Amplify', sublabel: 'Co-Marketing', value: '$1.6M · $540K', change: 6.4, trend: 'up' },
+          ],
+        },
+      ],
+      tables: [
+        {
+          id: 'corp-sla',
+          title: 'Lead Routing SLA',
+          description: 'Average time to first-touch across territories.',
+          columns: [
+            { id: 'region', label: 'Region' },
+            { id: 'owner', label: 'SDR Pod' },
+            { id: 'sla', label: 'SLA (mins)' },
+            { id: 'breaches', label: 'Breaches (7d)' },
+          ],
+          rows: [
+            { id: 'na', cells: ['North America', 'Velocity Team', '14', '1'] },
+            { id: 'emea', cells: ['EMEA', 'Expansion Pod', '18', '2'] },
+            { id: 'apac', cells: ['APAC', 'Launch Team', '22', '0'] },
+          ],
+        },
+      ],
+      forms: [
+        {
+          id: 'corporate-playbook',
+          title: 'Launch Account Based Playbook',
+          description: 'Define target criteria and automate outreach tasks.',
+          cta: 'Deploy Playbook',
+          fields: [
+            { id: 'industry', label: 'Target Industry', type: 'select', options: ['SaaS', 'Manufacturing', 'Healthcare', 'Finance'] },
+            { id: 'revenue', label: 'Minimum Revenue ($M)', type: 'number', placeholder: '25' },
+            { id: 'leadscore', label: 'Lead Score Threshold', type: 'number', placeholder: '80' },
+            { id: 'autoassign', label: 'Auto Assign to SDR', type: 'toggle' },
+          ],
+        },
+      ],
+      automation: {
+        summary:
+          'Lead scoring orchestrations ingest behavior data, sync enriched profiles to CRM, and trigger targeted enablement tasks for each buying committee persona.',
+        jobs: [
+          {
+            id: 'lead-score',
+            title: 'Predictive Lead Score Refresh',
+            status: 'active',
+            cadence: 'Every 30 minutes',
+            trigger: 'New activity logged in CDP',
+            actions: ['Recalculate propensity model', 'Write score + intent to CRM', 'Alert SDR channel on tier-one accounts'],
+            owner: 'Revenue Operations',
+            workflowId: 'wf-leadscore',
+          },
+          {
+            id: 'exec-brief',
+            title: 'Executive Brief Digest',
+            status: 'active',
+            cadence: 'Daily · 08:00 local time',
+            trigger: 'Close of business summary ready',
+            actions: ['Compile KPI snapshot', 'Render PowerPoint deck', 'Post to #exec-briefings'],
+            owner: 'Analytics',
+            workflowId: 'wf-exec',
+          },
+          {
+            id: 'crm-clean',
+            title: 'CRM Hygiene Sweeper',
+            status: 'paused',
+            cadence: 'Weekly · Monday',
+            trigger: 'Dormant opportunities > 30 days',
+            actions: ['Reassign owner', 'Schedule follow-up task', 'Notify manager of stale deals'],
+            owner: 'Sales Ops',
+            workflowId: 'wf-crm',
+          },
+        ],
+        workflows: [
+          {
+            id: 'wf-leadscore',
+            title: 'Predictive Lead Enrichment',
+            description: 'Prioritizes accounts with buying signals by syncing models into CRM and sales engagement.',
+            steps: [
+              { id: '1', name: 'Ingest data', detail: 'Combine intent, product usage, and firmographics.', owner: 'Data Platform' },
+              { id: '2', name: 'Score accounts', detail: 'Apply ML model + human override rules.', owner: 'RevOps AI' },
+              { id: '3', name: 'Sync CRM', detail: 'Push scores, segments, and playbook hints.', owner: 'CRM Sync' },
+              { id: '4', name: 'Trigger alerts', detail: 'Send Slack alerts with account dossiers.', owner: 'Sales Enablement' },
+            ],
+          },
+          {
+            id: 'wf-exec',
+            title: 'Executive Brief Builder',
+            description: 'Keeps leadership aligned with pipeline health and marketing performance.',
+            steps: [
+              { id: '1', name: 'Generate KPI snapshot', detail: 'Aggregate metrics from BI warehouse.', owner: 'Analytics' },
+              { id: '2', name: 'Render deck', detail: 'Populate slides with charts + commentary.', owner: 'Narrative Engine' },
+              { id: '3', name: 'Distribute', detail: 'Email + Slack summary to executive channel.', owner: 'Ops Bot' },
+              { id: '4', name: 'Archive', detail: 'Store deck in SharePoint / GDrive automatically.', owner: 'Knowledge Base' },
+            ],
+          },
+          {
+            id: 'wf-crm',
+            title: 'CRM Hygiene Taskforce',
+            description: 'Automates cleanup routines for dormant or inconsistent opportunity data.',
+            steps: [
+              { id: '1', name: 'Detect stale deals', detail: 'Identify deals stuck with no activity > 30 days.', owner: 'Revenue Ops' },
+              { id: '2', name: 'Flag risk', detail: 'Tag opportunity with risk reason + recommended actions.', owner: 'AI Assistant' },
+              { id: '3', name: 'Assign tasks', detail: 'Create Salesforce tasks for owners + managers.', owner: 'CRM Sync' },
+              { id: '4', name: 'Escalate', detail: 'Escalate to leadership when response > 48 hours.', owner: 'Sales Ops' },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      id: 'custom-app',
+      name: 'Product Operations Hub',
+      tagline: 'Custom web app for cross-functional delivery',
+      description:
+        'Task orchestration, collaboration insights, and automation primitives powering product and engineering squads.',
+      heroMetric: {
+        id: 'deployments',
+        label: 'Deployments This Quarter',
+        value: '482',
+        change: 14.6,
+        trend: 'up',
+        description: 'Production deployments shipped across all squads.',
+        icon: 'Rocket',
+      },
+      metrics: [
+        {
+          id: 'cycle-time',
+          label: 'Median Cycle Time',
+          value: '2.8 days',
+          change: -1.2,
+          trend: 'down',
+          description: 'Time from ready-for-dev to production release.',
+          icon: 'Timer',
+        },
+        {
+          id: 'tasks-completed',
+          label: 'Tasks Completed',
+          value: '1,920',
+          change: 9.4,
+          trend: 'up',
+          description: 'Stories completed across all swimlanes this sprint cycle.',
+          icon: 'ClipboardCheck',
+        },
+        {
+          id: 'qa-automation',
+          label: 'Automated Test Coverage',
+          value: '82%',
+          change: 3.5,
+          trend: 'up',
+          description: 'UI + API coverage tracked across nightly suites.',
+          icon: 'Shield',
+        },
+        {
+          id: 'alerts',
+          label: 'Incident MTTR',
+          value: '41 min',
+          change: -8.2,
+          trend: 'down',
+          description: 'Mean time to resolution for Sev2 incidents this month.',
+          icon: 'Activity',
+        },
+      ],
+      highlights: [
+        'Kanban board syncs with Jira + Linear via bi-directional webhooks.',
+        'Recurring task templates auto-provision for sprint rituals and QA sweeps.',
+        'Weekly reminder automation pings owners for stale review columns.',
+      ],
+      charts: [
+        {
+          id: 'custom-throughput-line',
+          type: 'line',
+          title: 'Throughput by Squad',
+          description: 'Stories completed each sprint for platform vs. growth squads.',
+          data: [
+            { sprint: 'Sprint 21', platform: 48, growth: 36 },
+            { sprint: 'Sprint 22', platform: 52, growth: 39 },
+            { sprint: 'Sprint 23', platform: 56, growth: 44 },
+            { sprint: 'Sprint 24', platform: 61, growth: 46 },
+            { sprint: 'Sprint 25', platform: 65, growth: 49 },
+          ],
+          xKey: 'sprint',
+          series: [
+            { id: 'platform', name: 'Platform Squad', dataKey: 'platform', color: '#4f46e5' },
+            { id: 'growth', name: 'Growth Squad', dataKey: 'growth', color: '#22c55e' },
+          ],
+        },
+        {
+          id: 'custom-workload',
+          type: 'stacked-bar',
+          title: 'Workload Distribution',
+          description: 'Task volume by teammate across Kanban columns.',
+          data: [
+            { member: 'Avery', todo: 6, progress: 11, review: 3 },
+            { member: 'Jordan', todo: 4, progress: 9, review: 5 },
+            { member: 'Casey', todo: 5, progress: 7, review: 4 },
+            { member: 'Taylor', todo: 3, progress: 8, review: 6 },
+          ],
+          xKey: 'member',
+          series: [
+            { id: 'todo', name: 'To Do', dataKey: 'todo', color: '#c7d2fe', stackId: 'kanban' },
+            { id: 'progress', name: 'In Progress', dataKey: 'progress', color: '#6366f1', stackId: 'kanban' },
+            { id: 'review', name: 'In Review', dataKey: 'review', color: '#312e81', stackId: 'kanban' },
+          ],
+        },
+      ],
+      tables: [
+        {
+          id: 'kanban-snapshot',
+          title: 'Kanban Snapshot',
+          description: 'Active epics with critical status indicators.',
+          columns: [
+            { id: 'epic', label: 'Epic' },
+            { id: 'owner', label: 'Owner' },
+            { id: 'column', label: 'Stage' },
+            { id: 'due', label: 'Target Date' },
+          ],
+          rows: [
+            { id: 'auth', cells: ['Unified Auth Layer', 'Avery Mills', 'In Review', 'Jun 28'] },
+            { id: 'billing', cells: ['Usage-based Billing', 'Jordan Cruz', 'In Progress', 'Jul 05'] },
+            { id: 'mobile', cells: ['Mobile Offline Sync', 'Casey Wu', 'In Progress', 'Jul 12'] },
+          ],
+        },
+      ],
+      forms: [
+        {
+          id: 'task-template',
+          title: 'Create Task Template',
+          description: 'Standardize recurring sprint rituals and QA checks.',
+          cta: 'Save Template',
+          fields: [
+            { id: 'name', label: 'Template Name', type: 'text', placeholder: 'Weekly Design Review' },
+            { id: 'ownerEmail', label: 'Owner Email', type: 'email', placeholder: 'owner@product.io' },
+            { id: 'cadence', label: 'Cadence (days)', type: 'number', placeholder: '7' },
+            { id: 'autoReminder', label: 'Auto Reminder', type: 'toggle' },
+          ],
+        },
+      ],
+      automation: {
+        summary:
+          'Recurring tasks spawn from templates, reminders ping owners on SLA breaches, and integrations sync Kanban states with deployment pipelines.',
+        jobs: [
+          {
+            id: 'qa-sweep',
+            title: 'QA Regression Sweep',
+            status: 'active',
+            cadence: 'Nightly · 23:30 UTC',
+            trigger: 'New build artifact published',
+            actions: ['Spin up ephemeral environment', 'Execute Cypress + Playwright suites', 'Post summary in #qa'],
+            owner: 'Quality Engineering',
+            workflowId: 'wf-qa',
+          },
+          {
+            id: 'retro-reminder',
+            title: 'Retro Agenda Builder',
+            status: 'active',
+            cadence: 'Weekly · Friday',
+            trigger: 'Sprint close event',
+            actions: ['Collect feedback cards', 'Summarize sentiment', 'Email agenda to team'],
+            owner: 'Product Ops',
+            workflowId: 'wf-retro',
+          },
+          {
+            id: 'stale-card',
+            title: 'Stale Card Escalation',
+            status: 'draft',
+            cadence: 'Daily',
+            trigger: 'Card idle > 5 days',
+            actions: ['Ping assignee in Slack', 'Notify engineering manager', 'Open Jira comment with context'],
+            owner: 'Engineering Ops',
+            workflowId: 'wf-stale',
+          },
+        ],
+        workflows: [
+          {
+            id: 'wf-qa',
+            title: 'Regression Automation',
+            description: 'Guarantees core flows stay green before release trains depart.',
+            steps: [
+              { id: '1', name: 'Provision env', detail: 'Create isolated testing environment from main branch.', owner: 'DevOps Bot' },
+              { id: '2', name: 'Run suites', detail: 'Execute UI + API coverage with parallel shards.', owner: 'QA Runner' },
+              { id: '3', name: 'Collect evidence', detail: 'Attach videos and logs to test report.', owner: 'Artifacts Service' },
+              { id: '4', name: 'Notify teams', detail: 'Post Slack summary + update deployment gates.', owner: 'Release Orchestrator' },
+            ],
+          },
+          {
+            id: 'wf-retro',
+            title: 'Retro Preparation',
+            description: 'Automates the entire sprint retrospective planning workflow.',
+            steps: [
+              { id: '1', name: 'Gather insights', detail: 'Pull feedback from retrospective bot + issue tracker.', owner: 'Insights Bot' },
+              { id: '2', name: 'Aggregate themes', detail: 'Group cards into wins, risks, experiments.', owner: 'Product Ops' },
+              { id: '3', name: 'Draft agenda', detail: 'Generate agenda doc with timeboxing suggestions.', owner: 'AI Assistant' },
+              { id: '4', name: 'Share pack', detail: 'Send doc to team and calendar event with context.', owner: 'Calendar Sync' },
+            ],
+          },
+          {
+            id: 'wf-stale',
+            title: 'Stale Card Escalation',
+            description: 'Keeps kanban flow healthy by escalating aging work items.',
+            steps: [
+              { id: '1', name: 'Detect stale cards', detail: 'Identify cards with no activity > 5 days.', owner: 'Workflow Engine' },
+              { id: '2', name: 'Notify assignee', detail: 'Send Slack DM with context + suggested next steps.', owner: 'Ops Bot' },
+              { id: '3', name: 'Escalate', detail: 'Notify team lead on repeated violations.', owner: 'Team Ops' },
+              { id: '4', name: 'Add automation task', detail: 'Create follow-up checklist in task board.', owner: 'Automation Bot' },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      id: 'media',
+      name: 'Content & Media Intelligence',
+      tagline: 'Engagement-first editorial operations',
+      description:
+        'Blend publishing cadence, content performance, and audience automation for modern media brands.',
+      heroMetric: {
+        id: 'engagement',
+        label: 'Engagement Rate',
+        value: '7.8%',
+        change: 2.6,
+        trend: 'up',
+        description: 'Sessions with multi-touch interactions over the last 30 days.',
+        icon: 'Sparkles',
+      },
+      metrics: [
+        {
+          id: 'new-subscribers',
+          label: 'New Subscribers',
+          value: '3,420',
+          change: 5.1,
+          trend: 'up',
+          description: 'Net-new newsletter + premium subscribers.',
+          icon: 'Users',
+        },
+        {
+          id: 'content-shipped',
+          label: 'Content Published',
+          value: '86 pieces',
+          change: 11.4,
+          trend: 'up',
+          description: 'Long-form articles, podcasts, and video content pushed live.',
+          icon: 'Newspaper',
+        },
+        {
+          id: 'watchtime',
+          label: 'Average Watch Time',
+          value: '6m 42s',
+          change: 1.7,
+          trend: 'up',
+          description: 'Average viewing duration for on-demand video series.',
+          icon: 'Film',
+        },
+        {
+          id: 'social',
+          label: 'Social Amplification',
+          value: '+32%',
+          change: 4.2,
+          trend: 'up',
+          description: 'Increase in shares driven by auto-tagging and clips.',
+          icon: 'Share2',
+        },
+      ],
+      highlights: [
+        'Scheduled publishing orchestrates across CMS, YouTube, and Spotify simultaneously.',
+        'Auto-tagging service enriches SEO metadata and dynamic playlists.',
+        'Engagement scoring ranks stories for newsletter placement automatically.',
+      ],
+      charts: [
+        {
+          id: 'media-line',
+          type: 'line',
+          title: 'Engagement Trend',
+          description: 'Audience interactions across owned channels by week.',
+          data: [
+            { week: 'Wk 1', onsite: 2.4, video: 1.8 },
+            { week: 'Wk 2', onsite: 2.6, video: 1.9 },
+            { week: 'Wk 3', onsite: 2.9, video: 2.0 },
+            { week: 'Wk 4', onsite: 3.3, video: 2.3 },
+            { week: 'Wk 5', onsite: 3.7, video: 2.6 },
+          ],
+          xKey: 'week',
+          series: [
+            { id: 'onsite', name: 'Onsite Actions (M)', dataKey: 'onsite', color: '#6366f1' },
+            { id: 'video', name: 'Video Plays (M)', dataKey: 'video', color: '#f97316' },
+          ],
+        },
+        {
+          id: 'media-bar',
+          type: 'bar',
+          title: 'Format Performance',
+          description: 'Comparative views and conversions per format.',
+          data: [
+            { format: 'Articles', views: 1.6, conversions: 0.46 },
+            { format: 'Video', views: 2.1, conversions: 0.58 },
+            { format: 'Podcast', views: 0.9, conversions: 0.24 },
+            { format: 'Live', views: 0.7, conversions: 0.18 },
+          ],
+          xKey: 'format',
+          series: [
+            { id: 'views', name: 'Views (M)', dataKey: 'views', color: '#4f46e5' },
+            { id: 'conversions', name: 'Conversions (M)', dataKey: 'conversions', color: '#22c55e' },
+          ],
+        },
+        {
+          id: 'media-donut',
+          type: 'donut',
+          title: 'Subscription Drivers',
+          description: 'Content types responsible for premium upgrades.',
+          data: [
+            { name: 'Deep Dives', value: 34, color: '#f43f5e' },
+            { name: 'Video Series', value: 28, color: '#6366f1' },
+            { name: 'Playbooks', value: 22, color: '#22d3ee' },
+            { name: 'Live Sessions', value: 16, color: '#10b981' },
+          ],
+        },
+      ],
+      tables: [
+        {
+          id: 'media-calendar',
+          title: 'Publishing Calendar',
+          description: 'Multi-channel content shipping in the next seven days.',
+          columns: [
+            { id: 'date', label: 'Date' },
+            { id: 'title', label: 'Title' },
+            { id: 'channel', label: 'Primary Channel' },
+            { id: 'owner', label: 'Producer' },
+          ],
+          rows: [
+            { id: 'wed', cells: ['Wed · Jun 18', 'AI Infrastructure Weekly', 'Newsletter', 'Hannah Kim'] },
+            { id: 'thu', cells: ['Thu · Jun 19', 'Founder Playbook Ep.12', 'Podcast', 'Miguel Ortega'] },
+            { id: 'fri', cells: ['Fri · Jun 20', 'Studio Session: Scale Ops', 'YouTube', 'Priya Patel'] },
+          ],
+        },
+      ],
+      forms: [
+        {
+          id: 'media-scheduling',
+          title: 'Schedule New Release',
+          description: 'Publish across channels with automation attachments.',
+          cta: 'Schedule Release',
+          fields: [
+            { id: 'title', label: 'Content Title', type: 'text', placeholder: 'New Episode Title' },
+            { id: 'launch', label: 'Launch Date & Time', type: 'datetime-local' },
+            { id: 'primary', label: 'Primary Channel', type: 'select', options: ['YouTube', 'Podcast', 'Newsletter', 'Blog'] },
+            { id: 'autoClip', label: 'Auto-generate social clips', type: 'toggle' },
+          ],
+        },
+      ],
+      automation: {
+        summary:
+          'Scheduled publishing orchestrates CMS, streaming platforms, and community channels while audience scoring fuels personalization and retention automations.',
+        jobs: [
+          {
+            id: 'clip-generator',
+            title: 'Social Clip Generator',
+            status: 'active',
+            cadence: 'After each video publish',
+            trigger: 'Video uploaded to CDN',
+            actions: ['Generate short clips', 'Queue TikTok + Reels posts', 'Notify social producer'],
+            owner: 'Media Ops',
+            workflowId: 'wf-clips',
+          },
+          {
+            id: 'newsletter-curation',
+            title: 'Newsletter Curator',
+            status: 'active',
+            cadence: 'Daily · 07:30',
+            trigger: 'Engagement score > threshold',
+            actions: ['Select top stories', 'Generate intro copy', 'Schedule send in ESP'],
+            owner: 'Editorial',
+            workflowId: 'wf-newsletter',
+          },
+          {
+            id: 'metadata-enrichment',
+            title: 'Metadata Enrichment',
+            status: 'draft',
+            cadence: 'On publish',
+            trigger: 'Content piece approved',
+            actions: ['Tag keywords', 'Update sitemap', 'Push to recommendation engine'],
+            owner: 'SEO Lab',
+            workflowId: 'wf-metadata',
+          },
+        ],
+        workflows: [
+          {
+            id: 'wf-clips',
+            title: 'Clip Distribution Flow',
+            description: 'Repurposes long-form video into social-ready assets automatically.',
+            steps: [
+              { id: '1', name: 'Transcribe video', detail: 'Auto-caption + segment story beats.', owner: 'AI Studio' },
+              { id: '2', name: 'Select highlights', detail: 'Score segments by engagement predictions.', owner: 'Insights Engine' },
+              { id: '3', name: 'Render clips', detail: 'Generate vertical + square formats with branding.', owner: 'Video Renderer' },
+              { id: '4', name: 'Schedule posts', detail: 'Queue to TikTok, Shorts, Reels with metadata.', owner: 'Social Scheduler' },
+            ],
+          },
+          {
+            id: 'wf-newsletter',
+            title: 'AI Newsletter Builder',
+            description: 'Curates stories and assembles the daily briefing automatically.',
+            steps: [
+              { id: '1', name: 'Select stories', detail: 'Rank articles using engagement score + freshness.', owner: 'Ranking Service' },
+              { id: '2', name: 'Draft copy', detail: 'Generate intro + section summaries.', owner: 'Editorial AI' },
+              { id: '3', name: 'Assemble layout', detail: 'Apply newsletter template with dynamic modules.', owner: 'ESP Builder' },
+              { id: '4', name: 'QA + Schedule', detail: 'Human review + schedule send window.', owner: 'Newsletter Ops' },
+            ],
+          },
+          {
+            id: 'wf-metadata',
+            title: 'Metadata Amplifier',
+            description: 'Optimizes SEO metadata and content tags for discoverability.',
+            steps: [
+              { id: '1', name: 'Extract entities', detail: 'Identify keywords and topics automatically.', owner: 'SEO Engine' },
+              { id: '2', name: 'Generate tags', detail: 'Suggest tag taxonomy and audience cohorts.', owner: 'AI Tagger' },
+              { id: '3', name: 'Sync systems', detail: 'Update CMS, sitemap, and recommendation graph.', owner: 'Content Sync' },
+              { id: '4', name: 'Monitor impact', detail: 'Track performance uplift and iterate.', owner: 'Analytics' },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      id: 'edtech',
+      name: 'Learning Analytics',
+      tagline: 'Engagement-first education insights',
+      description:
+        'Monitor course performance, student mastery, and automation triggers for modern learning experiences.',
+      heroMetric: {
+        id: 'completion',
+        label: 'Course Completion Rate',
+        value: '84%',
+        change: 7.1,
+        trend: 'up',
+        description: 'Average completion across self-paced cohorts.',
+        icon: 'GraduationCap',
+      },
+      metrics: [
+        {
+          id: 'active-learners',
+          label: 'Active Learners',
+          value: '18,420',
+          change: 6.3,
+          trend: 'up',
+          description: 'Learners who completed a module in the last 7 days.',
+          icon: 'Users',
+        },
+        {
+          id: 'certificates',
+          label: 'Certificates Issued',
+          value: '2,416',
+          change: 8.5,
+          trend: 'up',
+          description: 'Certificates auto-generated via competency completion.',
+          icon: 'Medal',
+        },
+        {
+          id: 'quiz-score',
+          label: 'Average Quiz Score',
+          value: '87%',
+          change: 1.8,
+          trend: 'up',
+          description: 'Rolling average from adaptive quiz engine.',
+          icon: 'CheckCheck',
+        },
+        {
+          id: 'inactivity',
+          label: 'Inactivity Alerts',
+          value: '312',
+          change: -5.7,
+          trend: 'down',
+          description: 'Learners flagged for nudges by inactivity automation.',
+          icon: 'Bell',
+        },
+      ],
+      highlights: [
+        'Student activity heatmap surfaces dormant hours for nudging automation.',
+        'Certificate issuance pipeline renders branded PDFs and emails automatically.',
+        'Adaptive quiz feedback syncs to CRM for cohort health reporting.',
+      ],
+      charts: [
+        {
+          id: 'edtech-progress-bar',
+          type: 'bar',
+          title: 'Module Progress by Cohort',
+          description: 'Percentage of learners completing modules per cohort.',
+          data: [
+            { cohort: 'Spring A', foundation: 92, advanced: 68 },
+            { cohort: 'Spring B', foundation: 88, advanced: 64 },
+            { cohort: 'Summer A', foundation: 86, advanced: 61 },
+            { cohort: 'Summer B', foundation: 84, advanced: 58 },
+          ],
+          xKey: 'cohort',
+          series: [
+            { id: 'foundation', name: 'Foundation', dataKey: 'foundation', color: '#4f46e5' },
+            { id: 'advanced', name: 'Advanced', dataKey: 'advanced', color: '#22c55e' },
+          ],
+        },
+      ],
+      heatmap: {
+        id: 'activity-heatmap',
+        title: 'Student Activity Heatmap',
+        description: 'Hourly engagement intensity by day of week (darker = more activity).',
+        days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        hours: ['06h', '09h', '12h', '15h', '18h', '21h'],
+        values: [
+          [12, 24, 32, 28, 20, 15],
+          [16, 28, 36, 30, 24, 18],
+          [18, 32, 40, 34, 26, 20],
+          [14, 30, 38, 36, 28, 19],
+          [10, 22, 30, 26, 18, 12],
+          [8, 16, 20, 18, 12, 9],
+          [6, 12, 18, 14, 10, 7],
+        ],
+      },
+      tables: [
+        {
+          id: 'top-courses',
+          title: 'Top Performing Courses',
+          description: 'Courses ranked by satisfaction and completion velocity.',
+          columns: [
+            { id: 'course', label: 'Course' },
+            { id: 'instructor', label: 'Instructor' },
+            { id: 'satisfaction', label: 'Satisfaction' },
+            { id: 'completion', label: 'Completion Time' },
+          ],
+          rows: [
+            { id: 'data', cells: ['Data Analytics Foundations', 'Iris Chen', '4.8 / 5', '21 days'] },
+            { id: 'ux', cells: ['Human-Centered Design', 'Elijah Brooks', '4.7 / 5', '18 days'] },
+            { id: 'ml', cells: ['ML Deployment Studio', 'Priya Kapoor', '4.6 / 5', '24 days'] },
+          ],
+        },
+      ],
+      forms: [
+        {
+          id: 'learning-nudge',
+          title: 'Configure Inactivity Nudge',
+          description: 'Set automation thresholds to re-engage dormant learners.',
+          cta: 'Save Nudge',
+          fields: [
+            { id: 'cohortSelect', label: 'Cohort', type: 'select', options: ['Spring A', 'Spring B', 'Summer A', 'Summer B'] },
+            { id: 'threshold-days', label: 'Days Inactive', type: 'number', placeholder: '5' },
+            { id: 'channel', label: 'Notification Channel', type: 'select', options: ['Email', 'SMS', 'In-App'] },
+            { id: 'autoFollow', label: 'Auto-assign mentor follow-up', type: 'toggle' },
+          ],
+        },
+      ],
+      automation: {
+        summary:
+          'Learning automation handles inactivity nudges, certificate generation, and competency-based recommendations across cohorts.',
+        jobs: [
+          {
+            id: 'certificate-job',
+            title: 'Certificate Issuance',
+            status: 'active',
+            cadence: 'Hourly',
+            trigger: 'Learner completes capstone',
+            actions: ['Render branded PDF', 'Email learner + manager', 'Sync record to CRM'],
+            owner: 'Academic Ops',
+            workflowId: 'wf-cert',
+          },
+          {
+            id: 'nudge-job',
+            title: 'Inactivity Nudge',
+            status: 'active',
+            cadence: 'Every 6 hours',
+            trigger: 'Learner inactive > configured threshold',
+            actions: ['Send reminder email', 'Assign mentor check-in', 'Log to retention dashboard'],
+            owner: 'Student Success',
+            workflowId: 'wf-nudge',
+          },
+          {
+            id: 'quiz-review',
+            title: 'Quiz Item Review',
+            status: 'draft',
+            cadence: 'Weekly',
+            trigger: 'Question accuracy < 60%',
+            actions: ['Flag item for SME', 'Propose revision from AI assistant', 'Update item bank'],
+            owner: 'Curriculum',
+            workflowId: 'wf-quiz',
+          },
+        ],
+        workflows: [
+          {
+            id: 'wf-cert',
+            title: 'Certificate Delivery Flow',
+            description: 'Delivers verified certificates to learners instantly.',
+            steps: [
+              { id: '1', name: 'Validate completion', detail: 'Confirm course requirements satisfied.', owner: 'Progress Engine' },
+              { id: '2', name: 'Generate certificate', detail: 'Render PDF with dynamic branding + signature.', owner: 'Certificate Service' },
+              { id: '3', name: 'Distribute', detail: 'Email learner, CC manager, log to LMS profile.', owner: 'Notification Hub' },
+              { id: '4', name: 'Sync CRM', detail: 'Update CRM with credential + course data.', owner: 'RevOps Bridge' },
+            ],
+          },
+          {
+            id: 'wf-nudge',
+            title: 'Inactivity Re-engagement',
+            description: 'Reactivates learners through multi-channel touchpoints.',
+            steps: [
+              { id: '1', name: 'Detect inactivity', detail: 'Monitor LMS events for dormant learners.', owner: 'LMS Listener' },
+              { id: '2', name: 'Segment', detail: 'Group learners by risk tier and cohort.', owner: 'Engagement Engine' },
+              { id: '3', name: 'Send nudges', detail: 'Email + SMS with recommended modules.', owner: 'Messaging Hub' },
+              { id: '4', name: 'Assign mentor', detail: 'Create follow-up tasks for mentors if no response.', owner: 'Mentor Ops' },
+            ],
+          },
+          {
+            id: 'wf-quiz',
+            title: 'Quiz Quality Review',
+            description: 'Maintains accuracy for adaptive quiz items.',
+            steps: [
+              { id: '1', name: 'Detect low accuracy', detail: 'Identify question accuracy anomalies.', owner: 'Assessment Engine' },
+              { id: '2', name: 'Draft revision', detail: 'Suggest updates via AI-generated hints.', owner: 'Curriculum AI' },
+              { id: '3', name: 'SME review', detail: 'Subject matter expert approves or edits.', owner: 'SME Reviewer' },
+              { id: '4', name: 'Publish update', detail: 'Deploy revised item to cohorts automatically.', owner: 'Content Ops' },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      id: 'specialized',
+      name: 'Specialized Verticals',
+      tagline: 'Real estate, finance, and healthcare accelerators',
+      description:
+        'Purpose-built insights and automations for highly regulated workflows with compliance-friendly guardrails.',
+      heroMetric: {
+        id: 'roi',
+        label: 'Average ROI Lift',
+        value: '+18.4%',
+        change: 4.7,
+        trend: 'up',
+        description: 'Blended ROI uplift across vertical accelerators.',
+        icon: 'TrendingUp',
+      },
+      metrics: [
+        {
+          id: 'listings',
+          label: 'Active Listings',
+          value: '328',
+          change: 6.8,
+          trend: 'up',
+          description: 'Live real-estate listings synced to portals with daily refresh.',
+          icon: 'Home',
+        },
+        {
+          id: 'finance-expense',
+          label: 'Expense Coverage',
+          value: '$4.6M',
+          change: -2.2,
+          trend: 'down',
+          description: 'Managed spend under finance automation oversight.',
+          icon: 'PiggyBank',
+        },
+        {
+          id: 'health-appointments',
+          label: 'Scheduled Appointments',
+          value: '1,962',
+          change: 9.5,
+          trend: 'up',
+          description: 'Confirmed healthcare visits with automated reminders.',
+          icon: 'Stethoscope',
+        },
+        {
+          id: 'automation-sla',
+          label: 'Automation SLA',
+          value: '94%',
+          change: 3.4,
+          trend: 'up',
+          description: 'Background jobs executed within SLA over last 30 days.',
+          icon: 'Workflow',
+        },
+      ],
+      highlights: [
+        'Listings sync across MLS, Zillow, and custom microsites every 30 minutes.',
+        'Finance bot categorizes expenses and pushes ROI dashboards to CFO suite nightly.',
+        'HIPAA-compliant reminders issue SMS + email with rescheduling links automatically.',
+      ],
+      charts: [
+        {
+          id: 'specialized-finance-line',
+          type: 'line',
+          title: 'Finance ROI vs Spend',
+          description: 'Quarterly spend and ROI uplift for fintech automation clients.',
+          data: [
+            { quarter: 'Q1', spend: 1.2, roi: 9.8 },
+            { quarter: 'Q2', spend: 1.4, roi: 11.6 },
+            { quarter: 'Q3', spend: 1.5, roi: 16.2 },
+            { quarter: 'Q4', spend: 1.5, roi: 18.4 },
+          ],
+          xKey: 'quarter',
+          series: [
+            { id: 'spend', name: 'Managed Spend ($M)', dataKey: 'spend', color: '#0ea5e9' },
+            { id: 'roi', name: 'ROI Lift (%)', dataKey: 'roi', color: '#22c55e' },
+          ],
+        },
+        {
+          id: 'specialized-realestate-bar',
+          type: 'bar',
+          title: 'Real Estate Leads by Property Type',
+          description: 'Qualified inquiries by listing category with automation scoring.',
+          data: [
+            { type: 'Residential', inquiries: 182, conversions: 54 },
+            { type: 'Commercial', inquiries: 96, conversions: 31 },
+            { type: 'Industrial', inquiries: 64, conversions: 22 },
+            { type: 'Luxury', inquiries: 42, conversions: 18 },
+          ],
+          xKey: 'type',
+          series: [
+            { id: 'inquiries', name: 'Inquiries', dataKey: 'inquiries', color: '#6366f1' },
+            { id: 'conversions', name: 'Qualified', dataKey: 'conversions', color: '#f97316' },
+          ],
+        },
+        {
+          id: 'specialized-health-donut',
+          type: 'donut',
+          title: 'Healthcare Appointment Mix',
+          description: 'Distribution of appointment categories processed by reminder workflows.',
+          data: [
+            { name: 'Primary Care', value: 36, color: '#4f46e5' },
+            { name: 'Specialist', value: 28, color: '#22c55e' },
+            { name: 'Telehealth', value: 22, color: '#0ea5e9' },
+            { name: 'Diagnostics', value: 14, color: '#f97316' },
+          ],
+        },
+      ],
+      leaderboards: [
+        {
+          id: 'realestate-agents',
+          title: 'Top Performing Agents',
+          description: 'Listings closed and response time per brokerage.',
+          columns: ['Agent', 'Brokerage', 'Closings', 'Avg Response'],
+          rows: [
+            { id: 'valdez', label: 'Noah Valdez', sublabel: 'Northwind Realty', value: '38 · 7m', change: 6.4, trend: 'up' },
+            { id: 'ramirez', label: 'Lucia Ramirez', sublabel: 'Coastal Estates', value: '31 · 6m', change: 5.1, trend: 'up' },
+            { id: 'oberoi', label: 'Aman Oberoi', sublabel: 'Metro Collective', value: '28 · 9m', change: 4.3, trend: 'up' },
+          ],
+        },
+      ],
+      tables: [
+        {
+          id: 'specialized-operations',
+          title: 'Automation Health Snapshot',
+          description: 'Cross-vertical automation reliability and escalation status.',
+          columns: [
+            { id: 'domain', label: 'Domain' },
+            { id: 'job', label: 'Job' },
+            { id: 'cadence', label: 'Cadence' },
+            { id: 'status', label: 'SLA Met' },
+          ],
+          rows: [
+            { id: 'estate', cells: ['Real Estate', 'Listing Syndication', 'Every 30 min', '99%'] },
+            { id: 'finance', cells: ['Finance', 'Expense Categorization', 'Hourly', '96%'] },
+            { id: 'health', cells: ['Healthcare', 'Reminder Dispatch', 'Every 15 min', '97%'] },
+          ],
+        },
+      ],
+      forms: [
+        {
+          id: 'specialized-intake',
+          title: 'Launch Vertical Automation',
+          description: 'Configure triggers, compliance rules, and notification paths for a new client.',
+          cta: 'Provision Workflow',
+          fields: [
+            { id: 'vertical', label: 'Vertical', type: 'select', options: ['Real Estate', 'Finance', 'Healthcare'] },
+            { id: 'region', label: 'Region', type: 'text', placeholder: 'California, USA' },
+            { id: 'compliance', label: 'Compliance Tier', type: 'select', options: ['Standard', 'Enhanced', 'Strict'] },
+            { id: 'notify', label: 'Send Compliance Digest', type: 'toggle' },
+          ],
+        },
+      ],
+      automation: {
+        summary:
+          'Domain-specific jobs sync listings, reconcile finance spend, and manage HIPAA-friendly reminders with auditable workflows.',
+        jobs: [
+          {
+            id: 'listing-sync',
+            title: 'Listing Syndication Loop',
+            status: 'active',
+            cadence: 'Every 30 minutes',
+            trigger: 'New MLS listing or price change',
+            actions: ['Normalize listing data', 'Publish to partner portals', 'Alert assigned agent'],
+            owner: 'Real Estate Ops',
+            workflowId: 'wf-listing',
+          },
+          {
+            id: 'finance-close',
+            title: 'Finance Close Prep',
+            status: 'active',
+            cadence: 'Nightly · 01:00',
+            trigger: 'Daily transactions imported',
+            actions: ['Categorize expenses', 'Reconcile ROI ledger', 'Email CFO digest'],
+            owner: 'Finance Automation',
+            workflowId: 'wf-finance',
+          },
+          {
+            id: 'health-reminder',
+            title: 'Healthcare Reminder Dispatch',
+            status: 'active',
+            cadence: 'Every 15 minutes',
+            trigger: 'Appointment within 24 hours',
+            actions: ['Send SMS + email reminder', 'Offer reschedule link', 'Notify provider dashboard'],
+            owner: 'Patient Experience',
+            workflowId: 'wf-health',
+          },
+        ],
+        workflows: [
+          {
+            id: 'wf-listing',
+            title: 'Listing Syndication Blueprint',
+            description: 'Ensures listings stay fresh across MLS and marketing experiences.',
+            steps: [
+              { id: '1', name: 'Ingest MLS feed', detail: 'Fetch listing deltas and validate required disclosures.', owner: 'Listing Engine' },
+              { id: '2', name: 'Enhance media', detail: 'Generate AI captions, watermark photos, optimize SEO.', owner: 'Creative Bot' },
+              { id: '3', name: 'Publish network', detail: 'Sync to portals, microsites, and agent CRM.', owner: 'Distribution Hub' },
+              { id: '4', name: 'Alert agent', detail: 'Send confirmation with performance predictions.', owner: 'Agent Concierge' },
+            ],
+          },
+          {
+            id: 'wf-finance',
+            title: 'Finance Close Automation',
+            description: 'Keeps CFO dashboards aligned with expense and ROI movements.',
+            steps: [
+              { id: '1', name: 'Import transactions', detail: 'Load corporate cards, invoices, reimbursements.', owner: 'Ledger Sync' },
+              { id: '2', name: 'Categorize spend', detail: 'AI + rules-based tagging for GL alignment.', owner: 'Expense Engine' },
+              { id: '3', name: 'Compute ROI', detail: 'Blend marketing + revenue data for ROI rollups.', owner: 'Analytics Core' },
+              { id: '4', name: 'Distribute digest', detail: 'Email CFO + controllers with actionable insights.', owner: 'Finance Ops' },
+            ],
+          },
+          {
+            id: 'wf-health',
+            title: 'Patient Reminder Lifecycle',
+            description: 'Automates patient communication while capturing compliance artifacts.',
+            steps: [
+              { id: '1', name: 'Identify patients', detail: 'Monitor EHR schedule for upcoming visits.', owner: 'EHR Listener' },
+              { id: '2', name: 'Compose reminder', detail: 'Personalize SMS/email with instructions + prep.', owner: 'Messaging Service' },
+              { id: '3', name: 'Handle responses', detail: 'Process confirmations or reschedules automatically.', owner: 'Engagement Bot' },
+              { id: '4', name: 'Audit trail', detail: 'Log communications and consent for compliance.', owner: 'Compliance Vault' },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+};
 
-  const response = await fetch(COMMERCE_DASHBOARD_URL, requestInit);
-
-  if (!response.ok) {
-    throw new Error('Failed to load commerce dashboard');
-  }
-
-  const payload = (await response.json()) as EcommerceDashboardResponse;
-  return enrichDashboardPayload(payload);
+export async function fetchPortfolioDashboard() {
+  await new Promise((resolve) => setTimeout(resolve, 120));
+  return portfolioDashboardData;
 }
 
-export const getCommerceDashboard = cache(async () =>
-  fetchCommerceDashboard({
-    cache: 'force-cache',
-    next: { revalidate: 300, tags: ['commerce-dashboard'] },
-  }),
-);
+export const getPortfolioDashboard = cache(async () => fetchPortfolioDashboard());
