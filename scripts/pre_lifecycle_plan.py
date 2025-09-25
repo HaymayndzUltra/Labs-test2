@@ -6,11 +6,12 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
-from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -139,6 +140,147 @@ def _artifact(path: Path) -> ArtifactProvider:
     return lambda ctx, p=path: p
 
 
+def _normalize_key(key: str) -> str:
+    """Convert assorted key styles to snake_case for config merging."""
+
+    key = key.strip()
+    if not key:
+        return key
+    key = key.replace("-", "_")
+    key = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", key)
+    return key.lower()
+
+
+LOWERCASE_KEYS = {
+    "industry",
+    "project_type",
+    "frontend",
+    "backend",
+    "database",
+    "auth",
+    "deploy",
+}
+
+SPEC_CONFIG_KEYS = {
+    "industry",
+    "project_type",
+    "frontend",
+    "backend",
+    "database",
+    "auth",
+    "deploy",
+    "compliance",
+    "features",
+    "separate_repos",
+}
+
+
+def _normalize_config_value(key: str, value: Any) -> Any:
+    if value is None:
+        return None
+
+    if isinstance(value, str):
+        cleaned = value.strip()
+        if not cleaned:
+            return None
+
+        lowered = cleaned.lower()
+        if key in LOWERCASE_KEYS:
+            return lowered
+
+        if key == "separate_repos":
+            if lowered in {"true", "yes", "1"}:
+                return True
+            if lowered in {"false", "no", "0"}:
+                return False
+            return None
+
+        if key == "compliance":
+            if lowered in {"none", "n/a", "na"}:
+                return []
+            parts = [p.strip().lower() for p in re.split(r"[,;/]", cleaned) if p.strip()]
+            return parts
+
+        if key == "features":
+            parts = [p.strip() for p in re.split(r"[,;/]", cleaned) if p.strip()]
+            return parts
+
+        if key == "output_root":
+            return cleaned
+
+        return cleaned
+
+    if isinstance(value, (list, tuple, set)):
+        if key == "compliance":
+            return [str(v).strip().lower() for v in value if str(v).strip()]
+        if key == "features":
+            return [str(v).strip() for v in value if str(v).strip()]
+        return list(value)
+
+    if isinstance(value, bool):
+        return value
+
+    return value
+
+
+def merge_config(base: Dict[str, Any], overrides: Dict[str, Any]) -> Dict[str, Any]:
+    merged: Dict[str, Any] = dict(base)
+    for raw_key, raw_value in overrides.items():
+        key = _normalize_key(str(raw_key))
+        if not key:
+            continue
+        normalized = _normalize_config_value(key, raw_value)
+        if normalized is None:
+            continue
+        merged[key] = normalized
+    return merged
+
+
+def parse_brief_frontmatter(brief_path: Path) -> Dict[str, Any]:
+    if not brief_path.exists():
+        return {}
+
+    content = brief_path.read_text(encoding="utf-8")
+    if not content.startswith("---\n"):
+        return {}
+
+    end_idx = content.find("\n---", 4)
+    if end_idx == -1:
+        return {}
+
+    block = content[4:end_idx]
+    metadata: Dict[str, Any] = {}
+    for line in block.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        metadata[_normalize_key(key)] = value.strip().strip("'\"")
+    return metadata
+
+
+def load_brief_metadata(name: str, brief_path: Path) -> Dict[str, Any]:
+    brief_dir = brief_path.parent
+    metadata: Dict[str, Any] = {}
+
+    for candidate in ("metadata.json", f"{name}.metadata.json"):
+        json_path = brief_dir / candidate
+        if not json_path.exists():
+            continue
+        try:
+            json_data = json.loads(json_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            print(f"[plan] Unable to parse metadata file {json_path}: {exc}", file=sys.stderr)
+            continue
+        if isinstance(json_data, dict):
+            metadata = merge_config(metadata, json_data)
+
+    metadata = merge_config(metadata, parse_brief_frontmatter(brief_path))
+    return metadata
+
+
 # ---------------------------------------------------------------------------
 # Stage builders
 
@@ -213,7 +355,11 @@ def stack_preflight_stage(ctx: PlanContext) -> PlanStep:
     doctor_script = ctx.script_path("doctor.py")
     generator_script = ctx.script_path("generate_client_project.py")
     selector_script = ctx.script_path("select_stacks.py")
-    compliance_flag = ctx.config.get("compliance") or ""
+    compliance_value = ctx.config.get("compliance") or ctx.spec.compliance
+    if isinstance(compliance_value, (list, tuple, set)):
+        compliance_flag = ",".join(str(v).strip() for v in compliance_value if str(v).strip())
+    else:
+        compliance_flag = str(compliance_value or "")
     auth_flag = ctx.config.get("auth") or ctx.spec.auth
     deploy_flag = ctx.config.get("deploy") or ctx.spec.deploy
     return PlanStep(
@@ -701,7 +847,19 @@ def main() -> int:
         return 2
 
     spec = BriefParser(str(brief_path)).parse()
-    lanes = build_plan(spec, cfg)
+
+    metadata = load_brief_metadata(name, brief_path)
+    spec_config = {key: value for key, value in asdict(spec).items() if key in SPEC_CONFIG_KEYS}
+
+    merged_cfg = merge_config(cfg, spec_config)
+    merged_cfg = merge_config(merged_cfg, metadata)
+    merged_cfg["name"] = name
+
+    spec_override = {key: merged_cfg[key] for key in SPEC_CONFIG_KEYS if key in merged_cfg}
+    if spec_override:
+        spec = replace(spec, **spec_override)
+
+    lanes = build_plan(spec, merged_cfg)
 
     output_root = Path(args.output_root)
     project_dir = (output_root / name).resolve()
@@ -711,7 +869,7 @@ def main() -> int:
 
     ctx = PlanContext(
         name=name,
-        config=cfg,
+        config=merged_cfg,
         spec=spec,
         brief_path=brief_path,
         output_root=output_root,

@@ -321,6 +321,7 @@ uv.lock
 !portfolio-dashboard/frontend/jest.config.js
 *.config.ts
 *.config.json
+!workflow.config.json
 tsconfig.json
 jsconfig.json
 tailwind.config.js

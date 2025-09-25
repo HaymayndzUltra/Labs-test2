@@ -6,7 +6,7 @@ This guide walks through the non-interactive lifecycle that turns a client brief
 
 - Python 3.11+, Node.js 18+ (if the selected stack includes a frontend), Docker (for containerized checks), and Git installed locally.
 - Approved brief stored at `docs/briefs/<NAME>/brief.md`.
-- `workflow.config.json` populated with defaults for `name`, `industry`, `project_type`, `frontend`, `backend`, and `database`, or equivalent environment variables exported in your shell.
+- `workflow.config.json` populated with baseline defaults for `industry`, `project_type`, `frontend`, `backend`, and `database`. The helper scripts now layer metadata discovered in the brief (YAML frontmatter or `metadata.json`) on top of these defaults, so new projects that reuse the standard stack only need `--name`.
 - Optional overrides: `AUTH`, `DEPLOY`, `COMPLIANCE`, and `NESTJS_ORM` depending on the client requirements.
 
 > ℹ️ Use the [`Makefile`](../Makefile) `lifecycle` target for a single entrypoint once the environment variables are in place. The steps below describe what the script executes under the hood.
@@ -23,6 +23,25 @@ python3 scripts/bootstrap_project.py --name portfolio-dashboard --update-config
 ```
 
 The bootstrapper reads overrides from CLI flags, environment variables, or `workflow.config.json`, ensures the brief folder exists via `scaffold_briefs.py`, then delegates to the lifecycle script. Continue with the detailed steps below when you need fine-grained control or to rerun individual stages.
+
+## Brief Metadata
+
+Populate `docs/briefs/<NAME>/brief.md` with YAML frontmatter (or an adjacent `metadata.json`) to describe the stack. When the metadata matches the defaults in `workflow.config.json`, supplying `--name` is sufficient because `pre_lifecycle_plan.py` and related helpers read the brief metadata automatically.
+
+```yaml
+---
+name: portfolio-dashboard
+industry: saas
+project_type: fullstack
+frontend: nextjs
+backend: fastapi
+database: postgres
+auth: auth0
+deploy: vercel
+---
+```
+
+Additional keys (e.g., `compliance`, `features`, or `separate_repos`) are also merged into the runtime configuration when provided.
 
 ## Step-by-Step Lifecycle
 

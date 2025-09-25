@@ -1,3 +1,14 @@
+---
+name: portfolio-dashboard
+industry: saas
+project_type: fullstack
+frontend: nextjs
+backend: fastapi
+database: postgres
+auth: auth0
+deploy: vercel
+---
+
 # Project Brief: Professional Portfolio Dashboard
 
 ## Client Information
