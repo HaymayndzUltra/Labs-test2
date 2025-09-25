@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -11,6 +12,8 @@ from scripts.lifecycle_tasks import build_plan
 from scripts.pre_lifecycle_plan import (
     PlanContext,
     PlanItem,
+    merge_workflow_config,
+    parse_metadata_from_brief,
     build_steps,
 )
 
@@ -91,3 +94,40 @@ def test_planitem_execute(tmp_path: Path, exit_code: int, expected: str):
     item = PlanItem("Execute command", command=command)
     status, _ = item.evaluate(ctx, execute=True)
     assert status == expected
+
+
+def test_parse_metadata_from_brief_frontmatter(tmp_path: Path):
+    brief_dir = tmp_path / "demo"
+    brief_dir.mkdir()
+    brief = brief_dir / "brief.md"
+    brief.write_text(
+        "---\nfrontend: angular\nbackend: django\ncompliance: hipaa, soc2\n---\nBody"
+    )
+
+    metadata = parse_metadata_from_brief(brief)
+    assert metadata["frontend"] == "angular"
+    assert metadata["backend"] == "django"
+    assert metadata["compliance"] == ["hipaa", "soc2"]
+
+
+def test_parse_metadata_from_brief_prefers_json(tmp_path: Path):
+    brief_dir = tmp_path / "demo"
+    brief_dir.mkdir()
+    brief = brief_dir / "brief.md"
+    brief.write_text("---\nfrontend: angular\n---\nBody")
+    (brief_dir / "metadata.json").write_text(json.dumps({"frontend": "nextjs"}))
+
+    metadata = parse_metadata_from_brief(brief)
+    assert metadata["frontend"] == "nextjs"
+
+
+def test_merge_workflow_config_prioritizes_metadata():
+    base = {"frontend": "nextjs", "backend": "fastapi", "compliance": []}
+    spec = make_spec(frontend="nextjs", backend="fastapi")
+    metadata = {"frontend": "angular", "compliance": ["hipaa"]}
+
+    merged = merge_workflow_config(base, spec, metadata, "demo")
+    assert merged["frontend"] == "angular"
+    assert merged["backend"] == "fastapi"
+    assert merged["name"] == "demo"
+    assert merged["compliance"] == ["hipaa"]

@@ -10,7 +10,7 @@ import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -614,7 +614,7 @@ def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Print pre-lifecycle execution plan.")
     ap.add_argument("--name", help="Client/project name override")
     ap.add_argument("--config", default="workflow.config.json")
-    ap.add_argument("--output-root", default="../_generated")
+    ap.add_argument("--output-root")
     ap.add_argument("--execute", action="store_true", help="Execute commands and report statuses")
     return ap.parse_args()
 
@@ -623,6 +623,92 @@ def load_config(path: Path) -> Dict:
     if not path.exists():
         raise FileNotFoundError(f"config not found: {path}")
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+LIST_FIELDS = {"compliance", "features"}
+LOWER_FIELDS = {"industry", "project_type", "frontend", "backend", "database", "auth", "deploy"}
+
+
+def _parse_frontmatter(text: str) -> Dict[str, str]:
+    if not text.startswith("---\n"):
+        return {}
+    end = text.find("\n---\n", 4)
+    if end == -1:
+        return {}
+    meta: Dict[str, str] = {}
+    for line in text[4:end].splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        meta[key.strip()] = value.strip().strip("\"'")
+    return meta
+
+
+def _normalize_metadata(metadata: Dict[str, Any]) -> Dict[str, Any]:
+    normalized: Dict[str, Any] = {}
+    for key, value in metadata.items():
+        key_lc = key.strip().lower()
+        if isinstance(value, str):
+            value = value.strip()
+            if key_lc in LIST_FIELDS:
+                parts = [part.strip() for part in value.split(",") if part.strip()]
+                if key_lc == "compliance":
+                    value = [part.lower() for part in parts]
+                else:
+                    value = parts
+            elif key_lc in LOWER_FIELDS:
+                value = value.lower()
+        elif isinstance(value, list) and key_lc == "compliance":
+            value = [str(part).strip().lower() for part in value]
+        normalized[key_lc] = value
+    return normalized
+
+
+def parse_metadata_from_brief(brief_path: Path) -> Dict[str, Any]:
+    if not brief_path.exists():
+        return {}
+
+    combined: Dict[str, Any] = {}
+    text = brief_path.read_text(encoding="utf-8")
+    combined.update(_parse_frontmatter(text))
+
+    metadata_json = brief_path.with_name("metadata.json")
+    if metadata_json.exists():
+        try:
+            json_metadata = json.loads(metadata_json.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"invalid metadata JSON at {metadata_json}: {exc}") from exc
+        combined.update(json_metadata)
+
+    return _normalize_metadata(combined)
+
+
+def merge_workflow_config(
+    base: Dict[str, Any],
+    spec: ScaffoldSpec,
+    metadata: Dict[str, Any],
+    name: str,
+) -> Dict[str, Any]:
+    merged: Dict[str, Any] = base.copy()
+    spec_config: Dict[str, Any] = {
+        "name": spec.name,
+        "industry": spec.industry,
+        "project_type": spec.project_type,
+        "frontend": spec.frontend,
+        "backend": spec.backend,
+        "database": spec.database,
+        "auth": spec.auth,
+        "deploy": spec.deploy,
+        "compliance": spec.compliance,
+        "features": spec.features,
+    }
+    merged.update(spec_config)
+    merged.update(metadata)
+    merged["name"] = name
+    return merged
 
 
 def ensure_brief_exists(path: Path) -> None:
@@ -700,10 +786,17 @@ def main() -> int:
         print(f"[plan] {exc}", file=sys.stderr)
         return 2
 
+    try:
+        metadata_overrides = parse_metadata_from_brief(brief_path)
+    except ValueError as exc:
+        print(f"[plan] {exc}", file=sys.stderr)
+        return 2
+
     spec = BriefParser(str(brief_path)).parse()
+    cfg = merge_workflow_config(cfg, spec, metadata_overrides, name)
     lanes = build_plan(spec, cfg)
 
-    output_root = Path(args.output_root)
+    output_root = Path(args.output_root or cfg.get("output_root") or "../_generated")
     project_dir = (output_root / name).resolve()
 
     frontend_lane = format_lane(lanes.get("frontend", []))
