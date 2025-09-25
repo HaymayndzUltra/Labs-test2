@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import DashboardClient from './DashboardClient';
-import { getCommerceDashboard } from './data';
-import type { EcommerceDashboardResponse } from './types';
+import { getPortfolioDashboard } from './data';
+import type { PortfolioDashboardResponse } from './types';
 
 function DashboardPageSkeleton() {
   return (
@@ -45,14 +45,14 @@ function DashboardPageSkeleton() {
 async function DashboardDataResolver({
   promise,
 }: {
-  promise: Promise<EcommerceDashboardResponse>;
+  promise: Promise<PortfolioDashboardResponse>;
 }) {
   const data = await promise;
   return <DashboardClient initialData={data} />;
 }
 
 export default function DashboardPage() {
-  const dashboardPromise = getCommerceDashboard();
+  const dashboardPromise = getPortfolioDashboard();
 
   return (
     <Suspense fallback={<DashboardPageSkeleton />}>
