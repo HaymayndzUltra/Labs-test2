@@ -1,0 +1,12 @@
+{
+  "name": "default",
+  "industry": "saas",
+  "project_type": "fullstack",
+  "frontend": "nextjs",
+  "backend": "fastapi",
+  "database": "postgres",
+  "auth": "auth0",
+  "deploy": "aws",
+  "compliance": [],
+  "output_root": "../_generated"
+}
