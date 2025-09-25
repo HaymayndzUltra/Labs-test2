@@ -19,6 +19,9 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
+      "@/*": [
+        "./src/*"
+      ],
       "@tanstack/react-query": [
         "./src/vendor/@tanstack/react-query"
       ]
