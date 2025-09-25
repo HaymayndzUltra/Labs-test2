@@ -1,0 +1,12 @@
+{
+  "industry": "saas",
+  "project_type": "fullstack",
+  "frontend": "nextjs",
+  "backend": "fastapi",
+  "database": "postgres",
+  "auth": "auth0",
+  "deploy": "vercel",
+  "features": ["analytics", "collaboration"],
+  "compliance": ["gdpr"],
+  "deployment_target": "vercel"
+}

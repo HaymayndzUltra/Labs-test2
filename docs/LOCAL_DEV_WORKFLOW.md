@@ -6,7 +6,7 @@ This guide walks through the non-interactive lifecycle that turns a client brief
 
 - Python 3.11+, Node.js 18+ (if the selected stack includes a frontend), Docker (for containerized checks), and Git installed locally.
 - Approved brief stored at `docs/briefs/<NAME>/brief.md`.
-- `workflow.config.json` populated with defaults for `name`, `industry`, `project_type`, `frontend`, `backend`, and `database`, or equivalent environment variables exported in your shell.
+- Baseline defaults live in `workflow.config.json`. It ships with the most common Next.js + FastAPI stack so that only `NAME` needs to be provided for matching projects. Per-project overrides come from brief metadata (frontmatter or `docs/briefs/<NAME>/metadata.json`) and are merged automatically by `pre_lifecycle_plan.py`.
 - Optional overrides: `AUTH`, `DEPLOY`, `COMPLIANCE`, and `NESTJS_ORM` depending on the client requirements.
 
 > ℹ️ Use the [`Makefile`](../Makefile) `lifecycle` target for a single entrypoint once the environment variables are in place. The steps below describe what the script executes under the hood.
@@ -23,6 +23,15 @@ python3 scripts/bootstrap_project.py --name portfolio-dashboard --update-config
 ```
 
 The bootstrapper reads overrides from CLI flags, environment variables, or `workflow.config.json`, ensures the brief folder exists via `scaffold_briefs.py`, then delegates to the lifecycle script. Continue with the detailed steps below when you need fine-grained control or to rerun individual stages.
+
+## Metadata-driven configuration
+
+Briefs now carry lightweight metadata so you rarely need to pass stack flags manually:
+
+- Add YAML frontmatter or a sibling `metadata.json` next to each `brief.md` with fields like `frontend`, `backend`, `database`, `auth`, and `deploy`.
+- `pre_lifecycle_plan.py` loads the baseline configuration, then merges the brief metadata and parsed scaffold spec to determine the effective stack.
+- If the brief matches the default Next.js + FastAPI profile, running `python scripts/pre_lifecycle_plan.py --name <NAME>` is sufficient—the script infers everything else.
+- Any explicit values in `metadata.json` or frontmatter override both the defaults and heuristic guesses from the parser, keeping unusual stacks flexible without touching the global config file.
 
 ## Step-by-Step Lifecycle
 
