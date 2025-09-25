@@ -178,7 +178,7 @@ export type CategorySubsection = {
 export type PortfolioCategory = {
   id: string;
   name: string;
-  icon: LucideIcon;
+  icon: string;
   tagline: string;
   description: string;
   surface: {

@@ -244,7 +244,7 @@ function buildCategories(): PortfolioCategory[] {
     {
       id: 'saas',
       name: 'SaaS Growth Command',
-      icon: CloudCog,
+      icon: 'CloudCog',
       tagline: 'Subscription intelligence tuned for ARR-heavy scale-ups.',
       description:
         'Monitor product adoption, API consumption, and retention signals through a cohesive growth cockpit.',
@@ -382,7 +382,7 @@ function buildCategories(): PortfolioCategory[] {
     {
       id: 'commerce',
       name: 'E-Commerce Intelligence',
-      icon: ShoppingBag,
+      icon: 'ShoppingBag',
       tagline: 'Merchandising, fulfilment, and lifecycle revenue in one glance.',
       description:
         'Layered analytics highlight SKU velocity, margin guardrails, and customer lifetime value.',
@@ -503,7 +503,7 @@ function buildCategories(): PortfolioCategory[] {
     {
       id: 'analytics',
       name: 'Corporate Analytics',
-      icon: BarChart3,
+      icon: 'BarChart3',
       tagline: 'Marketing-to-revenue visibility with no spreadsheet gymnastics.',
       description:
         'Track lead sources, conversion funnel health, and pipeline velocity with executive-ready visuals.',
@@ -602,7 +602,7 @@ function buildCategories(): PortfolioCategory[] {
     {
       id: 'productivity',
       name: 'Custom Productivity Suite',
-      icon: KanbanSquare,
+      icon: 'KanbanSquare',
       tagline: 'Kanban, workload analytics, and automation fused together.',
       description:
         'High-velocity teams visualise flow efficiency and stay ahead of SLA breaches.',
@@ -713,7 +713,7 @@ function buildCategories(): PortfolioCategory[] {
     {
       id: 'media',
       name: 'Content & Media Hub',
-      icon: PlayCircle,
+      icon: 'PlayCircle',
       tagline: 'Editorial rhythm, engagement, and monetisation in one studio view.',
       description:
         'Blend publishing cadences, campaign performance, and community health for every channel.',
@@ -802,7 +802,7 @@ function buildCategories(): PortfolioCategory[] {
     {
       id: 'edtech',
       name: 'EdTech Learning Fabric',
-      icon: GraduationCap,
+      icon: 'GraduationCap',
       tagline: 'Student activation, mastery, and credentialing at scale.',
       description:
         'Track mastery signals, prompt interventions, and surface instructor impact across cohorts.',
@@ -884,7 +884,7 @@ function buildCategories(): PortfolioCategory[] {
     {
       id: 'specialised',
       name: 'Specialised Verticals',
-      icon: Building2,
+      icon: 'Building2',
       tagline: 'Blueprints tailored for regulated, high-touch industries.',
       description:
         'Dedicated mini-dashboards show how automation and analytics flex to unique industry pressures.',

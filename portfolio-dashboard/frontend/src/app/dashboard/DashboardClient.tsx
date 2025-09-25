@@ -3,14 +3,20 @@
 import {
   ArrowDownRight,
   ArrowUpRight,
+  BarChart3,
+  Building2,
   CheckCircle2,
   ChevronRight,
   CircleDashed,
   Clock3,
+  CloudCog,
   Dot,
+  GraduationCap,
+  KanbanSquare,
   Layers,
   MailCheck,
   PlayCircle,
+  ShoppingBag,
   SlidersHorizontal,
   Sparkle,
 } from 'lucide-react';
@@ -50,6 +56,16 @@ const trendIconMap = {
   up: ArrowUpRight,
   down: ArrowDownRight,
   steady: CircleDashed,
+} as const;
+
+const categoryIconMap = {
+  CloudCog,
+  ShoppingBag,
+  BarChart3,
+  KanbanSquare,
+  PlayCircle,
+  GraduationCap,
+  Building2,
 } as const;
 
 type TrendKey = keyof typeof trendIconMap;
@@ -664,7 +680,7 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
         <div className="mx-auto max-w-7xl px-6 pb-6">
           <div className="flex flex-wrap gap-3">
             {initialData.categories.map((category) => {
-              const Icon = category.icon;
+              const Icon = categoryIconMap[category.icon as keyof typeof categoryIconMap];
               const isActive = category.id === activeCategoryId;
               return (
                 <button
