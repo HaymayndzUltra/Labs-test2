@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { api } from '@/lib/api';
+import { api } from '../lib/api';
 
 const fetcher = (url: string) => api.get(url).then((res) => res.data);
 

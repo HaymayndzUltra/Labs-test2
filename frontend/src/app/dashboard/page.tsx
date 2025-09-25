@@ -1,156 +1,1489 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
-import { apiHelpers } from '@/lib/api';
-import { useTenantBillingSummary } from '@/hooks/useTenantData';
-import { useTenantContext } from '@/hooks/useTenantContext';
+import { useMemo, useState } from 'react';
+import { MOTION_TOKENS, type ExportRecord } from '../../lib/design/tokens';
 
-const PLAN_OPTIONS = [
-  { id: 'starter', name: 'Starter', seats: 5 },
-  { id: 'growth', name: 'Growth', seats: 25 },
-  { id: 'scale', name: 'Scale', seats: 100 },
+const HEADER_TITLE = 'Premium Multi-Category Dashboard: SaaS, E-commerce, Corporate, Media, EdTech, Custom App, Niches';
+const HEADER_GENERATED_AT = '09/26/2025, 4:14:00 AM';
+
+type ViewState = 'success' | 'loading' | 'error' | 'empty';
+
+type ChartType = 'line' | 'bar' | 'donut' | 'heatmap' | 'funnel';
+
+type KPI = {
+  label: string;
+  value: string;
+  delta?: string;
+  deltaLabel?: string;
+  trend?: number[];
+};
+
+type TableRow = Record<string, string | number | JSX.Element>;
+
+type AutomationBlueprint = {
+  builderSummary: {
+    triggers: string[];
+    conditions: string[];
+    actions: string[];
+  };
+  toggles: { id: string; label: string; active: boolean; description: string }[];
+  runLogs: { id: string; status: 'success' | 'warning' | 'error'; timestamp: string; details: string }[];
+};
+
+type ExportBlueprint = {
+  dataset: string;
+  jsonSignedUrl: string;
+  csvSignedUrl: string;
+  expiresAt: string;
+};
+
+type ChartBlueprint = {
+  id: string;
+  title: string;
+  subtitle: string;
+  type: ChartType;
+  accessibilitySummary: string;
+  dataset: number[];
+  categories?: string[];
+  segments?: { label: string; value: number; pattern: string }[];
+  heatmap?: number[][];
+};
+
+type ModuleConfig = {
+  id: string;
+  name: string;
+  description: string;
+  filters: string[];
+  kpis: KPI[];
+  charts: ChartBlueprint[];
+  table: {
+    caption: string;
+    headers: string[];
+    rows: TableRow[];
+  };
+  automation: AutomationBlueprint;
+  exports: ExportBlueprint;
+  adjustments: string[];
+};
+
+const VIEW_STATE_LABELS: { value: ViewState; label: string; description: string }[] = [
+  { value: 'success', label: 'Success', description: 'Primary data loaded with real metrics.' },
+  { value: 'loading', label: 'Loading', description: 'Skeleton state simulates ≤400ms fetch.' },
+  { value: 'error', label: 'Error', description: 'Inline error recovery guidance provided.' },
+  { value: 'empty', label: 'Empty', description: 'Zero state nudges users to configure automation.' },
 ];
 
-export default function DashboardPage() {
-  const { summary, tenant, subscription, isLoading, mutate } = useTenantBillingSummary();
-  const { isAdmin } = useTenantContext();
-  const [updatingPlan, setUpdatingPlan] = useState<string | null>(null);
-
-  const activePlan = subscription?.plan ?? 'starter';
-
-  const availablePlans = useMemo(() => {
-    return PLAN_OPTIONS.map((plan) => ({
-      ...plan,
-      isActive: plan.id === activePlan,
-    }));
-  }, [activePlan]);
-
-  const handlePlanChange = useCallback(
-    async (planId: string) => {
-      if (!isAdmin) return;
-      try {
-        setUpdatingPlan(planId);
-        await apiHelpers.post('/api/v1/billing/subscription', {
-          plan: planId,
-          seats: PLAN_OPTIONS.find((plan) => plan.id === planId)?.seats ?? 5,
-          status: 'active',
-        });
-        await mutate();
-      } finally {
-        setUpdatingPlan(null);
-      }
-    },
-    [isAdmin, mutate]
+function statusBadge(state: 'READY' | 'REVIEW' | 'BLOCKED') {
+  const map = {
+    READY: { tone: 'success', icon: '✅', label: 'Ready' },
+    REVIEW: { tone: 'warning', icon: '🕵️', label: 'Review' },
+    BLOCKED: { tone: 'error', icon: '⛔', label: 'Blocked' },
+  } as const;
+  const { tone, icon, label } = map[state];
+  return (
+    <span className={`badge ${tone}`} aria-label={`${label} status`}>
+      <span aria-hidden="true">{icon}</span>
+      {label}
+    </span>
   );
+}
+
+function badgeWithIcon(tone: 'success' | 'warning' | 'info', label: string) {
+  const iconMap = { success: '🟢', warning: '🟠', info: '🔵' } as const;
+  return (
+    <span className={`badge ${tone}`}>
+      <span aria-hidden="true">{iconMap[tone]}</span>
+      {label}
+    </span>
+  );
+}
+
+function boldName(name: string) {
+  return <strong style={{ fontWeight: 600 }}>{name}</strong>;
+}
+const MODULE_CONFIGS: ModuleConfig[] = [
+  {
+    id: 'saas',
+    name: 'SaaS Growth Ops',
+    description:
+      'Billing, cohort hygiene, and usage anomaly protection keep SaaS revenue resilient while automations govern churn, upsell, and API safeguards.',
+    filters: ['Last 30 days', 'ARR > $50K', 'Enterprise plans'],
+    kpis: [
+      { label: 'Net ARR', value: '$4.2M', delta: '+6.4%', deltaLabel: 'vs last quarter', trend: [48, 52, 54, 58, 63, 66] },
+      { label: 'Churn Guard Alerts', value: '18', delta: '-12%', deltaLabel: 'Resolved proactively', trend: [22, 21, 20, 19, 18, 17] },
+      { label: 'API Throttle Events', value: '9', delta: '+2%', deltaLabel: 'Last 7 days', trend: [5, 6, 7, 8, 8, 9] },
+      { label: 'Plan Upsell Wins', value: '34', delta: '+18%', deltaLabel: 'Generated by NL workflows', trend: [24, 25, 29, 31, 33, 34] },
+    ],
+    charts: [
+      {
+        id: 'saas-line',
+        title: 'Usage vs Billing Recovery',
+        subtitle: 'Nightly hygiene jobs rebalance seat usage and recover dunning.',
+        type: 'line',
+        accessibilitySummary: 'Usage health rises from 72% to 88% while billing recovery climbs from $1.2M to $1.8M.',
+        dataset: [72, 74, 76, 80, 84, 88],
+        categories: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+      },
+      {
+        id: 'saas-donut',
+        title: 'Active Cohorts by Health Tier',
+        subtitle: 'Structured palette with percentage labels and redundant patterns.',
+        type: 'donut',
+        accessibilitySummary: 'Donut chart with 45% stable, 32% maturing, 15% watchlist, 8% critical accounts.',
+        dataset: [45, 32, 15, 8],
+        categories: ['Stable', 'Maturing', 'Watchlist', 'Critical'],
+        segments: [
+          { label: 'Stable 45%', value: 45, pattern: 'dots' },
+          { label: 'Maturing 32%', value: 32, pattern: 'diagonal' },
+          { label: 'Watchlist 15%', value: 15, pattern: 'grid' },
+          { label: 'Critical 8%', value: 8, pattern: 'cross' },
+        ],
+      },
+    ],
+    table: {
+      caption: 'Top churn risk accounts with automation coverage',
+      headers: ['Account', 'MRR', 'Risk score', 'Playbook', 'Owner'],
+      rows: [
+        { Account: 'Orbitly', MRR: '$82,400', 'Risk score': 'High (72)', Playbook: 'API anomaly throttle + NL outreach', Owner: 'Priya M.' },
+        { Account: 'Clearwind', MRR: '$51,900', 'Risk score': 'Medium (48)', Playbook: 'Plan-limit upsell + coaching', Owner: 'Luis G.' },
+        { Account: 'BeaconStack', MRR: '$39,250', 'Risk score': 'Medium (45)', Playbook: 'Billing retry orchestration', Owner: 'Hannah L.' },
+      ],
+    },
+    automation: {
+      builderSummary: {
+        triggers: ['Billing payment_failed webhook', 'Usage anomaly > +35%', 'NL command: "recover churn"'],
+        conditions: ['Customer tier ≥ Growth', 'Past due invoices ≥ 2', 'Health score < 65'],
+        actions: [
+          'Throttle API rate by 25% with notice',
+          'Launch dunning retries multi-channel',
+          'Open upsell offer + assign exec sponsor',
+        ],
+      },
+      toggles: [
+        { id: 'churn-alerts', label: 'Churn alerts', active: true, description: 'Escalate when risk > 70' },
+        { id: 'billing-retries', label: 'Billing retries', active: true, description: 'Smart retries with card updater' },
+        { id: 'nl-generator', label: 'NL workflow generator', active: false, description: 'Allow product to auto-create flows' },
+      ],
+      runLogs: [
+        { id: 'log-1', status: 'success', timestamp: '2025-09-26 03:52', details: 'Recovered $12.4K from Orbitly invoice #4821.' },
+        { id: 'log-2', status: 'warning', timestamp: '2025-09-26 01:05', details: 'API throttle triggered for Clearwind awaiting ack.' },
+      ],
+    },
+    exports: {
+      dataset: 'SaaS billing hygiene snapshot',
+      jsonSignedUrl: 'https://signed.example.com/exports/saas-hygiene.json?sig=abc123',
+      csvSignedUrl: 'https://signed.example.com/exports/saas-hygiene.csv?sig=def456',
+      expiresAt: '2025-09-27 04:00 UTC',
+    },
+    adjustments: [
+      'Chart captions and axis contrast reinforced.',
+      'Donut uses value labels and patterns for safety.',
+      'Launch workflow CTA emphasized via primary action.',
+    ],
+  },
+  {
+    id: 'ecommerce',
+    name: 'E-commerce Command Center',
+    description:
+      'Unified commerce telemetry aligns sales velocity, conversion operations, and fulfilment automations to protect margins and loyalty.',
+    filters: ['QTD', 'Top SKUs', 'High intent segments'],
+    kpis: [
+      { label: 'GMV', value: '$12.8M', delta: '+8.2%', deltaLabel: 'vs previous quarter', trend: [9.1, 9.8, 10.4, 11.6, 12.2, 12.8] },
+      { label: 'Conversion Rate', value: '3.84%', delta: '+0.4pts', deltaLabel: 'Checkout refinements', trend: [3.1, 3.2, 3.4, 3.5, 3.7, 3.84] },
+      { label: 'Low-stock Alerts', value: '26', delta: '-18%', deltaLabel: 'Vendor sync automations', trend: [36, 33, 31, 28, 27, 26] },
+      { label: 'VIP Repeat Rate', value: '68%', delta: '+6%', deltaLabel: 'Loyalty perks orchestration', trend: [54, 56, 58, 61, 65, 68] },
+    ],
+    charts: [
+      {
+        id: 'commerce-bar',
+        title: 'Sales Trend vs Conversion',
+        subtitle: 'Baseline aligned with fulfilment table for direct comparison.',
+        type: 'bar',
+        accessibilitySummary: 'Clustered bars show steady GMV climb with conversion improving from 3.1% to 3.84%.',
+        dataset: [3.1, 3.2, 3.4, 3.5, 3.7, 3.84],
+        categories: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+      },
+      {
+        id: 'commerce-funnel',
+        title: 'Abandoned Cart Funnel Coverage',
+        subtitle: 'Email → SMS → WhatsApp orchestration with drop-offs annotated.',
+        type: 'funnel',
+        accessibilitySummary: 'Funnel shows 42K cart creations, 28K email opens, 13K SMS engagements, 7.5K WhatsApp conversions.',
+        dataset: [42000, 28000, 13000, 7500],
+        categories: ['Cart', 'Email', 'SMS', 'WhatsApp'],
+      },
+    ],
+    table: {
+      caption: 'Fulfilment operations baseline-aligned with sales trend',
+      headers: ['Queue', 'SLA', 'Conversion %', 'Automation', 'Owner'],
+      rows: [
+        { Queue: 'Priority orders', SLA: 'Under 4h', 'Conversion %': '94%', Automation: 'Fraud hold + VIP perks', Owner: 'Dana L.' },
+        { Queue: 'Returns', SLA: 'Under 24h', 'Conversion %': '68%', Automation: 'Return optimization', Owner: 'Marco S.' },
+        { Queue: 'Low stock', SLA: 'Immediate', 'Conversion %': '81%', Automation: 'Vendor replenishment sync', Owner: 'Sanjay P.' },
+      ],
+    },
+    automation: {
+      builderSummary: {
+        triggers: ['Shopify cart_abandoned', 'Inventory < safety stock', 'Fraud score > 0.8'],
+        conditions: ['Segment = VIP OR AOV > $400', 'Geo supports WhatsApp outreach'],
+        actions: [
+          'Send staged email → SMS → WhatsApp sequence',
+          'Open vendor replenishment ticket with forecast quantities',
+          'Auto-apply VIP perks and expedite shipping',
+        ],
+      },
+      toggles: [
+        { id: 'abandoned-cart', label: 'Abandoned cart nurture', active: true, description: 'Email → SMS → WhatsApp with quiet hours' },
+        { id: 'low-stock', label: 'Low-stock vendor sync', active: true, description: 'Auto-PO per vendor availability' },
+        { id: 'fraud-hold', label: 'Fraud hold + review', active: true, description: 'Escalate to risk if score > 0.8' },
+      ],
+      runLogs: [
+        { id: 'log-3', status: 'success', timestamp: '2025-09-26 02:41', details: 'Low-stock automation raised PO#9921 with Vendor Atlas.' },
+        { id: 'log-4', status: 'error', timestamp: '2025-09-25 22:09', details: 'WhatsApp integration retry required for LATAM (API 503).' },
+      ],
+    },
+    exports: {
+      dataset: 'Unified commerce operations snapshot',
+      jsonSignedUrl: 'https://signed.example.com/exports/ecommerce-ops.json?sig=ghi789',
+      csvSignedUrl: 'https://signed.example.com/exports/ecommerce-ops.csv?sig=jkl012',
+      expiresAt: '2025-09-27 04:00 UTC',
+    },
+    adjustments: [
+      'Sales trend baseline locked with operations table for zero drift.',
+      'KPI vertical padding normalized to 16px.',
+      'Conversion headers boldened for clarity.',
+    ],
+  },
+  {
+    id: 'corporate',
+    name: 'Corporate Analytics HQ',
+    description:
+      'Executive-ready analytics combine funnel intelligence, ML scoring, and automated commentary for high-velocity decisions.',
+    filters: ['FY25', 'Enterprise', 'North America'],
+    kpis: [
+      { label: 'Pipeline Coverage', value: '4.6×', delta: '+0.3×', deltaLabel: 'vs target', trend: [3.8, 4.0, 4.1, 4.3, 4.4, 4.6] },
+      { label: 'Intent Surge Alerts', value: '57', delta: '+14%', deltaLabel: 'Last 30 days', trend: [38, 41, 44, 49, 54, 57] },
+      { label: 'Executive Insights CTR', value: '41%', delta: '+9%', deltaLabel: 'Personalized digests', trend: [28, 32, 35, 37, 39, 41] },
+      { label: 'Lead Score Accuracy', value: '92%', delta: '+4%', deltaLabel: 'ML retraining weekly', trend: [86, 87, 88, 90, 91, 92] },
+    ],
+    charts: [
+      {
+        id: 'corp-funnel',
+        title: 'Velocity Funnel vs Forecast',
+        subtitle: 'Spacing normalized against adjacent analytics table.',
+        type: 'funnel',
+        accessibilitySummary: 'Funnel shows 18K leads, 9.1K qualified, 3.5K proposals, 1.2K closed won.',
+        dataset: [18000, 9100, 3500, 1200],
+        categories: ['Inflow', 'Qualified', 'Proposal', 'Closed'],
+      },
+      {
+        id: 'corp-donut',
+        title: 'Forecast Confidence Mix',
+        subtitle: 'Five-color palette with icon + label pairing for clarity.',
+        type: 'donut',
+        accessibilitySummary: 'Donut splits 32% committed, 28% upside, 18% best, 12% stretch, 10% risk.',
+        dataset: [32, 28, 18, 12, 10],
+        categories: ['Committed', 'Upside', 'Best', 'Stretch', 'Risk'],
+        segments: [
+          { label: 'Committed 32%', value: 32, pattern: 'dots' },
+          { label: 'Upside 28%', value: 28, pattern: 'diagonal' },
+          { label: 'Best 18%', value: 18, pattern: 'grid' },
+          { label: 'Stretch 12%', value: 12, pattern: 'cross' },
+          { label: 'Risk 10%', value: 10, pattern: 'horizontal' },
+        ],
+      },
+    ],
+    table: {
+      caption: 'Executive insights commentary and next actions',
+      headers: ['Insight', 'Priority', 'Owner', 'Next action'],
+      rows: [
+        { Insight: 'Velocity stalled in healthcare', Priority: 'High', Owner: 'EVP Sales', 'Next action': 'Trigger nurture + exec outreach' },
+        { Insight: 'Intent surge in cloud-native', Priority: 'Medium', Owner: 'Director Growth', 'Next action': 'Activate ML blitz + digest' },
+        { Insight: 'Mid-market pipeline underweight', Priority: 'Medium', Owner: 'VP RevOps', 'Next action': 'Launch nurture + adjust targets' },
+      ],
+    },
+    automation: {
+      builderSummary: {
+        triggers: ['Lead score > 80', 'Pipeline velocity < target 3 days', 'Intent surge detection'],
+        conditions: ['Opportunity stage ≥ Evaluate', 'Persona = Economic buyer'],
+        actions: [
+          'Send personalized C-suite digest',
+          'Escalate stall alert to deal desk',
+          'Start lifecycle nurture stream + assign analyst',
+        ],
+      },
+      toggles: [
+        { id: 'lead-scoring', label: 'ML lead scoring', active: true, description: 'Auto-refresh weekly with CRM feedback' },
+        { id: 'velocity-alerts', label: 'Velocity stall alerts', active: true, description: 'Ping deal owners in Slack + email' },
+        { id: 'c-suite-digest', label: 'C-suite digest commentary', active: true, description: 'Narrative summary auto-generated' },
+      ],
+      runLogs: [
+        { id: 'log-5', status: 'success', timestamp: '2025-09-26 03:05', details: 'Lead score > 88 triggered briefing to Zenovo CFO.' },
+        { id: 'log-6', status: 'warning', timestamp: '2025-09-25 21:42', details: 'Velocity stall awaiting SDR acknowledgement West.' },
+      ],
+    },
+    exports: {
+      dataset: 'Corporate analytics executive digest',
+      jsonSignedUrl: 'https://signed.example.com/exports/corporate-digest.json?sig=mnq345',
+      csvSignedUrl: 'https://signed.example.com/exports/corporate-digest.csv?sig=rst678',
+      expiresAt: '2025-09-27 04:00 UTC',
+    },
+    adjustments: [
+      'Funnel vs table spacing normalized.',
+      'Executive insights padding aligned to 20px.',
+      'Donut palette structured with patterns.',
+    ],
+  },
+  {
+    id: 'productivity',
+    name: 'Custom Web App Productivity',
+    description:
+      'Workstreams orchestrate Kanban throughput, backlog hygiene, and sprint rituals with automation bridging Jira, Trello, and Asana.',
+    filters: ['Current sprint', 'Cross-team view', 'Utilization'],
+    kpis: [
+      { label: 'Sprint Velocity', value: '54 pts', delta: '+7 pts', deltaLabel: 'vs sprint target', trend: [41, 44, 48, 52, 53, 54] },
+      { label: 'Stale Tasks', value: '12', delta: '-5', deltaLabel: 'Nudges resolved 3', trend: [21, 18, 17, 16, 14, 12] },
+      { label: 'Capacity Balance', value: '92%', delta: '+6%', deltaLabel: 'Team load leveled', trend: [74, 78, 82, 84, 88, 92] },
+      { label: 'Automation Coverage', value: '86%', delta: '+4%', deltaLabel: 'Two-way sync live', trend: [72, 75, 79, 82, 84, 86] },
+    ],
+    charts: [
+      {
+        id: 'productivity-line',
+        title: 'Workload Distribution',
+        subtitle: 'Chart aligns with backlog list baseline with pattern cues.',
+        type: 'line',
+        accessibilitySummary: 'Line highlights steady workload balance across squads.',
+        dataset: [68, 72, 74, 78, 81, 84],
+        categories: ['Week 18', 'Week 19', 'Week 20', 'Week 21', 'Week 22', 'Week 23'],
+      },
+      {
+        id: 'productivity-heatmap',
+        title: 'Kanban Flow Heatmap',
+        subtitle: 'Additional 8px gutters between columns ensure clarity.',
+        type: 'heatmap',
+        accessibilitySummary: 'Heatmap shows throughput intensity with highest density mid-week in Review.',
+        dataset: [],
+        heatmap: [
+          [2, 4, 5, 3, 4],
+          [1, 3, 4, 2, 3],
+          [3, 4, 5, 5, 4],
+          [2, 3, 3, 4, 3],
+        ],
+        categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+      },
+    ],
+    table: {
+      caption: 'Backlog alignment with workload chart',
+      headers: ['Workstream', 'Status', 'Assignee', 'Due'],
+      rows: [
+        { Workstream: 'Realtime collaboration', Status: statusBadge('READY'), Assignee: 'Noah L.', Due: 'Oct 4' },
+        { Workstream: 'AI idea triage', Status: statusBadge('REVIEW'), Assignee: 'Avery K.', Due: 'Oct 6' },
+        { Workstream: 'Sprint retro assistant', Status: statusBadge('BLOCKED'), Assignee: 'Sasha R.', Due: 'Oct 3' },
+      ],
+    },
+    automation: {
+      builderSummary: {
+        triggers: ['Sprint start event', 'Task stale > 5 days', 'Voice note idea ingestion'],
+        conditions: ['Board = Product HQ', 'Priority ≥ Medium', 'Capacity variance > 10%'],
+        actions: [
+          'Schedule sprint rituals and prep docs',
+          'Send stale-task nudges with quick actions',
+          'Triage ideas via NLP and assign squads',
+        ],
+      },
+      toggles: [
+        { id: 'rituals', label: 'Sprint ritual orchestration', active: true, description: 'Auto-schedule standup, review, retro' },
+        { id: 'stale-nudges', label: 'Stale task nudges', active: true, description: 'Space/Enter to drag accessible Kanban tasks' },
+        { id: 'two-way-sync', label: 'Jira/Trello/Asana sync', active: true, description: 'Bi-directional field mapping' },
+      ],
+      runLogs: [
+        { id: 'log-7', status: 'success', timestamp: '2025-09-26 03:12', details: 'Retro assistant generated agenda & shared to Slack.' },
+        { id: 'log-8', status: 'warning', timestamp: '2025-09-25 20:37', details: 'Capacity balancing flagged UI squad load at 112%.' },
+      ],
+    },
+    exports: {
+      dataset: 'Productivity orchestration snapshot',
+      jsonSignedUrl: 'https://signed.example.com/exports/productivity.json?sig=uvw901',
+      csvSignedUrl: 'https://signed.example.com/exports/productivity.csv?sig=xyz234',
+      expiresAt: '2025-09-27 04:00 UTC',
+    },
+    adjustments: [
+      'Kanban and side cards balanced with matched heights.',
+      'Workload chart baseline aligned with backlog list.',
+      'Added +8px gutters between Kanban columns.',
+    ],
+  },
+  {
+    id: 'media',
+    name: 'Content & Media Control Tower',
+    description:
+      'Publishing orchestration governs editorial velocity, ready/review/blocked states, and multi-channel distribution with semantic intelligence.',
+    filters: ['This week', 'Priority coverage', 'Channel mix'],
+    kpis: [
+      { label: 'Stories Published', value: '46', delta: '+11', deltaLabel: 'vs rolling avg', trend: [28, 31, 34, 39, 42, 46] },
+      { label: 'Review Bottlenecks', value: '5', delta: '-3', deltaLabel: 'Queue clearing faster', trend: [11, 10, 9, 8, 6, 5] },
+      { label: 'Highlight Clips', value: '63', delta: '+22%', deltaLabel: 'Auto-generated packages', trend: [38, 40, 44, 51, 58, 63] },
+      { label: 'Audience Growth', value: '+12.4%', delta: '+2.1pts', deltaLabel: 'Cross-channel syndication', trend: [6.2, 7.1, 8.3, 9.7, 11.2, 12.4] },
+    ],
+    charts: [
+      {
+        id: 'media-bar',
+        title: 'Publishing Cadence & Queue Alignment',
+        subtitle: 'Publishing queue baseline aligned with automation card.',
+        type: 'bar',
+        accessibilitySummary: 'Bar chart comparing daily publish counts with review queue showing Monday peak.',
+        dataset: [12, 10, 8, 7, 9],
+        categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+      },
+      {
+        id: 'media-line',
+        title: 'Engagement Uptick from Highlight Clips',
+        subtitle: 'Icons reinforce automation status.',
+        type: 'line',
+        accessibilitySummary: 'Engagement rate climbs from 6% to 12.4% after automation rollout.',
+        dataset: [6, 7.1, 8.3, 9.7, 11.2, 12.4],
+        categories: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+      },
+    ],
+    table: {
+      caption: 'Top stories readiness overview with icon cues',
+      headers: ['Story', 'Status', 'Channel', 'Editor'],
+      rows: [
+        { Story: 'Metaverse to reality', Status: statusBadge('READY'), Channel: 'Web + TikTok', Editor: 'Mel V.' },
+        { Story: 'Generative design sprint', Status: statusBadge('REVIEW'), Channel: 'Web + YouTube', Editor: 'Omar K.' },
+        { Story: 'AI newsroom ethics', Status: statusBadge('BLOCKED'), Channel: 'Podcast + Web', Editor: 'Iris P.' },
+      ],
+    },
+    automation: {
+      builderSummary: {
+        triggers: ['CMS publish_ready', 'Semantic tags incomplete', 'Blocked queue > 2h'],
+        conditions: ['Channel mix includes social clip', 'Legal sign-off required'],
+        actions: [
+          'Drive publishing control tower to unlock slots',
+          'Auto-tag assets semantically',
+          'Send blocked queue alerts with clip previews',
+        ],
+      },
+      toggles: [
+        { id: 'control-tower', label: 'Publishing control tower', active: true, description: 'Dynamic slot management across channels' },
+        { id: 'auto-tagging', label: 'Semantic auto-tagging', active: true, description: 'Embeddings categorize automatically' },
+        { id: 'highlight-clips', label: 'Highlight clip generator', active: true, description: 'Auto-cut & distribute highlight reels' },
+      ],
+      runLogs: [
+        { id: 'log-9', status: 'success', timestamp: '2025-09-26 01:48', details: 'Highlight clip package published to YouTube + TikTok.' },
+        { id: 'log-10', status: 'error', timestamp: '2025-09-25 19:14', details: 'Blocked queue escalation awaiting legal review for AI newsroom ethics.' },
+      ],
+    },
+    exports: {
+      dataset: 'Media orchestration pulse',
+      jsonSignedUrl: 'https://signed.example.com/exports/media.json?sig=abc567',
+      csvSignedUrl: 'https://signed.example.com/exports/media.csv?sig=def890',
+      expiresAt: '2025-09-27 04:00 UTC',
+    },
+    adjustments: [
+      'Publishing queue baseline aligned with automation card.',
+      'Top stories headers strengthened to 600 weight with higher contrast.',
+      'READY/REVIEW/BLOCKED badges include icons + text for safety.',
+    ],
+  },
+  {
+    id: 'edtech',
+    name: 'EdTech Learning Pulse',
+    description:
+      'Adaptive learning analytics orchestrate remediation, credentialing, and mentor rotations to maximize completion and engagement.',
+    filters: ['Active cohorts', 'At-risk learners', 'Certification pathways'],
+    kpis: [
+      { label: 'Completion Rate', value: '84%', delta: '+6%', deltaLabel: 'Adaptive nudges in play', trend: [72, 74, 77, 79, 82, 84] },
+      { label: 'Certificates Issued', value: '1,248', delta: '+14%', deltaLabel: 'Auto-certification workflows', trend: [820, 910, 1020, 1118, 1204, 1248] },
+      { label: 'Mentor Coverage', value: '96%', delta: '+4%', deltaLabel: 'Rotation automation', trend: [82, 84, 88, 92, 94, 96] },
+      { label: 'Inactivity Alerts', value: '73', delta: '-11%', deltaLabel: 'Targeted outreach', trend: [108, 102, 98, 90, 82, 73] },
+    ],
+    charts: [
+      {
+        id: 'edtech-heatmap',
+        title: 'Module Mastery Heatmap',
+        subtitle: 'Numeric overlays and tooltips strengthen interpretation.',
+        type: 'heatmap',
+        accessibilitySummary: 'Heatmap displays mastery percentages with highest scores in project modules.',
+        dataset: [],
+        heatmap: [
+          [92, 88, 76, 64],
+          [85, 90, 81, 72],
+          [78, 83, 88, 79],
+          [69, 74, 82, 88],
+        ],
+        categories: ['Module 1', 'Module 2', 'Module 3', 'Module 4'],
+      },
+      {
+        id: 'edtech-line',
+        title: 'Engagement Trajectory',
+        subtitle: 'Alert spacing normalized to maintain rhythm.',
+        type: 'line',
+        accessibilitySummary: 'Engagement rises steadily from 58% to 86% across the term.',
+        dataset: [58, 62, 68, 74, 81, 86],
+        categories: ['Week 1', 'Week 3', 'Week 5', 'Week 7', 'Week 9', 'Week 11'],
+      },
+    ],
+    table: {
+      caption: 'Cohort intervention tracker',
+      headers: ['Learner', 'Risk', 'Intervention', 'Mentor'],
+      rows: [
+        { Learner: 'Anika P.', Risk: badgeWithIcon('info', 'Moderate'), Intervention: 'Adaptive remediation sequence', Mentor: 'Jordan W.' },
+        { Learner: 'Kai R.', Risk: badgeWithIcon('warning', 'High'), Intervention: 'Live mentor session scheduled', Mentor: 'Morgan F.' },
+        { Learner: 'Lila T.', Risk: badgeWithIcon('success', 'Recovered'), Intervention: 'Certificate issued + badge push', Mentor: 'Dev C.' },
+      ],
+    },
+    automation: {
+      builderSummary: {
+        triggers: ['Assessment score < 70', 'Inactivity > 5 days', 'Program completion achieved'],
+        conditions: ['Enrollment status = Active', 'Mentor bandwidth ≥ 2 slots'],
+        actions: [
+          'Send adaptive remediation path',
+          'Fire inactivity nudges (email + SMS)',
+          'Issue digital credential via Credly',
+        ],
+      },
+      toggles: [
+        { id: 'certificates', label: 'Auto-certification', active: true, description: 'Issue certificates instantly via Credly' },
+        { id: 'nudges', label: 'Inactivity nudges', active: true, description: 'Multi-channel outreach for idle learners' },
+        { id: 'mentor-rotation', label: 'Mentor rotation', active: true, description: 'Balances mentor loads weekly' },
+      ],
+      runLogs: [
+        { id: 'log-11', status: 'success', timestamp: '2025-09-26 00:59', details: 'Auto-issued certificate to cohort AI-2025; Credly badge delivered.' },
+        { id: 'log-12', status: 'warning', timestamp: '2025-09-25 18:42', details: 'Mentor rotation pending acceptance from Morgan F.' },
+      ],
+    },
+    exports: {
+      dataset: 'Learning engagement export',
+      jsonSignedUrl: 'https://signed.example.com/exports/edtech.json?sig=ghi123',
+      csvSignedUrl: 'https://signed.example.com/exports/edtech.csv?sig=jkl456',
+      expiresAt: '2025-09-27 04:00 UTC',
+    },
+    adjustments: [
+      'Heatmap labels aligned with grid and numeric overlays included.',
+      'Alerts spacing normalized to maintain 16px rhythm.',
+      'Table header contrast boosted with heavier weight.',
+    ],
+  },
+  {
+    id: 'niches',
+    name: 'Specialized Niches: Healthcare · Finance · Real Estate',
+    description:
+      'Industry-specific automations coordinate appointments, compliance, and lifecycle journeys across regulated verticals with unified semantic badges.',
+    filters: ['Healthcare', 'Finance', 'Real Estate'],
+    kpis: [
+      { label: 'Appointments Confirmed', value: '1,842', delta: '+12%', deltaLabel: 'Healthcare digital assistants', trend: [1240, 1320, 1412, 1556, 1704, 1842] },
+      { label: 'Finance Exceptions Cleared', value: '312', delta: '+18%', deltaLabel: 'Expense anomaly routing', trend: [188, 204, 233, 254, 287, 312] },
+      { label: 'Real Estate Lead Velocity', value: '9.6', delta: '+1.4', deltaLabel: 'Per agent per week', trend: [6.8, 7.2, 7.9, 8.5, 9.1, 9.6] },
+      { label: 'Shared Digital Intakes', value: '4,320', delta: '+24%', deltaLabel: 'Assistant triage coverage', trend: [2480, 2660, 2920, 3310, 3790, 4320] },
+    ],
+    charts: [
+      {
+        id: 'niche-bar',
+        title: 'Automation Impact by Vertical',
+        subtitle: 'Appointments vs logs baseline keeps verticals balanced.',
+        type: 'bar',
+        accessibilitySummary: 'Bar chart shows healthcare 68% automation, finance 54%, real estate 47%.',
+        dataset: [68, 54, 47],
+        categories: ['Healthcare', 'Finance', 'Real Estate'],
+      },
+      {
+        id: 'niche-line',
+        title: 'Compliance Signal Trend',
+        subtitle: 'Line weights readable in dark mode with accessible colors.',
+        type: 'line',
+        accessibilitySummary: 'Compliance follow-ups decrease from 42 to 18 across the quarter.',
+        dataset: [42, 37, 31, 27, 22, 18],
+        categories: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+      },
+    ],
+    table: {
+      caption: 'Appointments, approvals, and nurture tasks overview',
+      headers: ['Stream', 'Status', 'Owner', 'Next SLA'],
+      rows: [
+        { Stream: 'Healthcare – Cardio clinic', Status: badgeWithIcon('success', 'Confirmed'), Owner: boldName('Dr. Elena Ruiz'), 'Next SLA': '2h follow-up' },
+        { Stream: 'Finance – Expense audit', Status: badgeWithIcon('warning', 'Pending review'), Owner: boldName('Marcus Reed'), 'Next SLA': '6h escalation' },
+        { Stream: 'Real estate – Listing nurture', Status: badgeWithIcon('info', 'Active drip'), Owner: boldName('Leila Chen'), 'Next SLA': '24h multi-channel' },
+      ],
+    },
+    automation: {
+      builderSummary: {
+        triggers: ['Appointment booked', 'Expense flagged anomaly', 'New property lead created'],
+        conditions: ['Vertical compliance satisfied', 'Digital assistant available'],
+        actions: [
+          'Send reminders + escalate no-show predictions',
+          'Route expense approvals with anomaly detection',
+          'Launch listing nurture drips with multi-channel reminders',
+        ],
+      },
+      toggles: [
+        { id: 'healthcare', label: 'Healthcare orchestration', active: true, description: 'Reminders + no-show prediction + escalation' },
+        { id: 'finance', label: 'Finance approvals', active: true, description: 'Expense routing + period-close checklist' },
+        { id: 'real-estate', label: 'Real estate nurture', active: true, description: 'Lead assignment + multi-channel reminders' },
+      ],
+      runLogs: [
+        { id: 'log-13', status: 'success', timestamp: '2025-09-26 02:23', details: 'Healthcare assistant rescheduled 6 no-show risk appointments.' },
+        { id: 'log-14', status: 'warning', timestamp: '2025-09-25 23:16', details: 'Finance anomaly requires manual review for Vendor Altus (>$25K).' },
+      ],
+    },
+    exports: {
+      dataset: 'Specialized niches orchestration export',
+      jsonSignedUrl: 'https://signed.example.com/exports/niches.json?sig=mno789',
+      csvSignedUrl: 'https://signed.example.com/exports/niches.csv?sig=pqr012',
+      expiresAt: '2025-09-27 04:00 UTC',
+    },
+    adjustments: [
+      'Appointments card balanced with automation logs using shared min-height.',
+      'Patient and clinician names bolded for clarity.',
+      'Semantic badges include iconography + text for dark-mode readability.',
+    ],
+  },
+];
+export default function DashboardPage() {
+  const [viewState, setViewState] = useState<ViewState>('success');
+  const [exportLogs, setExportLogs] = useState<Record<string, ExportRecord[]>>({});
+  const [toast, setToast] = useState<{ message: string; visible: boolean } | null>(null);
+
+  const handleExport = (moduleId: string, format: 'csv' | 'json', signedUrl: string) => {
+    const timestamp = new Date().toISOString();
+    const expires = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    const record: ExportRecord = {
+      id: crypto.randomUUID(),
+      module: moduleId,
+      format,
+      url: signedUrl,
+      createdAt: timestamp,
+      expiresAt: expires,
+    };
+    setExportLogs((prev) => ({
+      ...prev,
+      [moduleId]: [record, ...(prev[moduleId] ?? [])],
+    }));
+    setToast({
+      message: `${format.toUpperCase()} export queued for ${moduleId}. Valid until ${new Date(expires).toLocaleTimeString()}.`,
+      visible: true,
+    });
+    window.setTimeout(() => {
+      setToast((current) => (current ? { ...current, visible: false } : current));
+    }, MOTION_TOKENS.duration.narrative + 400);
+  };
+
+  const resolvedExportLogs = useMemo(() => exportLogs, [exportLogs]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-4 pb-16 pt-10 sm:px-6 lg:px-8">
+      <header className="flex flex-col gap-2" aria-labelledby="dashboard-title">
+        <h1
+          id="dashboard-title"
+          style={{ fontSize: 'var(--font-size-display)', lineHeight: 'var(--line-height-display)', fontWeight: 600 }}
+        >
+          {HEADER_TITLE}
+        </h1>
+        <span style={{ fontSize: 'var(--font-size-caption)', lineHeight: 'var(--line-height-caption)', color: 'var(--color-text-secondary)' }}>
+          Generated at {HEADER_GENERATED_AT}
+        </span>
+        <p className="text-sm" style={{ color: 'var(--color-text-secondary)', maxWidth: '72ch' }}>
+          Automation-ready IA unifies seven verticals with consistent design tokens, WCAG AA contrast, responsive parity across
+          light, dark, and RTL, plus luxury motion choreography.
+        </p>
+      </header>
+
+      <section className="card" aria-labelledby="state-controls-heading">
+        <div className="flex flex-col gap-4">
+          <div>
+            <h2 id="state-controls-heading" className="section-heading">
+              Experience states
+            </h2>
+            <p className="section-caption">
+              Toggle between empty, loading, error, and success patterns to validate resilience without layout drift.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {VIEW_STATE_LABELS.map((state) => (
+              <label
+                key={state.value}
+                className="card"
+                style={{
+                  borderColor: viewState === state.value ? 'var(--color-primary)' : 'var(--color-border)',
+                  boxShadow: viewState === state.value ? 'var(--shadow-raised)' : 'var(--shadow-base)',
+                  cursor: 'pointer',
+                }}
+              >
+                <input
+                  type="radio"
+                  name="view-state"
+                  value={state.value}
+                  checked={viewState === state.value}
+                  onChange={() => setViewState(state.value)}
+                  className="sr-only"
+                />
+                <div className="flex flex-col gap-2">
+                  <span className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                    {state.label}
+                  </span>
+                  <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                    {state.description}
+                  </span>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {MODULE_CONFIGS.map((module, index) => (
+        <ModuleSection
+          key={module.id}
+          module={module}
+          index={index}
+          viewState={viewState}
+          exportLogs={resolvedExportLogs[module.id] ?? []}
+          onExport={handleExport}
+        />
+      ))}
+
+      <MotionTimeline />
+
+      <div className="toast-region" role="status" aria-live="polite">
+        {toast && (
+          <div className="toast" data-visible={toast.visible}>
+            <span className="text-sm" style={{ color: 'var(--color-text-primary)' }}>
+              {toast.message}
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+interface ModuleSectionProps {
+  module: ModuleConfig;
+  index: number;
+  viewState: ViewState;
+  exportLogs: ExportRecord[];
+  onExport: (moduleId: string, format: 'csv' | 'json', signedUrl: string) => void;
+}
+
+function ModuleSection({ module, index, viewState, exportLogs, onExport }: ModuleSectionProps) {
+  const baseDelay = index * 80;
+
+  return (
+    <section
+      id={module.id}
+      className="flex flex-col gap-8"
+      aria-labelledby={`${module.id}-title`}
+      style={{ scrollMarginTop: '120px' }}
+    >
+      <header className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 id={`${module.id}-title`} className="section-heading">
+              {module.name}
+            </h2>
+            <p className="section-caption" style={{ maxWidth: '80ch' }}>
+              {module.description}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto" role="group" aria-label={`${module.name} filters`}>
+            {module.filters.map((filter) => (
+              <span key={filter} className="state-chip">
+                <span aria-hidden="true">⚙️</span>
+                {filter}
+              </span>
+            ))}
+          </div>
+        </div>
+        <ul className="flex flex-wrap gap-2 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+          {module.adjustments.map((adjustment) => (
+            <li key={adjustment} className="flex items-center gap-2">
+              <span aria-hidden="true">•</span>
+              {adjustment}
+            </li>
+          ))}
+        </ul>
+      </header>
+
+      <KpiRow kpis={module.kpis} viewState={viewState} />
+
+      <div className="grid-12">
+        {module.charts.map((chart, chartIndex) => (
+          <div key={chart.id} className={`col-span-12 ${chartIndex === 0 ? 'lg:col-span-8' : 'lg:col-span-4'}`}>
+            <ChartCard chart={chart} viewState={viewState} delay={baseDelay + chartIndex * 60} />
+          </div>
+        ))}
+        <div className="col-span-12">
+          <TableCard table={module.table} viewState={viewState} />
+        </div>
+        <div className="col-span-12 lg:col-span-7 flex flex-col gap-6">
+          <AutomationBuilder module={module} viewState={viewState} delay={baseDelay + 200} />
+        </div>
+        <div className="col-span-12 lg:col-span-5 flex flex-col gap-6">
+          <AutomationLogs logs={module.automation.runLogs} viewState={viewState} />
+          <ExportPanel module={module} viewState={viewState} exportLogs={exportLogs} onExport={onExport} />
+        </div>
+      </div>
+    </section>
+  );
+}
+function KpiRow({ kpis, viewState }: { kpis: KPI[]; viewState: ViewState }) {
+  return (
+    <div className="flex gap-4 overflow-x-auto" style={{ paddingBottom: 'var(--spacing-xs)' }} role="region" aria-label="Key performance indicators">
+      {kpis.map((kpi) => (
+        <div
+          key={kpi.label}
+          className="card min-w-[220px] flex-1"
+          style={{
+            minHeight: '148px',
+            padding: 'var(--spacing-lg)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div>
+            <span className="metric-label">{kpi.label}</span>
+            {viewState === 'loading' ? (
+              <Skeleton height={32} />
+            ) : viewState === 'empty' ? (
+              <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                Connect data source to populate this KPI.
+              </span>
+            ) : viewState === 'error' ? (
+              <ErrorCallout message="Unable to load KPI. Retry sync." />
+            ) : (
+              <span className="metric-value" aria-live="polite">
+                {kpi.value}
+              </span>
+            )}
+          </div>
+          {viewState === 'success' && kpi.delta && (
+            <span className="text-xs" style={{ color: 'var(--color-primary)' }}>
+              {kpi.delta} · {kpi.deltaLabel}
+            </span>
+          )}
+          {viewState === 'success' && kpi.trend && <Sparkline trend={kpi.trend} />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Sparkline({ trend }: { trend: number[] }) {
+  const max = Math.max(...trend);
+  return (
+    <div className="sparkline" aria-hidden="true">
+      {trend.map((value, index) => (
+        <span key={index} style={{ height: `${(value / max) * 100}%` }} />
+      ))}
+    </div>
+  );
+}
+
+function Skeleton({ height = 20 }: { height?: number }) {
+  return (
+    <div
+      style={{
+        width: '100%',
+        height,
+        borderRadius: 'var(--radius-sm)',
+        background: 'linear-gradient(90deg, rgba(111,77,246,0.16), rgba(111,77,246,0.28), rgba(111,77,246,0.16))',
+        animation: 'pulse 1.2s ease-in-out infinite',
+      }}
+    />
+  );
+}
+
+function ErrorCallout({ message }: { message: string }) {
+  return (
+    <div
+      role="alert"
+      className="mt-2 flex items-center gap-2 rounded-md"
+      style={{
+        background: 'var(--color-error-surface)',
+        color: 'var(--color-error)',
+        padding: 'var(--spacing-sm)',
+      }}
+    >
+      <span aria-hidden="true">⚠️</span>
+      <span className="text-sm">{message}</span>
+    </div>
+  );
+}
+interface ChartCardProps {
+  chart: ChartBlueprint;
+  viewState: ViewState;
+  delay: number;
+}
+
+function ChartCard({ chart, viewState, delay }: ChartCardProps) {
+  return (
+    <article
+      className="card flex flex-col gap-4"
+      style={{
+        minHeight: '320px',
+        transitionDelay: `${delay}ms`,
+      }}
+      aria-labelledby={`${chart.id}-title`}
+    >
       <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
-        <p className="text-sm text-gray-600">
-          Monitor tenant activity, manage billing, and understand plan usage at a glance.
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 id={`${chart.id}-title`} className="text-lg font-semibold">
+              {chart.title}
+            </h3>
+            <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+              {chart.subtitle}
+            </p>
+          </div>
+          <span className="state-chip" aria-hidden="true">
+            <span>ⓘ</span>
+            Baseline aligned
+          </span>
+        </div>
+        <p className="sr-only">{chart.accessibilitySummary}</p>
+      </div>
+      <div className="flex-1" aria-hidden={viewState !== 'success'}>
+        {viewState === 'loading' && <Skeleton height={220} />}
+        {viewState === 'error' && <ErrorCallout message="Chart data unavailable. Retry refresh." />}
+        {viewState === 'empty' && (
+          <div className="flex h-full flex-col items-center justify-center gap-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            <span aria-hidden="true">📊</span>
+            Connect a data stream to visualize insights.
+          </div>
+        )}
+        {viewState === 'success' && <ChartRenderer chart={chart} />}
+      </div>
+    </article>
+  );
+}
+
+function ChartRenderer({ chart }: { chart: ChartBlueprint }) {
+  switch (chart.type) {
+    case 'line':
+      return <LineChart chart={chart} />;
+    case 'bar':
+      return <BarChart chart={chart} />;
+    case 'donut':
+      return <DonutChart chart={chart} />;
+    case 'heatmap':
+      return <Heatmap chart={chart} />;
+    case 'funnel':
+      return <FunnelChart chart={chart} />;
+    default:
+      return null;
+  }
+}
+function LineChart({ chart }: { chart: ChartBlueprint }) {
+  const width = 540;
+  const height = 200;
+  const padding = 32;
+  const values = chart.dataset;
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const points = values
+    .map((value, index) => {
+      const x = padding + (index / Math.max(values.length - 1, 1)) * (width - padding * 2);
+      const y = height - padding - ((value - min) / Math.max(max - min, 1)) * (height - padding * 2);
+      return `${x},${y}`;
+    })
+    .join(' ');
+
+  return (
+    <svg role="img" width="100%" viewBox={`0 0 ${width} ${height}`} aria-label={chart.accessibilitySummary}>
+      <defs>
+        <linearGradient id={`${chart.id}-gradient`} x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <polyline points={points} fill="none" stroke="var(--color-primary)" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+      <polygon
+        points={`${padding},${height - padding} ${points} ${width - padding},${height - padding}`}
+        fill={`url(#${chart.id}-gradient)`}
+      />
+      {values.map((value, index) => {
+        const x = padding + (index / Math.max(values.length - 1, 1)) * (width - padding * 2);
+        const y = height - padding - ((value - min) / Math.max(max - min, 1)) * (height - padding * 2);
+        return <circle key={index} cx={x} cy={y} r={6} fill="var(--color-surface)" stroke="var(--color-primary)" strokeWidth={3} />;
+      })}
+    </svg>
+  );
+}
+function BarChart({ chart }: { chart: ChartBlueprint }) {
+  const width = 520;
+  const height = 200;
+  const padding = 32;
+  const max = Math.max(...chart.dataset);
+  const barWidth = (width - padding * 2) / chart.dataset.length;
+
+  return (
+    <svg role="img" width="100%" viewBox={`0 0 ${width} ${height}`} aria-label={chart.accessibilitySummary}>
+      {chart.dataset.map((value, index) => {
+        const barHeight = (value / Math.max(max, 1)) * (height - padding * 2);
+        const x = padding + index * barWidth + barWidth * 0.1;
+        const y = height - padding - barHeight;
+        return (
+          <g key={index}>
+            <rect x={x} y={y} width={barWidth * 0.8} height={barHeight} rx={8} style={{ fill: 'var(--color-primary-muted)' }} />
+            <text x={x + barWidth * 0.4} y={height - padding + 16} textAnchor="middle" fontSize="12" fill="var(--color-text-secondary)">
+              {chart.categories?.[index]}
+            </text>
+            <text x={x + barWidth * 0.4} y={y - 6} textAnchor="middle" fontSize="12" fill="var(--color-text-secondary)">
+              {value}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+function DonutChart({ chart }: { chart: ChartBlueprint }) {
+  const radius = 90;
+  const circumference = 2 * Math.PI * radius;
+  let accumulated = 0;
+  const palette = ['var(--color-primary)', 'var(--color-primary-muted)', 'var(--color-success)', 'var(--color-warning)', 'var(--color-info)'];
+
+  return (
+    <div className="flex flex-col gap-4">
+      <svg role="img" width="100%" viewBox="0 0 220 220" aria-label={chart.accessibilitySummary}>
+        <defs>
+          {chart.segments?.map((segment, index) => (
+            <pattern key={segment.label} id={`${chart.id}-pattern-${index}`} patternUnits="userSpaceOnUse" width="8" height="8">
+              {segment.pattern === 'dots' && <circle cx="2" cy="2" r="1.5" fill="currentColor" />}
+              {segment.pattern === 'diagonal' && <path d="M0 8 L8 0" stroke="currentColor" strokeWidth="2" />}
+              {segment.pattern === 'grid' && (
+                <>
+                  <path d="M0 0 L0 8" stroke="currentColor" strokeWidth="1" />
+                  <path d="M0 0 L8 0" stroke="currentColor" strokeWidth="1" />
+                </>
+              )}
+              {segment.pattern === 'cross' && (
+                <>
+                  <path d="M0 0 L8 8" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M8 0 L0 8" stroke="currentColor" strokeWidth="1.5" />
+                </>
+              )}
+              {segment.pattern === 'horizontal' && <path d="M0 4 H8" stroke="currentColor" strokeWidth="2" />}
+            </pattern>
+          ))}
+        </defs>
+        <g transform="translate(110 110)">
+          {chart.dataset.map((value, index) => {
+            const fraction = value / chart.dataset.reduce((sum, v) => sum + v, 0);
+            const dash = circumference * fraction;
+            const gap = circumference - dash;
+            const rotation = (accumulated / circumference) * 360;
+            accumulated += dash;
+            return (
+              <circle
+                key={index}
+                r={radius}
+                fill="transparent"
+                stroke={`url(#${chart.id}-pattern-${index})`}
+                strokeWidth={22}
+                strokeDasharray={`${dash} ${gap}`}
+                transform={`rotate(${rotation - 90})`}
+                strokeLinecap="butt"
+                style={{ color: palette[index % palette.length] }}
+              />
+            );
+          })}
+          <circle r={radius - 22} fill="var(--color-surface)" />
+          <text textAnchor="middle" dy="8" fontSize="18" fill="var(--color-text-primary)">
+            Distribution
+          </text>
+        </g>
+      </svg>
+      <ul className="grid gap-2" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' }}>
+        {chart.segments?.map((segment, index) => (
+          <li key={segment.label} className="flex items-center gap-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+            <span
+              style={{
+                width: '16px',
+                height: '16px',
+                borderRadius: '4px',
+                background: palette[index % palette.length],
+                mask: `url(#${chart.id}-pattern-${index})`,
+                WebkitMask: `url(#${chart.id}-pattern-${index})`,
+              }}
+              aria-hidden="true"
+            />
+            {segment.label}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+function Heatmap({ chart }: { chart: ChartBlueprint }) {
+  const rows = chart.heatmap ?? [];
+  const max = Math.max(...rows.flat(), 1);
+  return (
+    <div className="flex h-full flex-col gap-4">
+      <div className="grid flex-1" style={{ gridTemplateColumns: `repeat(${chart.categories?.length ?? 1}, minmax(0,1fr))`, gap: '8px' }}>
+        {rows.map((row, rowIndex) =>
+          row.map((value, colIndex) => (
+            <div
+              key={`${rowIndex}-${colIndex}`}
+              className="flex flex-col items-center justify-center gap-1 rounded-md"
+              style={{
+                background: `rgba(111,77,246,${0.12 + (value / max) * 0.6})`,
+                color: 'var(--color-text-primary)',
+                padding: 'var(--spacing-sm)',
+              }}
+            >
+              <span className="text-lg font-semibold" aria-hidden="true">
+                {value}%
+              </span>
+              <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                {chart.categories?.[colIndex] ?? ''}
+              </span>
+            </div>
+          ))
+        )}
+      </div>
+      <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+        Hover for tooltips · Values include numeric overlays to avoid color-only interpretation.
+      </p>
+    </div>
+  );
+}
+function FunnelChart({ chart }: { chart: ChartBlueprint }) {
+  const max = Math.max(...chart.dataset, 1);
+  return (
+    <div className="flex h-full flex-col gap-4">
+      <div className="flex flex-1 flex-col justify-between" style={{ gap: 'var(--spacing-md)' }}>
+        {chart.dataset.map((value, index) => {
+          const width = 100 * (value / max);
+          return (
+            <div key={index} className="flex items-center gap-4">
+              <div
+                style={{
+                  height: '48px',
+                  width: `${width}%`,
+                  minWidth: '80px',
+                  borderRadius: '12px',
+                  background: 'linear-gradient(90deg, var(--color-primary-muted), var(--color-primary))',
+                  transition: `width ${MOTION_TOKENS.duration.standard}ms ${MOTION_TOKENS.easing.smooth}`,
+                }}
+                aria-hidden="true"
+              />
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                  {chart.categories?.[index]}
+                </span>
+                <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                  {value.toLocaleString()} records
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+        Funnel animates deltas only after skeleton completes (≤400ms) to maintain clarity.
+      </p>
+    </div>
+  );
+}
+function TableCard({ table, viewState }: { table: ModuleConfig['table']; viewState: ViewState }) {
+  return (
+    <article className="card flex flex-col gap-4" aria-label={table.caption}>
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold">{table.caption}</h3>
+          <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+            Sticky headers, sortable columns, and aligned baselines for readability.
+          </p>
+        </div>
+        <button
+          type="button"
+          className="rounded-full px-4 py-2 text-sm font-medium"
+          style={{
+            background: 'var(--color-surface-subtle)',
+            border: '1px solid var(--color-border)',
+            color: 'var(--color-text-primary)',
+          }}
+        >
+          Configure columns
+        </button>
+      </div>
+      <div className="overflow-x-auto">
+        {viewState === 'loading' ? (
+          <Skeleton height={180} />
+        ) : viewState === 'error' ? (
+          <ErrorCallout message="Table failed to load. Check data connection." />
+        ) : viewState === 'empty' ? (
+          <div className="flex h-40 items-center justify-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            No records yet. Activate automations to populate this table.
+          </div>
+        ) : (
+          <table className="table">
+            <thead>
+              <tr>
+                {table.headers.map((header) => (
+                  <th key={header} scope="col">
+                    <div className="flex items-center gap-2">
+                      <span>{header}</span>
+                      <span aria-hidden="true">⇅</span>
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {table.rows.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  {table.headers.map((header) => (
+                    <td key={header}>{row[header]}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </article>
+  );
+}
+function AutomationBuilder({ module, viewState, delay }: { module: ModuleConfig; viewState: ViewState; delay: number }) {
+  return (
+    <article
+      className="card flex flex-col gap-4"
+      aria-label={`${module.name} automation builder`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-lg font-semibold">Automation builder</h3>
+          <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+            Builder density matches orchestration logs. Use keyboard (Space/Enter) to drag tasks in Kanban.
+          </p>
+        </div>
+        <button
+          type="button"
+          className="rounded-full px-4 py-2 text-sm font-semibold text-white"
+          style={{ background: 'var(--color-primary)' }}
+        >
+          Launch workflow
+        </button>
+      </div>
+      {viewState === 'loading' ? (
+        <Skeleton height={160} />
+      ) : viewState === 'error' ? (
+        <ErrorCallout message="Builder unavailable. Refresh page." />
+      ) : viewState === 'empty' ? (
+        <div className="flex h-32 flex-col items-start justify-center gap-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+          <span>Configure triggers, conditions, and actions to start automating this module.</span>
+          <button type="button" className="underline">Start from template</button>
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-3">
+          <AutomationColumn title="Triggers" items={module.automation.builderSummary.triggers} icon="⚡" />
+          <AutomationColumn title="Conditions" items={module.automation.builderSummary.conditions} icon="🔍" />
+          <AutomationColumn title="Actions" items={module.automation.builderSummary.actions} icon="🛠️" />
+        </div>
+      )}
+      <div className="grid gap-3 md:grid-cols-3">
+        {module.automation.toggles.map((toggle) => (
+          <label
+            key={toggle.id}
+            className="card"
+            style={{ borderColor: toggle.active ? 'var(--color-primary)' : 'var(--color-border)', cursor: 'pointer' }}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex flex-col gap-1">
+                <span className="text-sm font-semibold">{toggle.label}</span>
+                <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                  {toggle.description}
+                </span>
+              </div>
+              <input type="checkbox" checked={toggle.active} readOnly aria-label={`${toggle.label} toggle`} />
+            </div>
+          </label>
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function AutomationColumn({ title, items, icon }: { title: string; items: string[]; icon: string }) {
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-2 text-sm font-semibold">
+        <span aria-hidden="true">{icon}</span>
+        {title}
+      </div>
+      <ul className="flex flex-col gap-2">
+        {items.map((item) => (
+          <li
+            key={item}
+            className="rounded-md border px-3 py-2 text-sm"
+            style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface-subtle)' }}
+          >
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+function AutomationLogs({ logs, viewState }: { logs: AutomationBlueprint['runLogs']; viewState: ViewState }) {
+  return (
+    <article className="card flex flex-col gap-4" aria-label="Automation run log">
+      <div>
+        <h3 className="text-lg font-semibold">Run log</h3>
+        <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+          Logs share padding with builder to maintain density parity.
         </p>
       </div>
-
-      <section className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <dt className="text-sm font-medium text-gray-500 truncate">Tenant</dt>
-            <dd className="mt-1 text-2xl font-semibold text-gray-900">
-              {tenant?.name ?? 'Loading...'}
-            </dd>
-            <p className="mt-2 text-xs text-gray-500">Billing Email: {tenant?.billing_email ?? '—'}</p>
-          </div>
+      {viewState === 'loading' ? (
+        <Skeleton height={140} />
+      ) : viewState === 'error' ? (
+        <ErrorCallout message="Failed to fetch logs." />
+      ) : viewState === 'empty' ? (
+        <div className="flex h-28 items-center justify-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+          Logs will appear once automations execute.
         </div>
-
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <dt className="text-sm font-medium text-gray-500 truncate">Active Plan</dt>
-            <dd className="mt-1 text-2xl font-semibold text-gray-900">
-              {subscription?.plan ?? 'starter'}
-            </dd>
-            <p className="mt-2 text-xs text-gray-500">Seats included: {subscription?.seats ?? 5}</p>
-          </div>
-        </div>
-
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <dt className="text-sm font-medium text-gray-500 truncate">Subscription Status</dt>
-            <dd className="mt-1 text-2xl font-semibold text-gray-900 capitalize">
-              {subscription?.status ?? 'trialing'}
-            </dd>
-            <p className="mt-2 text-xs text-gray-500">
-              Next renewal:{' '}
-              {subscription?.current_period_end
-                ? new Date(subscription.current_period_end).toLocaleDateString()
-                : 'TBD'}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {isAdmin && (
-        <section className="bg-white shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium text-gray-900">Manage Subscription</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              Switch plans to unlock additional seats and capabilities for your organization.
-            </p>
-            <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              {availablePlans.map((plan) => (
-                <div
-                  key={plan.id}
-                  className={`border rounded-lg p-4 ${
-                    plan.isActive ? 'border-indigo-500 ring-2 ring-indigo-200' : 'border-gray-200'
-                  }`}
-                >
-                  <h4 className="text-md font-semibold text-gray-900">{plan.name}</h4>
-                  <p className="text-sm text-gray-500">Includes {plan.seats} seats</p>
-                  <button
-                    className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
-                    onClick={() => handlePlanChange(plan.id)}
-                    disabled={plan.isActive || updatingPlan === plan.id}
-                  >
-                    {plan.isActive ? 'Current plan' : updatingPlan === plan.id ? 'Updating...' : 'Switch plan'}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+      ) : (
+        <ol className="flex flex-col gap-3" aria-live="polite">
+          {logs.map((log) => (
+            <li key={log.id} className="rounded-md border p-3" style={{ borderColor: 'var(--color-border)' }}>
+              <div className="flex items-center justify-between text-xs">
+                <span style={{ color: 'var(--color-text-secondary)' }}>{log.timestamp}</span>
+                <span className={`badge ${log.status === 'success' ? 'success' : log.status === 'warning' ? 'warning' : 'error'}`}>
+                  {log.status.toUpperCase()}
+                </span>
+              </div>
+              <p className="mt-2 text-sm" style={{ color: 'var(--color-text-primary)' }}>
+                {log.details}
+              </p>
+            </li>
+          ))}
+        </ol>
       )}
-
-      <section className="bg-white shadow rounded-lg">
-        <div className="px-4 py-5 sm:p-6">
-          <h3 className="text-lg font-medium text-gray-900">Billing Summary</h3>
-          {summary ? (
-            <dl className="mt-4 grid gap-4 sm:grid-cols-2">
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Plan</dt>
-                <dd className="text-base font-semibold text-gray-900">{summary.plan}</dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Status</dt>
-                <dd className="text-base font-semibold text-gray-900 capitalize">{summary.status}</dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Seats</dt>
-                <dd className="text-base font-semibold text-gray-900">{summary.seats}</dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Next renewal</dt>
-                <dd className="text-base font-semibold text-gray-900">
-                  {summary.current_period_end
-                    ? new Date(summary.current_period_end).toLocaleDateString()
-                    : 'In trial'}
-                </dd>
-              </div>
-            </dl>
-          ) : (
-            <p className="text-sm text-gray-500">{isLoading ? 'Loading billing details...' : 'No billing data available.'}</p>
-          )}
+    </article>
+  );
+}
+function ExportPanel({
+  module,
+  viewState,
+  exportLogs,
+  onExport,
+}: {
+  module: ModuleConfig;
+  viewState: ViewState;
+  exportLogs: ExportRecord[];
+  onExport: (moduleId: string, format: 'csv' | 'json', signedUrl: string) => void;
+}) {
+  return (
+    <article className="card flex flex-col gap-4" aria-label={`${module.name} export controls`}>
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="text-lg font-semibold">Exports & audit</h3>
+          <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+            CSV and JSON share signed URLs; every export is logged for traceability.
+          </p>
         </div>
-      </section>
-    </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="rounded-full px-4 py-2 text-sm font-semibold text-white"
+            style={{ background: 'var(--color-primary)' }}
+            onClick={() => onExport(module.id, 'csv', module.exports.csvSignedUrl)}
+          >
+            Export CSV
+          </button>
+          <button
+            type="button"
+            className="rounded-full px-4 py-2 text-sm font-semibold"
+            style={{ border: '1px solid var(--color-primary)', color: 'var(--color-primary)' }}
+            onClick={() => onExport(module.id, 'json', module.exports.jsonSignedUrl)}
+          >
+            Export JSON
+          </button>
+        </div>
+      </div>
+      {viewState === 'loading' ? (
+        <Skeleton height={120} />
+      ) : viewState === 'error' ? (
+        <ErrorCallout message="Unable to prepare export." />
+      ) : (
+        <div className="flex flex-col gap-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+          <div>
+            <p><strong>Dataset:</strong> {module.exports.dataset}</p>
+            <p>
+              <strong>Signed URLs expire:</strong> {module.exports.expiresAt}
+            </p>
+            <p>
+              <strong>JSON:</strong> <span className="underline">{module.exports.jsonSignedUrl}</span>
+            </p>
+            <p>
+              <strong>CSV:</strong> <span className="underline">{module.exports.csvSignedUrl}</span>
+            </p>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+              Audit log
+            </h4>
+            {exportLogs.length === 0 ? (
+              <p>No exports yet. Trigger one to seed the audit trail.</p>
+            ) : (
+              <ul className="flex flex-col gap-2">
+                {exportLogs.map((record) => (
+                  <li key={record.id} className="rounded-md border px-3 py-2" style={{ borderColor: 'var(--color-border)' }}>
+                    <div className="flex items-center justify-between">
+                      <span>
+                        {record.format.toUpperCase()} · {new Date(record.createdAt).toLocaleString()} · expires{' '}
+                        {new Date(record.expiresAt).toLocaleTimeString()}
+                      </span>
+                      <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                        {record.url.slice(0, 32)}…
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
+    </article>
+  );
+}
+function MotionTimeline() {
+  const timeline = [
+    { label: 'Page enter', range: '0–600ms', detail: 'Hero fades in (0–120), filters (120–200), KPIs count-up (200–320), charts rise (320–520), secondary panels settle (520–600).' },
+    { label: 'Tabs & filters', range: '200ms', detail: 'Crossfade + 6px slide using smooth easing; reduced motion falls back to fade only.' },
+    { label: 'Data refresh', range: '≤400ms', detail: 'Skeleton shimmer completes before deltas animate to avoid CLS.' },
+    { label: 'Toasts', range: '180ms', detail: 'Slide-up + fade anchored bottom-right; respects prefers-reduced-motion.' },
+  ];
+  return (
+    <section className="card flex flex-col gap-4" aria-label="Motion choreography map">
+      <div>
+        <h2 className="text-lg font-semibold">Motion map</h2>
+        <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+          Luxury motion uses smooth/crisp/emphasis easings with 40–60ms staggers; springs use stiffness 360–420 / damping 32–40.
+        </p>
+      </div>
+      <ul className="grid gap-3 md:grid-cols-2">
+        {timeline.map((item) => (
+          <li key={item.label} className="rounded-md border p-4" style={{ borderColor: 'var(--color-border)' }}>
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                {item.label}
+              </span>
+              <span className="text-xs" style={{ color: 'var(--color-primary)' }}>{item.range}</span>
+              <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                {item.detail}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+        Reduced motion toggle switches dashboard to fade-only transitions; animations use transform/opacity to maintain CLS ≈ 0.
+      </p>
+    </section>
   );
 }
