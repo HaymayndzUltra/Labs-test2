@@ -17,6 +17,16 @@ const palette = ['#2563eb', '#06b6d4', '#22c55e', '#f97316', '#ef4444', '#7c3aed
 export const DonutChart = ({ data, height = 240 }: DonutChartProps) => {
   const width = 320;
   const radius = Math.min(width, height) / 2 - 12;
+  
+  // Add null/undefined check for data
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full text-[var(--color-text-muted)]">
+        No data available
+      </div>
+    );
+  }
+  
   const total = data.reduce((sum, datum) => sum + datum.value, 0);
 
   return (
@@ -30,7 +40,7 @@ export const DonutChart = ({ data, height = 240 }: DonutChartProps) => {
           padAngle={0.02}
         >
           {({ arcs, path }) =>
-            arcs.map((arcDatum, index) => {
+            arcs && arcs.length > 0 ? arcs.map((arcDatum, index) => {
               const angle = (arcDatum.startAngle + arcDatum.endAngle) / 2;
               const [labelX, labelY] = [
                 Math.cos(angle) * (radius + 18),
@@ -56,7 +66,7 @@ export const DonutChart = ({ data, height = 240 }: DonutChartProps) => {
                   </text>
                 </g>
               );
-            })
+            }) : null
           }
         </Arc>
         <text

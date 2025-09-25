@@ -7,6 +7,7 @@ import { DataTable } from '../components/DataTable';
 import { AutomationBuilder } from '../components/AutomationBuilder';
 import { useToast } from '../components/ToastProvider';
 import { Skeleton } from '../components/Skeleton';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 export const SaaSModule = () => {
   const { data, isLoading, error, refetch } = useModuleData('saas');
@@ -88,7 +89,9 @@ export const SaaSModule = () => {
               ]}
               onPointFocus={(point) => `${point.label} ${point.value}% of churn`}
             >
-              <DonutChart data={data.charts.churnComposition as { label: string; value: number }[]} />
+              <ErrorBoundary>
+                <DonutChart data={(data.charts.churnComposition as { label: string; value: number }[]) || []} />
+              </ErrorBoundary>
             </ChartCard>
           )}
           {isLoading || !data ? (
@@ -107,7 +110,9 @@ export const SaaSModule = () => {
               ]}
               onPointFocus={(point) => `${point.label} ${point.value}% of accounts`}
             >
-              <DonutChart data={data.charts.billingOrchestration as { label: string; value: number }[]} />
+              <ErrorBoundary>
+                <DonutChart data={(data.charts.billingOrchestration as { label: string; value: number }[]) || []} />
+              </ErrorBoundary>
             </ChartCard>
           )}
         </div>
