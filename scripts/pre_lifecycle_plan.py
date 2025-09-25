@@ -696,11 +696,32 @@ def load_config(path: Path) -> Dict:
 
 
 def _parse_frontmatter(text: str) -> Dict[str, Any]:
+    # Normalize line endings to handle both Unix (\n) and Windows (\r\n)
+    text = text.replace('\r\n', '\n').replace('\r', '\n')
+    
+    # Check for frontmatter start
     if not text.startswith("---\n"):
         return {}
-    end = text.find("\n---\n", 4)
+    
+    # Find the closing delimiter - handle both \n---\n and --- at end of file
+    end_marker = "\n---\n"
+    end = text.find(end_marker, 4)
+    
+    # If not found with newline, check if --- is at the end of the file
     if end == -1:
-        return {}
+        # Look for --- followed by newline or end of string
+        end_marker = "\n---"
+        end = text.find(end_marker, 4)
+        if end == -1:
+            # Check if the file ends with --- (no trailing newline)
+            if text.endswith("\n---"):
+                end = len(text) - 4
+            else:
+                return {}
+        else:
+            end += len(end_marker) - 1  # Include the --- but not the trailing newline
+    
+    # Extract frontmatter content (skip the opening ---\n)
     fm = text[4:end]
     meta: Dict[str, Any] = {}
     for raw_line in fm.splitlines():
