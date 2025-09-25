@@ -1329,3 +1329,7 @@ const portfolioDashboard: PortfolioDashboardResponse = {
 };
 
 export const getPortfolioDashboard = cache(async () => portfolioDashboard);
+
+export async function fetchPortfolioDashboard() {
+  return portfolioDashboard;
+}
