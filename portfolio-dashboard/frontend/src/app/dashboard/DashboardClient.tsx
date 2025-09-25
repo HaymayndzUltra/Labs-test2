@@ -1,1759 +1,1163 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import Image from 'next/image';
+import { useMemo, useState } from 'react';
 import {
-  type KeyboardEvent as ReactKeyboardEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import {
+  Activity,
   ArrowDownRight,
   ArrowUpRight,
   BarChart3,
-  Check,
-  ChevronDown,
-  Heart,
-  LineChart,
-  Loader2,
-  Package,
-  PieChart,
-  Search,
-  ShoppingCart,
-  SlidersHorizontal,
+  BookOpen,
+  CalendarCheck,
+  CheckCircle2,
+  ClipboardList,
+  FileSpreadsheet,
+  Globe,
+  Layers,
+  LineChart as LineChartIcon,
+  Mail,
+  PlayCircle,
+  Send,
   Sparkles,
-  Star,
+  TabletSmartphone,
   Users,
+  Workflow,
   X,
 } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
-import { FALLBACK_IMAGE } from './constants';
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import type {
-  BrandFilter,
-  Category,
-  DeliveryOption,
-  EcommerceDashboardResponse,
-  MetricTrend,
-  OverviewMetric,
-  PriceRange,
-  Product,
-  RatingFilter,
-  SortOption,
-  SortOptionId,
-  SpotlightMetric,
-} from './types';
-import { useCommerceDashboard } from './useCommerceDashboard';
-
-type TrendPalette = {
-  text: string;
-  badge: string;
-  icon: typeof ArrowUpRight;
-};
-
-const TREND_PALETTE: Record<MetricTrend, TrendPalette> = {
-  up: {
-    text: 'text-emerald-600',
-    badge: 'bg-emerald-50/80',
-    icon: ArrowUpRight,
-  },
-  down: {
-    text: 'text-rose-600',
-    badge: 'bg-rose-50/80',
-    icon: ArrowDownRight,
-  },
-  steady: {
-    text: 'text-neutral-600',
-    badge: 'bg-neutral-200/70',
-    icon: ArrowUpRight,
-  },
-};
-
-const SORT_OPTIONS: SortOption[] = [
-  {
-    id: 'featured',
-    label: 'Featured',
-    description: 'Default merchandising order',
-  },
-  {
-    id: 'popularity-desc',
-    label: 'Most Popular',
-    description: 'Highest number of reviews first',
-  },
-  {
-    id: 'rating-desc',
-    label: 'Top Rated',
-    description: 'Highest rated products first',
-  },
-  {
-    id: 'price-asc',
-    label: 'Price: Low to High',
-    description: 'Sort by ascending price',
-  },
-  {
-    id: 'price-desc',
-    label: 'Price: High to Low',
-    description: 'Sort by descending price',
-  },
-];
-
-function BrandCarouselSkeleton() {
-  return (
-    <div className="mx-auto w-full max-w-7xl px-6">
-      <div className="h-32 animate-pulse rounded-3xl border border-indigo-100/70 bg-white/80 shadow-soft" />
-    </div>
-  );
-}
-
-const BrandCarousel = dynamic(
-  () => import('./BrandCarousel').then((mod) => mod.BrandCarousel),
-  {
-    loading: () => <BrandCarouselSkeleton />,
-    ssr: false,
-  },
-);
-
-function formatCurrency(value: number, currency: string) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: value % 1 === 0 ? 0 : 2,
-  }).format(value);
-}
-
-function formatChange(change: number) {
-  const prefix = change > 0 ? '+' : '';
-  return `${prefix}${change.toFixed(1)}%`;
-}
-
-function getSliderBackground([selectedMin, selectedMax]: [number, number], priceRange: PriceRange) {
-  const span = priceRange.maximum - priceRange.minimum;
-  if (span <= 0) return undefined;
-
-  const minPercent = ((selectedMin - priceRange.minimum) / span) * 100;
-  const maxPercent = ((selectedMax - priceRange.minimum) / span) * 100;
-
-  const clampedMin = Math.max(0, Math.min(100, minPercent));
-  const clampedMax = Math.max(0, Math.min(100, maxPercent));
-
-  return `linear-gradient(90deg, rgba(99,102,241,0.12) ${clampedMin}%, #4f46e5 ${clampedMin}%, #4f46e5 ${clampedMax}%, rgba(99,102,241,0.12) ${clampedMax}%)`;
-}
-
-function areStringSetsEqual(a: string[], b: string[]) {
-  if (a.length !== b.length) return false;
-  const reference = new Set(a);
-  return b.every((value) => reference.has(value));
-}
-
-function useDebouncedValue<T>(value: T, delay: number) {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handle = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handle);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-}
-
-type DashboardClientProps = {
-  initialData: EcommerceDashboardResponse;
-};
-
-export default function DashboardClient({ initialData }: DashboardClientProps) {
-  const { data: dashboardData, mutate: mutateDashboard } = useCommerceDashboard(initialData);
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [selectedBrands, setSelectedBrands] = useState<string[]>(() =>
-    initialData.brand_filters.filter((brand) => brand.checked).map((brand) => brand.id),
-  );
-  const [priceSelection, setPriceSelection] = useState<[number, number]>([
-    initialData.price_range.selected_min,
-    initialData.price_range.selected_max,
-  ]);
-  const [isFiltering, setIsFiltering] = useState(false);
-  const [sortOption, setSortOption] = useState<SortOptionId>('featured');
-  const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
-  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
-  const filterTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const categoryRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const sortButtonRef = useRef<HTMLButtonElement | null>(null);
-  const sortMenuRef = useRef<HTMLDivElement | null>(null);
-  const sortOptionRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const initialFiltersRef = useRef({
-    price: [
-      initialData.price_range.selected_min,
-      initialData.price_range.selected_max,
-    ] as [number, number],
-    brands: initialData.brand_filters.filter((brand) => brand.checked).map((brand) => brand.id),
-    delivery: initialData.delivery_options.find((option) => option.active)?.id ?? null,
-  });
-  const lastDefaultsFingerprintRef = useRef<string | null>(null);
-
-  const debouncedActiveCategory = useDebouncedValue(activeCategory, 200);
-  const debouncedSelectedBrands = useDebouncedValue(selectedBrands, 200);
-  const debouncedPriceSelection = useDebouncedValue(priceSelection, 200);
-  const debouncedSortOption = useDebouncedValue(sortOption, 200);
-
-  const dashboardDefaults = useMemo(() => {
-    if (!dashboardData) return null;
-
-    const defaultBrandIds = dashboardData.brand_filters
-      .filter((brand) => brand.checked)
-      .map((brand) => brand.id);
-
-    return {
-      fingerprint: dashboardData.generated_at,
-      price: [
-        dashboardData.price_range.selected_min,
-        dashboardData.price_range.selected_max,
-      ] as [number, number],
-      brands: defaultBrandIds,
-      delivery: dashboardData.delivery_options.find((option) => option.active)?.id ?? null,
-    };
-  }, [dashboardData]);
-
-  useEffect(() => {
-    if (!dashboardDefaults) return;
-
-    if (lastDefaultsFingerprintRef.current === dashboardDefaults.fingerprint) {
-      return;
-    }
-
-    lastDefaultsFingerprintRef.current = dashboardDefaults.fingerprint;
-
-    setActiveCategory('all');
-    setSelectedBrands([...dashboardDefaults.brands]);
-    setPriceSelection([
-      dashboardDefaults.price[0],
-      dashboardDefaults.price[1],
-    ]);
-    initialFiltersRef.current = {
-      price: [dashboardDefaults.price[0], dashboardDefaults.price[1]],
-      brands: [...dashboardDefaults.brands],
-      delivery: dashboardDefaults.delivery,
-    };
-  }, [dashboardDefaults]);
-
-  useEffect(() => {
-    if (!isSortMenuOpen) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (!sortMenuRef.current && !sortButtonRef.current) return;
-      if (
-        sortMenuRef.current?.contains(target) ||
-        sortButtonRef.current?.contains(target)
-      ) {
-        return;
-      }
-      setIsSortMenuOpen(false);
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsSortMenuOpen(false);
-        sortButtonRef.current?.focus();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isSortMenuOpen]);
-
-  useEffect(() => {
-    if (!isSortMenuOpen) return;
-    const frame = requestAnimationFrame(() => {
-      sortOptionRefs.current[0]?.focus();
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [isSortMenuOpen]);
-
-  useEffect(() => {
-    if (!isFilterSheetOpen) {
-      document.body.style.removeProperty('overflow');
-      return;
-    }
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsFilterSheetOpen(false);
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isFilterSheetOpen]);
-
-  const categoryOptions = useMemo(() => {
-    if (!dashboardData) {
-      return [{ id: 'all', label: 'All Products' }];
-    }
-
-    const seen = new Set<string>();
-    const options = dashboardData.categories
-      .filter((category) => {
-        if (!category.id || !category.label) return false;
-        if (seen.has(category.id)) return false;
-        seen.add(category.id);
-        return true;
-      })
-      .map((category) => ({ id: category.id, label: category.label }));
-
-    return [{ id: 'all', label: 'All Products' }, ...options];
-  }, [dashboardData]);
-
-  const activeSort = useMemo(
-    () => SORT_OPTIONS.find((option) => option.id === sortOption) ?? SORT_OPTIONS[0],
-    [sortOption],
-  );
-
-  useEffect(() => {
-    categoryRefs.current = categoryRefs.current.slice(0, categoryOptions.length);
-  }, [categoryOptions.length]);
-
-  useEffect(() => {
-    sortOptionRefs.current = sortOptionRefs.current.slice(0, SORT_OPTIONS.length);
-  }, []);
-
-  const triggerFilteringFeedback = useCallback(() => {
-    setIsFiltering(true);
-    if (filterTimeoutRef.current) {
-      clearTimeout(filterTimeoutRef.current);
-    }
-    filterTimeoutRef.current = setTimeout(() => {
-      setIsFiltering(false);
-    }, 420);
-  }, []);
-
-  const handleCategoryChange = useCallback(
-    (categoryId: string) => {
-      setActiveCategory(categoryId);
-      triggerFilteringFeedback();
-    },
-    [triggerFilteringFeedback],
-  );
-
-  const handleCategoryKeyDown = useCallback(
-    (event: ReactKeyboardEvent<HTMLButtonElement>, index: number) => {
-      if (!categoryOptions.length) return;
-
-      const lastIndex = categoryOptions.length - 1;
-      let nextIndex = index;
-
-      switch (event.key) {
-        case 'ArrowRight':
-        case 'ArrowDown':
-          nextIndex = index === lastIndex ? 0 : index + 1;
-          break;
-        case 'ArrowLeft':
-        case 'ArrowUp':
-          nextIndex = index === 0 ? lastIndex : index - 1;
-          break;
-        case 'Home':
-          nextIndex = 0;
-          break;
-        case 'End':
-          nextIndex = lastIndex;
-          break;
-        default:
-          return;
-      }
-
-      event.preventDefault();
-
-      const nextButton = categoryRefs.current[nextIndex];
-      if (nextButton) {
-        nextButton.focus();
-        const nextId = nextButton.dataset.categoryId;
-        if (nextId) {
-          handleCategoryChange(nextId);
-        }
-      }
-    },
-    [categoryOptions.length, handleCategoryChange],
-  );
-
-  const setDeliveryOption = useCallback(
-    (optionId: string | null) => {
-      mutateDashboard(
-        (current) => {
-          if (!current) return current;
-
-          const updated = current.delivery_options.map((option) => ({
-            ...option,
-            active: optionId ? option.id === optionId : false,
-          }));
-
-          return { ...current, delivery_options: updated };
-        },
-        { revalidate: false },
-      );
-    },
-    [mutateDashboard],
-  );
-
-  const handleBrandToggle = useCallback(
-    (brandId: string) => {
-      setSelectedBrands((prev) =>
-        prev.includes(brandId) ? prev.filter((id) => id !== brandId) : [...prev, brandId],
-      );
-      triggerFilteringFeedback();
-    },
-    [triggerFilteringFeedback],
-  );
-
-  const handleDeliveryToggle = useCallback(
-    (optionId: string) => {
-      setDeliveryOption(optionId);
-      triggerFilteringFeedback();
-    },
-    [setDeliveryOption, triggerFilteringFeedback],
-  );
-
-  const handleSortSelect = useCallback(
-    (optionId: SortOptionId) => {
-      setSortOption(optionId);
-      setIsSortMenuOpen(false);
-      triggerFilteringFeedback();
-    },
-    [triggerFilteringFeedback],
-  );
-
-  const handleClearCategory = useCallback(() => {
-    setActiveCategory('all');
-    triggerFilteringFeedback();
-  }, [triggerFilteringFeedback]);
-
-  const handleClearPrice = useCallback(() => {
-    const defaults = initialFiltersRef.current;
-    if (!defaults) return;
-    setPriceSelection([defaults.price[0], defaults.price[1]]);
-    triggerFilteringFeedback();
-  }, [triggerFilteringFeedback]);
-
-  const handleClearBrands = useCallback(() => {
-    const defaults = initialFiltersRef.current;
-    if (!defaults) return;
-    setSelectedBrands([...defaults.brands]);
-    triggerFilteringFeedback();
-  }, [triggerFilteringFeedback]);
-
-  const handleClearDelivery = useCallback(() => {
-    const defaults = initialFiltersRef.current;
-    const fallbackId = defaults?.delivery ?? null;
-    setDeliveryOption(fallbackId);
-    triggerFilteringFeedback();
-  }, [setDeliveryOption, triggerFilteringFeedback]);
-
-  const handleResetFilters = useCallback(() => {
-    const defaults = initialFiltersRef.current;
-    setActiveCategory('all');
-    if (defaults) {
-      setSelectedBrands([...defaults.brands]);
-      setPriceSelection([defaults.price[0], defaults.price[1]]);
-      setDeliveryOption(defaults.delivery);
-    }
-    triggerFilteringFeedback();
-  }, [setDeliveryOption, triggerFilteringFeedback]);
-
-  useEffect(() => {
-    return () => {
-      if (filterTimeoutRef.current) {
-        clearTimeout(filterTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  const filteredProducts = useMemo(() => {
-    if (!dashboardData) return [];
-
-    const filtered = dashboardData.products.filter((product) => {
-      const matchesCategory =
-        debouncedActiveCategory === 'all' || product.category_id === debouncedActiveCategory;
-      const matchesBrand =
-        debouncedSelectedBrands.length === 0 || debouncedSelectedBrands.includes(product.brand_id);
-      const matchesRating = product.rating >= dashboardData.rating_filter.minimum_rating;
-      const matchesPrice =
-        product.price >= debouncedPriceSelection[0] && product.price <= debouncedPriceSelection[1];
-      return matchesCategory && matchesBrand && matchesRating && matchesPrice;
-    });
-
-    const sorted = [...filtered];
-    switch (debouncedSortOption) {
-      case 'price-asc':
-        sorted.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-desc':
-        sorted.sort((a, b) => b.price - a.price);
-        break;
-      case 'rating-desc':
-        sorted.sort((a, b) => {
-          if (b.rating === a.rating) return b.reviews - a.reviews;
-          return b.rating - a.rating;
-        });
-        break;
-      case 'popularity-desc':
-        sorted.sort((a, b) => {
-          if (b.reviews === a.reviews) return b.rating - a.rating;
-          return b.reviews - a.reviews;
-        });
-        break;
-      case 'featured':
-      default:
-        break;
-    }
-
-    return sorted;
-  }, [
-    dashboardData,
-    debouncedActiveCategory,
-    debouncedSelectedBrands,
-    debouncedPriceSelection,
-    debouncedSortOption,
-  ]);
-
-  const {
-    overview_metrics: overviewMetrics,
-    categories,
-    price_range: priceRange,
-    rating_filter: ratingFilter,
-    brand_filters: brandFilters,
-    delivery_options: deliveryOptions,
-    spotlight_metric: spotlightMetric,
-  } = dashboardData;
-
-  const defaultFilters = initialFiltersRef.current;
-  const defaultPriceRange: [number, number] = defaultFilters?.price ?? [
-    priceRange.selected_min,
-    priceRange.selected_max,
-  ];
-  const priceFilterActive =
-    priceSelection[0] !== defaultPriceRange[0] || priceSelection[1] !== defaultPriceRange[1];
-  const defaultBrandIds = defaultFilters?.brands ?? [];
-  const appliedBrandIds = selectedBrands.length === 0 ? defaultBrandIds : selectedBrands;
-  const brandFilterActive = defaultBrandIds.length
-    ? !areStringSetsEqual(appliedBrandIds, defaultBrandIds)
-    : appliedBrandIds.length > 0;
-  const defaultDeliveryId = defaultFilters?.delivery ?? null;
-  const activeDeliveryOption = deliveryOptions.find((option) => option.active) ?? null;
-  const deliveryFilterActive = activeDeliveryOption
-    ? activeDeliveryOption.id !== defaultDeliveryId && activeDeliveryOption.id !== null
-    : false;
-  const activeCategoryOption = categoryOptions.find((category) => category.id === activeCategory);
-  const categoryIsNotDefault = activeCategory !== 'all';
-  const activeFilterCount = [
-    categoryIsNotDefault,
-    priceFilterActive,
-    brandFilterActive,
-    deliveryFilterActive,
-  ].filter(Boolean).length;
-
-  const brandNameById = new Map<string, string>();
-  brandFilters.forEach((brand) => {
-    brandNameById.set(brand.id, brand.name);
-  });
-
-  const filterSummaryItems: FilterSummaryItem[] = [];
-
-  if (categoryIsNotDefault && activeCategoryOption) {
-    filterSummaryItems.push({
-      id: 'category',
-      label: activeCategoryOption.label,
-      onClear: handleClearCategory,
-    });
-  }
-
-  if (priceFilterActive) {
-    filterSummaryItems.push({
-      id: 'price',
-      label: `${formatCurrency(priceSelection[0], priceRange.currency)} – ${formatCurrency(priceSelection[1], priceRange.currency)}`,
-      onClear: handleClearPrice,
-    });
-  }
-
-  if (brandFilterActive) {
-    const resolvedNames = appliedBrandIds
-      .map((id) => brandNameById.get(id) ?? id)
-      .slice(0, 2);
-    const brandLabel =
-      appliedBrandIds.length > 2
-        ? `${resolvedNames.join(', ')} +${appliedBrandIds.length - 2}`
-        : resolvedNames.join(', ');
-    filterSummaryItems.push({
-      id: 'brand',
-      label: brandLabel || `${appliedBrandIds.length} brands`,
-      onClear: handleClearBrands,
-    });
-  }
-
-  if (deliveryFilterActive && activeDeliveryOption) {
-    filterSummaryItems.push({
-      id: 'delivery',
-      label: activeDeliveryOption.label,
-      onClear: handleClearDelivery,
-    });
-  }
+  AutomationWorkflow,
+  ChartPoint,
+  CorporateSection,
+  MetricCard,
+  PieSegment,
+  PortfolioDashboardResponse,
+  TabDefinition,
+} from './data';
+
+const cardClass =
+  'rounded-3xl border border-indigo-100/60 bg-white/90 p-6 shadow-lg ring-1 ring-indigo-100/40 backdrop-blur';
+const sectionTitleClass = 'text-lg font-semibold text-slate-900';
+const subTitleClass = 'text-sm text-slate-500';
+
+function TrendBadge({ change, trend }: { change?: number; trend?: MetricCard['trend'] }) {
+  if (change == null || trend == null) return null;
+
+  const isPositive = trend === 'up';
+  const isNeutral = trend === 'steady';
+  const tone = isNeutral
+    ? 'bg-slate-100 text-slate-600'
+    : isPositive
+    ? 'bg-emerald-100 text-emerald-700'
+    : 'bg-rose-100 text-rose-700';
+  const Icon = isNeutral ? Activity : isPositive ? ArrowUpRight : ArrowDownRight;
 
   return (
-    <div className="min-h-screen bg-surface">
-      <div className="w-full border-b border-indigo-100/70 bg-surface-alt/80 shadow-sm backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center gap-4 px-6 py-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary/90 via-secondary/80 to-primary/60 text-lg font-semibold text-white shadow-soft">
-              CX
-            </div>
-            <div>
-              <p className="text-lg font-semibold text-neutral-900">Commerce Experience</p>
-              <p className="text-sm text-neutral-600">Enterprise analytics workspace</p>
-            </div>
-          </div>
-          <div className="hidden flex-1 items-center gap-3 rounded-full border border-indigo-100 bg-surface-alt px-4 py-2 shadow-soft md:flex">
-            <Search className="h-4 w-4 text-neutral-500" />
-            <input
-              type="search"
-              placeholder="Search product, SKU, or insight"
-              className="w-full border-0 bg-transparent text-sm text-neutral-600 placeholder:text-neutral-500 focus:outline-none"
-              aria-label="Search products"
-            />
-            <button
-              type="button"
-              className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-white shadow-soft transition hover:shadow-glow"
-            >
-              <Sparkles className="h-3 w-3" />
-              Quick find
-            </button>
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <button
-              type="button"
-              className="hidden items-center gap-2 rounded-full border border-indigo-100 bg-surface-alt px-3 py-2 text-sm font-medium text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50 lg:flex"
-            >
-              <Package className="h-4 w-4" />
-              Orders
-            </button>
-            <button
-              type="button"
-              className="hidden items-center gap-2 rounded-full border border-indigo-100 bg-surface-alt px-3 py-2 text-sm font-medium text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50 xl:flex"
-            >
-              <Heart className="h-4 w-4" />
-              Saved
-            </button>
-            <button
-              type="button"
-              className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-soft transition hover:shadow-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-              aria-label="Open cart"
-            >
-              <ShoppingCart className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
+    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${tone}`}>
+      <Icon className="h-3.5 w-3.5" />
+      {change > 0 ? '+' : ''}
+      {change.toFixed(1)}%
+    </span>
+  );
+}
+
+function MetricCardItem({ metric }: { metric: MetricCard }) {
+  return (
+    <div className={`${cardClass} transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl`}>
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-medium text-slate-500">{metric.label}</p>
+        <TrendBadge change={metric.change} trend={metric.trend} />
       </div>
-
-      <main className="mx-auto max-w-7xl space-y-6 px-6 pb-12 pt-6">
-        <BrandCarousel />
-
-        <section className="grid grid-cols-12 gap-6">
-          <aside className="col-span-12 space-y-5 lg:col-span-4 xl:col-span-3">
-            <div className="hidden lg:block">
-              <FilterPanel
-                priceRange={priceRange}
-                priceSelection={priceSelection}
-                setPriceSelection={setPriceSelection}
-                ratingFilter={ratingFilter}
-                brandFilters={brandFilters}
-                selectedBrands={selectedBrands}
-                onBrandToggle={handleBrandToggle}
-                onBrandsReset={handleClearBrands}
-                deliveryOptions={deliveryOptions}
-                onDeliveryToggle={handleDeliveryToggle}
-                onReset={handleResetFilters}
-                onFilterChange={triggerFilteringFeedback}
-                initialFilters={defaultFilters}
-                variant="desktop"
-                activeCount={activeFilterCount}
-              />
-            </div>
-
-            <InsightsWidget spotlightMetric={spotlightMetric} overviewMetrics={overviewMetrics} />
-          </aside>
-
-          <section className="col-span-12 space-y-5 lg:col-span-8 xl:col-span-9">
-            <div className="rounded-3xl border border-indigo-100/70 bg-surface-alt px-6 py-5 shadow-soft">
-              <div
-                className="scrollbar-hidden -mx-2 overflow-x-auto pb-2"
-                role="tablist"
-                aria-label="Product categories"
-                aria-orientation="horizontal"
-              >
-                <div className="flex w-max items-center gap-2 px-2">
-                  {categoryOptions.map((category, index) => {
-                    const isActive = activeCategory === category.id;
-                    const chipClasses = `inline-flex items-center rounded-full border px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60 ${
-                      isActive
-                        ? 'border-primary bg-primary text-white shadow-soft'
-                        : 'border-transparent bg-white/90 text-neutral-600 hover:border-primary/40 hover:bg-primary/5 hover:text-primary'
-                    }`;
-
-                    return (
-                      <button
-                        key={`${category.id}-${index}`}
-                        ref={(element) => {
-                          categoryRefs.current[index] = element;
-                        }}
-                        type="button"
-                        data-category-id={category.id}
-                        className={chipClasses}
-                        role="tab"
-                        aria-selected={isActive}
-                        tabIndex={isActive ? 0 : -1}
-                        onClick={() => handleCategoryChange(category.id)}
-                        onKeyDown={(event) => handleCategoryKeyDown(event, index)}
-                      >
-                        {category.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold text-neutral-900">Product Catalogue</h2>
-                  <p className="text-sm text-neutral-600">
-                    Showing <span className="font-semibold text-primary">{filteredProducts.length}</span> curated results
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-2 rounded-full border border-indigo-100/80 bg-white px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50 lg:hidden"
-                      onClick={() => setIsFilterSheetOpen(true)}
-                      aria-expanded={isFilterSheetOpen}
-                      aria-controls="mobile-filter-sheet"
-                    >
-                      <SlidersHorizontal className="h-4 w-4" />
-                      Filters
-                      {activeFilterCount ? (
-                        <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/15 px-2 text-xs font-semibold text-primary">
-                          {activeFilterCount}
-                        </span>
-                      ) : null}
-                    </button>
-                    {isFiltering ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" /> Filtering
-                      </span>
-                    ) : null}
-                  <div className="relative">
-                    <button
-                      ref={sortButtonRef}
-                      type="button"
-                      className="inline-flex items-center gap-2 rounded-full border border-indigo-100/80 bg-white px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
-                      aria-haspopup="listbox"
-                      aria-expanded={isSortMenuOpen}
-                      onClick={() => setIsSortMenuOpen((current) => !current)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
-                          event.preventDefault();
-                          setIsSortMenuOpen(true);
-                        }
-                      }}
-                    >
-                      <span>
-                        Sort: <span className="text-neutral-900">{activeSort.label}</span>
-                      </span>
-                      <ChevronDown className={`h-4 w-4 transition ${isSortMenuOpen ? 'rotate-180 text-primary' : ''}`} />
-                    </button>
-
-                    {isSortMenuOpen ? (
-                      <div
-                        ref={sortMenuRef}
-                        role="listbox"
-                        tabIndex={-1}
-                        className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-2xl border border-indigo-100/70 bg-white shadow-soft"
-                        onBlur={(event) => {
-                          const nextFocus = event.relatedTarget as Node | null;
-                          if (!nextFocus || !sortMenuRef.current?.contains(nextFocus)) {
-                            setIsSortMenuOpen(false);
-                          }
-                        }}
-                      >
-                        <ul className="divide-y divide-indigo-50/80">
-                          {SORT_OPTIONS.map((option, index) => {
-                            const isSelected = option.id === sortOption;
-                            const optionClasses = `w-full px-4 py-3 text-left text-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50 ${
-                              isSelected
-                                ? 'bg-primary/10 font-semibold text-primary'
-                                : 'hover:bg-neutral-50'
-                            }`;
-
-                            return (
-                              <li key={option.id}>
-                                <button
-                                  ref={(element) => {
-                                    sortOptionRefs.current[index] = element;
-                                  }}
-                                  type="button"
-                                  role="option"
-                                  aria-selected={isSelected}
-                                  data-sort-id={option.id}
-                                  className={optionClasses}
-                                  onClick={() => handleSortSelect(option.id)}
-                                  onKeyDown={(event) => {
-                                    if (event.key === 'Escape') {
-                                      event.preventDefault();
-                                      setIsSortMenuOpen(false);
-                                      sortButtonRef.current?.focus();
-                                      return;
-                                    }
-
-                                    const currentIndex = index;
-                                    const last = SORT_OPTIONS.length - 1;
-                                    let next = currentIndex;
-
-                                    if (event.key === 'ArrowDown') {
-                                      event.preventDefault();
-                                      next = currentIndex === last ? 0 : currentIndex + 1;
-                                    }
-
-                                    if (event.key === 'ArrowUp') {
-                                      event.preventDefault();
-                                      next = currentIndex === 0 ? last : currentIndex - 1;
-                                    }
-
-                                    if (event.key === 'Home') {
-                                      event.preventDefault();
-                                      next = 0;
-                                    }
-
-                                    if (event.key === 'End') {
-                                      event.preventDefault();
-                                      next = last;
-                                    }
-
-                                    if (next !== currentIndex) {
-                                      sortOptionRefs.current[next]?.focus();
-                                    }
-
-                                    if (event.key === 'Enter' || event.key === ' ') {
-                                      event.preventDefault();
-                                      handleSortSelect(option.id);
-                                    }
-                                  }}
-                                >
-                                  <div className="flex flex-col items-start gap-1">
-                                    <span>{option.label}</span>
-                                    <span className="text-xs text-neutral-500">{option.description}</span>
-                                  </div>
-                                </button>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-              </div>
-
-              <FilterSummaryBar
-                items={filterSummaryItems}
-                onClearAll={handleResetFilters}
-              />
-            </div>
-
-            <VirtualizedProductGrid
-              products={filteredProducts}
-              ratingThreshold={ratingFilter.minimum_rating}
-              isFiltering={isFiltering}
-            />
-          </section>
-        </section>
-      </main>
-
-      {isFilterSheetOpen ? (
-        <div
-          id="mobile-filter-sheet"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Filters"
-          className="fixed inset-0 z-40 flex items-end bg-neutral-900/40 backdrop-blur-sm lg:hidden"
-          onClick={() => setIsFilterSheetOpen(false)}
-        >
-          <div
-            className="max-h-[85vh] w-full rounded-t-3xl bg-white shadow-soft"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <FilterPanel
-              priceRange={priceRange}
-              priceSelection={priceSelection}
-              setPriceSelection={setPriceSelection}
-              ratingFilter={ratingFilter}
-              brandFilters={brandFilters}
-              selectedBrands={selectedBrands}
-              onBrandToggle={handleBrandToggle}
-              onBrandsReset={handleClearBrands}
-              deliveryOptions={deliveryOptions}
-              onDeliveryToggle={handleDeliveryToggle}
-              onReset={handleResetFilters}
-              onFilterChange={triggerFilteringFeedback}
-              initialFilters={defaultFilters}
-              variant="modal"
-              activeCount={activeFilterCount}
-              onClose={() => setIsFilterSheetOpen(false)}
-              onApply={() => setIsFilterSheetOpen(false)}
-            />
-          </div>
-        </div>
-      ) : null}
+      <p className="mt-3 text-3xl font-semibold text-slate-900">{metric.value}</p>
+      {metric.description ? <p className="mt-2 text-sm text-slate-500">{metric.description}</p> : null}
     </div>
   );
 }
 
-type VirtualizedProductGridProps = {
-  products: Product[];
-  ratingThreshold: number;
-  isFiltering: boolean;
-};
-
-function VirtualizedProductGrid({ products, ratingThreshold, isFiltering }: VirtualizedProductGridProps) {
-  const shouldVirtualize = products.length > 20;
-  const [visibleCount, setVisibleCount] = useState(
-    shouldVirtualize ? Math.min(20, products.length) : products.length,
-  );
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
-
-  const productSignature = useMemo(() => products.map((product) => product.id).join('|'), [products]);
-
-  useEffect(() => {
-    if (!shouldVirtualize) {
-      setVisibleCount(products.length);
-      return;
-    }
-
-    setVisibleCount(Math.min(20, products.length));
-  }, [productSignature, products.length, shouldVirtualize]);
-
-  useEffect(() => {
-    if (!shouldVirtualize) return;
-
-    const sentinel = loadMoreRef.current;
-    if (!sentinel) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setVisibleCount((current) => {
-              if (current >= products.length) return current;
-              return Math.min(current + 12, products.length);
-            });
-          }
-        });
-      },
-      { rootMargin: '200px 0px' },
-    );
-
-    observer.observe(sentinel);
-    return () => {
-      observer.disconnect();
-    };
-  }, [products.length, shouldVirtualize]);
-
-  const visibleProducts = useMemo(
-    () => (shouldVirtualize ? products.slice(0, visibleCount) : products),
-    [products, shouldVirtualize, visibleCount],
-  );
-
+function MetricsGrid({ metrics }: { metrics: MetricCard[] }) {
   return (
-    <div className="relative">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-        {visibleProducts.map((product, index) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            ratingThreshold={ratingThreshold}
-            index={index}
-            isFiltering={isFiltering}
-          />
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {metrics.map((metric) => (
+        <MetricCardItem key={metric.id} metric={metric} />
+      ))}
+    </div>
+  );
+}
+
+function AutomationList({
+  automations,
+  onInspect,
+}: {
+  automations: AutomationWorkflow[];
+  onInspect: (workflow: AutomationWorkflow) => void;
+}) {
+  return (
+    <div className={`${cardClass} flex flex-col gap-4`}>
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className={sectionTitleClass}>Automation orchestration</h3>
+          <p className="text-sm text-slate-500">Triggers, actions, and cadences that keep this module on autopilot.</p>
+        </div>
+        <Workflow className="h-5 w-5 text-indigo-500" />
+      </div>
+      <div className="space-y-3">
+        {automations.map((automation) => (
+          <button
+            key={automation.id}
+            type="button"
+            onClick={() => onInspect(automation)}
+            className="w-full rounded-2xl border border-indigo-100/70 bg-indigo-50/70 px-4 py-3 text-left text-sm text-slate-700 transition hover:border-indigo-200 hover:bg-white"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-semibold text-slate-900">{automation.title}</p>
+                <p className="mt-1 text-xs text-slate-500">Trigger: {automation.trigger}</p>
+              </div>
+              <span
+                className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                  automation.active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'
+                }`}
+              >
+                {automation.active ? 'Active' : 'Paused'}
+              </span>
+            </div>
+            <p className="mt-2 text-xs text-slate-500">Action: {automation.action}</p>
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+              <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-1">Owner: {automation.owner}</span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-1">Channel: {automation.channel}</span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-1">Cadence: {automation.cadence}</span>
+            </div>
+          </button>
         ))}
       </div>
-      {shouldVirtualize ? (
-        <div ref={loadMoreRef} className="h-2 w-full" aria-hidden="true" />
-      ) : null}
-      {isFiltering ? (
-        <ProductGridSkeleton count={Math.max(visibleProducts.length, 3)} />
-      ) : null}
     </div>
   );
 }
 
-function FilterPanel({
-  priceRange,
-  priceSelection,
-  setPriceSelection,
-  ratingFilter,
-  brandFilters,
-  selectedBrands,
-  onBrandToggle,
-  onBrandsReset,
-  deliveryOptions,
-  onDeliveryToggle,
-  onReset,
-  onFilterChange,
-  initialFilters,
-  variant = 'desktop',
-  activeCount,
-  onClose,
-  onApply,
+function SubscriptionTable({
+  rows,
 }: {
-  priceRange: PriceRange;
-  priceSelection: [number, number];
-  setPriceSelection: React.Dispatch<React.SetStateAction<[number, number]>>;
-  ratingFilter: RatingFilter;
-  brandFilters: BrandFilter[];
-  selectedBrands: string[];
-  onBrandToggle: (brandId: string) => void;
-  onBrandsReset: () => void;
-  deliveryOptions: DeliveryOption[];
-  onDeliveryToggle: (optionId: string) => void;
-  onReset: () => void;
-  onFilterChange: () => void;
-  initialFilters: { price: [number, number]; brands: string[]; delivery: string | null } | null;
-  variant?: 'desktop' | 'modal';
-  activeCount: number;
-  onClose?: () => void;
-  onApply?: () => void;
+  rows: PortfolioDashboardResponse['saas']['subscriptionPlans'];
 }) {
-  const [showAllBrands, setShowAllBrands] = useState(false);
-  const [openSections, setOpenSections] = useState({
-    price: true,
-    rating: true,
-    brand: true,
-    delivery: true,
-  });
-  const isDesktop = variant === 'desktop';
-
-  const priceSpan = Math.max(priceRange.maximum - priceRange.minimum, 1);
-  const minPercent = ((priceSelection[0] - priceRange.minimum) / priceSpan) * 100;
-  const maxPercent = ((priceSelection[1] - priceRange.minimum) / priceSpan) * 100;
-  const clampedMinPercent = Math.min(100, Math.max(0, minPercent));
-  const clampedMaxPercent = Math.min(100, Math.max(0, maxPercent));
-
-  const defaultSelectedBrandIds = useMemo(() => {
-    if (initialFilters?.brands) {
-      return initialFilters.brands;
-    }
-    return brandFilters.filter((brand) => brand.checked).map((brand) => brand.id);
-  }, [initialFilters, brandFilters]);
-
-  const displayedBrands = showAllBrands ? brandFilters : brandFilters.slice(0, 7);
-  const hasAdditionalBrands = brandFilters.length > displayedBrands.length;
-
-  const appliedBrandIds = selectedBrands.length === 0 ? defaultSelectedBrandIds : selectedBrands;
-  const brandBadge = appliedBrandIds.length > 0 ? String(appliedBrandIds.length) : null;
-  const priceBadge = initialFilters
-    ? priceSelection[0] !== initialFilters.price[0] || priceSelection[1] !== initialFilters.price[1]
-      ? '1'
-      : null
-    : null;
-  const activeDeliveryId = deliveryOptions.find((option) => option.active)?.id ?? null;
-  const deliveryBadge = initialFilters && activeDeliveryId && activeDeliveryId !== initialFilters.delivery ? '1' : null;
-
-  const formattedAverage = formatCurrency(priceRange.average, priceRange.currency);
-  const formattedMin = formatCurrency(priceSelection[0], priceRange.currency);
-  const formattedMax = formatCurrency(priceSelection[1], priceRange.currency);
-
-  const containerClasses =
-    variant === 'desktop'
-      ? 'flex flex-col gap-4 rounded-[32px] bg-white p-6 shadow-soft ring-1 ring-indigo-100/70 lg:sticky lg:top-24'
-      : 'flex h-full flex-col overflow-hidden rounded-t-3xl bg-white p-4 shadow-soft';
-
-  const scrollAreaClasses = variant === 'desktop' ? 'space-y-4' : 'flex-1 space-y-4 overflow-y-auto pr-1';
-
-  const toggleSection = (section: keyof typeof openSections) => {
-    setOpenSections((current) => ({ ...current, [section]: !current[section] }));
-  };
-
   return (
-    <div className={containerClasses}>
-      {variant === 'desktop' ? (
-        <header className="flex items-center justify-between gap-3">
+    <div className={cardClass}>
+      <div className="flex items-center justify-between">
+        <h3 className={sectionTitleClass}>Subscription plans</h3>
+        <Sparkles className="h-5 w-5 text-indigo-500" />
+      </div>
+      <p className="mt-1 text-sm text-slate-500">Tiered packaging with activation, API allocation, and churn performance.</p>
+      <div className="mt-5 overflow-hidden rounded-2xl border border-slate-100">
+        <table className="w-full divide-y divide-slate-100 text-left text-sm">
+          <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">
+            <tr>
+              <th className="px-4 py-3">Plan</th>
+              <th className="px-4 py-3">Price</th>
+              <th className="px-4 py-3">Active users</th>
+              <th className="px-4 py-3">Activation</th>
+              <th className="px-4 py-3">API allocation</th>
+              <th className="px-4 py-3">Churn</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 bg-white">
+            {rows.map((plan) => (
+              <tr key={plan.id} className="transition hover:bg-indigo-50/40">
+                <td className="px-4 py-3 font-medium text-slate-900">
+                  <div className="flex items-center gap-2">
+                    {plan.name}
+                    {plan.badge ? (
+                      <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[11px] font-semibold text-indigo-700">
+                        {plan.badge}
+                      </span>
+                    ) : null}
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-slate-600">{plan.price}</td>
+                <td className="px-4 py-3 text-slate-600">{plan.activeUsers.toLocaleString()}</td>
+                <td className="px-4 py-3 text-slate-600">{plan.activationRate}</td>
+                <td className="px-4 py-3 text-slate-600">{plan.apiAllocation}</td>
+                <td className="px-4 py-3 text-slate-600">{plan.churn}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function GradientCard({ children, title, icon: Icon }: { children: React.ReactNode; title: string; icon: React.ComponentType<any> }) {
+  return (
+    <div className={`${cardClass} flex flex-col gap-4`}>
+      <div className="flex items-center gap-3">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-500 text-white shadow-lg">
+          <Icon className="h-5 w-5" />
+        </div>
+        <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function PieLegend({ segments }: { segments: PieSegment[] }) {
+  return (
+    <div className="mt-4 grid gap-2 text-xs text-slate-600 sm:grid-cols-2">
+      {segments.map((segment) => (
+        <div key={segment.id} className="flex items-center gap-2">
+          <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: segment.color }} />
+          <span className="font-medium text-slate-800">{segment.label}</span>
+          <span className="ml-auto text-slate-500">{segment.value}%</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function AutomationModal({ workflow, onClose }: { workflow: AutomationWorkflow; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 px-4 pb-10 pt-12 backdrop-blur-sm sm:items-center">
+      <div className="max-w-2xl rounded-3xl bg-white p-6 shadow-2xl">
+        <div className="flex items-start justify-between gap-6">
           <div>
-            <h2 className="text-lg font-semibold text-neutral-900">Filters</h2>
-            <p className="text-xs text-neutral-500">
-              {activeCount ? `${activeCount} active filter${activeCount > 1 ? 's' : ''}` : 'Refine product results'}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onReset}
-            className="text-sm font-semibold text-primary transition hover:text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-          >
-            Reset
-          </button>
-        </header>
-      ) : (
-        <header className="flex items-center justify-between gap-3 pb-2">
-          <div>
-            <h2 className="text-lg font-semibold text-neutral-900">Filters</h2>
-            <p className="text-xs text-neutral-500">
-              {activeCount ? `${activeCount} active filter${activeCount > 1 ? 's' : ''}` : 'Refine product results'}
-            </p>
+            <p className="text-xs uppercase tracking-[0.2em] text-indigo-500">Workflow detail</p>
+            <h2 className="mt-2 text-2xl font-semibold text-slate-900">{workflow.title}</h2>
+            <p className="mt-1 text-sm text-slate-500">A reusable background job ready for enterprise automation stacks.</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-indigo-100/70 text-neutral-500 transition hover:text-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
-            aria-label="Close filters"
+            className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-100"
           >
             <X className="h-4 w-4" />
           </button>
-        </header>
-      )}
-
-      <div className={scrollAreaClasses}>
-        <section className="rounded-3xl border border-indigo-100/70 bg-white p-5 shadow-soft">
-          <button
-            type="button"
-            className="flex w-full items-center justify-between gap-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-            id="filter-price-header"
-            aria-expanded={openSections.price}
-            aria-controls="filter-price-content"
-            onClick={() => toggleSection('price')}
-          >
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-neutral-900">Price Range</span>
-              <span className="text-xs text-neutral-500">Average price {formattedAverage}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              {priceBadge ? (
-                <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
-                  {priceBadge}
-                </span>
-              ) : null}
-              <ChevronDown className={`h-4 w-4 transition-transform ${openSections.price ? 'rotate-180 text-primary' : 'text-neutral-400'}`} />
-            </div>
-          </button>
-          <div
-            id="filter-price-content"
-            role="region"
-            aria-labelledby="filter-price-header"
-            className={openSections.price ? 'mt-4 space-y-4' : 'mt-4 space-y-4 hidden'}
-          >
-            <div className="rounded-3xl border border-indigo-100/70 bg-white/90 p-5 shadow-inner">
-              <div className="relative h-16">
-                <div className="absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-indigo-100" />
-                <div
-                  className="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-gradient-to-r from-primary via-secondary to-primary"
-                  style={{
-                    left: `${Math.min(clampedMinPercent, clampedMaxPercent)}%`,
-                    right: `${100 - Math.max(clampedMinPercent, clampedMaxPercent)}%`,
-                  }}
-                />
-                <span
-                  className="absolute top-0 inline-flex -translate-y-full -translate-x-1/2 items-center gap-1 rounded-full bg-neutral-900 px-3 py-1 text-xs font-semibold text-white shadow-[0_10px_25px_-15px_rgba(15,23,42,0.9)]"
-                  style={{ left: `${clampedMinPercent}%` }}
-                >
-                  {formattedMin}
-                </span>
-                <span
-                  className="absolute top-0 inline-flex -translate-y-full -translate-x-1/2 items-center gap-1 rounded-full bg-neutral-900 px-3 py-1 text-xs font-semibold text-white shadow-[0_10px_25px_-15px_rgba(15,23,42,0.9)]"
-                  style={{ left: `${clampedMaxPercent}%` }}
-                >
-                  {formattedMax}
-                </span>
-                <input
-                  type="range"
-                  min={priceRange.minimum}
-                  max={priceRange.maximum}
-                  value={priceSelection[0]}
-                  onChange={(event) => {
-                    const value = Number(event.target.value);
-                    setPriceSelection(([currentMin, currentMax]) => {
-                      const requested = Math.min(value, currentMax - 10);
-                      return [Math.max(requested, priceRange.minimum), currentMax];
-                    });
-                    onFilterChange();
-                  }}
-                  className="absolute inset-0 z-10 h-full w-full appearance-none bg-transparent focus:outline-none focus-visible:outline-none [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-secondary [&::-moz-range-track]:bg-transparent [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:-mt-[6px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-secondary"
-                  aria-label="Minimum price"
-                />
-                <input
-                  type="range"
-                  min={priceRange.minimum}
-                  max={priceRange.maximum}
-                  value={priceSelection[1]}
-                  onChange={(event) => {
-                    const value = Number(event.target.value);
-                    setPriceSelection(([currentMin, currentMax]) => {
-                      const requested = Math.max(value, currentMin + 10);
-                      return [currentMin, Math.min(requested, priceRange.maximum)];
-                    });
-                    onFilterChange();
-                  }}
-                  className="absolute inset-0 z-20 h-full w-full appearance-none bg-transparent focus:outline-none focus-visible:outline-none [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-secondary [&::-moz-range-track]:bg-transparent [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:-mt-[6px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-secondary"
-                  aria-label="Maximum price"
-                />
-              </div>
-            </div>
+        </div>
+        <dl className="mt-6 grid gap-4 sm:grid-cols-2">
+          <div className="rounded-2xl bg-indigo-50/70 p-4">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-indigo-600">Trigger</dt>
+            <dd className="mt-2 text-sm text-slate-700">{workflow.trigger}</dd>
           </div>
-        </section>
-
-        <section className="rounded-3xl border border-indigo-100/70 bg-white p-5 shadow-soft">
+          <div className="rounded-2xl bg-emerald-50/70 p-4">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-emerald-600">Action</dt>
+            <dd className="mt-2 text-sm text-slate-700">{workflow.action}</dd>
+          </div>
+          <div className="rounded-2xl bg-slate-50 p-4">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Owner & channel</dt>
+            <dd className="mt-2 text-sm text-slate-700">
+              <span className="font-semibold text-slate-900">Owner:</span> {workflow.owner}
+              <br />
+              <span className="font-semibold text-slate-900">Channel:</span> {workflow.channel}
+            </dd>
+          </div>
+          <div className="rounded-2xl bg-slate-50 p-4">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Cadence</dt>
+            <dd className="mt-2 text-sm text-slate-700">{workflow.cadence}</dd>
+          </div>
+        </dl>
+        <div className="mt-6 rounded-2xl border border-indigo-100/70 bg-white/60 p-4 text-sm text-slate-600">
+          <p>
+            Background jobs are versioned and deployed through our automation mesh. Each workflow exposes health checks, retry
+            policies, and observability hooks so you can plug into any enterprise stack without rework.
+          </p>
+        </div>
+        <div className="mt-6 flex flex-wrap items-center gap-3">
           <button
             type="button"
-            className="flex w-full items-center justify-between gap-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-            id="filter-rating-header"
-            aria-expanded={openSections.rating}
-            aria-controls="filter-rating-content"
-            onClick={() => toggleSection('rating')}
+            className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500"
           >
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-neutral-900">Star Rating</span>
-              <span className="text-xs text-neutral-500">{ratingFilter.label}</span>
-            </div>
-            <ChevronDown className={`h-4 w-4 transition-transform ${openSections.rating ? 'rotate-180 text-primary' : 'text-neutral-400'}`} />
+            <Sparkles className="h-4 w-4" /> Clone workflow
           </button>
-          <div
-            id="filter-rating-content"
-            role="region"
-            aria-labelledby="filter-rating-header"
-            className={openSections.rating ? 'mt-4' : 'mt-4 hidden'}
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-full border border-indigo-200 px-4 py-2 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-50"
+            onClick={onClose}
           >
-            <div className="flex items-center gap-1 text-amber-400">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Star
-                  key={String(index)}
-                  className={`h-5 w-5 ${index < Math.round(ratingFilter.minimum_rating) ? 'fill-current text-amber-400' : 'text-neutral-200'}`}
-                  aria-hidden="true"
-                />
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HeatmapCell({ value, max }: { value: number; max: number }) {
+  const intensity = value / max;
+  const background = `rgba(79, 70, 229, ${0.12 + intensity * 0.6})`;
+  return (
+    <div className="flex h-10 items-center justify-center rounded-2xl text-xs font-semibold text-slate-700" style={{ background }}>
+      {value}
+    </div>
+  );
+}
+
+function WorkloadBar({ point }: { point: ChartPoint }) {
+  const capacity = point.secondary ?? point.value;
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-xs text-slate-500">
+        <span className="font-medium text-slate-700">{point.label}</span>
+        <span>
+          {point.value}/{capacity} tasks
+        </span>
+      </div>
+      <div className="h-3 w-full overflow-hidden rounded-full bg-slate-100">
+        <div className="h-full rounded-full bg-indigo-500" style={{ width: `${Math.min(100, (point.value / capacity) * 100)}%` }} />
+      </div>
+    </div>
+  );
+}
+
+function StatusPill({ status }: { status: 'healthy' | 'attention' | 'delayed' }) {
+  const tone =
+    status === 'healthy'
+      ? 'bg-emerald-100 text-emerald-700'
+      : status === 'attention'
+      ? 'bg-amber-100 text-amber-700'
+      : 'bg-rose-100 text-rose-700';
+  return <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${tone}`}>{status}</span>;
+}
+
+function FunnelStep({
+  stage,
+  count,
+  conversion,
+  delta,
+  index,
+}: CorporateSection['funnel'][number] & { index: number }) {
+  const width = 100 - index * 8;
+  const trendTone = delta >= 0 ? 'text-emerald-600' : 'text-rose-600';
+  return (
+    <div className="mx-auto w-full max-w-xl">
+      <div
+        className="mx-auto rounded-2xl border border-indigo-100/70 bg-indigo-50/70 px-4 py-3 shadow-sm"
+        style={{ width: `${width}%` }}
+      >
+        <div className="flex items-center justify-between text-xs uppercase tracking-wide text-indigo-600">
+          <span>{stage}</span>
+          <span>{conversion}</span>
+        </div>
+        <div className="mt-1 flex items-end justify-between">
+          <span className="text-lg font-semibold text-slate-900">{count.toLocaleString()}</span>
+          <span className={`flex items-center gap-1 text-xs font-semibold ${trendTone}`}>
+            {delta >= 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+            {delta >= 0 ? '+' : ''}
+            {delta.toFixed(1)}%
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function DashboardClient({ initialData }: { initialData: PortfolioDashboardResponse }) {
+  const [activeTab, setActiveTab] = useState<TabDefinition['id']>('saas');
+  const [modalAutomation, setModalAutomation] = useState<AutomationWorkflow | null>(null);
+
+  const activeSection = useMemo(() => initialData.tabs.find((tab) => tab.id === activeTab), [initialData.tabs, activeTab]);
+
+  const openAutomation = (workflow: AutomationWorkflow) => setModalAutomation(workflow);
+  const closeAutomation = () => setModalAutomation(null);
+
+  const renderSaaS = () => (
+    <div className="space-y-6">
+      <MetricsGrid metrics={initialData.saas.metrics} />
+      <div className="grid gap-6 lg:grid-cols-5">
+        <div className="lg:col-span-3 space-y-6">
+          <SubscriptionTable rows={initialData.saas.subscriptionPlans} />
+          <div className="grid gap-6 md:grid-cols-2">
+            <GradientCard title="MRR growth" icon={LineChartIcon}>
+              <div className="h-56">
+                <ResponsiveContainer>
+                  <LineChart data={initialData.saas.growthTrend}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis dataKey="label" stroke="#94a3b8" fontSize={12} />
+                    <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(value) => `$${value}k`} />
+                    <Tooltip contentStyle={{ borderRadius: 16 }} />
+                    <Line type="monotone" dataKey="value" stroke="#4f46e5" strokeWidth={3} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </GradientCard>
+            <GradientCard title="API usage saturation" icon={BarChart3}>
+              <div className="h-56">
+                <ResponsiveContainer>
+                  <AreaChart data={initialData.saas.apiUsageTrend}>
+                    <defs>
+                      <linearGradient id="apiGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.7} />
+                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0.05} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="4 4" stroke="#e2e8f0" />
+                    <XAxis dataKey="label" stroke="#94a3b8" fontSize={12} />
+                    <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(value) => `${value}M`} />
+                    <Tooltip contentStyle={{ borderRadius: 16 }} />
+                    <Area type="monotone" dataKey="value" stroke="#4f46e5" fill="url(#apiGradient)" strokeWidth={2} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </GradientCard>
+          </div>
+        </div>
+        <div className="lg:col-span-2 space-y-6">
+          <GradientCard title="Churn health" icon={Users}>
+            <div className="h-56">
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie
+                    data={initialData.saas.churnSegments}
+                    dataKey="value"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={4}
+                  >
+                    {initialData.saas.churnSegments.map((entry) => (
+                      <Cell key={entry.id} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value: number) => `${value}%`} contentStyle={{ borderRadius: 16 }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <PieLegend segments={initialData.saas.churnSegments} />
+          </GradientCard>
+          <div className={cardClass}>
+            <h3 className={sectionTitleClass}>Billing cycle orchestration</h3>
+            <p className="mt-1 text-sm text-slate-500">
+              Background jobs performing ledger sync, revenue recognition, and compliance audit trails.
+            </p>
+            <div className="mt-4 space-y-3">
+              {initialData.saas.billingCycles.map((cycle) => (
+                <div
+                  key={cycle.id}
+                  className="flex flex-col gap-1 rounded-2xl bg-slate-50 p-3 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <p className="font-semibold text-slate-900">{cycle.label}</p>
+                    <p className="text-xs text-slate-500">Owners: {cycle.owners.join(', ')}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-full bg-white px-2 py-1 text-xs text-slate-500">Next run {cycle.nextRun}</span>
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                        cycle.status === 'completed'
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : cycle.status === 'processing'
+                          ? 'bg-amber-100 text-amber-700'
+                          : 'bg-indigo-100 text-indigo-700'
+                      }`}
+                    >
+                      {cycle.status}
+                    </span>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
-        </section>
-
-        <section className="rounded-3xl border border-indigo-100/70 bg-white p-5 shadow-soft">
-          <button
-            type="button"
-            className="flex w-full items-center justify-between gap-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-            id="filter-brand-header"
-            aria-expanded={openSections.brand}
-            aria-controls="filter-brand-content"
-            onClick={() => toggleSection('brand')}
-          >
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-neutral-900">Brand</span>
-              <span className="text-xs text-neutral-500">
-                {appliedBrandIds.length ? `${appliedBrandIds.length} selected` : 'Select preferred brands'}
-              </span>
+        </div>
+      </div>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <AutomationList automations={initialData.saas.automation} onInspect={openAutomation} />
+        <div className={`${cardClass} lg:col-span-2`}>
+          <h3 className={sectionTitleClass}>Churn recovery playbook</h3>
+          <p className="mt-1 text-sm text-slate-500">Configure real-time outreach without leaving the dashboard.</p>
+          <form className="mt-4 grid gap-4 lg:grid-cols-2" onSubmit={(event) => event.preventDefault()}>
+            <label className="flex flex-col gap-2 text-sm text-slate-700">
+              Contact template
+              <select className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
+                <option>Usage drop nurture</option>
+                <option>Executive alignment offer</option>
+                <option>Migration support</option>
+              </select>
+            </label>
+            <label className="flex flex-col gap-2 text-sm text-slate-700">
+              Trigger threshold
+              <input
+                type="number"
+                className="rounded-2xl border border-slate-200 px-3 py-2 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                placeholder="Usage %"
+                defaultValue={40}
+              />
+            </label>
+            <label className="flex flex-col gap-2 text-sm text-slate-700">
+              Fallback owner
+              <input
+                className="rounded-2xl border border-slate-200 px-3 py-2 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                defaultValue="Lifecycle team"
+              />
+            </label>
+            <label className="flex flex-col gap-2 text-sm text-slate-700">
+              Message preview
+              <textarea
+                className="min-h-[120px] rounded-2xl border border-slate-200 px-3 py-2 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                defaultValue="Hey team, we noticed API usage trending down. Let’s schedule a workflow audit and share upcoming roadmap upgrades."
+              />
+            </label>
+            <div className="lg:col-span-2 flex flex-wrap items-center gap-3">
+              <button
+                type="submit"
+                className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500"
+              >
+                <Send className="h-4 w-4" /> Save workflow preset
+              </button>
+              <span className="text-xs text-slate-500">The automation mesh will deploy this preset instantly.</span>
             </div>
-            <div className="flex items-center gap-2">
-              {brandBadge ? (
-                <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
-                  {brandBadge}
-                </span>
-              ) : null}
-              <ChevronDown className={`h-4 w-4 transition-transform ${openSections.brand ? 'rotate-180 text-primary' : 'text-neutral-400'}`} />
-            </div>
-          </button>
-          <div
-            id="filter-brand-content"
-            role="region"
-            aria-labelledby="filter-brand-header"
-            className={openSections.brand ? 'mt-4 space-y-3' : 'mt-4 space-y-3 hidden'}
-          >
-            {displayedBrands.map((brand) => {
-              const checked = selectedBrands.length === 0
-                ? brand.checked
-                : selectedBrands.includes(brand.id);
-              const initial = brand.name.charAt(0).toUpperCase();
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 
-              return (
-                <label
-                  key={brand.id}
-                  className={`group flex items-center justify-between gap-3 rounded-2xl px-3 py-2 shadow-sm ring-1 transition hover:ring-primary/60 ${
-                    checked
-                      ? 'bg-primary/10 ring-primary/50'
-                      : 'bg-white/95 ring-indigo-100/70'
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => onBrandToggle(brand.id)}
-                    className="peer sr-only"
-                    aria-label={`Filter by ${brand.name}`}
-                  />
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-primary shadow-inner">
-                      {initial}
-                    </span>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-semibold text-neutral-800 group-hover:text-neutral-900">
-                        {brand.name}
-                      </span>
-                      <span className="text-[11px] font-medium text-neutral-400">{brand.product_count} items</span>
-                    </div>
+  const renderCommerce = () => (
+    <div className="space-y-6">
+      <MetricsGrid metrics={initialData.commerce.metrics} />
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-6">
+          <div className={cardClass}>
+            <div className="flex items-center justify-between">
+              <h3 className={sectionTitleClass}>Top products leaderboard</h3>
+              <TabletSmartphone className="h-5 w-5 text-emerald-500" />
+            </div>
+            <p className="mt-1 text-sm text-slate-500">Merchandising performance across categories with live conversion rates.</p>
+            <div className="mt-4 overflow-hidden rounded-2xl border border-slate-100">
+              <table className="w-full divide-y divide-slate-100 text-sm">
+                <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3">Product</th>
+                    <th className="px-4 py-3">Category</th>
+                    <th className="px-4 py-3">Revenue</th>
+                    <th className="px-4 py-3">Conversion</th>
+                    <th className="px-4 py-3">Inventory</th>
+                    <th className="px-4 py-3 text-right">Trend</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 bg-white">
+                  {initialData.commerce.topProducts.map((product, index) => (
+                    <tr key={product.id} className="transition hover:bg-emerald-50/50">
+                      <td className="px-4 py-3 font-medium text-slate-900">
+                        <div className="flex items-center gap-3">
+                          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-xs font-semibold text-emerald-600">
+                            #{index + 1}
+                          </span>
+                          {product.name}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-slate-600">{product.category}</td>
+                      <td className="px-4 py-3 text-slate-600">{product.revenue}</td>
+                      <td className="px-4 py-3 text-slate-600">{product.conversionRate}</td>
+                      <td className="px-4 py-3 text-slate-600">{product.inventory}</td>
+                      <td className="px-4 py-3 text-right">
+                        <TrendBadge change={product.trend === 'down' ? -2.1 : 2.6} trend={product.trend} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div className={cardClass}>
+            <div className="flex items-center justify-between">
+              <h3 className={sectionTitleClass}>Seasonal promotion builder</h3>
+              <Mail className="h-5 w-5 text-emerald-500" />
+            </div>
+            <form className="mt-4 grid gap-4 md:grid-cols-2" onSubmit={(event) => event.preventDefault()}>
+              <label className="flex flex-col gap-2 text-sm text-slate-700">
+                Campaign name
+                <input className="rounded-2xl border border-slate-200 px-3 py-2 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" defaultValue="Holiday VIP drop" />
+              </label>
+              <label className="flex flex-col gap-2 text-sm text-slate-700">
+                Audience segment
+                <select className="rounded-2xl border border-slate-200 px-3 py-2 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100">
+                  <option>High intent browsers</option>
+                  <option>Repeat purchasers</option>
+                  <option>First-time buyers</option>
+                </select>
+              </label>
+              <label className="md:col-span-2 flex flex-col gap-2 text-sm text-slate-700">
+                Incentive
+                <input className="rounded-2xl border border-slate-200 px-3 py-2 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" defaultValue="Free express shipping + early access" />
+              </label>
+              <label className="md:col-span-2 flex flex-col gap-2 text-sm text-slate-700">
+                Message
+                <textarea className="min-h-[100px] rounded-2xl border border-slate-200 px-3 py-2 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" defaultValue="You left premium picks in your cart. Finish checkout for complimentary express shipping & VIP concierge." />
+              </label>
+              <div className="md:col-span-2 flex flex-wrap items-center gap-3">
+                <button type="submit" className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-400">
+                  <Send className="h-4 w-4" /> Activate automation
+                </button>
+                <span className="text-xs text-slate-500">Abandoned cart triggers will sync this message to SMS and email automatically.</span>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div className="space-y-6">
+          <GradientCard title="Sales trends" icon={BarChart3}>
+            <div className="h-56">
+              <ResponsiveContainer>
+                <BarChart data={initialData.commerce.salesTrend}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#d1fae5" />
+                  <XAxis dataKey="label" stroke="#6b7280" fontSize={12} />
+                  <YAxis stroke="#6b7280" fontSize={12} tickFormatter={(value) => `$${value}k`} />
+                  <Tooltip contentStyle={{ borderRadius: 16 }} />
+                  <Bar dataKey="value" fill="#10b981" radius={[10, 10, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </GradientCard>
+          <AutomationList automations={initialData.commerce.automation} onInspect={openAutomation} />
+          <div className={cardClass}>
+            <h3 className={sectionTitleClass}>Operational health</h3>
+            <div className="mt-4 space-y-3">
+              {initialData.commerce.operations.map((operation) => (
+                <div key={operation.id} className="rounded-2xl bg-emerald-50/50 p-3 text-sm text-slate-600">
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold text-slate-900">{operation.title}</p>
+                    <StatusPill status={operation.status} />
                   </div>
-                  <span
-                    className={`flex h-7 w-7 items-center justify-center rounded-2xl border text-transparent transition group-hover:border-primary/40 ${
-                      checked
-                        ? 'border-secondary bg-secondary text-white'
-                        : 'border-indigo-200 bg-white'
+                  <p className="mt-1 text-xs text-slate-500">{operation.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderCorporate = () => (
+    <div className="space-y-6">
+      <MetricsGrid metrics={initialData.corporate.metrics} />
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6">
+          <GradientCard title="Conversion funnel" icon={Globe}>
+            <div className="space-y-3">
+              {initialData.corporate.funnel.map((step, index) => (
+                <FunnelStep key={step.id} {...step} index={index} />
+              ))}
+            </div>
+          </GradientCard>
+          <AutomationList automations={initialData.corporate.automation} onInspect={openAutomation} />
+        </div>
+        <div className="space-y-6 lg:col-span-2">
+          <GradientCard title="Lead source mix" icon={Users}>
+            <div className="h-64">
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie data={initialData.corporate.leadSources} dataKey="value" cx="50%" cy="50%" outerRadius={110} label>
+                    {initialData.corporate.leadSources.map((entry) => (
+                      <Cell key={entry.id} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value: number) => `${value}%`} contentStyle={{ borderRadius: 16 }} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </GradientCard>
+          <div className={cardClass}>
+            <h3 className={sectionTitleClass}>Executive insights</h3>
+            <ul className="mt-4 space-y-3 text-sm text-slate-600">
+              {initialData.corporate.insights.map((insight) => (
+                <li key={insight.id} className="rounded-2xl bg-slate-50 p-4">
+                  <p className="font-semibold text-slate-900">{insight.headline}</p>
+                  <p className="mt-1 text-xs text-slate-500">{insight.detail}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderCustomApp = () => (
+    <div className="space-y-6">
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <div className={cardClass}>
+            <div className="flex items-center justify-between">
+              <h3 className={sectionTitleClass}>Kanban delivery board</h3>
+              <Layers className="h-5 w-5 text-purple-500" />
+            </div>
+            <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {initialData.customApp.kanban.map((column) => (
+                <div key={column.id} className="rounded-3xl bg-purple-50/70 p-4">
+                  <div className="flex items-center justify-between text-sm font-semibold text-purple-800">
+                    <span>{column.title}</span>
+                    <span className="rounded-full bg-white px-2 py-0.5 text-xs text-purple-500">{column.badge}</span>
+                  </div>
+                  <div className="mt-3 space-y-3">
+                    {column.tasks.map((task) => (
+                      <div key={task.id} className="rounded-2xl bg-white p-3 shadow-sm">
+                        <p className="text-sm font-semibold text-slate-900">{task.title}</p>
+                        <p className="mt-1 text-xs text-slate-500">Owner: {task.owner}</p>
+                        <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
+                          <span className="rounded-full bg-slate-100 px-2 py-0.5">Due {task.due}</span>
+                          <span className={`rounded-full px-2 py-0.5 ${
+                            task.priority === 'high'
+                              ? 'bg-rose-100 text-rose-700'
+                              : task.priority === 'medium'
+                              ? 'bg-amber-100 text-amber-700'
+                              : 'bg-emerald-100 text-emerald-700'
+                          }`}>Priority {task.priority}</span>
+                          {task.automation ? <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-indigo-600">{task.automation}</span> : null}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className={cardClass}>
+            <h3 className={sectionTitleClass}>Idea backlog intake</h3>
+            <ul className="mt-4 space-y-3 text-sm text-slate-600">
+              {initialData.customApp.backlogIdeas.map((idea, index) => (
+                <li key={idea} className="flex items-start gap-3 rounded-2xl bg-slate-50 p-3">
+                  <span className="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-purple-100 text-xs font-semibold text-purple-600">
+                    {index + 1}
+                  </span>
+                  <span>{idea}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div className="space-y-6">
+          <GradientCard title="Workload distribution" icon={ClipboardList}>
+            <div className="space-y-3">
+              {initialData.customApp.workloadDistribution.map((point) => (
+                <WorkloadBar key={point.label} point={point} />
+              ))}
+            </div>
+          </GradientCard>
+          <AutomationList automations={initialData.customApp.automation} onInspect={openAutomation} />
+          <div className={cardClass}>
+            <h3 className={sectionTitleClass}>Create recurring task</h3>
+            <form className="mt-4 space-y-3" onSubmit={(event) => event.preventDefault()}>
+              <label className="flex flex-col gap-2 text-sm text-slate-700">
+                Task title
+                <input className="rounded-2xl border border-slate-200 px-3 py-2 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100" placeholder="Weekly release readiness" />
+              </label>
+              <label className="flex flex-col gap-2 text-sm text-slate-700">
+                Owner
+                <input className="rounded-2xl border border-slate-200 px-3 py-2 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100" placeholder="Automation bot" />
+              </label>
+              <label className="flex flex-col gap-2 text-sm text-slate-700">
+                Cadence
+                <select className="rounded-2xl border border-slate-200 px-3 py-2 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100">
+                  <option>Weekly</option>
+                  <option>Bi-weekly</option>
+                  <option>Monthly</option>
+                </select>
+              </label>
+              <button type="submit" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-400">
+                <CheckCircle2 className="h-4 w-4" /> Save automation
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderContent = () => (
+    <div className="space-y-6">
+      <MetricsGrid metrics={initialData.content.metrics} />
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <div className={cardClass}>
+            <div className="flex items-center justify-between">
+              <h3 className={sectionTitleClass}>Engagement trend</h3>
+              <PlayCircle className="h-5 w-5 text-amber-500" />
+            </div>
+            <div className="mt-4 h-60">
+              <ResponsiveContainer>
+                <LineChart data={initialData.content.engagementTrend}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#fcd34d" />
+                  <XAxis dataKey="label" stroke="#f59e0b" fontSize={12} />
+                  <YAxis stroke="#f59e0b" fontSize={12} tickFormatter={(value) => `${value}k`} />
+                  <Tooltip contentStyle={{ borderRadius: 16 }} />
+                  <Line type="monotone" dataKey="value" stroke="#f97316" strokeWidth={3} dot={{ r: 4 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          <div className={cardClass}>
+            <div className="flex items-center justify-between">
+              <h3 className={sectionTitleClass}>Top performing stories</h3>
+              <Sparkles className="h-5 w-5 text-amber-500" />
+            </div>
+            <div className="mt-4 overflow-hidden rounded-2xl border border-slate-100">
+              <table className="w-full divide-y divide-slate-100 text-sm">
+                <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3">Title</th>
+                    <th className="px-4 py-3">Format</th>
+                    <th className="px-4 py-3">Publish window</th>
+                    <th className="px-4 py-3">Engagement</th>
+                    <th className="px-4 py-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 bg-white">
+                  {initialData.content.topStories.map((story) => (
+                    <tr key={story.id} className="transition hover:bg-amber-50/50">
+                      <td className="px-4 py-3 font-medium text-slate-900">{story.title}</td>
+                      <td className="px-4 py-3 text-slate-600">{story.format}</td>
+                      <td className="px-4 py-3 text-slate-600">{story.publishedAt}</td>
+                      <td className="px-4 py-3 text-slate-600">{story.engagement}</td>
+                      <td className="px-4 py-3 text-slate-600">{story.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div className="space-y-6">
+          <AutomationList automations={initialData.content.automation} onInspect={openAutomation} />
+          <div className={cardClass}>
+            <h3 className={sectionTitleClass}>Publishing queue</h3>
+            <ul className="mt-4 space-y-3 text-sm text-slate-600">
+              {initialData.content.publishingQueue.map((slot) => (
+                <li key={slot.id} className="rounded-2xl bg-slate-50 p-3">
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold text-slate-900">{slot.slot}</p>
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                        slot.status === 'ready'
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : slot.status === 'in-review'
+                          ? 'bg-amber-100 text-amber-700'
+                          : 'bg-rose-100 text-rose-700'
+                      }`}
+                    >
+                      {slot.status}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-slate-500">{slot.topic}</p>
+                  <p className="mt-1 text-xs text-slate-400">Editor: {slot.editor}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderEdTech = () => {
+    const maxHeat = Math.max(...initialData.edtech.activityHeatmap.values.map((item) => item.score));
+    return (
+      <div className="space-y-6">
+        <MetricsGrid metrics={initialData.edtech.metrics} />
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="space-y-6 lg:col-span-2">
+            <div className={cardClass}>
+              <div className="flex items-center justify-between">
+                <h3 className={sectionTitleClass}>Program performance</h3>
+                <BookOpen className="h-5 w-5 text-rose-500" />
+              </div>
+              <div className="mt-4 overflow-hidden rounded-2xl border border-slate-100">
+                <table className="w-full divide-y divide-slate-100 text-sm">
+                  <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">
+                    <tr>
+                      <th className="px-4 py-3">Course</th>
+                      <th className="px-4 py-3">Enrollment</th>
+                      <th className="px-4 py-3">Completion</th>
+                      <th className="px-4 py-3">Avg score</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 bg-white">
+                    {initialData.edtech.courses.map((course) => (
+                      <tr key={course.id} className="transition hover:bg-rose-50/60">
+                        <td className="px-4 py-3 font-medium text-slate-900">{course.title}</td>
+                        <td className="px-4 py-3 text-slate-600">{course.enrollment.toLocaleString()}</td>
+                        <td className="px-4 py-3 text-slate-600">{course.completion}</td>
+                        <td className="px-4 py-3 text-slate-600">{course.avgScore}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div className={cardClass}>
+              <div className="flex items-center justify-between">
+                <h3 className={sectionTitleClass}>Student activity heatmap</h3>
+                <LineChartIcon className="h-5 w-5 text-rose-500" />
+              </div>
+              <div className="mt-4 overflow-x-auto">
+                <div className="min-w-[640px] space-y-3">
+                  <div className="grid grid-cols-8 gap-2 text-xs font-semibold text-slate-500">
+                    <span />
+                    {initialData.edtech.activityHeatmap.weeks.map((week) => (
+                      <span key={week} className="text-center">
+                        {week}
+                      </span>
+                    ))}
+                  </div>
+                  {initialData.edtech.activityHeatmap.days.map((day) => (
+                    <div key={day} className="grid grid-cols-8 gap-2 items-center">
+                      <span className="text-xs font-semibold text-slate-500">{day}</span>
+                      {initialData.edtech.activityHeatmap.weeks.map((week) => {
+                        const value = initialData.edtech.activityHeatmap.values.find(
+                          (item) => item.day === day && item.week === week,
+                        )?.score;
+                        return <HeatmapCell key={`${week}-${day}`} value={value ?? 0} max={maxHeat} />;
+                      })}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-6">
+            <AutomationList automations={initialData.edtech.automation} onInspect={openAutomation} />
+            <div className={cardClass}>
+              <h3 className={sectionTitleClass}>Intelligence alerts</h3>
+              <ul className="mt-4 space-y-3 text-sm text-slate-600">
+                {initialData.edtech.alerts.map((alert) => (
+                  <li
+                    key={alert.id}
+                    className={`rounded-2xl p-3 ${
+                      alert.severity === 'critical'
+                        ? 'bg-rose-100 text-rose-700'
+                        : alert.severity === 'warning'
+                        ? 'bg-amber-100 text-amber-700'
+                        : 'bg-rose-50 text-rose-700'
                     }`}
                   >
-                    <Check className="h-3.5 w-3.5" />
-                  </span>
-                </label>
-              );
-            })}
-
-            {hasAdditionalBrands ? (
-              <button
-                type="button"
-                onClick={() => setShowAllBrands((current) => !current)}
-                className="text-sm font-semibold text-primary transition hover:text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-              >
-                {showAllBrands ? 'Show fewer brands' : 'Show more brands'}
-              </button>
-            ) : null}
-
-            <button
-              type="button"
-              onClick={onBrandsReset}
-              className="inline-flex items-center gap-2 text-xs font-semibold text-primary transition hover:text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-            >
-              Reset brands
-            </button>
-          </div>
-        </section>
-
-        <section className="rounded-3xl border border-indigo-100/70 bg-white p-5 shadow-soft">
-          <button
-            type="button"
-            className="flex w-full items-center justify-between gap-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-            id="filter-delivery-header"
-            aria-expanded={openSections.delivery}
-            aria-controls="filter-delivery-content"
-            onClick={() => toggleSection('delivery')}
-          >
-            <span className="text-sm font-semibold text-neutral-900">Delivery Options</span>
-            <div className="flex items-center gap-2">
-              {deliveryBadge ? (
-                <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
-                  {deliveryBadge}
-                </span>
-              ) : null}
-              <ChevronDown className={`h-4 w-4 transition-transform ${openSections.delivery ? 'rotate-180 text-primary' : 'text-neutral-400'}`} />
+                    {alert.message}
+                  </li>
+                ))}
+              </ul>
             </div>
-          </button>
-          <div
-            id="filter-delivery-content"
-            role="region"
-            aria-labelledby="filter-delivery-header"
-            className={openSections.delivery ? 'mt-4 flex flex-wrap gap-3' : 'mt-4 hidden'}
-          >
-            {deliveryOptions.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => onDeliveryToggle(option.id)}
-                className={`inline-flex min-w-[120px] items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary/40 ${
-                  option.active
-                    ? 'bg-primary text-white shadow-soft'
-                    : 'bg-indigo-50/60 text-neutral-600 hover:bg-indigo-100 hover:text-primary'
-                }`}
-                aria-pressed={option.active}
-              >
-                {option.label}
-              </button>
-            ))}
           </div>
-        </section>
-      </div>
-
-      {variant === 'desktop' ? null : (
-        <div className="mt-4 flex items-center justify-between gap-3 border-t border-indigo-100/70 pt-4">
-          <button
-            type="button"
-            onClick={onReset}
-            className="text-sm font-semibold text-neutral-600 transition hover:text-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
-          >
-            Clear all
-          </button>
-          <button
-            type="button"
-            onClick={onApply}
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:shadow-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-          >
-            Show results
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-type FilterSummaryItem = {
-  id: string;
-  label: string;
-  onClear?: () => void;
-};
-
-function FilterSummaryBar({
-  items,
-  onClearAll,
-}: {
-  items: FilterSummaryItem[];
-  onClearAll: () => void;
-}) {
-  if (items.length === 0) {
-    return null;
-  }
-
-  return (
-    <div className="mt-4 flex flex-wrap items-center gap-2 rounded-3xl border border-indigo-100/70 bg-white/80 p-3 shadow-soft backdrop-blur lg:sticky lg:top-24">
-      {items.map((item) => (
-        <button
-          key={item.id}
-          type="button"
-          onClick={item.onClear}
-          className="inline-flex items-center gap-2 rounded-full border border-indigo-100/70 bg-white px-3 py-1 text-xs font-semibold text-neutral-600 transition hover:border-primary/40 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
-        >
-          <span>{item.label}</span>
-          {item.onClear ? <X className="h-3.5 w-3.5" /> : null}
-        </button>
-      ))}
-      <button
-        type="button"
-        onClick={onClearAll}
-        className="ml-auto inline-flex items-center gap-2 rounded-full border border-transparent bg-primary/10 px-3 py-1 text-xs font-semibold text-primary transition hover:bg-primary/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/40"
-      >
-        Clear all
-      </button>
-    </div>
-  );
-}
-
-function InsightsWidget({
-  spotlightMetric,
-  overviewMetrics,
-}: {
-  spotlightMetric: SpotlightMetric;
-  overviewMetrics: OverviewMetric[];
-}) {
-  const palette = TREND_PALETTE[spotlightMetric.trend] ?? TREND_PALETTE.steady;
-  const TrendIcon = palette.icon;
-
-  return (
-    <div className="rounded-3xl border border-indigo-100/70 bg-white p-6 shadow-soft">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-medium text-neutral-600">Customer insight</p>
-          <AnimatedMetricValue
-            value={spotlightMetric.value}
-            className="mt-1 block text-3xl font-semibold text-neutral-900"
-            duration={900}
-          />
-        </div>
-        <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${palette.badge} ${palette.text}`}>
-          <TrendIcon className="h-3.5 w-3.5" />
-          {formatChange(spotlightMetric.change)}
-        </span>
-      </div>
-      <p className="mt-3 text-sm text-neutral-600">{spotlightMetric.label}</p>
-      <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-0">
-        {overviewMetrics.map((metric, index) => {
-          const extraClasses = [
-            index >= 2 ? 'sm:border-t sm:border-indigo-100/60 sm:pt-5' : '',
-            index % 2 === 0 ? 'sm:pr-5' : 'sm:pl-5',
-          ]
-            .filter(Boolean)
-            .join(' ');
-
-          return <KpiCard key={metric.id} metric={metric} className={extraClasses} />;
-        })}
-      </div>
-      <button
-        type="button"
-        className="mt-6 inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-white/70 px-4 py-2 text-sm font-semibold text-secondary shadow-soft transition hover:border-secondary hover:bg-secondary/10 hover:text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary/40"
-      >
-        <SlidersHorizontal className="h-4 w-4" />
-        Personalise insights
-      </button>
-    </div>
-  );
-}
-
-const KPI_ICON_MATCHERS: { pattern: RegExp; icon: LucideIcon }[] = [
-  { pattern: /revenue|sales|order|gmv|income/i, icon: BarChart3 },
-  { pattern: /conversion|rate|performance|growth/i, icon: LineChart },
-  { pattern: /customer|client|user|retention|loyalty/i, icon: Users },
-  { pattern: /traffic|visit|view|session|engagement/i, icon: PieChart },
-];
-
-function resolveMetricIcon(metric: OverviewMetric): LucideIcon {
-  const match = KPI_ICON_MATCHERS.find(({ pattern }) => pattern.test(metric.label));
-  return match?.icon ?? BarChart3;
-}
-
-function KpiCard({ metric, className }: { metric: OverviewMetric; className?: string }) {
-  const palette = TREND_PALETTE[metric.trend] ?? TREND_PALETTE.steady;
-  const TrendIcon = palette.icon;
-  const Icon = resolveMetricIcon(metric);
-
-  return (
-    <article
-      className={`flex min-h-[184px] flex-col justify-between rounded-2xl border border-indigo-100/70 bg-white/90 p-5 shadow-soft transition-transform duration-300 ease-out hover:-translate-y-0.5 hover:shadow-glow ${className ?? ''}`}
-    >
-      <div className="flex items-start justify-between">
-        <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/10 via-primary/10 to-secondary/5 text-secondary shadow-inner">
-          <Icon className="h-5 w-5" aria-hidden="true" />
-        </span>
-        <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${palette.badge} ${palette.text}`}>
-          <TrendIcon className="h-3.5 w-3.5" />
-          {formatChange(metric.change)}
-        </span>
-      </div>
-      <div className="mt-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-neutral-600">{metric.label}</p>
-        <AnimatedMetricValue
-          value={metric.value}
-          className="mt-2 block text-xl font-semibold text-neutral-900"
-          duration={720}
-        />
-      </div>
-      <p className="mt-3 text-xs leading-relaxed text-neutral-600">{metric.description}</p>
-    </article>
-  );
-}
-
-function ProductCard({
-  product,
-  ratingThreshold,
-  index,
-  isFiltering,
-}: {
-  product: Product;
-  ratingThreshold: number;
-  index: number;
-  isFiltering: boolean;
-}) {
-  const [imgSrc, setImgSrc] = useState(product.image ?? FALLBACK_IMAGE);
-  const discount =
-    product.original_price && product.original_price > product.price
-      ? Math.round((1 - product.price / product.original_price) * 100)
-      : null;
-
-  useEffect(() => {
-    setImgSrc(product.image ?? FALLBACK_IMAGE);
-  }, [product.image]);
-
-  return (
-    <article
-      className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border border-indigo-100/70 bg-surface-alt p-5 shadow-soft transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-glow ${
-        isFiltering ? 'opacity-70' : 'opacity-100'
-      }`}
-      style={{ animationDelay: `${index * 0.12}s` }}
-      data-price={product.price}
-    >
-      <div className="relative mb-4 overflow-hidden rounded-2xl bg-accent-soft shadow-inner">
-        <div className="relative aspect-[4/3] w-full">
-          <Image
-            src={imgSrc}
-            alt={product.name}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 360px"
-            className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
-            onError={() => setImgSrc(FALLBACK_IMAGE)}
-            loading="lazy"
-          />
-        </div>
-        <button
-          type="button"
-          className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/90 text-neutral-400 shadow-soft transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
-          aria-label={product.favorite ? 'Saved to favourites' : 'Add to favourites'}
-        >
-          <Heart className={`h-4 w-4 ${product.favorite ? 'fill-primary text-primary' : ''}`} />
-        </button>
-        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-          {discount ? (
-            <Badge tone="bg-rose-100 text-rose-600">-{discount}%</Badge>
-          ) : null}
-          {product.badges.map((badge) => (
-            <Badge key={badge.id} tone={badge.tone}>
-              {badge.label}
-            </Badge>
-          ))}
         </div>
       </div>
+    );
+  };
 
-      <div className="flex flex-1 flex-col">
-        <h3 className="line-clamp-2 text-lg font-semibold text-neutral-900">{product.name}</h3>
-        <div className="mt-3 flex items-baseline gap-2">
-          <p className="text-2xl font-semibold text-neutral-900">{formatCurrency(product.price, product.currency)}</p>
-          {product.original_price ? (
-            <p className="text-sm text-neutral-600 line-through">
-              {formatCurrency(product.original_price, product.currency)}
-            </p>
-          ) : null}
-        </div>
-
-        <div className="mt-3 flex items-center gap-2 text-sm text-neutral-600">
-          <div className="flex items-center gap-1 text-amber-400" aria-hidden="true">
-            <Star className="h-4 w-4 fill-current" />
-            <span className="font-semibold text-neutral-700">{product.rating.toFixed(1)}</span>
+  const renderSpecialized = () => (
+    <div className="space-y-6">
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6">
+          <h3 className="text-xl font-semibold text-slate-900">Real estate intelligence</h3>
+          <MetricsGrid metrics={initialData.specialized.realEstate.metrics} />
+          <div className={cardClass}>
+            <h4 className={sectionTitleClass}>Listings & inquiries</h4>
+            <ul className="mt-4 space-y-3 text-sm text-slate-600">
+              {initialData.specialized.realEstate.pipeline.map((item) => (
+                <li key={item.id} className="rounded-2xl bg-slate-50 p-3">
+                  <p className="font-semibold text-slate-900">{item.address}</p>
+                  <p className="text-xs text-slate-500">Stage: {item.stage}</p>
+                  <p className="text-xs text-slate-400">Inquiries: {item.inquiries} · Agent: {item.agent}</p>
+                </li>
+              ))}
+            </ul>
           </div>
-          <span aria-label={`${product.rating.toFixed(1)} stars from ${product.reviews} reviews`}>
-            ({product.reviews})
-          </span>
-          {product.rating >= ratingThreshold ? (
-            <Badge tone="bg-primary/10 text-primary">Top rated</Badge>
-          ) : null}
         </div>
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Badge tone="bg-secondary/10 text-secondary">{product.category_id}</Badge>
-          <Badge tone="bg-primary/10 text-primary">{product.brand_id}</Badge>
+        <div className="space-y-6">
+          <GradientCard title="Market momentum" icon={LineChartIcon}>
+            <div className="h-56">
+              <ResponsiveContainer>
+                <AreaChart data={initialData.specialized.realEstate.trend}>
+                  <defs>
+                    <linearGradient id="realEstate" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.7} />
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="4 4" stroke="#cbd5f5" />
+                  <XAxis dataKey="label" stroke="#6366f1" fontSize={12} />
+                  <YAxis stroke="#6366f1" fontSize={12} />
+                  <Tooltip contentStyle={{ borderRadius: 16 }} />
+                  <Area type="monotone" dataKey="value" stroke="#4f46e5" fill="url(#realEstate)" strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </GradientCard>
+          <AutomationList automations={initialData.specialized.realEstate.automation} onInspect={openAutomation} />
         </div>
-
-        <div className="mt-6 flex items-center gap-3">
-          <button
-            type="button"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:shadow-glow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
-          >
-            <ShoppingCart className="h-4 w-4" />
-            Add to cart
-          </button>
-          <button
-            type="button"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-primary/40 px-4 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/50"
-          >
-            Quick view
-          </button>
+        <div className="space-y-6">
+          <h3 className="text-xl font-semibold text-slate-900">Finance & healthcare</h3>
+          <div className={cardClass}>
+            <h4 className={sectionTitleClass}>Expense vs budget</h4>
+            <div className="mt-4 h-56">
+              <ResponsiveContainer>
+                <LineChart data={initialData.specialized.finance.expenses}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="label" stroke="#64748b" fontSize={12} />
+                  <YAxis stroke="#64748b" fontSize={12} tickFormatter={(value) => `$${value}k`} />
+                  <Tooltip contentStyle={{ borderRadius: 16 }} />
+                  <Line type="monotone" dataKey="value" stroke="#14b8a6" strokeWidth={3} dot={false} name="Actual" />
+                  <Line type="monotone" dataKey="secondary" stroke="#0ea5e9" strokeDasharray="4 4" strokeWidth={2} dot={false} name="Budget" />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          <div className={cardClass}>
+            <h4 className={sectionTitleClass}>ROI breakdown</h4>
+            <div className="mt-4 h-56">
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie data={initialData.specialized.finance.roiBreakdown} dataKey="value" innerRadius={60} outerRadius={90}>
+                    {initialData.specialized.finance.roiBreakdown.map((entry) => (
+                      <Cell key={entry.id} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value: number) => `${value}%`} contentStyle={{ borderRadius: 16 }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          <AutomationList automations={initialData.specialized.finance.automation} onInspect={openAutomation} />
         </div>
       </div>
-    </article>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className={cardClass}>
+          <div className="flex items-center justify-between">
+            <h3 className={sectionTitleClass}>Healthcare appointments</h3>
+            <CalendarCheck className="h-5 w-5 text-sky-500" />
+          </div>
+          <div className="mt-4 overflow-hidden rounded-2xl border border-slate-100">
+            <table className="w-full divide-y divide-slate-100 text-sm">
+              <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">
+                <tr>
+                  <th className="px-4 py-3">Patient</th>
+                  <th className="px-4 py-3">Clinician</th>
+                  <th className="px-4 py-3">Start</th>
+                  <th className="px-4 py-3">Channel</th>
+                  <th className="px-4 py-3">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {initialData.specialized.healthcare.appointments.map((appointment) => (
+                  <tr key={appointment.id} className="transition hover:bg-sky-50/60">
+                    <td className="px-4 py-3 font-medium text-slate-900">{appointment.patient}</td>
+                    <td className="px-4 py-3 text-slate-600">{appointment.clinician}</td>
+                    <td className="px-4 py-3 text-slate-600">{appointment.start}</td>
+                    <td className="px-4 py-3 text-slate-600">{appointment.channel}</td>
+                    <td className="px-4 py-3 text-slate-600">{appointment.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div className="space-y-6">
+          <MetricsGrid metrics={initialData.specialized.healthcare.metrics} />
+          <AutomationList automations={initialData.specialized.healthcare.automation} onInspect={openAutomation} />
+        </div>
+      </div>
+    </div>
   );
-}
 
-function Badge({ tone, children }: { tone: string; children: React.ReactNode }) {
-  return <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${tone}`}>{children}</span>;
-}
+  const tabRenderers: Record<TabDefinition['id'], () => JSX.Element> = {
+    saas: renderSaaS,
+    commerce: renderCommerce,
+    corporate: renderCorporate,
+    customApp: renderCustomApp,
+    content: renderContent,
+    edtech: renderEdTech,
+    specialized: renderSpecialized,
+  };
 
-function AnimatedMetricValue({
-  value,
-  className,
-  duration = 800,
-}: {
-  value: string;
-  className?: string;
-  duration?: number;
-}) {
-  const { prefix, suffix, numericValue, decimals, showPlus } = useMemo(() => {
-    const trimmed = value.trim();
-    const prefixMatch = trimmed.match(/^[^\d+-]*/)?.[0] ?? '';
-    const rest = trimmed.slice(prefixMatch.length);
-    const numberMatch = rest.match(/[-+]?\d*[.,]?\d*/)?.[0] ?? '';
-    const sanitizedNumber = numberMatch.replace(/,/g, '');
-    const numericValue = Number.parseFloat(sanitizedNumber);
-    const suffix = rest.slice(numberMatch.length);
-    const decimals = sanitizedNumber.includes('.')
-      ? sanitizedNumber.split('.')[1]?.length ?? 0
-      : 0;
-    const showPlus = numberMatch.trim().startsWith('+');
-    return { prefix: prefixMatch, suffix, numericValue, decimals, showPlus };
-  }, [value]);
-
-  const isNumeric = Number.isFinite(numericValue);
-  const [current, setCurrent] = useState(() => (isNumeric ? numericValue : 0));
-  const previousValueRef = useRef(isNumeric ? numericValue : 0);
-
-  useEffect(() => {
-    if (!isNumeric) return;
-
-    const startValue = previousValueRef.current;
-    const targetValue = numericValue;
-
-    if (startValue === targetValue) {
-      setCurrent(targetValue);
-      previousValueRef.current = targetValue;
-      return;
-    }
-
-    const durationMs = Math.max(duration, 0);
-    const startTime = performance.now();
-    setCurrent(startValue);
-
-    let frame: number;
-    const step = (timestamp: number) => {
-      const progress = durationMs === 0 ? 1 : Math.min((timestamp - startTime) / durationMs, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const nextValue = startValue + (targetValue - startValue) * eased;
-      setCurrent(nextValue);
-
-      if (progress < 1) {
-        frame = requestAnimationFrame(step);
-      } else {
-        previousValueRef.current = targetValue;
-      }
-    };
-
-    frame = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(frame);
-  }, [isNumeric, numericValue, duration]);
-
-  if (!isNumeric) {
-    return <span className={className}>{value}</span>;
-  }
-
-  const decimalsToDisplay = Math.min(decimals, 2);
-  const formattedNumber = current.toLocaleString('en-US', {
-    minimumFractionDigits: decimalsToDisplay,
-    maximumFractionDigits: decimalsToDisplay,
-  });
-  const withSign = showPlus && current >= 0 ? `+${formattedNumber}` : formattedNumber;
-
-  return <span className={className}>{`${prefix}${withSign}${suffix}`}</span>;
-}
-
-function ProductGridSkeleton({ count }: { count: number }) {
   return (
-    <div className="pointer-events-none absolute inset-0 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-      {Array.from({ length: count }).map((_, index) => (
-        <div
-          key={`skeleton-${index}`}
-          className="animate-pulse rounded-3xl border border-indigo-100/60 bg-surface-alt p-5 shadow-soft"
-          aria-hidden="true"
-        >
-          <div className="mb-4 h-56 rounded-2xl bg-neutral-200/80" />
+    <div className="min-h-screen bg-[var(--color-surface)] pb-16">
+      <header className="border-b border-indigo-100/70 bg-white/80 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-8 md:flex-row md:items-center md:justify-between">
           <div className="space-y-3">
-            <div className="h-4 w-3/4 rounded bg-neutral-200" />
-            <div className="h-6 w-1/2 rounded bg-neutral-200" />
-            <div className="h-4 w-2/3 rounded bg-neutral-200" />
+            <span className="inline-flex items-center gap-2 rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
+              <Sparkles className="h-4 w-4" /> Unified portfolio experience
+            </span>
+            <div>
+              <h1 className="text-3xl font-semibold text-slate-900 md:text-4xl">{initialData.hero.title}</h1>
+              <p className="mt-2 text-base text-slate-600 md:text-lg">{initialData.hero.subtitle}</p>
+            </div>
+            <p className="text-sm text-slate-500 md:text-base">{initialData.hero.description}</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500"
+              >
+                <FileSpreadsheet className="h-4 w-4" /> {initialData.hero.cta}
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 rounded-full border border-indigo-200 px-4 py-2 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-50"
+                onClick={() => setModalAutomation(initialData.saas.automation[0])}
+              >
+                <Workflow className="h-4 w-4" /> Explore automation blueprints
+              </button>
+            </div>
+          </div>
+          <div className="rounded-3xl border border-indigo-100/70 bg-indigo-50/70 p-5 text-sm text-slate-600 shadow-lg">
+            <p className="text-xs uppercase tracking-[0.2em] text-indigo-500">Generated</p>
+            <p className="mt-1 font-semibold text-slate-900">{new Date(initialData.generatedAt).toLocaleString()}</p>
+            <p className="mt-2 text-xs text-slate-500">
+              Every module ships with analytics, automation, and visualizations following one cohesive premium SaaS design system.
+            </p>
           </div>
         </div>
-      ))}
+      </header>
+      <nav className="mx-auto mt-8 flex max-w-7xl flex-wrap gap-3 px-6">
+        {initialData.tabs.map((tab) => {
+          const isActive = tab.id === activeTab;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`group relative overflow-hidden rounded-full border px-5 py-3 text-left transition-all ${
+                isActive
+                  ? 'border-indigo-500 bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow-lg'
+                  : 'border-indigo-100 bg-white text-slate-600 hover:border-indigo-200 hover:shadow-md'
+              }`}
+            >
+              <span className="text-sm font-semibold">{tab.label}</span>
+              <p className={`mt-1 text-xs ${isActive ? 'text-indigo-100' : 'text-slate-400'}`}>{tab.description}</p>
+            </button>
+          );
+        })}
+      </nav>
+      <main className="mx-auto mt-8 max-w-7xl space-y-6 px-6">
+        <div className={`${cardClass} bg-white/70`}> 
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-indigo-500">Active module</p>
+              <h2 className="text-2xl font-semibold text-slate-900">{activeSection?.label}</h2>
+              <p className="mt-1 text-sm text-slate-500">{activeSection?.description}</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="inline-flex items-center gap-2 rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
+                <Workflow className="h-4 w-4" /> Background jobs synced
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+                <CheckCircle2 className="h-4 w-4" /> Consistent design language
+              </span>
+            </div>
+          </div>
+        </div>
+        <section className="space-y-6">{tabRenderers[activeTab]()}</section>
+      </main>
+      {modalAutomation ? <AutomationModal workflow={modalAutomation} onClose={closeAutomation} /> : null}
     </div>
   );
 }
