@@ -7,10 +7,12 @@ from __future__ import annotations
 
 import argparse
 import json
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Callable, Dict, Iterable, List, Sequence, Union
 
 from project_generator.core.brief_parser import BriefParser
+from project_generator.core.brief_parser import ScaffoldSpec
 
 
 def parse_args() -> argparse.Namespace:
@@ -20,199 +22,348 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
-def task(
-    id_: str,
-    title: str,
-    area: str,
-    blocked_by: List[str] | None = None,
-    labels: List[str] | None = None,
-    estimate: str = "1d",
-    acceptance: List[str] | None = None,
-    dod: List[str] | None = None,
-) -> Dict:
-    return {
-        "id": id_,
-        "title": title,
-        "area": area,
-        "estimate": estimate,
-        "blocked_by": blocked_by or [],
-        "labels": labels or [],
-        "acceptance": acceptance or [],
-        "dod": dod or [],
-        "state": "pending",
-    }
+@dataclass
+class TaskTemplate:
+    """Structured template that can render a lane task for the supplied spec."""
 
-
-def build_plan(spec) -> Dict[str, List[Dict]]:
-    be: List[Dict] = []
-    fe: List[Dict] = []
-
-    # Backend lane
-    be.append(
-        task(
-            "BE-SCH",
-            "Design DB schema",
-            "backend",
-            acceptance=["ERD drafted", "tables defined", "naming conventions applied"],
-        )
+    id: str
+    title: str
+    area: str
+    blocked_by: Union[Sequence[str], Callable[[ScaffoldSpec], Sequence[str]]] = field(
+        default_factory=list
     )
-    be.append(
-        task(
+    labels: Sequence[str] = field(default_factory=list)
+    estimate: str = "1d"
+    acceptance: Sequence[str] = field(default_factory=list)
+    dod: Sequence[str] = field(default_factory=list)
+    condition: Callable[[ScaffoldSpec], bool] = lambda spec: True
+
+    def render(self, spec: ScaffoldSpec) -> Dict[str, Any]:
+        fmt = {"spec": spec}
+
+        def _format(values: Iterable[str]) -> List[str]:
+            return [v.format_map(fmt) for v in values]
+
+        blocked_by = self.blocked_by(spec) if callable(self.blocked_by) else self.blocked_by
+        return {
+            "id": self.id,
+            "title": self.title.format_map(fmt),
+            "area": self.area,
+            "estimate": self.estimate,
+            "blocked_by": list(blocked_by),
+            "labels": list(self.labels),
+            "acceptance": _format(self.acceptance),
+            "dod": _format(self.dod),
+            "state": "pending",
+        }
+
+
+def _compliance_flags(spec: ScaffoldSpec) -> set[str]:
+    return {c.lower() for c in spec.compliance if c}
+
+
+def _feature_flags(spec: ScaffoldSpec) -> set[str]:
+    return {f.lower() for f in spec.features if f}
+
+
+def _default_backend_templates() -> List[TaskTemplate]:
+    return [
+        TaskTemplate(
+            "BE-SCH",
+            "Design {spec.database} schema",
+            "backend",
+            acceptance=[
+                "ERD drafted",
+                "tables defined",
+                "naming conventions applied",
+            ],
+            condition=lambda spec: spec.database != "none",
+        ),
+        TaskTemplate(
             "BE-SEED",
             "Seed loaders (CSV/mock)",
             "backend",
             blocked_by=["BE-SCH"],
             acceptance=["seed scripts run", "sample rows present"],
-        )
-    )
-    be.append(
-        task(
+            condition=lambda spec: spec.database != "none",
+        ),
+        TaskTemplate(
             "BE-MDL",
-            "Aggregates/MatViews (funnel, revenue, etc.)",
+            "Aggregate models aligned to primary KPIs",
             "backend",
             blocked_by=["BE-SEED"],
             acceptance=["views created", "query p95 < 400ms (seed)"],
-        )
-    )
-    be += [
-        task(
-            "BE-API-KPI",
-            "GET /api/v1/kpis",
-            "backend",
-            blocked_by=["BE-MDL"],
-            acceptance=["returns totals/deltas", "OpenAPI updated"],
+            condition=lambda spec: spec.project_type != "web",
         ),
-        task(
-            "BE-API-REV",
-            "GET /api/v1/revenue",
+        TaskTemplate(
+            "BE-API-CORE",
+            "Expose {spec.backend} service endpoints",
             "backend",
-            blocked_by=["BE-MDL"],
-            acceptance=["time series ok", "OpenAPI updated"],
-        ),
-        task("BE-API-CAT", "GET /api/v1/categories", "backend", blocked_by=["BE-MDL"]),
-        task("BE-API-PLT", "GET /api/v1/platforms", "backend", blocked_by=["BE-MDL"]),
-        task("BE-API-CUS", "GET /api/v1/customers/insights", "backend", blocked_by=["BE-MDL"]),
-        task("BE-API-FDB", "GET /api/v1/feedback", "backend", blocked_by=["BE-MDL"]),
-        task(
-            "BE-EXP",
-            "GET /api/v1/export/csv",
-            "backend",
-            blocked_by=[
-                "BE-API-KPI",
-                "BE-API-REV",
-                "BE-API-CAT",
-                "BE-API-PLT",
-                "BE-API-CUS",
-                "BE-API-FDB",
+            blocked_by=lambda spec: ["BE-MDL"]
+            if spec.project_type != "web" and spec.database != "none"
+            else [],
+            acceptance=[
+                "core endpoints implemented",
+                "OpenAPI updated",
             ],
         ),
-    ]
-    be.append(
-        task(
+        TaskTemplate(
             "BE-AUTH",
-            "Auth0/RBAC skeleton",
+            "Integrate {spec.auth} auth provider",
             "backend",
             labels=["security"],
             acceptance=["role checks present"],
-        )
-    )
-    be.append(
-        task(
+            condition=lambda spec: spec.auth != "none",
+        ),
+        TaskTemplate(
             "BE-OBS",
             "Structured logs + correlation IDs",
             "backend",
             labels=["observability"],
             acceptance=["request id on logs"],
-        )
-    )
-    be.append(
-        task(
+        ),
+        TaskTemplate(
             "BE-TST",
-            "Unit+Integration tests (Testcontainers)",
+            "Unit + integration tests",
             "backend",
-            blocked_by=["BE-API-KPI", "BE-API-REV"],
+            blocked_by=["BE-API-CORE"],
             acceptance=["pytest green", ">= minimal coverage"],
-        )
-    )
+        ),
+    ]
 
-    # Frontend lane
-    fe.append(
-        task(
+
+def _api_backend_templates() -> List[TaskTemplate]:
+    return [
+        TaskTemplate(
+            "BE-DOMAIN",
+            "Model domain objects and validation schemas",
+            "backend",
+            acceptance=["pydantic/domain schemas captured", "error responses documented"],
+        ),
+        TaskTemplate(
+            "BE-RATE-LIMIT",
+            "Add rate limiting and observability for {spec.backend} APIs",
+            "backend",
+            blocked_by=["BE-DOMAIN"],
+            labels=["security"],
+            acceptance=["throttling enforced", "metrics exported"],
+        ),
+        TaskTemplate(
+            "BE-AUTH",
+            "Integrate {spec.auth} auth provider",
+            "backend",
+            labels=["security"],
+            acceptance=["role checks present"],
+            condition=lambda spec: spec.auth != "none",
+        ),
+        TaskTemplate(
+            "BE-DOCS",
+            "Publish OpenAPI and postman collection",
+            "backend",
+            blocked_by=["BE-RATE-LIMIT"],
+            acceptance=["OpenAPI committed", "client sdk generated"],
+        ),
+        TaskTemplate(
+            "BE-TST",
+            "Contract + integration tests",
+            "backend",
+            blocked_by=["BE-DOCS"],
+            acceptance=["tests green", "newman suite recorded"],
+        ),
+    ]
+
+
+def _compliance_backend_templates() -> List[TaskTemplate]:
+    return [
+        TaskTemplate(
+            "BE-HIPAA",
+            "HIPAA logging and PHI safeguards",
+            "backend",
+            labels=["compliance"],
+            acceptance=["audit log enabled", "PHI masked in logs"],
+            condition=lambda spec: "hipaa" in _compliance_flags(spec),
+        ),
+        TaskTemplate(
+            "BE-PCI",
+            "PCI DSS encryption + key rotation",
+            "backend",
+            labels=["compliance"],
+            acceptance=["card data encrypted", "rotation policy documented"],
+            condition=lambda spec: "pci" in _compliance_flags(spec),
+        ),
+        TaskTemplate(
+            "BE-GDPR",
+            "GDPR data export/delete flows",
+            "backend",
+            labels=["compliance"],
+            acceptance=["export endpoint present", "delete workflow documented"],
+            condition=lambda spec: "gdpr" in _compliance_flags(spec),
+        ),
+    ]
+
+
+def _feature_backend_templates() -> List[TaskTemplate]:
+    return [
+        TaskTemplate(
+            "BE-ML",
+            "Serve machine learning predictions",
+            "backend",
+            labels=["ml"],
+            acceptance=["model artifact versioned", "latency within SLA"],
+            condition=lambda spec: "ml" in _feature_flags(spec),
+        ),
+        TaskTemplate(
+            "BE-WORKFLOW",
+            "Orchestrate workflow automation jobs",
+            "backend",
+            labels=["workflow"],
+            acceptance=["scheduler configured", "idempotent runs"],
+            condition=lambda spec: "workflow" in _feature_flags(spec),
+        ),
+    ]
+
+
+def _default_frontend_templates() -> List[TaskTemplate]:
+    return [
+        TaskTemplate(
             "FE-DSN",
-            "Shell/Layout/Routes",
+            "Shell/Layout/Routes for {spec.frontend}",
             "frontend",
             acceptance=["routes wired", "base theme applied"],
-        )
-    )
-    fe.append(
-        task(
+        ),
+        TaskTemplate(
             "FE-TYPES",
-            "openapi-typescript client",
+            "Generate typed client from OpenAPI",
             "frontend",
             acceptance=["types.ts generated", "typed client compiles"],
-        )
-    )
-    fe.append(
-        task(
+        ),
+        TaskTemplate(
             "FE-MOCKS",
             "MSW/Prism mocks",
             "frontend",
             acceptance=["mocks respond", "dev proxy configured"],
-        )
-    )
-    fe += [
-        task(
-            "FE-KPI",
-            "KPI cards + filters",
+        ),
+        TaskTemplate(
+            "FE-DASH",
+            "Implement analytics dashboards",
             "frontend",
             blocked_by=["FE-DSN", "FE-TYPES"],
             acceptance=["renders", "no console errors"],
         ),
-        task(
-            "FE-REV",
-            "Revenue chart + range selectors",
-            "frontend",
-            blocked_by=["FE-DSN", "FE-TYPES"],
-            acceptance=["renders", "no console errors"],
-        ),
-        task("FE-PLT", "Platform distribution (bars)", "frontend", blocked_by=["FE-DSN", "FE-TYPES"]),
-        task("FE-CAT", "Category ranks (bars)", "frontend", blocked_by=["FE-DSN", "FE-TYPES"]),
-        task("FE-CUS", "Customer insights panel", "frontend", blocked_by=["FE-DSN", "FE-TYPES"]),
-        task("FE-FDB", "Feedback timeline", "frontend", blocked_by=["FE-DSN", "FE-TYPES"]),
-        task(
-            "FE-EXP",
+        TaskTemplate(
+            "FE-EXPORT",
             "Exports (CSV/PNG)",
             "frontend",
-            blocked_by=[
-                "FE-KPI",
-                "FE-REV",
-                "FE-PLT",
-                "FE-CAT",
-                "FE-CUS",
-                "FE-FDB",
-            ],
-            acceptance=["CSV downloads"],
+            blocked_by=["FE-DASH"],
+            acceptance=["download works"],
         ),
-    ]
-    fe.append(
-        task(
-            "FE-A11Y-PERF",
-            "WCAG AA + code-split/memoize",
+        TaskTemplate(
+            "FE-A11Y",
+            "WCAG AA hardening",
             "frontend",
-            labels=["a11y", "performance"],
-        )
-    )
-    fe.append(
-        task(
+            labels=["a11y"],
+        ),
+        TaskTemplate(
             "FE-TST",
             "Component + E2E smoke",
             "frontend",
-            blocked_by=["FE-KPI", "FE-REV"],
+            blocked_by=["FE-DASH"],
             acceptance=["tests green"],
-        )
-    )
+        ),
+    ]
 
-    return {"backend": be, "frontend": fe}
+
+def _mobile_frontend_templates() -> List[TaskTemplate]:
+    return [
+        TaskTemplate(
+            "FE-MOB-SHELL",
+            "Mobile navigation + routing",
+            "frontend",
+            acceptance=["navigation flows connected", "deep link configured"],
+        ),
+        TaskTemplate(
+            "FE-MOB-AUTH",
+            "Wire {spec.auth} auth into mobile client",
+            "frontend",
+            acceptance=["login succeeds", "tokens persisted securely"],
+            condition=lambda spec: spec.auth != "none",
+        ),
+        TaskTemplate(
+            "FE-MOB-OFFLINE",
+            "Offline persistence + sync",
+            "frontend",
+            acceptance=["cache seeded", "sync retries"],
+            condition=lambda spec: "offline" in _feature_flags(spec),
+        ),
+        TaskTemplate(
+            "FE-MOB-TST",
+            "Device + integration tests",
+            "frontend",
+            acceptance=["tests green"],
+        ),
+    ]
+
+
+def _feature_frontend_templates() -> List[TaskTemplate]:
+    return [
+        TaskTemplate(
+            "FE-REPORTS",
+            "Interactive reporting widgets",
+            "frontend",
+            blocked_by=["FE-DSN", "FE-TYPES"],
+            acceptance=["filters persist", "downloads available"],
+            condition=lambda spec: "reporting" in _feature_flags(spec),
+        ),
+        TaskTemplate(
+            "FE-WORKFLOW",
+            "Workflow builder UI",
+            "frontend",
+            labels=["workflow"],
+            blocked_by=["FE-DSN"],
+            acceptance=["steps reorderable", "state persisted"],
+            condition=lambda spec: "workflow" in _feature_flags(spec),
+        ),
+    ]
+
+
+def _render_lane(spec: ScaffoldSpec, templates: List[TaskTemplate]) -> List[Dict[str, Any]]:
+    lane: List[Dict[str, Any]] = []
+    for template in templates:
+        if template.condition(spec):
+            lane.append(template.render(spec))
+    return lane
+
+
+def build_plan(spec: ScaffoldSpec) -> Dict[str, List[Dict[str, Any]]]:
+    backend_lane: List[Dict[str, Any]]
+    if spec.backend == "none":
+        backend_lane = []
+    elif spec.project_type == "api":
+        backend_lane = _render_lane(
+            spec,
+            _api_backend_templates() + _compliance_backend_templates() + _feature_backend_templates(),
+        )
+    else:
+        backend_lane = _render_lane(
+            spec,
+            _default_backend_templates() + _compliance_backend_templates() + _feature_backend_templates(),
+        )
+
+    frontend_lane: List[Dict[str, Any]]
+    if spec.frontend == "none" or spec.project_type == "api":
+        frontend_lane = []
+    elif spec.project_type == "mobile" or spec.frontend == "expo":
+        frontend_lane = _render_lane(
+            spec,
+            _mobile_frontend_templates() + _feature_frontend_templates(),
+        )
+    else:
+        frontend_lane = _render_lane(
+            spec,
+            _default_frontend_templates() + _feature_frontend_templates(),
+        )
+
+    return {"backend": backend_lane, "frontend": frontend_lane}
 
 
 def render_plan_md(spec, plan: Dict[str, List[Dict]]) -> str:
