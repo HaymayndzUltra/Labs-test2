@@ -232,9 +232,9 @@ export type PortfolioDashboardResponse = {
 };
 
 const portfolioDashboard: PortfolioDashboardResponse = {
-  generatedAt: '2024-11-18T08:00:00.000Z',
+  generatedAt: '2025-09-26T04:14:00.000Z',
   hero: {
-    title: 'Portfolio-grade product operations',
+    title: 'Premium Multi-Category Dashboard',
     subtitle: 'Multi-domain dashboards built with enterprise rigor',
     description:
       'A curated showcase of SaaS, commerce, corporate, custom app, media, education, and niche solutions — all sharing one premium design system.',

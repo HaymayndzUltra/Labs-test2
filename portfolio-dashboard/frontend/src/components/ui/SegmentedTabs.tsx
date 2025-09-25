@@ -25,11 +25,18 @@ export function SegmentedTabs({ tabs, activeId, onChange }: SegmentedTabsProps) 
             aria-controls={`${tab.id}-panel`}
             onClick={() => onChange(tab.id)}
             className={cn(
-              'flex min-w-[160px] flex-1 items-center justify-center gap-2 rounded-[18px] px-4 py-3 text-sm font-semibold transition focus-visible:focus-ring',
+              'flex min-w-[160px] flex-1 items-center justify-center gap-2 rounded-[18px] px-4 py-3 text-sm font-semibold transition-all duration-300 focus-visible:focus-ring',
               isActive
-                ? 'bg-gradient-to-r from-[var(--primary-500)] to-[var(--primary-600)] text-white shadow-md'
-                : 'text-slate-600 hover:bg-slate-100/80'
+                ? 'text-white shadow-xl shadow-purple-500/10'
+                : 'text-slate-600 hover:-translate-y-0.5 hover:bg-slate-100/80'
             )}
+            style={
+              isActive
+                ? {
+                    backgroundImage: 'var(--brand-gradient)',
+                  }
+                : undefined
+            }
           >
             <span className="whitespace-nowrap">{tab.label}</span>
           </button>
