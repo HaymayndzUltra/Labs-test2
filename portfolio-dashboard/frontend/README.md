@@ -1,79 +1,69 @@
-# portfolio-dashboard Frontend
+# Portfolio-grade Product Operations (Frontend)
 
-This is a Next.js 14 application using the App Router.
+Modern React + Vite implementation of the portfolio-grade product operations dashboard. The frontend ships a reusable design system, portfolio modules, and Storybook playground.
+
+## Stack
+- **Vite + React 19**
+- **TypeScript**
+- **Zustand** for global UI state & feature flags
+- **@tanstack/react-query** for data fetching/cache
+- **Recharts** for accessible, keyboard navigable charts
+- **react-hook-form + zod** for automation builder forms
+- **Vitest + Testing Library** for unit tests
+- **Storybook** with light/dark + LTR/RTL controls
 
 ## Getting Started
 
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn
-
-### Installation
-
 ```bash
 npm install
-```
-
-### Development
-
-```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser.
+Open http://localhost:5173 to view the dashboard.
 
-### Building for Production
-
-```bash
-npm run build
-npm start
-```
+### Scripts
+- `npm run dev` – start Vite dev server
+- `npm run build` – type-check and build production assets
+- `npm run preview` – preview production build
+- `npm run test` – run vitest suite (formatting, design tokens, store reducers)
+- `npm run lint` – eslint TypeScript sources
+- `npm run storybook` – launch Storybook with theme toggles
 
 ## Project Structure
-
 ```
 src/
-├── app/            # App Router pages and layouts
-├── components/     # Reusable React components
-├── hooks/          # Custom React hooks
-├── lib/            # Utility functions and API client
-├── types/          # TypeScript type definitions
-└── styles/         # Global styles and Tailwind config
+├── App.tsx                    # Root portfolio application
+├── components/                # Design system primitives & modules
+├── data/                      # Portfolio fixtures & typings
+├── features/dashboard/        # Module renderers & skeletons
+├── hooks/                     # Cross-cutting hooks (URL sync, media queries)
+├── lib/                       # Formatting, query client, live event stream
+├── store/                     # Zustand store with filters & feature flags
+├── theme/                     # Design tokens + global styles
+└── stories/                   # Storybook stories
 ```
 
-## Features
-
-- **Next.js 14** with App Router
-- **TypeScript** for type safety
-- **Tailwind CSS** for styling
-- **SWR** for data fetching
-- **Axios** for API calls
-- **React Hook Form** with Zod validation
-- **Jest** for testing
-
-## Environment Variables
-
-Copy `.env.example` to `.env.local` and update the values:
-
-```bash
-cp .env.example .env.local
-```
+## Design System Highlights
+- 12-column responsive grid with 8pt spacing rhythm
+- Tokenized typography scale (H1/H2/H3/Body/Caption)
+- Surface elevations (S0–S3) with light/dark themes
+- Semantic palettes (`--primary`, `--success`, `--warning`, `--danger`, `--info`)
+- Colorblind-safe chart palette & vertical accent gradients
+- Motion tuned to 200ms with reduced-motion support
+- Accessible focus rings, keyboard navigation, and ARIA patterns
 
 ## Testing
 
 ```bash
-# Run tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Generate coverage report
-npm run test:coverage
+npm run test
 ```
 
-## Learn More
+Vitest executes formatting utilities, design token resolution, and Zustand reducer tests under jsdom.
 
-- [Next.js Documentation](https://nextjs.org/docs)
-- [React Documentation](https://react.dev)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+## Storybook
+
+```bash
+npm run storybook
+```
+
+Use the toolbar controls to toggle light/dark themes and LTR/RTL directions. Stories live in `src/stories`.
