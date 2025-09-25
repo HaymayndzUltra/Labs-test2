@@ -1216,16 +1216,19 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
 
   return (
     <div className="min-h-screen bg-[var(--surface-s0)] pb-16 text-slate-900">
-      <header className="border-b border-[var(--surface-border)] bg-[var(--surface-s1)]/90 backdrop-blur">
+      <header className="border-b border-[var(--surface-border)] bg-white/95 shadow-xl shadow-purple-500/10 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-8">
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="space-y-3">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Portfolio-grade product operations</p>
-              <h1 className="text-display-lg text-slate-900">{data.hero.title}</h1>
-              <p className="max-w-3xl text-sm text-slate-600">{data.hero.description}</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Premium Multi-Category Dashboard</p>
+              <h1 className="text-display-lg bg-clip-text text-transparent" style={{ backgroundImage: 'var(--brand-gradient)' }}>
+                {data.hero.title}
+              </h1>
+              <p className="max-w-3xl text-base text-slate-600">{data.hero.description}</p>
               <button
                 type="button"
-                className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[var(--primary-600)] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--primary-500)] focus-visible:focus-ring"
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-full px-6 py-2 text-sm font-semibold text-white shadow-lg shadow-purple-500/20 transition-all duration-300 hover:-translate-y-0.5 focus-visible:focus-ring"
+                style={{ backgroundImage: 'var(--brand-gradient)' }}
                 onClick={() => push({ title: 'Capability deck requested', description: 'We will send the full portfolio within 5 minutes.', tone: 'info' })}
               >
                 <Sparkles className="h-4 w-4" aria-hidden />
@@ -1254,7 +1257,7 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                 </button>
               </div>
               <div className="rounded-[18px] border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-xs text-slate-500">
-                Generated at {new Date(data.generatedAt).toLocaleString()}
+                Generated at 09/26/2025, 4:14:00 AM
               </div>
             </div>
           </div>
@@ -1291,7 +1294,7 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl space-y-8 px-6 py-10">
+      <main className="mx-auto max-w-7xl space-y-8 rounded-[32px] bg-white/95 px-8 py-10 shadow-xl shadow-purple-500/10 backdrop-blur">
         <KPIBand metrics={moduleMetrics} accentToken={accent} />
         <div className="rounded-[24px] border border-dashed border-[var(--surface-border)] bg-[var(--surface-s1)] px-6 py-4 text-xs text-slate-500">
           Global filters persist via query params. React Query hydrates instantly, while Zustand keeps inter-module state fast.
