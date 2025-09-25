@@ -10,22 +10,10 @@ interface ProvidersProps {
 }
 
 export function Providers({ children }: ProvidersProps) {
-  const queryClientRef = useRef<QueryClient>();
+  const queryClientRef = useRef<QueryClient | null>(null);
 
   if (!queryClientRef.current) {
-    queryClientRef.current = new QueryClient({
-      defaultOptions: {
-        queries: {
-          staleTime: 60_000,
-          gcTime: 5 * 60_000,
-          refetchOnWindowFocus: false,
-          refetchOnReconnect: true,
-        },
-        mutations: {
-          retry: 0,
-        },
-      },
-    });
+    queryClientRef.current = new QueryClient();
   }
 
   return (

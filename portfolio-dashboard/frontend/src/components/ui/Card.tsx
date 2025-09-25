@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 
 type CardProps = HTMLAttributes<HTMLDivElement> & {
   padding?: 'sm' | 'md' | 'lg';
-  as?: keyof JSX.IntrinsicElements;
+  as?: keyof React.JSX.IntrinsicElements;
 };
 
 const paddingMap: Record<NonNullable<CardProps['padding']>, string> = {
