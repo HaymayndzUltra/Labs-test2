@@ -4,7 +4,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
 const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'portfolio-dashboard';
 const APP_DESC = process.env.NEXT_PUBLIC_APP_DESCRIPTION || 'Generated Next.js app';
@@ -23,25 +23,40 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" data-theme="light">
+      <body className={`${inter.className} bg-[color:var(--color-canvas)] text-[color:var(--color-foreground)]`}>
         <Providers>
           <div className="min-h-screen flex flex-col">
-            <header className="bg-white shadow-sm border-b">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-16">
-                  <h1 className="text-xl font-semibold">{APP_NAME}</h1>
-                  <nav className="space-x-4">
-                    <Link href="/" className="text-gray-700 hover:text-gray-900">Home</Link>
-                    <Link href="/dashboard" className="text-gray-700 hover:text-gray-900">Dashboard</Link>
+            <header className="sticky top-0 z-40 backdrop-blur bg-[color:var(--color-canvas)]/90 border-b border-[color:var(--color-border)]">
+              <div className="mx-auto w-full max-w-[1200px] px-6 py-4">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="text-sm font-medium tracking-wide text-[color:var(--color-primary)] uppercase">
+                      {APP_NAME}
+                    </p>
+                    <p className="text-sm text-[color:var(--color-foreground-muted)]">{APP_DESC}</p>
+                  </div>
+                  <nav className="flex flex-wrap items-center gap-3 text-sm font-medium">
+                    <Link
+                      href="/"
+                      className="pill bg-[color:var(--color-surface)] border-[color:var(--color-border)] hover:border-[color:var(--color-primary)] transition-colors"
+                    >
+                      Home
+                    </Link>
+                    <Link
+                      href="/dashboard"
+                      className="pill bg-[color:var(--color-primary)] text-white hover:opacity-90 transition-opacity"
+                    >
+                      Dashboard
+                    </Link>
                   </nav>
                 </div>
               </div>
             </header>
             <main className="flex-1">{children}</main>
-            <footer className="bg-gray-50 border-t">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <p className="text-center text-sm text-gray-500">© {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
+            <footer className="border-t border-[color:var(--color-border)] bg-[color:var(--color-surface)]">
+              <div className="mx-auto w-full max-w-[1200px] px-6 py-6 text-center text-xs text-[color:var(--color-foreground-muted)]">
+                © {new Date().getFullYear()} {APP_NAME}. All rights reserved.
               </div>
             </footer>
           </div>
