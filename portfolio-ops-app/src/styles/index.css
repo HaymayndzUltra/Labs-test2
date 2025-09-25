@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-size: 14px;
+}
+
+@layer base {
+  h1 {
+    @apply text-[32px] leading-[36px] font-semibold;
+  }
+  h2 {
+    @apply text-[22px] leading-[28px] font-semibold;
+  }
+  h3 {
+    @apply text-[16px] leading-[24px] font-semibold;
+  }
+  p,
+  span,
+  label {
+    @apply text-[14px] leading-[20px];
+  }
+  small {
+    @apply text-[12px] leading-[16px] font-medium;
+  }
+}
+
+@layer utilities {
+  .grid-12 {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 24px;
+  }
+  @media (max-width: 1023px) {
+    .grid-12 {
+      gap: 16px;
+    }
+  }
+  @media (max-width: 767px) {
+    .grid-12 {
+      gap: 12px;
+    }
+  }
+  .card-surface {
+    background: var(--surface-1);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow-elevation);
+  }
+  .kpi-value {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 36px;
+    letter-spacing: -0.01em;
+  }
+  .baseline-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+  }
+}
