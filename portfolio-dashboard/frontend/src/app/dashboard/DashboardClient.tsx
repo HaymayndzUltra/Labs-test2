@@ -1220,7 +1220,7 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-8">
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="space-y-3">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Portfolio-grade product operations</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Premium Multi-Category Dashboard</p>
               <h1 className="text-display-lg text-slate-900">{data.hero.title}</h1>
               <p className="max-w-3xl text-sm text-slate-600">{data.hero.description}</p>
               <button
@@ -1254,7 +1254,17 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                 </button>
               </div>
               <div className="rounded-[18px] border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-xs text-slate-500">
-                Generated at {new Date(data.generatedAt).toLocaleString()}
+                Generated at{' '}
+                {new Date(data.generatedAt).toLocaleString('en-US', {
+                  month: '2-digit',
+                  day: '2-digit',
+                  year: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  second: '2-digit',
+                  hour12: true,
+                  timeZone: 'UTC',
+                })}
               </div>
             </div>
           </div>
