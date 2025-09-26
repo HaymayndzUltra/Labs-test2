@@ -20,6 +20,8 @@ type ChartCardProps = {
   ariaDescription?: string;
   toolbar?: ReactNode;
   tone?: 'default' | 'accent';
+  maxDisplayRows?: number;
+  className?: string;
 };
 
 export function ChartCard({
@@ -33,8 +35,11 @@ export function ChartCard({
   ariaDescription,
   toolbar,
   tone = 'default',
+  maxDisplayRows,
+  className,
 }: ChartCardProps) {
   const borderClass = tone === 'accent' ? 'border-[var(--primary-300)]/50' : 'border-[var(--surface-border)]';
+  const tableRows = maxDisplayRows ? rows.slice(0, maxDisplayRows) : rows;
 
   return (
     <Card
@@ -42,7 +47,7 @@ export function ChartCard({
       aria-labelledby={`${id}-title`}
       aria-describedby={ariaDescription ? `${id}-desc` : undefined}
       role="region"
-      className={cn('flex h-full flex-col gap-5 border bg-[var(--surface-s1)]', borderClass)}
+      className={cn('flex h-full flex-col gap-5 border bg-[var(--surface-s1)]', borderClass, className)}
     >
       <div className="flex flex-col gap-2">
         <div className="flex flex-wrap items-start justify-between gap-3">
@@ -83,7 +88,7 @@ export function ChartCard({
         <div role="figure" aria-labelledby={`${id}-title`} aria-describedby={ariaDescription ? `${id}-desc` : undefined}>
           {children}
         </div>
-        <div className="overflow-auto rounded-[18px] border border-dashed border-[var(--surface-border)]">
+        <div className="rounded-[18px] border border-dashed border-[var(--surface-border)]">
           <table className="min-w-full divide-y divide-[var(--surface-border)]" aria-label={`${title} data table`}>
             <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
               <tr>
@@ -95,7 +100,7 @@ export function ChartCard({
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
-              {rows.map((row, rowIndex) => (
+              {tableRows.map((row, rowIndex) => (
                 <tr key={`${id}-row-${rowIndex}`} className="hover:bg-[var(--primary-50)]/40">
                   {columns.map((column) => (
                     <td

@@ -101,7 +101,7 @@ export function AutomationBuilder({ onCreate, verticalAccent }: AutomationBuilde
             <span className="font-semibold text-slate-700">Conditions</span>
             <textarea
               {...register('conditions')}
-              className="rounded-[14px] border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-sm text-slate-700 focus-visible:focus-ring"
+              className="min-h-[120px] rounded-[14px] border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-sm text-slate-700 focus-visible:focus-ring"
               rows={3}
               placeholder="If workspace plan = Scale & seat utilization < 60%"
             />
@@ -113,7 +113,7 @@ export function AutomationBuilder({ onCreate, verticalAccent }: AutomationBuilde
             <span className="font-semibold text-slate-700">Actions</span>
             <textarea
               {...register('action')}
-              className="rounded-[14px] border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-sm text-slate-700 focus-visible:focus-ring"
+              className="min-h-[120px] rounded-[14px] border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-sm text-slate-700 focus-visible:focus-ring"
               rows={3}
               placeholder="Open CSM task, send Slack alert, launch in-app journey"
             />
