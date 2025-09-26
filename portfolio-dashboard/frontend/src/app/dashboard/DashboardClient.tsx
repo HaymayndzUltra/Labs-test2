@@ -193,7 +193,7 @@ function SaaSModule({
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 xl:col-span-8">
           <Card
-            className="flex h-full min-h-[384px] flex-col overflow-visible border border-[var(--surface-border)] bg-[var(--surface-s1)]"
+            className="flex h-full h-[400px] flex-col overflow-visible border border-[var(--surface-border)] bg-[var(--surface-s1)]"
             role="region"
             aria-label="Subscription plans"
           >
@@ -261,7 +261,7 @@ function SaaSModule({
           </Card>
         </div>
         <div className="col-span-12 xl:col-span-4">
-          <div className="h-full min-h-[384px]">
+          <div className="h-full h-[400px]">
             <ChartCard
               id="saas-churn"
               title="Churn health distribution"
@@ -317,7 +317,7 @@ function SaaSModule({
                 <LineChart data={data.growthTrend} margin={{ left: 12, right: 12, top: 24, bottom: 12 }}>
                   <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
                   <XAxis dataKey="label" tickLine={false} axisLine={false} />
-                  <YAxis tickLine={false} axisLine={false} domain={[0, (dataMax) => dataMax * 1.18]} />
+                  <YAxis tickLine={false} axisLine={false} domain={[0, (dataMax: number) => dataMax * 1.18]} />
                   <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
                   <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={{ r: 4 }} />
                 </LineChart>
@@ -1460,8 +1460,8 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
 
   return (
     <div className="min-h-screen bg-[var(--surface-s0)] pb-16 text-slate-900">
-      <header className="border-b border-[var(--surface-border)] bg-white/95 shadow-xl shadow-purple-500/10 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-[1280px] flex-col gap-6 px-6 py-8">
+      <header className="border-b border-[var(--surface-border)] bg-white/95 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-[1660px] flex-col gap-6 px-6 py-8">
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="space-y-3">
               <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Premium Multi-Category Dashboard</p>
@@ -1547,14 +1547,16 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1280px] space-y-8 rounded-[32px] bg-white/95 px-6 py-10 shadow-xl shadow-purple-500/10 backdrop-blur">
-        <KPIBand metrics={moduleMetrics} accentToken={accent} />
+      <main className="mx-auto max-w-[1660px] space-y-6 px-6 py-10">
+        <div className="mb-4">
+          <KPIBand metrics={moduleMetrics} accentToken={accent} />
+        </div>
         <div className="rounded-[24px] border border-dashed border-[var(--surface-border)] bg-[var(--surface-s1)] px-6 py-4 text-xs text-slate-500">
           Global filters persist via query params. React Query hydrates instantly, while Zustand keeps inter-module state fast.
         </div>
 
         {/* Main content with right rail */}
-        <div className="grid gap-6 xl:grid-cols-12">
+        <div className="grid gap-10 xl:grid-cols-12">
           {/* Main content area */}
           <div className="xl:col-span-8">
             {moduleContent}

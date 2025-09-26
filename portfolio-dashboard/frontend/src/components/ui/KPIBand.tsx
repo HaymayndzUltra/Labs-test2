@@ -118,7 +118,7 @@ export function KPIBand({ metrics, accentToken, onInspect }: KPIBandProps) {
             key={metric.id}
             type="button"
             onClick={() => onInspect?.(metric)}
-            className="min-h-[160px] min-w-[280px] flex-shrink-0 rounded-[20px] border border-[color:var(--surface-border)] bg-white/10 p-6 text-left shadow-lg backdrop-blur-lg transition-all duration-300 ease-out hover:-translate-y-0.5 focus-visible:focus-ring sm:min-w-0"
+            className="min-h-[128px] min-w-[280px] flex-shrink-0 rounded-[20px] border border-[color:var(--surface-border)] bg-white/10 p-6 text-left shadow-lg backdrop-blur-lg transition-all duration-300 ease-out hover:-translate-y-0.5 focus-visible:focus-ring sm:min-w-0"
             style={{
               boxShadow: '0 18px 36px rgba(79, 70, 229, 0.08)',
             }}
