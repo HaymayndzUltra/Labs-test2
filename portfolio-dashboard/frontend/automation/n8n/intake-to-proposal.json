@@ -1,0 +1,61 @@
+{
+  "name": "Upwork Portfolio Intake to Proposal",
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Webhook Intake",
+      "type": "n8n-nodes-base.webhook",
+      "parameters": {
+        "path": "upwork-intake",
+        "httpMethod": "POST"
+      }
+    },
+    {
+      "id": "2",
+      "name": "OpenAI Summarize",
+      "type": "n8n-nodes-base.openAi",
+      "parameters": {
+        "operation": "chat",
+        "resource": "completion",
+        "model": "gpt-4o-mini",
+        "prompt": "Summarize intake into proposal sections"
+      },
+      "notes": "TODO: Insert API key via credentials"
+    },
+    {
+      "id": "3",
+      "name": "Create Proposal PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "https://vercel-app/proposal-export",
+        "method": "POST"
+      },
+      "notes": "Calls Next.js action to generate pdf-lib bundle"
+    },
+    {
+      "id": "4",
+      "name": "CRM Upsert",
+      "type": "n8n-nodes-base.crm",
+      "parameters": {
+        "operation": "upsert",
+        "collection": "leads"
+      },
+      "notes": "TODO: Connect to HubSpot/Close"
+    },
+    {
+      "id": "5",
+      "name": "Send Follow-up Email",
+      "type": "n8n-nodes-base.emailSend",
+      "parameters": {
+        "subject": "Your personalized dashboard prototype",
+        "text": "Attached proposal PDF + booking link"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Intake": { "main": [[{ "node": "OpenAI Summarize", "type": "main", "index": 0 }]] },
+    "OpenAI Summarize": { "main": [[{ "node": "Create Proposal PDF", "type": "main", "index": 0 }]] },
+    "Create Proposal PDF": { "main": [[{ "node": "CRM Upsert", "type": "main", "index": 0 }]] },
+    "CRM Upsert": { "main": [[{ "node": "Send Follow-up Email", "type": "main", "index": 0 }]] }
+  }
+}
