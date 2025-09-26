@@ -11,13 +11,6 @@ export interface KPI {
 }
 
 export function formatKpiValue(kpi: KPI): string {
-  const numberFormat = new Intl.NumberFormat('en-US', {
-    style: kpi.formatter === 'currency' ? 'currency' : 'decimal',
-    currency: kpi.formatter === 'currency' ? 'USD' : undefined,
-    maximumFractionDigits: kpi.formatter === 'percent' ? 1 : 0,
-    minimumFractionDigits: kpi.formatter === 'percent' ? 1 : 0
-  });
-
   if (kpi.formatter === 'duration') {
     const minutes = Math.floor(kpi.value);
     const seconds = Math.round((kpi.value % 1) * 60);
@@ -25,10 +18,18 @@ export function formatKpiValue(kpi: KPI): string {
   }
 
   if (kpi.formatter === 'percent') {
-    return `${numberFormat.format(kpi.value)}%`;
+    return `${kpi.value.toFixed(1)}%`;
   }
 
-  return numberFormat.format(kpi.value);
+  const options: Intl.NumberFormatOptions = {
+    notation: 'compact',
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 0,
+    style: kpi.formatter === 'currency' ? 'currency' : 'decimal',
+    currency: kpi.formatter === 'currency' ? 'USD' : undefined
+  };
+
+  return new Intl.NumberFormat('en-US', options).format(kpi.value);
 }
 
 export const saasKpis: KPI[] = [

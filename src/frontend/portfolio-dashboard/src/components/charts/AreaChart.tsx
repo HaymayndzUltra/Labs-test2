@@ -11,9 +11,19 @@ interface AreaChartProps {
   series: ChartPoint[];
   gradientId: string;
   verticalAccent?: string;
+  className?: string;
+  size?: '200' | '240' | '320' | '380';
 }
 
-export function AreaChart({ title, description, series, gradientId, verticalAccent }: AreaChartProps) {
+export function AreaChart({
+  title,
+  description,
+  series,
+  gradientId,
+  verticalAccent,
+  className,
+  size = '240'
+}: AreaChartProps) {
   const xScale = scalePoint()
     .domain(series.map((point) => point.label))
     .range([0, 600]);
@@ -28,7 +38,16 @@ export function AreaChart({ title, description, series, gradientId, verticalAcce
     <ChartFrame
       title={title}
       description={description}
-      table={<DataTable columns={['Label', 'Value']} rows={series.map((point) => [point.label, point.value.toFixed(1)])} />}
+      className={className}
+      size={size}
+      table={
+        <DataTable
+          columns={['Label', 'Value']}
+          rows={series.map((point) => [point.label, point.value.toFixed(1)])}
+          numericColumns={[1]}
+          variant="chart"
+        />
+      }
     >
       <svg className="chart-svg" viewBox="0 0 640 240" role="presentation" focusable={false}>
         <defs>

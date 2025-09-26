@@ -1,142 +1,135 @@
+import { useMemo } from 'react';
 import { customAppKpis } from './moduleKpis';
+import { generateTimeSeries } from '../data/fixtures';
 import { useLiveKpis } from '../hooks/useLiveKpis';
 import { KpiCard } from '../components/primitives/KpiCard';
-import { AutomationBuilder } from '../components/automation/AutomationBuilder';
+import { AreaChart } from '../components/charts/AreaChart';
+import { BarChart } from '../components/charts/BarChart';
+import { DataTable } from '../components/primitives/DataTable';
+import { AutomationWorkbench } from '../components/automation/AutomationWorkbench';
 
-const lanes = [
-  { name: 'Backlog', count: 18 },
-  { name: 'In progress', count: 12 },
-  { name: 'Review', count: 6 },
-  { name: 'Done', count: 22 }
+const kanbanSnapshot = [
+  { lane: 'Backlog', cards: 22, sla: '72%' },
+  { lane: 'In progress', cards: 14, sla: '88%' },
+  { lane: 'Review', cards: 7, sla: '94%' },
+  { lane: 'Ready to launch', cards: 11, sla: '91%' }
 ];
 
-const ideas = [
-  'Shared automations library with role permissions',
-  'AI summary on completed rituals',
-  'Dependency graph export',
-  'API triggered board snapshots'
+const quickstartAutomations = [
+  { label: 'Cycle close rituals', value: 62 },
+  { label: 'Incident postmortems', value: 48 },
+  { label: 'Intake triage', value: 44 },
+  { label: 'Stakeholder updates', value: 38 }
 ];
 
-const workload = [
-  { label: 'Design', value: 18 },
-  { label: 'Engineering', value: 26 },
-  { label: 'QA', value: 9 },
-  { label: 'Product', value: 14 }
+const backlogItems = [
+  { title: 'Self-healing workflows', status: 'Design sync', tone: 'info' },
+  { title: 'Release readiness scorecard', status: 'Blocked: data feed', tone: 'warning' },
+  { title: 'Ops handbook automation', status: 'In build', tone: 'success' }
+];
+
+const efficiencyHighlights = [
+  { title: 'Ritual templates', impact: '45 min saved per sprint review', delta: '↑ 18% adoption' },
+  { title: 'AI update digest', impact: 'Cuts stand-up time by 6 min', delta: '↓ 22% context switching' }
 ];
 
 export function CustomAppModule() {
   const kpis = useLiveKpis(customAppKpis);
+  const kpiTrends = useMemo(
+    () => customAppKpis.map((kpi) => generateTimeSeries(20, kpi.value, 0.08).map((point) => point.value)),
+    []
+  );
+  const usageSeries = useMemo(() => generateTimeSeries(12, 420, 0.1), []);
+  const automationSeries = useMemo(
+    () => quickstartAutomations.map((item) => ({ label: item.label, value: item.value })),
+    []
+  );
 
   return (
-    <div className="dashboard-grid" data-accent="custom">
+    <section aria-labelledby="productivity-suite-title" className="module-layout" data-accent="custom">
+      <h2 id="productivity-suite-title" className="visually-hidden">
+        Productivity suite and automation
+      </h2>
       <section className="kpi-band" aria-label="Productivity suite KPIs">
-        {kpis.map((kpi) => (
-          <KpiCard key={kpi.label} kpi={kpi} />
+        {kpis.map((kpi, index) => (
+          <KpiCard key={kpi.label} kpi={kpi} trend={kpiTrends[index]} accent="var(--vertical-custom)" />
         ))}
       </section>
 
-      <div className="card col-6" role="region" aria-labelledby="kanban-board">
-        <div className="card__header">
-          <h2 id="kanban-board" className="card__title">
-            Kanban delivery board
-          </h2>
-        </div>
-        <div role="list" aria-label="Kanban lanes" className="card-list">
-          {lanes.map((lane) => (
-            <div key={lane.name} role="listitem" tabIndex={0} className="card">
-              <div className="card__header">
-                <h3 className="card__title">{lane.name}</h3>
-                <span className="badge">{lane.count} cards</span>
-              </div>
-              <p className="card__subtitle">
-                Keyboard drag and drop supported. Press space to lift, arrows to move, enter to drop.
-              </p>
+      <div className="dashboard-grid">
+        <div className="dashboard-grid__main">
+          <div className="card card--240 span-4" role="region" aria-labelledby="kanban-summary-title">
+            <div className="card__header">
+              <h3 id="kanban-summary-title" className="card__title">
+                Kanban summary board
+              </h3>
             </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="card col-6" role="region" aria-labelledby="idea-intake">
-        <div className="card__header">
-          <h2 id="idea-intake" className="card__title">
-            Idea backlog intake
-          </h2>
-        </div>
-        <ul className="card-list">
-          {ideas.map((idea) => (
-            <li key={idea}>{idea}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="card col-6" role="region" aria-labelledby="workload-distribution">
-        <div className="card__header">
-          <h2 id="workload-distribution" className="card__title">
-            Workload distribution
-          </h2>
-        </div>
-        <ul className="card-list">
-          {workload.map((bucket) => (
-            <li key={bucket.label}>
-              {bucket.label}
-              <div className="chart-legend__item">
-                <span className="chart-legend__swatch" style={{ background: 'var(--vertical-custom)' }} />
-                {bucket.value} active items
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="card col-3" role="region" aria-labelledby="automation-custom">
-        <div className="card__header">
-          <h2 id="automation-custom" className="card__title">
-            Automations
-          </h2>
-        </div>
-        <ul className="card-list">
-          <li>Sprint rituals <span className="status-chip" data-tone="success">Scheduled</span></li>
-          <li>Workload rebalancing <span className="status-chip" data-tone="warning">2 flagged</span></li>
-          <li>DevOps hooks <span className="status-chip" data-tone="info">PR sync live</span></li>
-        </ul>
-      </div>
-
-      <div className="card col-3" role="region" aria-labelledby="recurring-task">
-        <div className="card__header">
-          <h2 id="recurring-task" className="card__title">
-            Create recurring task
-          </h2>
-        </div>
-        <form className="card-list">
-          <label htmlFor="task-name">Task</label>
-          <input id="task-name" placeholder="Prep sprint review" required />
-          <label htmlFor="task-cadence">Cadence</label>
-          <select id="task-cadence">
-            <option>Weekly</option>
-            <option>Bi-weekly</option>
-            <option>Monthly</option>
-          </select>
-          <label htmlFor="task-owner">Owner</label>
-          <input id="task-owner" placeholder="Assign team or role" />
-          <div className="form-actions">
-            <button type="submit" className="button-primary">
-              Save
-            </button>
+            <DataTable
+              columns={["Lane", "Active cards", "SLA hit"]}
+              rows={kanbanSnapshot.map((lane) => [lane.lane, lane.cards, lane.sla])}
+              numericColumns={[1, 2]}
+            />
           </div>
-        </form>
-      </div>
 
-      <div className="card col-6">
-        <AutomationBuilder
-          name="custom"
-          defaults={{
-            trigger: 'Stale cards > 5 days in review lane',
-            conditions: 'Notify only once per day. Skip if deployment blocked.',
-            actions: 'Ping assignee → Add to daily standup agenda → Escalate after 48h',
-            cadence: 'Check every 30 minutes via webhook events.'
-          }}
-        />
+          <AreaChart
+            className="span-4"
+            title="Usage tracking metrics"
+            description="Active rituals completed each week across the workspace."
+            series={usageSeries}
+            gradientId="usage-trend"
+            verticalAccent="var(--vertical-custom)"
+          />
+
+          <BarChart
+            className="span-4"
+            title="Quickstart automations"
+            description="Most launched playbooks from the automation library."
+            series={automationSeries}
+            palette={["#409C8C", "#3C66F5", "#F59E0B", "#6E59D9"]}
+          />
+
+          <div className="card card--240 span-4" role="region" aria-labelledby="ops-backlog-title">
+            <div className="card__header">
+              <h3 id="ops-backlog-title" className="card__title">
+                Ops backlog
+              </h3>
+            </div>
+            <DataTable
+              columns={["Workstream", "Owner", "Status"]}
+              rows={[
+                ['Incident retros', 'SRE pod', 'Rolling out'],
+                ['Release QA automation', 'Quality guild', 'Final review'],
+                ['HubSpot sync', 'Platform team', 'Testing'],
+                ['Knowledge base curator', 'Operations', 'Prioritized'],
+                ['Compliance cadence', 'Program office', 'In scoping']
+              ]}
+              footer={[`View all backlog items`, '', '→']}
+            />
+          </div>
+        </div>
+
+        <aside className="dashboard-grid__rail">
+          <AutomationWorkbench
+            builder={{
+              summary: 'Templatize recurring workflows to protect focus time across product operations.',
+              trigger: 'Cycle milestone reached or task idle > 48h',
+              conditions: 'Skip when launch freeze active; respect regional blackout dates.',
+              actions: 'Assign playbook owner → sync with stand-up notes → notify channel stakeholders.',
+              metrics: [
+                { label: 'Coverage', value: '68%' },
+                { label: 'Time saved', value: '12.4h/wk' }
+              ]
+            }}
+            backlog={{
+              items: backlogItems,
+              footer: 'Next triage Thursday 09:00 PT'
+            }}
+            efficiency={{
+              items: efficiencyHighlights
+            }}
+          />
+        </aside>
       </div>
-    </div>
+    </section>
   );
 }

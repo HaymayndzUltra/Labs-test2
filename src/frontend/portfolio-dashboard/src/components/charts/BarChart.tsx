@@ -8,9 +8,11 @@ interface BarChartProps {
   description: string;
   series: ChartPoint[];
   palette: string[];
+  className?: string;
+  size?: '200' | '240' | '320' | '380';
 }
 
-export function BarChart({ title, description, series, palette }: BarChartProps) {
+export function BarChart({ title, description, series, palette, className, size = '240' }: BarChartProps) {
   const xScale = scaleBand()
     .domain(series.map((point) => point.label))
     .range([0, 640])
@@ -23,7 +25,16 @@ export function BarChart({ title, description, series, palette }: BarChartProps)
     <ChartFrame
       title={title}
       description={description}
-      table={<DataTable columns={['Label', 'Value']} rows={series.map((point) => [point.label, point.value.toFixed(1)])} />}
+      className={className}
+      size={size}
+      table={
+        <DataTable
+          columns={['Label', 'Value']}
+          rows={series.map((point) => [point.label, point.value.toFixed(1)])}
+          numericColumns={[1]}
+          variant="chart"
+        />
+      }
     >
       <svg className="chart-svg" viewBox="0 0 640 240" role="presentation" focusable={false}>
         {series.map((point, index) => (

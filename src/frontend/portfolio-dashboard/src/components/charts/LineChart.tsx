@@ -11,9 +11,19 @@ interface LineChartProps {
   series: ChartPoint[];
   tone?: 'primary' | 'vertical';
   verticalAccent?: string;
+  className?: string;
+  size?: '200' | '240' | '320' | '380';
 }
 
-export function LineChart({ title, description, series, tone = 'primary', verticalAccent }: LineChartProps) {
+export function LineChart({
+  title,
+  description,
+  series,
+  tone = 'primary',
+  verticalAccent,
+  className,
+  size = '240'
+}: LineChartProps) {
   const xScale = scalePoint()
     .domain(series.map((point) => point.label))
     .range([0, 600]);
@@ -29,7 +39,16 @@ export function LineChart({ title, description, series, tone = 'primary', vertic
     <ChartFrame
       title={title}
       description={description}
-      table={<DataTable columns={['Label', 'Value']} rows={series.map((point) => [point.label, point.value.toFixed(1)])} />}
+      className={className}
+      size={size}
+      table={
+        <DataTable
+          columns={['Label', 'Value']}
+          rows={series.map((point) => [point.label, point.value.toFixed(1)])}
+          numericColumns={[1]}
+          variant="chart"
+        />
+      }
     >
       <svg className="chart-svg" viewBox="0 0 640 240" role="presentation" focusable={false}>
         <path d={pathGenerator(series) ?? ''} fill="none" stroke={stroke} strokeWidth={3} strokeLinecap="round" />

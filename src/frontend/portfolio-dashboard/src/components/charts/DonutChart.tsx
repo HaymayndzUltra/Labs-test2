@@ -8,9 +8,11 @@ interface DonutChartProps {
   description: string;
   series: ChartPoint[];
   palette: string[];
+  className?: string;
+  size?: '200' | '240' | '320' | '380';
 }
 
-export function DonutChart({ title, description, series, palette }: DonutChartProps) {
+export function DonutChart({ title, description, series, palette, className, size = '240' }: DonutChartProps) {
   const pieGenerator = pie<ChartPoint>().value((point) => point.value);
   const arcs = pieGenerator(series);
   const arcGenerator = arc<typeof arcs[number]>().innerRadius(60).outerRadius(110).padAngle(0.02);
@@ -19,7 +21,20 @@ export function DonutChart({ title, description, series, palette }: DonutChartPr
     <ChartFrame
       title={title}
       description={description}
-      table={<DataTable columns={['Label', 'Value', 'Share']} rows={series.map((point) => [point.label, point.value.toFixed(1), `${((point.value / series.reduce((sum, entry) => sum + entry.value, 0)) * 100).toFixed(1)}%`])} />}
+      className={className}
+      size={size}
+      table={
+        <DataTable
+          columns={['Label', 'Value', 'Share']}
+          rows={series.map((point) => [
+            point.label,
+            point.value.toFixed(1),
+            `${((point.value / series.reduce((sum, entry) => sum + entry.value, 0)) * 100).toFixed(1)}%`
+          ])}
+          numericColumns={[1, 2]}
+          variant="chart"
+        />
+      }
       legend={
         <div className="chart-legend">
           {series.map((point, index) => (
