@@ -1,16 +1,21 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { FilterState } from '../components/primitives/FilterChips';
+export interface FilterState {
+  dateRange: string;
+  channel: string;
+  source: string;
+}
 
 interface FilterStore {
   filters: FilterState;
-  setFilter: (key: string, value: string) => void;
+  setFilter: (key: keyof FilterState, value: string) => void;
+  resetFilters: () => void;
 }
 
-const defaultFilters: FilterState = {
+export const defaultFilters: FilterState = {
   dateRange: 'Last 30 days',
-  segment: 'All segments',
-  channel: 'All channels'
+  channel: 'All channels',
+  source: 'All sources'
 };
 
 export const useGlobalFilters = create<FilterStore>()(
@@ -23,6 +28,10 @@ export const useGlobalFilters = create<FilterStore>()(
             ...state.filters,
             [key]: value
           }
+        })),
+      resetFilters: () =>
+        set(() => ({
+          filters: { ...defaultFilters }
         }))
     }),
     {
