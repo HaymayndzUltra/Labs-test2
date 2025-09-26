@@ -83,7 +83,7 @@ export function ChartCard({
         <div role="figure" aria-labelledby={`${id}-title`} aria-describedby={ariaDescription ? `${id}-desc` : undefined}>
           {children}
         </div>
-        <div className="overflow-auto rounded-[18px] border border-dashed border-[var(--surface-border)]">
+        <div className="overflow-hidden rounded-[18px] border border-dashed border-[var(--surface-border)]">
           <table className="min-w-full divide-y divide-[var(--surface-border)]" aria-label={`${title} data table`}>
             <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
               <tr>

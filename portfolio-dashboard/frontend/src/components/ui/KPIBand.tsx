@@ -74,20 +74,32 @@ function useAnimatedMetric(value: string, duration = 400) {
 }
 
 function CountUpValue({ value, accentToken }: { value: string; accentToken: string }) {
-  const numeric = useMemo(() => parseNumericFromString(value), [value]);
-  const formattedBase = useMemo(() => {
-    if (numeric == null) return value;
-    
-    // Format with k/M abbreviations and max 2 decimals
-    if (numeric >= 1000000) {
-      return `${(numeric / 1000000).toFixed(numeric % 1000000 === 0 ? 0 : 2)}M`;
-    } else if (numeric >= 1000) {
-      return `${(numeric / 1000).toFixed(numeric % 1000 === 0 ? 0 : 2)}k`;
-    } else {
-      return numeric.toFixed(numeric % 1 === 0 ? 0 : 2);
+  const animatedValue = useMemo(() => {
+    const numeric = parseNumericFromString(value);
+    if (numeric == null) {
+      return value;
     }
-  }, [numeric, value]);
-  const animatedValue = useAnimatedMetric(formattedBase);
+
+    const compactMatch = value.match(/^([^0-9+-]*)([-+]?[\d,.]+)([kKmM]?)(.*)$/);
+    const prefix = compactMatch?.[1]?.trimStart() ?? '';
+    const magnitude = compactMatch?.[3]?.toLowerCase() ?? '';
+    const trailing = compactMatch?.[4] ?? '';
+
+    let normalized = numeric;
+    if (magnitude === 'm') {
+      normalized = numeric * 1_000_000;
+    } else if (magnitude === 'k') {
+      normalized = numeric * 1_000;
+    }
+
+    const formatted = formatCompact(normalized);
+    const suffix = trailing.trimStart().startsWith('%') ? '%' : '';
+    const base = `${prefix}${formatted}${suffix}`.trim();
+
+    return base.length > 0 ? base : value;
+  }, [value]);
+
+  const displayValue = useAnimatedMetric(animatedValue);
 
   return (
     <span
@@ -95,14 +107,14 @@ function CountUpValue({ value, accentToken }: { value: string; accentToken: stri
       style={{ color: `var(${accentToken})` }}
       aria-live="polite"
     >
-      {animatedValue}
+      {displayValue}
     </span>
   );
 }
 
 export function KPIBand({ metrics, accentToken, onInspect }: KPIBandProps) {
   return (
-    <div className="flex gap-6 overflow-x-auto pb-4 sm:grid sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {metrics.map((metric) => {
         const Icon =
           metric.trend === 'up' ? ArrowUpRight : metric.trend === 'down' ? ArrowDownRight : Minus;
@@ -118,47 +130,45 @@ export function KPIBand({ metrics, accentToken, onInspect }: KPIBandProps) {
             key={metric.id}
             type="button"
             onClick={() => onInspect?.(metric)}
-            className="min-h-[160px] min-w-[280px] flex-shrink-0 rounded-[20px] border border-[color:var(--surface-border)] bg-white/10 p-6 text-left shadow-lg backdrop-blur-lg transition-all duration-300 ease-out hover:-translate-y-0.5 focus-visible:focus-ring sm:min-w-0"
+            className="flex h-full min-h-[128px] flex-col justify-between rounded-[20px] border border-[color:var(--surface-border)] bg-white/10 p-5 text-left shadow-lg backdrop-blur-lg transition-all duration-300 ease-out hover:-translate-y-0.5 focus-visible:focus-ring"
             style={{
               boxShadow: '0 18px 36px rgba(79, 70, 229, 0.08)',
             }}
           >
-            <div className="flex h-full flex-col justify-between">
-              <div className="flex items-center justify-between gap-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-                  {metric.label}
-                </p>
-                {metric.trend ? (
-                  <span
-                    className={cn('inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold', tone)}
-                    aria-label={trendCopy[metric.trend]}
-                  >
-                    <Icon className="h-3.5 w-3.5" aria-hidden />
-                    {metric.change != null ? `${metric.change > 0 ? '+' : ''}${metric.change.toFixed(1)}%` : trendCopy[metric.trend]}
-                  </span>
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+                {metric.label}
+              </p>
+              {metric.trend ? (
+                <span
+                  className={cn('inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold', tone)}
+                  aria-label={trendCopy[metric.trend]}
+                >
+                  <Icon className="h-3.5 w-3.5" aria-hidden />
+                  {metric.change != null ? `${metric.change > 0 ? '+' : ''}${metric.change.toFixed(1)}%` : trendCopy[metric.trend]}
+                </span>
+              ) : null}
+            </div>
+            <div className="mt-2 flex items-end justify-between gap-4">
+              <div className="relative flex-1">
+                <CountUpValue value={metric.value} accentToken={accentToken} />
+                {metric.description ? (
+                  <div className="group inline-block">
+                    <span className="mt-1 inline-block cursor-help text-[11px] text-slate-600" aria-describedby={`${metric.id}-def`}>
+                      {metric.description}
+                    </span>
+                    <span
+                      role="tooltip"
+                      id={`${metric.id}-def`}
+                      className="invisible absolute z-20 mt-1 max-w-[220px] rounded-[10px] border border-[var(--surface-border)] bg-[var(--surface-s1)] px-2 py-1 text-[11px] text-slate-700 shadow-sm group-hover:visible"
+                    >
+                      {metric.label} definition and calculation context.
+                    </span>
+                  </div>
                 ) : null}
               </div>
-              <div className="flex items-end justify-between gap-4">
-                <div className="relative flex-1">
-                  <CountUpValue value={metric.value} accentToken={accentToken} />
-                  {metric.description ? (
-                    <div className="group inline-block">
-                      <span className="mt-1 inline-block cursor-help text-[11px] text-slate-600" aria-describedby={`${metric.id}-def`}>
-                        {metric.description}
-                      </span>
-                      <span
-                        role="tooltip"
-                        id={`${metric.id}-def`}
-                        className="invisible absolute z-20 mt-1 max-w-[220px] rounded-[10px] border border-[var(--surface-border)] bg-[var(--surface-s1)] px-2 py-1 text-[11px] text-slate-700 shadow-sm group-hover:visible"
-                      >
-                        {metric.label} definition and calculation context.
-                      </span>
-                    </div>
-                  ) : null}
-                </div>
-                <div className="h-[36px] w-[120px] flex-shrink-0" aria-hidden>
-                  <Sparkline data={lastWindow} color={`var(${accentToken})`} height={36} variant="line" />
-                </div>
+              <div className="h-[36px] w-[120px] flex-shrink-0" aria-hidden>
+                <Sparkline data={lastWindow} color={`var(${accentToken})`} height={36} variant="line" />
               </div>
             </div>
           </button>

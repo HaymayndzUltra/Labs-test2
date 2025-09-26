@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Area,
   AreaChart,
@@ -26,7 +26,6 @@ import {
   Earth,
   Workflow,
   Activity,
-  ClipboardList,
   Sparkles,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
@@ -188,10 +187,14 @@ function SaaSModule({
 
       {/* PRIMARY BLOCK 1: PLANS + CHURN */}
       <div className="col-span-12">
-        <div className="grid grid-cols-12 gap-6">
+        <div className="grid grid-cols-12 gap-6 lg:items-stretch">
           {/* Subscription table - dominant width */}
-          <div className="col-span-12 lg:col-span-9">
-            <Card className="border border-[var(--surface-border)] h-[400px]" role="region" aria-label="Subscription plans">
+          <div className="col-span-12 lg:col-span-8">
+            <Card
+              className="flex h-full min-h-[360px] flex-col overflow-visible border border-[var(--surface-border)] bg-[var(--surface-s1)]"
+              role="region"
+              aria-label="Subscription plans"
+            >
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-title-sm text-slate-900">Subscription plans</h3>
@@ -259,7 +262,7 @@ function SaaSModule({
           </div>
 
           {/* Churn donut - compact width */}
-          <div className="col-span-12 lg:col-span-3">
+          <div className="col-span-12 lg:col-span-4">
             <ChartCard
               id="saas-churn"
               title="Churn health distribution"
@@ -270,8 +273,8 @@ function SaaSModule({
                 { key: 'share', label: 'Share', align: 'right' },
               ]}
             >
-              <div className="flex flex-col items-center h-[400px]">
-                <ResponsiveContainer height={250} width="100%">
+              <div className="flex h-full flex-col items-center justify-between">
+                <ResponsiveContainer height={260} width="100%">
                   <PieChart>
                     <Pie dataKey="value" data={data.churnSegments} innerRadius={60} outerRadius={100} paddingAngle={3}>
                       {data.churnSegments.map((segment) => (
@@ -283,8 +286,17 @@ function SaaSModule({
                     />
                   </PieChart>
                 </ResponsiveContainer>
-                <div className="mt-2 w-full">
-                  <Legend verticalAlign="bottom" align="center" iconSize={8} wrapperStyle={{ paddingTop: 4 }} />
+                <div className="mt-4 flex w-full items-center justify-center gap-3 overflow-x-auto pb-1 text-xs font-semibold text-slate-600">
+                  {data.churnSegments.map((segment) => (
+                    <div
+                      key={segment.id}
+                      className="inline-flex items-center gap-2 rounded-full bg-white/60 px-3 py-1 shadow-sm"
+                    >
+                      <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: segment.color }} aria-hidden />
+                      <span>{segment.label}</span>
+                      <span className="font-bold">{segment.value}%</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </ChartCard>
@@ -292,38 +304,11 @@ function SaaSModule({
         </div>
       </div>
 
-      <div className="col-span-12 lg:col-span-4">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Billing cycles">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Billing cycle orchestration</h3>
-              <p className="text-xs text-slate-600">Real-time close management with owner accountability.</p>
-            </div>
-            <ClipboardList className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
-          </div>
-          <ul className="mt-4 space-y-3">
-            {data.billingCycles.map((cycle) => (
-              <li key={cycle.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <div className="flex items-center justify-between text-sm text-slate-700">
-                  <span className="font-semibold text-slate-900">{cycle.label}</span>
-                  <StatusChip
-                    label={cycle.status}
-                    tone={cycle.status === 'completed' ? 'success' : cycle.status === 'processing' ? 'info' : 'warning'}
-                  />
-                </div>
-                <p className="mt-2 text-xs text-slate-500">Next run {cycle.nextRun}</p>
-                <p className="text-xs text-slate-500">Owners: {cycle.owners.join(', ')}</p>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
-
       {/* PRIMARY BLOCK 2: MRR GROWTH (KING SECTION) */}
       <div className="col-span-12">
-        <div className="grid grid-cols-12 gap-6">
+        <div className="grid grid-cols-12 gap-6 lg:items-start">
           {/* MRR Growth Chart - Dominant */}
-          <div className="col-span-12 lg:col-span-8">
+          <div className="col-span-12 lg:col-span-8 space-y-6">
             <ChartCard
               id="saas-growth"
               title="MRR growth"
@@ -334,33 +319,37 @@ function SaaSModule({
                 { key: 'mrr', label: 'MRR ($K)', align: 'right' },
               ]}
             >
-              <div className="flex flex-col gap-4">
-                <div className="flex justify-end">
-                  <div className="flex items-center gap-2 text-xs text-slate-600">
-                    <div className="h-2 w-2 rounded-full bg-[var(--primary-500)]" />
-                    <span>MRR Growth</span>
-                  </div>
-                </div>
-                <ResponsiveContainer height={350}>
-                  <LineChart data={data.growthTrend}>
+              <div className="flex flex-col gap-6">
+                <ResponsiveContainer height={320}>
+                  <LineChart data={data.growthTrend} margin={{ left: 12, right: 12, top: 20, bottom: 12 }}>
                     <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
                     <XAxis dataKey="label" tickLine={false} axisLine={false} />
-                    <YAxis tickLine={false} axisLine={false} />
+                    <YAxis tickLine={false} axisLine={false} domain={[0, (dataMax) => dataMax * 1.15]} />
                     <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-                    <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={{ r: 5 }} />
+                    <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={{ r: 4 }} />
                   </LineChart>
                 </ResponsiveContainer>
+                <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-600">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white/60 px-3 py-1 shadow-sm">
+                    <span className="h-2 w-2 rounded-full bg-[var(--primary-500)]" aria-hidden />
+                    MRR growth (USD)
+                  </span>
+                  <span className="text-[11px] font-medium text-slate-500">
+                    15% headroom applied to emphasize current trajectory.
+                  </span>
+                </div>
               </div>
             </ChartCard>
-          </div>
-
-          {/* Compact Monthly Breakdown */}
-          <div className="col-span-12 lg:col-span-4">
-            <Card className="border border-[var(--surface-border)] h-[400px]" role="region" aria-label="Monthly breakdown">
-              <div className="flex items-center justify-between gap-4 mb-4">
+            {/* Compact Monthly Breakdown */}
+            <Card
+              className="flex min-h-[200px] flex-col gap-4 overflow-visible border border-[var(--surface-border)] bg-[var(--surface-s1)]"
+              role="region"
+              aria-label="Monthly breakdown"
+            >
+              <div className="flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-title-sm text-slate-900">Monthly breakdown</h3>
-                  <p className="text-xs text-slate-600">Top 6 months</p>
+                  <p className="text-xs text-slate-600">Top six months with quick view</p>
                 </div>
                 <button
                   type="button"
@@ -369,43 +358,38 @@ function SaaSModule({
                   View all months
                 </button>
               </div>
-              <div className="overflow-hidden">
-                <table className="min-w-full" aria-label="Monthly breakdown table">
-                  <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
-                    <tr>
-                      <th className="px-4 py-3 text-left">Month</th>
-                      <th className="px-4 py-3 text-right">Net</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
-                    {data.growthTrend.slice(0, 6).map((point, index) => {
-                      const prevValue = index > 0 ? data.growthTrend[index - 1].value : 0;
-                      const growth = prevValue > 0 ? ((point.value - prevValue) / prevValue * 100) : 0;
-                      const net = point.value * 0.32; // Simplified calculation
-                      return (
-                        <tr key={point.label} className="hover:bg-[var(--primary-50)]/40">
-                          <td className="px-4 py-[11px] font-semibold text-slate-900">{point.label}</td>
-                          <td className="px-4 py-[11px] text-right">
-                            <span className={cn(
+              <table className="min-w-full" aria-label="Monthly breakdown table">
+                <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Month</th>
+                    <th className="px-4 py-3 text-right">Net</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
+                  {data.growthTrend.slice(0, 6).map((point) => {
+                    const net = point.value * 0.32;
+                    return (
+                      <tr key={point.label} className="hover:bg-[var(--primary-50)]/40">
+                        <td className="px-4 py-[11px] font-semibold text-slate-900">{point.label}</td>
+                        <td className="px-4 py-[11px] text-right">
+                          <span
+                            className={cn(
                               'text-xs font-semibold',
                               net > 0 ? 'text-[var(--success-600)]' : net < 0 ? 'text-[var(--danger-600)]' : 'text-slate-600'
-                            )}>
-                              ${net.toFixed(0)}k
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                            )}
+                          >
+                            ${net.toFixed(0)}k
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </Card>
           </div>
         </div>
       </div>
-
-
-      {/* SECONDARY INSIGHTS: GROWTH DRIVERS */}
       <div className="col-span-12">
         <div className="mb-4">
           <h2 className="text-title-lg text-slate-900">Growth Drivers</h2>
@@ -414,8 +398,12 @@ function SaaSModule({
         <div className="grid grid-cols-12 gap-6">
           {/* Affiliates growth (left) */}
           <div className="col-span-12 lg:col-span-6">
-            <Card className="border border-[var(--surface-border)] h-[320px]" role="region" aria-label="Affiliates growth">
-              <div className="flex items-center justify-between gap-4 mb-4">
+            <Card
+              className="flex h-full min-h-[240px] flex-col border border-[var(--surface-border)]"
+              role="region"
+              aria-label="Affiliates growth"
+            >
+              <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-title-sm text-slate-900">Affiliates growth</h3>
                   <p className="text-xs text-slate-600">Share of total (%)</p>
@@ -436,15 +424,19 @@ function SaaSModule({
 
           {/* Top sellers (right) */}
           <div className="col-span-12 lg:col-span-6">
-            <Card className="border border-[var(--surface-border)] h-[320px]" role="region" aria-label="Top sellers">
-              <div className="flex items-center justify-between gap-4 mb-4">
+            <Card
+              className="flex h-full min-h-[240px] flex-col border border-[var(--surface-border)]"
+              role="region"
+              aria-label="Top sellers"
+            >
+              <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-title-sm text-slate-900">Top sellers</h3>
                   <p className="text-xs text-slate-600">Item/SKU/Plan, Sales/Revenue, Share %</p>
                 </div>
                 <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
               </div>
-              <div className="overflow-hidden">
+              <div className="flex-1 overflow-hidden">
                 <table className="min-w-full" aria-label="Top sellers table">
                   <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
                     <tr>
@@ -470,6 +462,14 @@ function SaaSModule({
                   </tbody>
                 </table>
               </div>
+              <div className="mt-3 flex justify-end">
+                <button
+                  type="button"
+                  className="inline-flex min-h-[32px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+                >
+                  View all sellers
+                </button>
+              </div>
             </Card>
           </div>
         </div>
@@ -484,8 +484,12 @@ function SaaSModule({
         <div className="grid grid-cols-12 gap-6">
           {/* API usage (left) */}
           <div className="col-span-12 lg:col-span-6">
-            <Card className="border border-[var(--surface-border)] h-[320px]" role="region" aria-label="API usage">
-              <div className="flex items-center justify-between gap-4 mb-4">
+            <Card
+              className="flex h-full min-h-[240px] flex-col border border-[var(--surface-border)]"
+              role="region"
+              aria-label="API usage"
+            >
+              <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-title-sm text-slate-900">API usage</h3>
                   <p className="text-xs text-slate-600">Rolling avg + peak</p>
@@ -506,15 +510,19 @@ function SaaSModule({
 
           {/* Top endpoints (right) */}
           <div className="col-span-12 lg:col-span-6">
-            <Card className="border border-[var(--surface-border)] h-[320px]" role="region" aria-label="Top endpoints">
-              <div className="flex items-center justify-between gap-4 mb-4">
+            <Card
+              className="flex h-full min-h-[240px] flex-col border border-[var(--surface-border)]"
+              role="region"
+              aria-label="Top endpoints"
+            >
+              <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-title-sm text-slate-900">Top endpoints</h3>
                   <p className="text-xs text-slate-600">Endpoint, Calls, Errors %, Latency p95</p>
                 </div>
                 <Workflow className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
               </div>
-              <div className="overflow-hidden">
+              <div className="flex-1 overflow-hidden">
                 <table className="min-w-full" aria-label="Top endpoints table">
                   <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
                     <tr>
@@ -549,12 +557,25 @@ function SaaSModule({
                   </tbody>
                 </table>
               </div>
+              <div className="mt-3 flex justify-end">
+                <button
+                  type="button"
+                  className="inline-flex min-h-[32px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+                >
+                  View all endpoints
+                </button>
+              </div>
             </Card>
           </div>
         </div>
       </div>
 
-
+      <div className="col-span-12">
+        <div className="rounded-[18px] border border-dashed border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-xs text-slate-500 lg:px-6">
+          <span className="font-semibold text-slate-800">Last refresh:</span>{' '}
+          {new Date().toLocaleString()} • Data sources: billing ledger, product analytics, and API observability logs.
+        </div>
+      </div>
 
     </div>
   );
@@ -1362,6 +1383,7 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
   const { push } = useToast();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const headerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -1374,6 +1396,28 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
   });
 
   useLiveMetrics();
+
+  useEffect(() => {
+    const node = headerRef.current;
+    if (!node) return;
+
+    const updateVar = () => {
+      document.documentElement.style.setProperty('--dashboard-header', `${node.offsetHeight}px`);
+    };
+
+    updateVar();
+
+    if (typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    const observer = new ResizeObserver(updateVar);
+    observer.observe(node);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -1472,7 +1516,10 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
 
   return (
     <div className="min-h-screen bg-[var(--surface-s0)] pb-16 text-slate-900">
-      <header className="border-b border-[var(--surface-border)] bg-white/95 shadow-xl shadow-purple-500/10 backdrop-blur-xl">
+      <header
+        ref={headerRef}
+        className="border-b border-[var(--surface-border)] bg-white/95 shadow-xl shadow-purple-500/10 backdrop-blur-xl"
+      >
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-8">
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="space-y-3">
@@ -1564,32 +1611,36 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
         <div className="rounded-[24px] border border-dashed border-[var(--surface-border)] bg-[var(--surface-s1)] px-6 py-4 text-xs text-slate-500">
           Global filters persist via query params. React Query hydrates instantly, while Zustand keeps inter-module state fast.
         </div>
-        
+
         {/* Main content with right rail */}
-        <div className="flex flex-col gap-6 lg:flex-row">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Main content area */}
-          <div className="flex-1">
+          <section className="lg:col-span-8" aria-label="Dashboard content">
             {moduleContent}
-          </div>
-          
+          </section>
+
           {/* RIGHT RAIL: AUTOMATION WORKBENCH */}
-          <div className="sticky top-[120px] w-full space-y-6 lg:w-[320px] lg:flex-shrink-0 lg:max-h-[calc(100vh-140px)] lg:overflow-y-auto">
+          <aside
+            className="space-y-6 lg:col-span-4 lg:sticky lg:self-start"
+            style={{ top: 'calc(var(--dashboard-header, 96px) + var(--dashboard-filters, 72px) + 24px)' }}
+            aria-label="Automation workbench"
+          >
             <div className="mb-4">
               <h2 className="text-title-lg text-slate-900">Automation Workbench</h2>
               <p className="text-sm text-slate-600">Build and manage automated workflows</p>
             </div>
-            
+
             {/* Automation builder (top) */}
-            <AutomationBuilder 
+            <AutomationBuilder
               onCreate={async (automation) => {
                 console.log('Creating automation:', automation);
-              }} 
-              verticalAccent={accent} 
+              }}
+              verticalAccent={accent}
             />
-            
+
             {/* Automation backlog (middle) */}
             <Card className="border border-[var(--surface-border)]" role="region" aria-label="Automation backlog">
-              <div className="flex items-center justify-between gap-4 mb-4">
+              <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-title-sm text-slate-900">Automation backlog</h3>
                   <p className="text-xs text-slate-600">Status chips, active/paused</p>
@@ -1612,20 +1663,20 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                       />
                     </div>
                     <p className="mt-1 text-xs text-slate-500">{automation.metric}</p>
-                    <div className="mt-2 flex gap-2">
-                      <button className="text-xs text-[var(--primary-600)] hover:text-[var(--primary-700)]">
-                        {automation.status === 'active' ? 'Pause' : 'Resume'}
-                      </button>
-                      <button className="text-xs text-slate-500 hover:text-slate-700">Edit</button>
-                    </div>
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex min-h-[32px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1 text-xs font-semibold text-[var(--primary-600)] transition hover:bg-[var(--primary-50)]/70 focus-visible:focus-ring"
+                    >
+                      {automation.status === 'active' ? 'Pause automation' : 'Resume automation'}
+                    </button>
                   </div>
                 ))}
               </div>
             </Card>
-            
+
             {/* Efficiency showcases (bottom) */}
-            <Card className="border border-[var(--surface-border)]" role="region" aria-label="Efficiency showcases">
-              <div className="flex items-center justify-between gap-4 mb-4">
+            <Card className="border border-[var(--surface-border)]" role="region" aria-label="Efficiency insights">
+              <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-title-sm text-slate-900">Efficiency showcases</h3>
                   <p className="text-xs text-slate-600">Recent automation wins</p>
@@ -1642,8 +1693,30 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                   <div className="text-xs text-[var(--primary-600)]">Smart FAQ automation</div>
                 </div>
               </div>
+              {selectedModule === 'saas' && data?.saas.billingCycles?.length ? (
+                <div className="mt-5 space-y-3 border-t border-dashed border-[var(--surface-border)] pt-4">
+                  <h4 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                    Billing cycle orchestration
+                  </h4>
+                  <ul className="space-y-3">
+                    {data.saas.billingCycles.map((cycle) => (
+                      <li key={cycle.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
+                        <div className="flex items-center justify-between text-sm text-slate-700">
+                          <span className="font-semibold text-slate-900">{cycle.label}</span>
+                          <StatusChip
+                            label={cycle.status}
+                            tone={cycle.status === 'completed' ? 'success' : cycle.status === 'processing' ? 'info' : 'warning'}
+                          />
+                        </div>
+                        <p className="mt-2 text-xs text-slate-500">Next run {cycle.nextRun}</p>
+                        <p className="text-xs text-slate-500">Owners: {cycle.owners.join(', ')}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
             </Card>
-          </div>
+          </aside>
         </div>
       </main>
     </div>
