@@ -117,8 +117,8 @@ export function StickyFilterBar() {
   }, [filters]);
 
   return (
-    <div className="sticky top-0 z-10 -mx-6 border-b border-[var(--surface-border)] bg-[var(--surface-s2)]/95 px-6 py-3 backdrop-blur supports-[backdrop-filter]:bg-[var(--surface-s2)]">
-      <div className="flex items-center justify-between gap-4 overflow-hidden">
+    <div className="sticky top-0 z-20 border-t border-b border-[var(--surface-border)] bg-white/95 backdrop-blur">
+      <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-6 px-6 py-3">
         <div className="flex flex-1 items-center gap-4 overflow-x-auto pb-1 pt-1 [scrollbar-width:none] sm:[scrollbar-width:auto]">
           {/* Date range (global) */}
           <Group label="Date Range">
