@@ -1,31 +1,39 @@
-import Link from 'next/link';
+import { LandingConstellation } from './(ecosystem)/components/LandingConstellation';
+import { DashboardVault } from './(ecosystem)/components/DashboardVault';
+import { DynamicProfileHub } from './(ecosystem)/components/DynamicProfileHub';
+import { DiscoveryClientModule } from './(ecosystem)/components/DiscoveryClientModule';
+import { AnimationSuite } from './(ecosystem)/components/AnimationSuite';
+import { AutomationPersonalization } from './(ecosystem)/components/AutomationPersonalization';
+
+const NAV_ITEMS = [
+  { id: 'discover', label: 'Discover', description: 'Persona constellation + guided tour' },
+  { id: 'explore', label: 'Explore', description: 'Dashboard vault pods (Fintech, Healthcare)' },
+  { id: 'prototype', label: 'Prototype', description: 'Discovery bot → proposal export' },
+  { id: 'engage', label: 'Engage', description: 'Automation, analytics, booking flows' },
+];
 
 export default function HomePage() {
-  const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'portfolio-dashboard';
-  const INDUSTRY = process.env.NEXT_PUBLIC_INDUSTRY || 'enterprise';
-  const PROJECT_TYPE = process.env.NEXT_PUBLIC_PROJECT_TYPE || 'fullstack';
-
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-          Welcome to {APP_NAME}
-        </h1>
-        <p className="mt-6 text-lg leading-8 text-gray-600">
-          Your {INDUSTRY} {PROJECT_TYPE} solution.
-        </p>
-        <div className="mt-10 flex items-center justify-center gap-x-6">
-          <Link
-            href="/dashboard"
-            className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            Get started
-          </Link>
-          <Link href="/docs" className="text-sm font-semibold leading-6 text-gray-900">
-            Learn more <span aria-hidden="true">→</span>
-          </Link>
-        </div>
+    <main className="min-h-screen bg-slate-950 text-white">
+      <div className="mx-auto flex max-w-6xl flex-col gap-16 px-6 py-16">
+        <nav className="grid gap-4 rounded-[3rem] border border-white/10 bg-slate-950/60 p-8 shadow-2xl backdrop-blur">
+          <p className="text-xs uppercase tracking-[0.4em] text-slate-300">Nonlinear Navigation Map</p>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {NAV_ITEMS.map((item) => (
+              <div key={item.id} className="rounded-3xl border border-white/15 bg-white/5 p-4">
+                <p className="text-sm font-semibold text-white">{item.label}</p>
+                <p className="mt-1 text-xs text-slate-300">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </nav>
+        <LandingConstellation />
+        <DashboardVault />
+        <DiscoveryClientModule />
+        <DynamicProfileHub />
+        <AnimationSuite />
+        <AutomationPersonalization />
       </div>
-    </div>
+    </main>
   );
 }
