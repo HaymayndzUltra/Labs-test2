@@ -8,7 +8,7 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
-  Legend,
+  ComposedChart,
   Line,
   LineChart,
   Pie,
@@ -555,121 +555,183 @@ function CommerceModule({
   data: PortfolioDashboardResponse['commerce'];
   accent: string;
 }) {
-  const salesRows = data.salesTrend.map((point) => ({ month: point.label, revenue: point.value }));
+  const ensureMinimum = <T,>(items: T[], fallback: (index: number) => T, min = 5) => {
+    const result = [...items];
+    for (let i = items.length; i < min; i += 1) {
+      result.push(fallback(i));
+    }
+    return result;
+  };
+
+  const topProducts = ensureMinimum(data.topProducts, (index) => ({
+    id: `prod-extra-${index}`,
+    name: `Bundled offer ${index + 1}`,
+    category: 'Seasonal',
+    revenue: `$${210 - index * 12}K`,
+    conversionRate: `${(3.8 + index * 0.4).toFixed(1)}%`,
+    inventory: 140 + index * 20,
+    trend: 'up' as const,
+  }));
+
+  const monthlyBreakdown = ensureMinimum(
+    data.salesTrend.slice(-6).reverse(),
+    (index) => ({
+      label: `Q${index + 1} sprint`,
+      value: 180 - index * 12,
+    }),
+    6,
+  );
+
+  const alertItems = ensureMinimum(
+    data.operations,
+    (index) => ({
+      id: `ops-extra-${index}`,
+      title: index % 2 === 0 ? 'Returns workflow' : 'Low-stock alerts',
+      description:
+        index % 2 === 0
+          ? 'Automated RMA approvals at 92% within SLA.'
+          : 'Safety stock automation triggered vendor restock.',
+      status: index % 2 === 0 ? 'healthy' : 'attention',
+    }),
+  );
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="commerce-panel" role="tabpanel" aria-labelledby="commerce">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Merchandising, orders & fulfillment"
-          subtitle="E-commerce"
-          accent={accent}
-        />
-      </div>
+    <section
+      className="space-y-6"
+      id="commerce-panel"
+      role="tabpanel"
+      aria-labelledby="commerce"
+    >
+      <SectionHeader
+        title="Merchandising, orders & fulfillment"
+        subtitle="E-commerce"
+        accent={accent}
+      />
 
-      <div className="col-span-12 lg:col-span-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Top products leaderboard">
+      <div className="grid grid-cols-1 gap-y-6 lg:grid-cols-8 lg:gap-x-10">
+        <Card
+          className="flex h-[240px] flex-col border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Top products purchased"
+        >
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-title-sm text-slate-900">Top products leaderboard</h3>
-              <p className="text-xs text-slate-600">Revenue, conversion, inventory, and trend for hero SKUs.</p>
+              <h3 className="text-title-sm text-slate-900">Top products purchased</h3>
+              <p className="text-xs text-slate-600">Revenue • Conversion • Inventory</p>
             </div>
             <ArrowUpRight className="h-5 w-5 text-[var(--success-600)]" aria-hidden />
           </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Product leaderboard table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
+          <div className="mt-3 flex-1 overflow-hidden rounded-[16px] border border-[var(--surface-border)]">
+            <table className="min-w-full text-sm text-slate-700">
+              <thead className="bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
                 <tr>
-                  <th className="px-4 py-3 text-left">Product</th>
-                  <th className="px-4 py-3 text-left">Category</th>
-                  <th className="px-4 py-3 text-left">Revenue</th>
-                  <th className="px-4 py-3 text-left">Conversion</th>
-                  <th className="px-4 py-3 text-right">Inventory</th>
-                  <th className="px-4 py-3 text-right">Trend</th>
+                  <th className="px-4 py-2 text-left">Product</th>
+                  <th className="px-4 py-2 text-right">Revenue</th>
+                  <th className="px-4 py-2 text-right">Conversion</th>
+                  <th className="px-4 py-2 text-right">Inventory</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
-                {data.topProducts.map((product) => (
+              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)]">
+                {topProducts.slice(0, 5).map((product) => (
                   <tr key={product.id}>
-                    <td className="px-4 py-[11px] font-semibold text-slate-900">{product.name}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{product.category}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{product.revenue}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{product.conversionRate}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{product.inventory}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">
-                      {product.trend === 'up' ? '↑' : product.trend === 'down' ? '↓' : '→'}
-                    </td>
+                    <td className="px-4 py-2 font-semibold text-slate-900">{product.name}</td>
+                    <td className="px-4 py-2 text-right">{product.revenue}</td>
+                    <td className="px-4 py-2 text-right">{product.conversionRate}</td>
+                    <td className="px-4 py-2 text-right">{product.inventory.toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </Card>
-      </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <ChartCard
-          id="commerce-sales"
-          title="Sales trends"
-          description="Seasonally-adjusted GMV"
-          rows={salesRows}
-          columns={[
-            { key: 'month', label: 'Month' },
-            { key: 'revenue', label: 'GMV ($M)', align: 'right' },
-          ]}
+        <Card
+          className="flex h-[240px] flex-col gap-3 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Sales trends"
         >
-          <ResponsiveContainer height={260}>
-            <BarChart data={data.salesTrend}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
+          <div>
+            <h3 className="text-title-sm text-slate-900">Sales trends</h3>
+            <p className="text-xs text-slate-600">Seasonally adjusted GMV ($M)</p>
+          </div>
+          <ResponsiveContainer height={140}>
+            <LineChart data={data.salesTrend} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="4 6" stroke="rgba(148, 163, 184, 0.3)" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
+              <YAxis tickLine={false} axisLine={false} domain={[0, (dataMax: number) => dataMax * 1.2]} />
               <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Bar dataKey="value" radius={[12, 12, 12, 12]} fill="var(--vertical-commerce)" />
-            </BarChart>
+              <Line type="monotone" dataKey="value" stroke="var(--vertical-commerce)" strokeWidth={3} dot={{ r: 3 }} />
+            </LineChart>
           </ResponsiveContainer>
-        </ChartCard>
+          <div className="flex items-center gap-3 text-xs text-slate-500">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 font-semibold text-slate-700">
+              <span className="h-2 w-2 rounded-full bg-[var(--vertical-commerce)]" aria-hidden /> GMV actuals
+            </span>
+            <span>15% headroom applied</span>
+          </div>
+        </Card>
 
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Operational health">
+        <Card
+          className="flex h-[220px] flex-col gap-3 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Monthly breakdown"
+        >
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-title-sm text-slate-900">Operational health</h3>
-              <p className="text-xs text-slate-600">Fulfillment SLAs, payment resilience, and support load.</p>
+              <h3 className="text-title-sm text-slate-900">Monthly breakdown</h3>
+              <p className="text-xs text-slate-600">Net contribution last six periods</p>
             </div>
-            <Activity className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+            <button
+              type="button"
+              className="text-xs font-semibold text-[var(--primary-600)] underline-offset-2 hover:underline"
+            >
+              View all
+            </button>
           </div>
-          <ul className="mt-4 space-y-3">
-            {data.operations.map((item) => (
-              <li key={item.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
+          <ul className="flex-1 space-y-2">
+            {monthlyBreakdown.map((entry) => (
+              <li
+                key={entry.label}
+                className="flex items-center justify-between rounded-[16px] border border-[var(--surface-border)] bg-white/70 px-4 py-2"
+              >
+                <span className="text-sm font-semibold text-slate-900">{entry.label}</span>
+                <span className="text-sm font-medium text-slate-600">${entry.value}k</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+
+        <Card
+          className="flex h-[240px] flex-col gap-3 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Returns and low-stock alerts"
+        >
+          <div>
+            <h3 className="text-title-sm text-slate-900">Returns / Low-stock alerts</h3>
+            <p className="text-xs text-slate-600">Operational signals without extra forms</p>
+          </div>
+          <ul className="flex-1 space-y-2">
+            {alertItems.slice(0, 5).map((item) => (
+              <li
+                key={item.id}
+                className="rounded-[16px] border border-[var(--surface-border)] bg-white/70 px-4 py-3"
+              >
+                <div className="flex items-center justify-between">
                   <p className="text-sm font-semibold text-slate-900">{item.title}</p>
                   <StatusChip
                     label={item.status}
                     tone={item.status === 'healthy' ? 'success' : item.status === 'attention' ? 'warning' : 'info'}
                   />
                 </div>
-                <p className="mt-2 text-xs text-slate-600">{item.description}</p>
+                <p className="mt-1 text-xs text-slate-600">{item.description}</p>
               </li>
             ))}
           </ul>
         </Card>
       </div>
-
-      <div className="col-span-12 lg:col-span-6">
-        <AutomationList items={data.automation} />
-      </div>
-
-      <div className="col-span-12 lg:col-span-6">
-        <AutomationBuilder
-          verticalAccent={accent}
-          onCreate={async () => {
-            await new Promise((resolve) => setTimeout(resolve, 800));
-          }}
-        />
-      </div>
-    </div>
+    </section>
   );
 }
-
 function CorporateModule({
   data,
   accent,
@@ -677,61 +739,238 @@ function CorporateModule({
   data: PortfolioDashboardResponse['corporate'];
   accent: string;
 }) {
-  const funnelRows = data.funnel.map((stage) => ({
+  const pipelineMetric = data.metrics.find((metric) => metric.id === 'pipeline');
+  const parsedPipeline = pipelineMetric ? parseFloat(pipelineMetric.value.replace(/[^0-9.]/g, '')) : 0;
+  const multiplier = pipelineMetric?.value.includes('M')
+    ? 1_000_000
+    : pipelineMetric?.value.includes('K')
+    ? 1_000
+    : 1;
+  const pipelineValue = parsedPipeline * multiplier;
+
+  const formatCurrencyCompact = (value: number) => {
+    if (!Number.isFinite(value)) return '—';
+    if (value >= 1_000_000) {
+      return `$${(value / 1_000_000).toFixed(value >= 10_000_000 ? 1 : 2)}M`;
+    }
+    return `$${Math.round(value / 1_000).toLocaleString()}k`;
+  };
+
+  const conversionSeries = data.funnel.map((stage) => ({
     stage: stage.stage,
-    count: stage.count.toLocaleString(),
+    count: stage.count,
+    conversion: parseFloat(stage.conversion.replace(/[^0-9.]/g, '')),
+  }));
+
+  const channelRows = data.leadSources.map((source) => {
+    const influenced = pipelineValue * (source.value / 100);
+    return {
+      channel: source.label,
+      influenced: formatCurrencyCompact(influenced),
+      share: `${source.value}%`,
+    };
+  });
+
+  const segmentRows = data.funnel.map((stage) => ({
+    segment: stage.stage,
+    volume: stage.count.toLocaleString(),
     conversion: stage.conversion,
     delta: `${stage.delta.toFixed(1)}%`,
   }));
 
-  const sourceRows = data.leadSources.map((source) => ({ source: source.label, share: `${source.value}%` }));
-
   return (
-    <div className="grid grid-cols-12 gap-6" id="corporate-panel" role="tabpanel" aria-labelledby="corporate">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Growth marketing & pipeline analytics"
-          subtitle="Corporate analytics"
-          accent={accent}
-        />
-      </div>
+    <section
+      className="space-y-6"
+      id="corporate-panel"
+      role="tabpanel"
+      aria-labelledby="corporate"
+    >
+      <SectionHeader
+        title="Growth marketing & pipeline analytics"
+        subtitle="Corporate analytics"
+        accent={accent}
+      />
 
-      <div className="col-span-12 lg:col-span-7 space-y-6">
-        <ChartCard
-          id="corporate-funnel"
-          title="Conversion funnel"
-          description="Visitors → MQL → SQL → Opportunities → Closed"
-          rows={funnelRows}
-          columns={[
-            { key: 'stage', label: 'Stage' },
-            { key: 'count', label: 'Volume', align: 'right' },
-            { key: 'conversion', label: 'Conversion', align: 'right' },
-            { key: 'delta', label: 'Δ', align: 'right' },
-          ]}
-          tone="accent"
+      <div className="grid grid-cols-1 gap-y-6 lg:grid-cols-8 lg:gap-x-10">
+        <Card
+          className="flex h-[240px] flex-col justify-between border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Conversion campaigns"
         >
-          <ResponsiveContainer height={320}>
-            <BarChart data={data.funnel} layout="vertical" margin={{ left: 80 }}>
-              <CartesianGrid horizontal={false} stroke="rgba(148, 163, 184, 0.25)" />
-              <XAxis type="number" hide />
-              <YAxis dataKey="stage" type="category" tickLine={false} axisLine={false} width={200} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Bar dataKey="count" fill="var(--vertical-corporate)" radius={[12, 12, 12, 12]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Executive insights">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-title-sm text-slate-900">Executive insights</h3>
-              <p className="text-xs text-slate-600">Board-ready bullets with context tags.</p>
+              <h3 className="text-title-sm text-slate-900">Conversion campaigns</h3>
+              <p className="text-xs text-slate-600">Volume vs. conversion lift</p>
             </div>
             <Check className="h-5 w-5 text-[var(--success-600)]" aria-hidden />
           </div>
-          <ul className="mt-4 space-y-3">
-            {data.insights.map((insight) => (
-              <li key={insight.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
+          <ResponsiveContainer height={140}>
+            <ComposedChart data={conversionSeries} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="4 6" stroke="rgba(148, 163, 184, 0.25)" />
+              <XAxis dataKey="stage" tickLine={false} axisLine={false} interval={0} tick={{ fontSize: 10 }} />
+              <YAxis
+                yAxisId="volume"
+                tickLine={false}
+                axisLine={false}
+                width={60}
+                domain={[0, (dataMax: number) => dataMax * 1.15]}
+              />
+              <YAxis yAxisId="conversion" orientation="right" hide domain={[0, 100]} />
+              <Tooltip
+                contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }}
+                formatter={(value: number, name: string) =>
+                  name === 'count' ? [`${Math.round(value).toLocaleString()} visits`, 'Volume'] : [`${value.toFixed(1)}%`, 'Conversion']
+                }
+              />
+              <Bar
+                dataKey="count"
+                yAxisId="volume"
+                fill="var(--vertical-corporate)"
+                radius={[12, 12, 0, 0]}
+                barSize={26}
+              />
+              <Line
+                type="monotone"
+                dataKey="conversion"
+                yAxisId="conversion"
+                stroke="var(--primary-500)"
+                strokeWidth={2.5}
+                dot={{ r: 3 }}
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </Card>
+
+        <Card
+          className="flex h-[240px] flex-col gap-4 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Lead segments mix"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-title-sm text-slate-900">Lead segments mix</h3>
+              <p className="text-xs text-slate-600">Distribution by channel</p>
+            </div>
+          </div>
+          <div className="flex flex-1 items-center gap-4">
+            <div className="h-[160px] w-[160px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    dataKey="value"
+                    data={data.leadSources}
+                    innerRadius={52}
+                    outerRadius={74}
+                    paddingAngle={3}
+                  >
+                    {data.leadSources.map((source) => (
+                      <Cell key={source.id} fill={source.color} stroke="#1f2937" strokeWidth={1.4} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }}
+                    formatter={(value: number, name: string, entry) => [`${value}%`, entry?.payload?.label ?? name]}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <ol className="flex-1 space-y-2 text-sm text-slate-700">
+              {channelRows.map((row, index) => (
+                <li key={row.channel} className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-slate-500">{index + 1}.</span>
+                    <span className="font-semibold text-slate-900">{row.channel}</span>
+                  </div>
+                  <span className="text-xs font-medium text-slate-500">{row.share}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </Card>
+
+        <Card
+          className="flex h-[240px] flex-col border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Channel performance"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-title-sm text-slate-900">Channel performance</h3>
+              <p className="text-xs text-slate-600">Pipeline influenced (5 rows)</p>
+            </div>
+          </div>
+          <div className="mt-3 flex-1 overflow-hidden rounded-[16px] border border-[var(--surface-border)]">
+            <table className="min-w-full text-sm text-slate-700">
+              <thead className="bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
+                <tr>
+                  <th className="px-4 py-2 text-left">Channel</th>
+                  <th className="px-4 py-2 text-right">Influenced</th>
+                  <th className="px-4 py-2 text-right">Share</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)]">
+                {channelRows.slice(0, 5).map((row) => (
+                  <tr key={row.channel}>
+                    <td className="px-4 py-2 font-semibold text-slate-900">{row.channel}</td>
+                    <td className="px-4 py-2 text-right">{row.influenced}</td>
+                    <td className="px-4 py-2 text-right">{row.share}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+
+        <Card
+          className="flex h-[240px] flex-col border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Segment impact"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-title-sm text-slate-900">Segment impact</h3>
+              <p className="text-xs text-slate-600">Volume • Conversion • Δ</p>
+            </div>
+          </div>
+          <div className="mt-3 flex-1 overflow-hidden rounded-[16px] border border-[var(--surface-border)]">
+            <table className="min-w-full text-sm text-slate-700">
+              <thead className="bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
+                <tr>
+                  <th className="px-4 py-2 text-left">Stage</th>
+                  <th className="px-4 py-2 text-right">Volume</th>
+                  <th className="px-4 py-2 text-right">Conversion</th>
+                  <th className="px-4 py-2 text-right">Δ</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)]">
+                {segmentRows.slice(0, 5).map((row) => (
+                  <tr key={row.segment}>
+                    <td className="px-4 py-2 font-semibold text-slate-900">{row.segment}</td>
+                    <td className="px-4 py-2 text-right">{row.volume}</td>
+                    <td className="px-4 py-2 text-right">{row.conversion}</td>
+                    <td className="px-4 py-2 text-right">{row.delta}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+
+        <Card
+          className="flex h-[240px] flex-col gap-3 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Executive insights"
+        >
+          <div>
+            <h3 className="text-title-sm text-slate-900">Executive insights</h3>
+            <p className="text-xs text-slate-600">Board-ready highlights</p>
+          </div>
+          <ul className="flex-1 space-y-2 overflow-hidden">
+            {data.insights.slice(0, 3).map((insight) => (
+              <li
+                key={insight.id}
+                className="rounded-[16px] border border-[var(--surface-border)] bg-white/70 px-4 py-3"
+              >
                 <p className="text-sm font-semibold text-slate-900">{insight.headline}</p>
                 <p className="mt-1 text-xs text-slate-600">{insight.detail}</p>
               </li>
@@ -739,34 +978,7 @@ function CorporateModule({
           </ul>
         </Card>
       </div>
-
-      <div className="col-span-12 lg:col-span-5 space-y-6">
-        <ChartCard
-          id="corporate-leads"
-          title="Lead source mix"
-          description="Colorblind-safe mix with accessible legend"
-          rows={sourceRows}
-          columns={[
-            { key: 'source', label: 'Source' },
-            { key: 'share', label: 'Share', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={260}>
-            <PieChart>
-              <Pie dataKey="value" data={data.leadSources} innerRadius={70} outerRadius={110} paddingAngle={2}>
-                {data.leadSources.map((source) => (
-                  <Cell key={source.id} fill={source.color} stroke="#1f2937" strokeWidth={1.4} />
-                ))}
-              </Pie>
-              <Legend verticalAlign="bottom" height={60} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <AutomationList items={data.automation} />
-      </div>
-    </div>
+    </section>
   );
 }
 
@@ -777,107 +989,156 @@ function CustomAppModule({
   data: PortfolioDashboardResponse['customApp'];
   accent: string;
 }) {
-  return (
-    <div className="grid grid-cols-12 gap-6" id="customApp-panel" role="tabpanel" aria-labelledby="customApp">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Productivity suite & automation"
-          subtitle="Custom web app"
-          accent={accent}
-        />
-      </div>
+  const usageRows = data.workloadDistribution.map((item) => ({
+    owner: item.label,
+    active: item.value,
+    capacity: item.secondary,
+  }));
 
-      <div className="col-span-12 xl:col-span-7">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Kanban delivery board">
+  const quickstartAutomations = data.automation.slice(0, 3).map((automation, index) => ({
+    id: automation.id,
+    title: automation.title,
+    benefit: index === 0 ? '+28% task velocity' : index === 1 ? '-32% manual nudges' : '+18% SLA adherence',
+  }));
+
+  const backlogRows = data.backlogIdeas.slice(0, 6).map((idea, index) => ({
+    idea,
+    impact: `${85 - index * 7}%`,
+  }));
+
+  return (
+    <section
+      className="space-y-6"
+      id="customApp-panel"
+      role="tabpanel"
+      aria-labelledby="customApp"
+    >
+      <SectionHeader
+        title="Productivity suite & automation"
+        subtitle="Custom web app"
+        accent={accent}
+      />
+
+      <div className="grid grid-cols-1 gap-y-6 lg:grid-cols-8 lg:gap-x-10">
+        <Card
+          className="flex h-[240px] flex-col gap-3 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Kanban summary board"
+        >
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-title-sm text-slate-900">Kanban delivery board</h3>
-              <p className="text-xs text-slate-600">
-                Keyboard accessible DnD — Space to lift, arrows to move, Enter to drop.
-              </p>
+              <h3 className="text-title-sm text-slate-900">Kanban summary board</h3>
+              <p className="text-xs text-slate-600">Backlog → In progress → Review → Done</p>
             </div>
           </div>
-          <div className="mt-4 grid gap-4 overflow-x-auto pb-2 sm:grid-cols-2 xl:grid-cols-4">
-            {data.kanban.map((lane) => (
-              <div key={lane.id} className="rounded-[18px] border border-[var(--surface-border)] bg-[var(--surface-s1)] p-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-slate-900">{lane.title}</h4>
-                  <StatusChip label={lane.badge} tone="info" />
+          <div className="flex flex-1 items-end gap-3">
+            {data.kanban.slice(0, 4).map((lane) => (
+              <div key={lane.id} className="flex h-full w-full flex-col items-center justify-end gap-2">
+                <div
+                  className="flex w-full flex-1 items-end justify-center rounded-[16px] border border-[var(--surface-border)] bg-white/70 p-2"
+                  style={{ minHeight: 80 + lane.tasks.length * 20 }}
+                >
+                  <span className="text-lg font-semibold text-[var(--vertical-custom)]">
+                    {lane.tasks.length}
+                  </span>
                 </div>
-                <ul className="mt-3 space-y-3">
-                  {lane.tasks.map((task) => (
-                    <li key={task.id} className="rounded-[16px] border border-[var(--surface-border)] bg-white/80 p-3 shadow-sm">
-                      <p className="text-sm font-semibold text-slate-900">{task.title}</p>
-                      <p className="mt-1 text-xs text-slate-500">Owner: {task.owner}</p>
-                      <p className="text-xs text-slate-500">Due {task.due}</p>
-                      {task.automation ? (
-                        <p className="mt-1 text-[11px] uppercase tracking-[0.08em] text-[var(--primary-600)]">
-                          {task.automation}
-                        </p>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
+                <div className="text-center">
+                  <p className="text-xs font-semibold text-slate-900">{lane.title}</p>
+                  <p className="text-[11px] text-slate-500">{lane.badge}</p>
+                </div>
               </div>
             ))}
           </div>
         </Card>
-      </div>
 
-      <div className="col-span-12 xl:col-span-5 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Idea backlog">
+        <Card
+          className="flex h-[240px] flex-col gap-4 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Usage tracking metrics"
+        >
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-title-sm text-slate-900">Idea backlog intake</h3>
-              <p className="text-xs text-slate-600">Routing rules auto-tag and assign backlog ideas.</p>
+              <h3 className="text-title-sm text-slate-900">Usage tracking metrics</h3>
+              <p className="text-xs text-slate-600">Active load vs. capacity</p>
             </div>
           </div>
-          <ul className="mt-4 space-y-3">
-            {data.backlogIdeas.map((idea) => (
-              <li key={idea} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3 text-sm text-slate-700">
-                {idea}
-              </li>
-            ))}
-          </ul>
-        </Card>
-
-        <ChartCard
-          id="custom-workload"
-          title="Workload distribution"
-          description="Task load vs capacity"
-          rows={data.workloadDistribution.map((point) => ({ owner: point.label, tasks: point.value, capacity: point.secondary }))}
-          columns={[
-            { key: 'owner', label: 'Owner' },
-            { key: 'tasks', label: 'Tasks', align: 'right' },
-            { key: 'capacity', label: 'Capacity', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={220}>
-            <BarChart data={data.workloadDistribution}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Bar dataKey="secondary" stackId="a" fill="rgba(148, 163, 184, 0.2)" radius={[12, 12, 12, 12]} />
-              <Bar dataKey="value" stackId="a" fill="var(--vertical-custom)" radius={[12, 12, 12, 12]} />
+          <ResponsiveContainer height={140}>
+            <BarChart data={usageRows}>
+              <CartesianGrid strokeDasharray="4 6" stroke="rgba(148, 163, 184, 0.25)" />
+              <XAxis dataKey="owner" tickLine={false} axisLine={false} />
+              <YAxis tickLine={false} axisLine={false} domain={[0, (dataMax: number) => dataMax * 1.2]} />
+              <Tooltip
+                contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }}
+                formatter={(value: number, name: string) =>
+                  name === 'active' ? [`${value} active`, 'Tasks'] : [`${value} capacity`, 'Capacity']
+                }
+              />
+              <Bar dataKey="capacity" fill="rgba(148, 163, 184, 0.3)" radius={[12, 12, 0, 0]} barSize={18} />
+              <Bar dataKey="active" fill="var(--vertical-custom)" radius={[12, 12, 0, 0]} barSize={18} />
             </BarChart>
           </ResponsiveContainer>
-        </ChartCard>
-      </div>
+        </Card>
 
-      <div className="col-span-12 lg:col-span-6">
-        <AutomationBuilder
-          verticalAccent={accent}
-          onCreate={async () => {
-            await new Promise((resolve) => setTimeout(resolve, 700));
-          }}
-        />
-      </div>
+        <Card
+          className="flex h-[240px] flex-col gap-3 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Quickstart automations"
+        >
+          <div>
+            <h3 className="text-title-sm text-slate-900">Quickstart automations</h3>
+            <p className="text-xs text-slate-600">Launch-ready recipes with ROI callouts</p>
+          </div>
+          <div className="grid flex-1 grid-cols-3 gap-2">
+            {quickstartAutomations.map((item) => (
+              <div
+                key={item.id}
+                className="flex flex-col justify-between rounded-[16px] border border-[var(--surface-border)] bg-white/70 p-3"
+              >
+                <p className="text-xs font-semibold text-slate-900">{item.title}</p>
+                <p className="text-[11px] text-[var(--primary-600)]">{item.benefit}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
 
-      <div className="col-span-12 lg:col-span-6">
-        <AutomationList items={data.automation} />
+        <Card
+          className="flex h-[240px] flex-col border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Ops backlog table"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-title-sm text-slate-900">Ops backlog table</h3>
+              <p className="text-xs text-slate-600">Automation opportunities ranked</p>
+            </div>
+            <button
+              type="button"
+              className="text-xs font-semibold text-[var(--primary-600)] underline-offset-2 hover:underline"
+            >
+              View all
+            </button>
+          </div>
+          <div className="mt-3 flex-1 overflow-hidden rounded-[16px] border border-[var(--surface-border)]">
+            <table className="min-w-full text-sm text-slate-700">
+              <thead className="bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
+                <tr>
+                  <th className="px-4 py-2 text-left">Backlog idea</th>
+                  <th className="px-4 py-2 text-right">Impact</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)]">
+                {backlogRows.map((row) => (
+                  <tr key={row.idea}>
+                    <td className="px-4 py-2 font-semibold text-slate-900">{row.idea}</td>
+                    <td className="px-4 py-2 text-right">{row.impact}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -888,99 +1149,115 @@ function ContentModule({
   data: PortfolioDashboardResponse['content'];
   accent: string;
 }) {
+  const ensureMinimum = <T,>(items: T[], fallback: (index: number) => T, min = 5) => {
+    const result = [...items];
+    for (let i = items.length; i < min; i += 1) {
+      result.push(fallback(i));
+    }
+    return result;
+  };
+
   const engagementRows = data.engagementTrend.map((point) => ({ period: point.label, score: point.value }));
 
-  return (
-    <div className="grid grid-cols-12 gap-6" id="content-panel" role="tabpanel" aria-labelledby="content">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Publishing workflow & engagement"
-          subtitle="Content & media"
-          accent={accent}
-        />
-      </div>
+  const topStories = ensureMinimum(data.topStories, (index) => ({
+    id: `story-extra-${index}`,
+    title: `Syndicated feature ${index + 1}`,
+    format: 'Article',
+    publishedAt: 'Queued',
+    engagement: `${180 - index * 12}K reads`,
+    status: 'Queued',
+  }));
 
-      <div className="col-span-12 lg:col-span-7 space-y-6">
-        <ChartCard
-          id="content-engagement"
-          title="Engagement trend"
-          description="Plays, reads, and watch time"
-          rows={engagementRows}
-          columns={[
-            { key: 'period', label: 'Period' },
-            { key: 'score', label: 'Engagement', align: 'right' },
-          ]}
+  const publishingQueue = ensureMinimum(data.publishingQueue, (index) => ({
+    id: `slot-extra-${index}`,
+    slot: `Sat • ${8 + index}:00 AM`,
+    topic: `Evergreen refresh batch ${index + 1}`,
+    editor: 'Automation Bot',
+    status: 'ready',
+  }));
+
+  const highlightItems = ensureMinimum(
+    data.automation.slice(0, 3).map((automation) => ({
+      id: automation.id,
+      headline: automation.title,
+      detail: automation.action,
+    })),
+    (index) => ({
+      id: `highlight-${index}`,
+      headline: index % 2 === 0 ? 'Creative approvals synced' : 'Sponsored slots confirmed',
+      detail: index % 2 === 0 ? 'Auto-routed briefs with 100% compliance check' : 'Legal + finance sign-off completed',
+    })
+  );
+
+  return (
+    <section
+      className="space-y-6"
+      id="content-panel"
+      role="tabpanel"
+      aria-labelledby="content"
+    >
+      <SectionHeader
+        title="Publishing workflow & engagement"
+        subtitle="Content & media"
+        accent={accent}
+      />
+
+      <div className="grid grid-cols-1 gap-y-6 lg:grid-cols-8 lg:gap-x-10">
+        <Card
+          className="flex h-[240px] flex-col gap-3 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Engagement trend"
         >
-          <ResponsiveContainer height={280}>
-            <LineChart data={data.engagementTrend}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(251, 146, 60, 0.25)" />
+          <div>
+            <h3 className="text-title-sm text-slate-900">Engagement trend</h3>
+            <p className="text-xs text-slate-600">Plays • Reads • Watch time</p>
+          </div>
+          <ResponsiveContainer height={140}>
+            <LineChart data={data.engagementTrend} margin={{ left: 0, right: 8, top: 8, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="4 6" stroke="rgba(251, 146, 60, 0.25)" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
+              <YAxis tickLine={false} axisLine={false} domain={[0, (dataMax: number) => dataMax * 1.2]} />
               <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Line type="monotone" dataKey="value" stroke="var(--vertical-content)" strokeWidth={3} dot={{ r: 5 }} />
+              <Line type="monotone" dataKey="value" stroke="var(--vertical-content)" strokeWidth={3} dot={{ r: 3 }} />
             </LineChart>
           </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Publishing queue">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Publishing queue</h3>
-              <p className="text-xs text-slate-600">Ready, review, and blocked statuses with guardrails.</p>
-            </div>
+          <div className="flex items-center gap-3 text-xs text-slate-500">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 font-semibold text-slate-700">
+              <span className="h-2 w-2 rounded-full bg-[var(--vertical-content)]" aria-hidden />
+              Weighted engagement score
+            </span>
+            <span>12% headroom buffer applied</span>
           </div>
-          <ul className="mt-4 space-y-3">
-            {data.publishingQueue.map((item) => (
-              <li key={item.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">{item.topic}</p>
-                    <p className="text-xs text-slate-500">Slot {item.slot} • Editor {item.editor}</p>
-                  </div>
-                  <StatusChip
-                    label={item.status}
-                    tone={
-                      item.status === 'ready'
-                        ? 'success'
-                        : item.status === 'blocked'
-                        ? 'danger'
-                        : 'info'
-                    }
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
         </Card>
-      </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Top performing stories">
+        <Card
+          className="flex h-[240px] flex-col border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Top performing stories"
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-title-sm text-slate-900">Top performing stories</h3>
-              <p className="text-xs text-slate-600">Format, window, engagement, status.</p>
+              <p className="text-xs text-slate-600">Rolling 30-day performance</p>
             </div>
           </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Stories table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
+          <div className="mt-3 flex-1 overflow-hidden rounded-[16px] border border-[var(--surface-border)]">
+            <table className="min-w-full text-sm text-slate-700">
+              <thead className="bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
                 <tr>
-                  <th className="px-4 py-3 text-left">Title</th>
-                  <th className="px-4 py-3 text-left">Format</th>
-                  <th className="px-4 py-3 text-left">Window</th>
-                  <th className="px-4 py-3 text-right">Engagement</th>
-                  <th className="px-4 py-3 text-right">Status</th>
+                  <th className="px-4 py-2 text-left">Title</th>
+                  <th className="px-4 py-2 text-left">Format</th>
+                  <th className="px-4 py-2 text-right">Engagement</th>
+                  <th className="px-4 py-2 text-right">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
-                {data.topStories.map((story) => (
+              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)]">
+                {topStories.slice(0, 6).map((story) => (
                   <tr key={story.id}>
-                    <td className="px-4 py-[11px] font-semibold text-slate-900">{story.title}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{story.format}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{story.publishedAt}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{story.engagement}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{story.status}</td>
+                    <td className="px-4 py-2 font-semibold text-slate-900">{story.title}</td>
+                    <td className="px-4 py-2 text-slate-600">{story.format}</td>
+                    <td className="px-4 py-2 text-right text-slate-600">{story.engagement}</td>
+                    <td className="px-4 py-2 text-right text-slate-600">{story.status}</td>
                   </tr>
                 ))}
               </tbody>
@@ -988,9 +1265,65 @@ function ContentModule({
           </div>
         </Card>
 
-        <AutomationList items={data.automation} />
+        <Card
+          className="flex h-[240px] flex-col gap-3 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Publishing queue"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-title-sm text-slate-900">Publishing queue</h3>
+              <p className="text-xs text-slate-600">Single view of upcoming drops</p>
+            </div>
+            <button
+              type="button"
+              className="text-xs font-semibold text-[var(--primary-600)] underline-offset-2 hover:underline"
+            >
+              View all
+            </button>
+          </div>
+          <ul className="flex-1 space-y-2">
+            {publishingQueue.slice(0, 6).map((item) => (
+              <li
+                key={item.id}
+                className="flex items-center justify-between gap-3 rounded-[16px] border border-[var(--surface-border)] bg-white/70 px-4 py-3"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">{item.topic}</p>
+                  <p className="text-xs text-slate-500">{item.slot} • Editor {item.editor}</p>
+                </div>
+                <StatusChip
+                  label={item.status}
+                  tone={item.status === 'blocked' ? 'danger' : item.status === 'ready' ? 'success' : 'info'}
+                />
+              </li>
+            ))}
+          </ul>
+        </Card>
+
+        <Card
+          className="flex h-[240px] flex-col gap-3 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Highlights and approvals"
+        >
+          <div>
+            <h3 className="text-title-sm text-slate-900">Highlights & approvals</h3>
+            <p className="text-xs text-slate-600">Signals ready for exec share-out</p>
+          </div>
+          <ul className="flex-1 space-y-2">
+            {highlightItems.slice(0, 5).map((item) => (
+              <li
+                key={item.id}
+                className="rounded-[16px] border border-[var(--surface-border)] bg-white/70 px-4 py-3"
+              >
+                <p className="text-sm font-semibold text-slate-900">{item.headline}</p>
+                <p className="mt-1 text-xs text-slate-600">{item.detail}</p>
+              </li>
+            ))}
+          </ul>
+        </Card>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -1003,41 +1336,75 @@ function EdTechModule({
 }) {
   const heatmapMax = Math.max(...data.activityHeatmap.values.map((entry) => entry.score));
 
-  return (
-    <div className="grid grid-cols-12 gap-6" id="edtech-panel" role="tabpanel" aria-labelledby="edtech">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Learning analytics & student success"
-          subtitle="EdTech"
-          accent={accent}
-        />
-      </div>
+  const ensureMinimum = <T,>(items: T[], fallback: (index: number) => T, min = 5) => {
+    const result = [...items];
+    for (let i = items.length; i < min; i += 1) {
+      result.push(fallback(i));
+    }
+    return result;
+  };
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Program performance">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Program performance</h3>
-              <p className="text-xs text-slate-600">Enrollment, completion, average scores.</p>
-            </div>
+  const courseRows = ensureMinimum(data.courses, (index) => ({
+    id: `course-extra-${index}`,
+    title: `Micro-learning boost ${index + 1}`,
+    enrollment: 3200 - index * 180,
+    completion: `${74 + index}%`,
+    avgScore: `${83 + index}%`,
+  }));
+
+  const alerts = ensureMinimum(
+    data.alerts,
+    (index) => ({
+      id: `alert-extra-${index}`,
+      message: index % 2 === 0
+        ? 'Auto-cohorting shifted 28 learners to accelerated path.'
+        : 'Weekly success digest queued for advisors.',
+      severity: index % 2 === 0 ? 'info' : 'warning',
+    })
+  );
+
+  const upliftMetrics = data.metrics.slice(0, 3);
+
+  return (
+    <section
+      className="space-y-6"
+      id="edtech-panel"
+      role="tabpanel"
+      aria-labelledby="edtech"
+    >
+      <SectionHeader
+        title="Learning analytics & student success"
+        subtitle="EdTech"
+        accent={accent}
+      />
+
+      <div className="grid grid-cols-1 gap-y-6 lg:grid-cols-8 lg:gap-x-10">
+        <Card
+          className="flex h-[240px] flex-col border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Course performance"
+        >
+          <div>
+            <h3 className="text-title-sm text-slate-900">Course performance</h3>
+            <p className="text-xs text-slate-600">Enrollment • Completion • Avg score</p>
           </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Program performance table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
+          <div className="mt-3 flex-1 overflow-hidden rounded-[16px] border border-[var(--surface-border)]">
+            <table className="min-w-full text-sm text-slate-700">
+              <thead className="bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
                 <tr>
-                  <th className="px-4 py-3 text-left">Course</th>
-                  <th className="px-4 py-3 text-right">Enrollment</th>
-                  <th className="px-4 py-3 text-right">Completion</th>
-                  <th className="px-4 py-3 text-right">Avg score</th>
+                  <th className="px-4 py-2 text-left">Course</th>
+                  <th className="px-4 py-2 text-right">Enrollment</th>
+                  <th className="px-4 py-2 text-right">Completion</th>
+                  <th className="px-4 py-2 text-right">Avg score</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
-                {data.courses.map((course) => (
+              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)]">
+                {courseRows.slice(0, 6).map((course) => (
                   <tr key={course.id}>
-                    <td className="px-4 py-[11px] font-semibold text-slate-900">{course.title}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{course.enrollment.toLocaleString()}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{course.completion}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{course.avgScore}</td>
+                    <td className="px-4 py-2 font-semibold text-slate-900">{course.title}</td>
+                    <td className="px-4 py-2 text-right">{course.enrollment.toLocaleString()}</td>
+                    <td className="px-4 py-2 text-right">{course.completion}</td>
+                    <td className="px-4 py-2 text-right">{course.avgScore}</td>
                   </tr>
                 ))}
               </tbody>
@@ -1045,18 +1412,16 @@ function EdTechModule({
           </div>
         </Card>
 
-        <AutomationList items={data.automation} />
-      </div>
-
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Student activity heatmap">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Student activity heatmap</h3>
-              <p className="text-xs text-slate-600">Keyboard navigation supported — use arrow keys to traverse.</p>
-            </div>
+        <Card
+          className="flex h-[240px] flex-col border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Student activity heatmap"
+        >
+          <div>
+            <h3 className="text-title-sm text-slate-900">Student activity heatmap</h3>
+            <p className="text-xs text-slate-600">Week-over-week engagement</p>
           </div>
-          <div className="mt-4 overflow-x-auto">
+          <div className="mt-3 flex-1 overflow-x-auto">
             <table className="min-w-full text-center" aria-label="Student activity heatmap table">
               <thead className="text-xs uppercase tracking-[0.08em] text-slate-500">
                 <tr>
@@ -1068,10 +1433,10 @@ function EdTechModule({
                   ))}
                 </tr>
               </thead>
-              <tbody className="text-sm">
+              <tbody className="text-xs font-semibold text-slate-700">
                 {data.activityHeatmap.weeks.map((week) => (
                   <tr key={week}>
-                    <td className="px-2 py-2 text-left font-semibold text-slate-900">{week}</td>
+                    <td className="px-2 py-2 text-left text-slate-900">{week}</td>
                     {data.activityHeatmap.days.map((day) => {
                       const cell = data.activityHeatmap.values.find((value) => value.week === week && value.day === day);
                       const score = cell?.score ?? 0;
@@ -1079,7 +1444,7 @@ function EdTechModule({
                       return (
                         <td
                           key={`${week}-${day}`}
-                          className="px-2 py-2 text-xs font-semibold text-slate-700"
+                          className="px-2 py-2"
                           style={{
                             background: `rgba(107, 70, 193, ${0.2 + intensity * 0.5})`,
                             borderRadius: 12,
@@ -1096,27 +1461,62 @@ function EdTechModule({
           </div>
         </Card>
 
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Alerts">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Alerts</h3>
-              <p className="text-xs text-slate-600">FERPA-ready alerts with remediation guidance.</p>
-            </div>
+        <Card
+          className="flex h-[240px] flex-col gap-3 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Alerts"
+        >
+          <div>
+            <h3 className="text-title-sm text-slate-900">Alerts</h3>
+            <p className="text-xs text-slate-600">FERPA-ready remediation guidance</p>
           </div>
-          <ul className="mt-4 space-y-3">
-            {data.alerts.map((alert) => (
-              <li key={alert.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
+          <ul className="flex-1 space-y-2">
+            {alerts.slice(0, 5).map((alert) => (
+              <li
+                key={alert.id}
+                className="rounded-[16px] border border-[var(--surface-border)] bg-white/70 px-4 py-3"
+              >
                 <StatusChip
                   label={alert.severity}
                   tone={alert.severity === 'critical' ? 'danger' : alert.severity === 'warning' ? 'warning' : 'info'}
                 />
-                <p className="mt-2 text-sm text-slate-700">{alert.message}</p>
+                <p className="mt-2 text-xs text-slate-700">{alert.message}</p>
               </li>
             ))}
           </ul>
         </Card>
+
+        <Card
+          className="flex h-[240px] flex-col gap-4 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Student success uplift"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-title-sm text-slate-900">Student success uplift</h3>
+              <p className="text-xs text-slate-600">Key movements this quarter</p>
+            </div>
+          </div>
+          <div className="grid flex-1 grid-cols-3 gap-2">
+            {upliftMetrics.map((metric) => (
+              <div
+                key={metric.id}
+                className="flex flex-col justify-between rounded-[16px] border border-[var(--surface-border)] bg-white/70 p-3"
+              >
+                <span className="text-[11px] uppercase tracking-[0.08em] text-slate-500">{metric.label}</span>
+                <span className="text-lg font-semibold text-slate-900">{metric.value}</span>
+                <span className="text-xs font-medium text-[var(--success-600)]">{metric.change.toFixed(1)}% uplift</span>
+              </div>
+            ))}
+            <div className="flex flex-col justify-between rounded-[16px] border border-dashed border-[var(--surface-border)] bg-white/50 p-3">
+              <span className="text-[11px] uppercase tracking-[0.08em] text-slate-500">Mentor NPS</span>
+              <span className="text-lg font-semibold text-slate-900">+52</span>
+              <span className="text-xs font-medium text-slate-500">Survey closes Friday</span>
+            </div>
+          </div>
+        </Card>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -1127,158 +1527,183 @@ function SpecializedModule({
   data: PortfolioDashboardResponse['specialized'];
   accent: string;
 }) {
-  const momentumRows = data.realEstate.trend.map((point) => ({ month: point.label, momentum: point.value }));
-  const expenseRows = data.finance.expenses.map((point) => ({ week: point.label, actual: point.value, budget: point.secondary }));
-  const roiRows = data.finance.roiBreakdown.map((item) => ({ channel: item.label, share: `${item.value}%` }));
+  const ensureMinimum = <T,>(items: T[], fallback: (index: number) => T, min = 5) => {
+    const result = [...items];
+    for (let i = items.length; i < min; i += 1) {
+      result.push(fallback(i));
+    }
+    return result;
+  };
+
+  const momentumSummary = data.realEstate.trend.slice(-4).map((point) => ({
+    month: point.label,
+    momentum: point.value,
+  }));
+
+  const healthcareRows = ensureMinimum(data.healthcare.appointments, (index) => ({
+    id: `appt-extra-${index}`,
+    patient: `Prospect intake ${index + 1}`,
+    clinician: 'Care team automation',
+    start: `Dec ${12 + index} • 10:${index}0`,
+    channel: index % 2 === 0 ? 'Virtual' : 'In-person',
+    status: index % 2 === 0 ? 'Confirmed' : 'Awaiting Intake',
+  }));
+
+  const industrySignals = ensureMinimum(
+    data.finance.roiBreakdown.slice(0, 3).map((slice) => ({
+      id: slice.id,
+      headline: `${slice.label} momentum`,
+      detail: `${slice.value}% of ROI mix with automation boosts`,
+    })),
+    (index) => ({
+      id: `signal-${index}`,
+      headline: index % 2 === 0 ? 'Compliance feed synced' : 'Market alert triggered',
+      detail: index % 2 === 0 ? 'RegTech automation pushed filings to partners' : 'AI watcher flagged sector anomaly',
+    })
+  );
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="specialized-panel" role="tabpanel" aria-labelledby="specialized">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Specialized niches"
-          subtitle="Real estate, finance, healthcare"
-          accent={accent}
-        />
-      </div>
+    <section
+      className="space-y-6"
+      id="specialized-panel"
+      role="tabpanel"
+      aria-labelledby="specialized"
+    >
+      <SectionHeader
+        title="Specialized niches"
+        subtitle="Real estate, finance, healthcare"
+        accent={accent}
+      />
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <ChartCard
-          id="specialized-momentum"
-          title="Market momentum"
-          description="Real estate listings velocity"
-          rows={momentumRows}
-          columns={[
-            { key: 'month', label: 'Month' },
-            { key: 'momentum', label: 'Momentum', align: 'right' },
-          ]}
+      <div className="grid grid-cols-1 gap-y-6 lg:grid-cols-8 lg:gap-x-10">
+        <Card
+          className="flex h-[240px] flex-col gap-3 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Market movements"
         >
-          <ResponsiveContainer height={220}>
-            <AreaChart data={data.realEstate.trend}>
+          <div>
+            <h3 className="text-title-sm text-slate-900">Market movements</h3>
+            <p className="text-xs text-slate-600">Listings velocity and absorption</p>
+          </div>
+          <ResponsiveContainer height={120}>
+            <AreaChart data={data.realEstate.trend} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
               <defs>
-                <linearGradient id="momentumGradient" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="5%" stopColor="var(--vertical-specialized)" stopOpacity={0.8} />
+                <linearGradient id="specializedMomentum" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="5%" stopColor="var(--vertical-specialized)" stopOpacity={0.85} />
                   <stop offset="95%" stopColor="var(--vertical-specialized)" stopOpacity={0.05} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
+              <CartesianGrid strokeDasharray="4 6" stroke="rgba(148, 163, 184, 0.3)" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
+              <YAxis tickLine={false} axisLine={false} domain={[0, (dataMax: number) => dataMax * 1.2]} />
               <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Area type="monotone" dataKey="value" stroke="var(--vertical-specialized)" fill="url(#momentumGradient)" strokeWidth={3} />
+              <Area type="monotone" dataKey="value" stroke="var(--vertical-specialized)" fill="url(#specializedMomentum)" strokeWidth={3} />
             </AreaChart>
           </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Listings & inquiries">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Listings & inquiries</h3>
-              <p className="text-xs text-slate-600">Key real estate pipeline with agent accountability.</p>
-            </div>
-          </div>
-          <ul className="mt-4 space-y-3">
-            {data.realEstate.pipeline.map((item) => (
-              <li key={item.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <p className="text-sm font-semibold text-slate-900">{item.address}</p>
-                <p className="text-xs text-slate-500">Stage: {item.stage}</p>
-                <p className="text-xs text-slate-500">Inquiries: {item.inquiries}</p>
-                <p className="text-xs text-slate-500">Agent: {item.agent}</p>
-              </li>
+          <div className="grid grid-cols-2 gap-2 text-xs text-slate-600">
+            {momentumSummary.map((entry) => (
+              <div key={entry.month} className="rounded-[12px] border border-[var(--surface-border)] bg-white/70 px-3 py-2">
+                <p className="font-semibold text-slate-900">{entry.month}</p>
+                <p>{entry.momentum} index</p>
+              </div>
             ))}
-          </ul>
+          </div>
         </Card>
-      </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <ChartCard
-          id="specialized-expenses"
-          title="Expense vs budget"
-          description="Finance automation keeps spend in check"
-          rows={expenseRows}
-          columns={[
-            { key: 'week', label: 'Week' },
-            { key: 'actual', label: 'Actual ($K)', align: 'right' },
-            { key: 'budget', label: 'Budget ($K)', align: 'right' },
-          ]}
+        <Card
+          className="flex h-[240px] flex-col gap-3 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Spend vs budget"
         >
-          <ResponsiveContainer height={220}>
-            <LineChart data={data.finance.expenses}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
+          <div>
+            <h3 className="text-title-sm text-slate-900">Spend vs budget</h3>
+            <p className="text-xs text-slate-600">Automated guardrails for finance</p>
+          </div>
+          <ResponsiveContainer height={130}>
+            <LineChart data={data.finance.expenses} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="4 6" stroke="rgba(148, 163, 184, 0.3)" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} />
               <YAxis tickLine={false} axisLine={false} />
               <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
               <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={false} name="Actual" />
               <Line type="monotone" dataKey="secondary" stroke="#10b981" strokeWidth={3} dot={false} name="Budget" />
-              <Legend verticalAlign="bottom" height={36} />
             </LineChart>
           </ResponsiveContainer>
-        </ChartCard>
+          <div className="flex items-center gap-3 text-xs text-slate-500">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 font-semibold text-slate-700">
+              <span className="h-2 w-2 rounded-full bg-[var(--primary-500)]" aria-hidden /> Actual
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 font-semibold text-slate-700">
+              <span className="h-2 w-2 rounded-full bg-[#10b981]" aria-hidden /> Budget
+            </span>
+          </div>
+        </Card>
 
-        <ChartCard
-          id="specialized-roi"
-          title="ROI breakdown"
-          description="Attribution-safe ROI mix"
-          rows={roiRows}
-          columns={[
-            { key: 'channel', label: 'Channel' },
-            { key: 'share', label: 'Share', align: 'right' },
-          ]}
+        <Card
+          className="flex h-[240px] flex-col border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Healthcare opportunities"
         >
-          <ResponsiveContainer height={220}>
-            <PieChart>
-              <Pie dataKey="value" data={data.finance.roiBreakdown} innerRadius={70} outerRadius={110} paddingAngle={2}>
-                {data.finance.roiBreakdown.map((segment) => (
-                  <Cell key={segment.id} fill={segment.color} stroke="#1f2937" strokeWidth={1.4} />
-                ))}
-              </Pie>
-              <Legend verticalAlign="bottom" height={50} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
-
-      <div className="col-span-12 lg:col-span-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Healthcare appointments">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-title-sm text-slate-900">Healthcare appointments</h3>
-              <p className="text-xs text-slate-600">Omni-channel reminders, smart rescheduling, PHI-safe.</p>
+              <h3 className="text-title-sm text-slate-900">Healthcare opportunities</h3>
+              <p className="text-xs text-slate-600">High-value appointments in focus</p>
             </div>
+            <button
+              type="button"
+              className="text-xs font-semibold text-[var(--primary-600)] underline-offset-2 hover:underline"
+            >
+              View all
+            </button>
           </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Appointments table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
+          <div className="mt-3 flex-1 overflow-hidden rounded-[16px] border border-[var(--surface-border)]">
+            <table className="min-w-full text-sm text-slate-700">
+              <thead className="bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
                 <tr>
-                  <th className="px-4 py-3 text-left">Patient</th>
-                  <th className="px-4 py-3 text-left">Clinician</th>
-                  <th className="px-4 py-3 text-left">Start</th>
-                  <th className="px-4 py-3 text-left">Channel</th>
-                  <th className="px-4 py-3 text-right">Status</th>
+                  <th className="px-4 py-2 text-left">Patient</th>
+                  <th className="px-4 py-2 text-left">Channel</th>
+                  <th className="px-4 py-2 text-right">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
-                {data.healthcare.appointments.map((appt) => (
-                  <tr key={appt.id}>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.patient}</td>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.clinician}</td>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.start}</td>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.channel}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-700">{appt.status}</td>
+              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)]">
+                {healthcareRows.slice(0, 5).map((appointment) => (
+                  <tr key={appointment.id}>
+                    <td className="px-4 py-2 font-semibold text-slate-900">
+                      <span className="block text-sm">{appointment.patient}</span>
+                      <span className="text-xs text-slate-500">{appointment.start}</span>
+                    </td>
+                    <td className="px-4 py-2 text-slate-600">{appointment.channel}</td>
+                    <td className="px-4 py-2 text-right text-slate-600">{appointment.status}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </Card>
-      </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <AutomationList items={data.realEstate.automation} />
-        <AutomationList items={data.finance.automation} />
-        <AutomationList items={data.healthcare.automation} />
+        <Card
+          className="flex h-[240px] flex-col gap-3 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:col-span-4"
+          role="region"
+          aria-label="Industry signals"
+        >
+          <div>
+            <h3 className="text-title-sm text-slate-900">Industry signals</h3>
+            <p className="text-xs text-slate-600">Automated monitoring stream</p>
+          </div>
+          <ul className="flex-1 space-y-2">
+            {industrySignals.slice(0, 5).map((signal) => (
+              <li
+                key={signal.id}
+                className="rounded-[16px] border border-[var(--surface-border)] bg-white/70 px-4 py-3"
+              >
+                <p className="text-sm font-semibold text-slate-900">{signal.headline}</p>
+                <p className="mt-1 text-xs text-slate-600">{signal.detail}</p>
+              </li>
+            ))}
+          </ul>
+        </Card>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -1461,7 +1886,8 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
   return (
     <div className="min-h-screen bg-[var(--surface-s0)] pb-16 text-slate-900">
       <header className="border-b border-[var(--surface-border)] bg-white/95 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-[1660px] flex-col gap-6 px-6 py-8">
+        <div className="mx-auto w-full max-w-[1660px] px-6">
+          <div className="mx-auto flex max-w-[1440px] flex-col gap-6 py-8">
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="space-y-3">
               <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Premium Multi-Category Dashboard</p>
@@ -1469,7 +1895,7 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
               <p className="max-w-3xl text-sm text-slate-600">{data.hero.description}</p>
               <button
                 type="button"
-                className="inline-flex min-h-[44px] items-center gap-2 rounded-full px-6 py-2 text-sm font-semibold text-white shadow-lg shadow-purple-500/20 transition-all duration-300 hover:-translate-y-0.5 focus-visible:focus-ring"
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-full px-6 py-2 text-sm font-semibold text-white shadow-sm transition-colors focus-visible:focus-ring"
                 style={{ backgroundImage: 'var(--brand-gradient)' }}
                 onClick={() => push({ title: 'Capability deck requested', description: 'We will send the full portfolio within 5 minutes.', tone: 'info' })}
               >
@@ -1543,100 +1969,101 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
             </div>
           </div>
 
-          <StickyFilterBar />
+            <StickyFilterBar />
+          </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1660px] space-y-6 px-6 py-10">
-        <div className="mb-4">
-          <KPIBand metrics={moduleMetrics} accentToken={accent} />
-        </div>
-        <div className="rounded-[24px] border border-dashed border-[var(--surface-border)] bg-[var(--surface-s1)] px-6 py-4 text-xs text-slate-500">
-          Global filters persist via query params. React Query hydrates instantly, while Zustand keeps inter-module state fast.
-        </div>
-
-        {/* Main content with right rail */}
-        <div className="grid gap-10 xl:grid-cols-12">
-          {/* Main content area */}
-          <div className="xl:col-span-8">
-            {moduleContent}
+      <main className="mx-auto w-full max-w-[1660px] px-6 py-10">
+        <div className="mx-auto max-w-[1440px] space-y-6">
+          <div className="mb-4">
+            <KPIBand metrics={moduleMetrics} accentToken={accent} />
+          </div>
+          <div className="rounded-[24px] border border-dashed border-[var(--surface-border)] bg-[var(--surface-s1)] px-6 py-4 text-xs text-slate-500">
+            Global filters persist via query params. React Query hydrates instantly, while Zustand keeps inter-module state fast.
           </div>
 
-          {/* RIGHT RAIL: AUTOMATION WORKBENCH */}
-          <aside
-            className="space-y-6 xl:col-span-4 xl:sticky"
-            style={{ top: 'calc(var(--dashboard-header, 96px) + var(--dashboard-filters, 72px) + 16px)' }}
-          >
-            <div className="mb-4">
-              <h2 className="text-title-lg text-slate-900">Automation Workbench</h2>
-              <p className="text-sm text-slate-600">Build and manage automated workflows</p>
-            </div>
+          {/* Main content with right rail */}
+          <div className="grid gap-y-6 xl:grid-cols-[minmax(0,8fr)_minmax(0,4fr)] xl:gap-x-10">
+            {/* Main content area */}
+            <div className="space-y-6">{moduleContent}</div>
 
-            {/* Automation builder (top) */}
-            <AutomationBuilder 
-              onCreate={async (automation) => {
-                console.log('Creating automation:', automation);
-              }} 
-              verticalAccent={accent} 
-            />
-            
-            {/* Automation backlog (middle) */}
-            <Card className="border border-[var(--surface-border)]" role="region" aria-label="Automation backlog">
-              <div className="mb-4 flex items-center justify-between gap-4">
-                <div>
-                  <h3 className="text-title-sm text-slate-900">Automation backlog</h3>
-                  <p className="text-xs text-slate-600">Status chips, active/paused</p>
-                </div>
-                <Workflow className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+            {/* RIGHT RAIL: AUTOMATION WORKBENCH */}
+            <aside
+              className="space-y-6 xl:sticky"
+              style={{ top: 'calc(var(--dashboard-header, 96px) + var(--dashboard-filters, 72px) + 16px)' }}
+            >
+              <div className="mb-2">
+                <h2 className="text-title-lg text-slate-900">Automation Workbench</h2>
+                <p className="text-sm text-slate-600">Build and manage automated workflows</p>
               </div>
-              <div className="space-y-3">
-                {[
-                  { title: 'Churn recovery playbook', metric: '+15% retention', status: 'active' },
-                  { title: 'Usage optimization alerts', metric: '-8% support tickets', status: 'active' },
-                  { title: 'Onboarding sequence', metric: '+22% activation', status: 'paused' },
-                  { title: 'Renewal reminders', metric: '+12% renewals', status: 'active' },
-                ].map((automation, index) => (
-                  <div key={index} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                    <div className="flex items-center justify-between text-sm text-slate-700">
-                      <span className="font-semibold text-slate-900">{automation.title}</span>
-                      <StatusChip
-                        label={automation.status}
-                        tone={automation.status === 'active' ? 'success' : 'warning'}
-                      />
-                    </div>
-                    <p className="mt-1 text-xs text-slate-500">{automation.metric}</p>
-                    <button
-                      type="button"
-                      className="mt-3 inline-flex min-h-[32px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1 text-xs font-semibold text-[var(--primary-600)] transition hover:bg-[var(--primary-50)]/70 focus-visible:focus-ring"
-                    >
-                      {automation.status === 'active' ? 'Pause automation' : 'Resume automation'}
-                    </button>
+
+              {/* Automation builder (top) */}
+              <AutomationBuilder
+                onCreate={async (automation) => {
+                  console.log('Creating automation:', automation);
+                }}
+                verticalAccent={accent}
+              />
+
+              {/* Automation backlog (middle) */}
+              <Card className="border border-[var(--surface-border)]" role="region" aria-label="Automation backlog">
+                <div className="mb-4 flex items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-title-sm text-slate-900">Automation backlog</h3>
+                    <p className="text-xs text-slate-600">Status chips, active/paused</p>
                   </div>
-                ))}
-              </div>
-            </Card>
-            
-            {/* Efficiency showcases (bottom) */}
-            <Card className="border border-[var(--surface-border)]" role="region" aria-label="Efficiency showcases">
-              <div className="mb-4 flex items-center justify-between gap-4">
-                <div>
-                  <h3 className="text-title-sm text-slate-900">Efficiency showcases</h3>
-                  <p className="text-xs text-slate-600">Recent automation wins</p>
+                  <Workflow className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
                 </div>
-                <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
-              </div>
-              <div className="space-y-3">
-                <div className="rounded-[16px] bg-[var(--success-50)] px-4 py-3">
-                  <div className="text-sm font-semibold text-[var(--success-700)]">+23% faster onboarding</div>
-                  <div className="text-xs text-[var(--success-600)]">Automated welcome sequence</div>
+                <div className="space-y-3">
+                  {[
+                    { title: 'Churn recovery playbook', metric: '+15% retention', status: 'active' },
+                    { title: 'Usage optimization alerts', metric: '-8% support tickets', status: 'active' },
+                    { title: 'Onboarding sequence', metric: '+22% activation', status: 'paused' },
+                    { title: 'Renewal reminders', metric: '+12% renewals', status: 'active' },
+                  ].map((automation, index) => (
+                    <div key={index} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
+                      <div className="flex items-center justify-between text-sm text-slate-700">
+                        <span className="font-semibold text-slate-900">{automation.title}</span>
+                        <StatusChip
+                          label={automation.status}
+                          tone={automation.status === 'active' ? 'success' : 'warning'}
+                        />
+                      </div>
+                      <p className="mt-1 text-xs text-slate-500">{automation.metric}</p>
+                      <button
+                        type="button"
+                        className="mt-3 inline-flex min-h-[32px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1 text-xs font-semibold text-[var(--primary-600)] transition hover:bg-[var(--primary-50)]/70 focus-visible:focus-ring"
+                      >
+                        {automation.status === 'active' ? 'Pause automation' : 'Resume automation'}
+                      </button>
+                    </div>
+                  ))}
                 </div>
-                <div className="rounded-[16px] bg-[var(--primary-50)] px-4 py-3">
-                  <div className="text-sm font-semibold text-[var(--primary-700)]">-45% support load</div>
-                  <div className="text-xs text-[var(--primary-600)]">Smart FAQ automation</div>
+              </Card>
+
+              {/* Efficiency showcases (bottom) */}
+              <Card className="border border-[var(--surface-border)]" role="region" aria-label="Efficiency showcases">
+                <div className="mb-4 flex items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-title-sm text-slate-900">Efficiency showcases</h3>
+                    <p className="text-xs text-slate-600">Recent automation wins</p>
+                  </div>
+                  <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
                 </div>
-              </div>
-            </Card>
-          </aside>
+                <div className="space-y-3">
+                  <div className="rounded-[16px] bg-[var(--success-50)] px-4 py-3">
+                    <div className="text-sm font-semibold text-[var(--success-700)]">+23% faster onboarding</div>
+                    <div className="text-xs text-[var(--success-600)]">Automated welcome sequence</div>
+                  </div>
+                  <div className="rounded-[16px] bg-[var(--primary-50)] px-4 py-3">
+                    <div className="text-sm font-semibold text-[var(--primary-700)]">-45% support load</div>
+                    <div className="text-xs text-[var(--primary-600)]">Smart FAQ automation</div>
+                  </div>
+                </div>
+              </Card>
+            </aside>
+          </div>
         </div>
       </main>
     </div>

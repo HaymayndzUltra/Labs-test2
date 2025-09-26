@@ -117,8 +117,8 @@ export function StickyFilterBar() {
   }, [filters]);
 
   return (
-    <div className="sticky top-0 z-10 -mx-6 border-b border-[var(--surface-border)] bg-[var(--surface-s2)]/95 px-6 py-3 backdrop-blur supports-[backdrop-filter]:bg-[var(--surface-s2)]">
-      <div className="flex items-center justify-between gap-4 overflow-hidden">
+    <div className="sticky top-0 z-10 border-b border-[var(--surface-border)] bg-[var(--surface-s2)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--surface-s2)]">
+      <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 overflow-hidden px-6 py-3">
         <div className="flex flex-1 items-center gap-4 overflow-x-auto pb-1 pt-1 [scrollbar-width:none] sm:[scrollbar-width:auto]">
           {/* Date range (global) */}
           <Group label="Date Range">
@@ -151,7 +151,7 @@ export function StickyFilterBar() {
           </Group>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2 pl-4">
           <button
             type="button"
             className="inline-flex min-h-[36px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
