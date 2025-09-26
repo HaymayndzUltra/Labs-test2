@@ -1,26 +1,19 @@
 'use client';
 
-import { ReactNode, useRef } from 'react';
-import { SWRConfig, type SWRConfiguration } from 'swr';
+import { ReactNode, useState } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { initPosthog } from '@/lib/analytics/posthog';
 
 interface ProvidersProps {
   children: ReactNode;
 }
 
 export function Providers({ children }: ProvidersProps) {
-  const cacheRef = useRef<Map<string, unknown>>();
+  const [client] = useState(() => new QueryClient());
 
-  if (!cacheRef.current) {
-    cacheRef.current = new Map();
+  if (typeof window !== 'undefined') {
+    initPosthog();
   }
 
-  const swrConfig: SWRConfiguration = {
-    provider: () => cacheRef.current as Map<string, unknown>,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: true,
-    revalidateIfStale: true,
-    dedupingInterval: 60_000,
-  };
-
-  return <SWRConfig value={swrConfig}>{children}</SWRConfig>;
+  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }

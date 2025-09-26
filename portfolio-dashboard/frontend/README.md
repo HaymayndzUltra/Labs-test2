@@ -1,6 +1,6 @@
 # portfolio-dashboard Frontend
 
-This is a Next.js 14 application using the App Router.
+This is a production-ready Upwork Portfolio Dashboard ecosystem built with Next.js 14 (App Router) and a full SaaS-style demo surface.
 
 ## Getting Started
 
@@ -20,7 +20,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser.
+Open [http://localhost:3000](http://localhost:3000) with your browser. The landing constellation, dashboard pods, discovery chat, animation suite, and automation modules are all available in the root route.
 
 ### Building for Production
 
@@ -33,31 +33,31 @@ npm start
 
 ```
 src/
-├── app/            # App Router pages and layouts
-├── components/     # Reusable React components
-├── hooks/          # Custom React hooks
-├── lib/            # Utility functions and API client
-├── types/          # TypeScript type definitions
-└── styles/         # Global styles and Tailwind config
+├── app/            # App Router entrypoints, layouts, and API routes
+├── components/     # Feature modules (landing, dashboards, discovery, profile, automation)
+├── lib/            # Analytics, automation, data generators, and client stubs
+└── state/          # Zustand persona store and persisted context
 ```
 
 ## Features
 
-- **Next.js 14** with App Router
-- **TypeScript** for type safety
-- **Tailwind CSS** for styling
-- **SWR** for data fetching
-- **Axios** for API calls
-- **React Hook Form** with Zod validation
-- **Jest** for testing
+- **Landing Constellation** powered by Three.js + @react-three/fiber with persona-aware themes.
+- **Dashboard Vault** with Fintech & Healthcare pods, Recharts analytics, and Deck.gl geospatial overlays backed by Faker synthetic data.
+- **Discovery Client Module** chat intake using React Query, Zod validation, and automation stubs that call `/api/intake` and `/api/proposal`.
+- **Dynamic Profile Hub** combining Observable Plot sparklines, testimonials matrix, and CTA modals (proposal + Calendly stub).
+- **Animation Suite** showcasing Framer Motion timelines and a configurable Lottie preset.
+- **Automation & Personalisation** panel outlining n8n/Zapier style workflows and persona rules.
+- **Analytics hooks** wired to PostHog with TODO placeholders for keys.
+- **LangChain + OpenAI** stubs ready for real proposal summarisation.
 
 ## Environment Variables
 
-Copy `.env.example` to `.env.local` and update the values:
+Copy `.env.example` to `.env.local` and update the values. All API keys are optional but recommended for full fidelity:
 
-```bash
-cp .env.example .env.local
-```
+- `NEXT_PUBLIC_POSTHOG_KEY` – PostHog analytics key (optional).
+- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` – Supabase client (optional stub).
+- `OPENAI_API_KEY` – Enables LangChain summarisation + proposal copy (TODO marker when absent).
+- Any CMS/API keys should be added with clear TODO notes where placeholders exist.
 
 ## Testing
 

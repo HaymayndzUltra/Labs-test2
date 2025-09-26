@@ -1,31 +1,34 @@
-import Link from 'next/link';
+import { LandingConstellation } from '@/components/landing/landing-constellation';
+import { DashboardVault } from '@/components/dashboard/dashboard-vault';
+import { DynamicProfileHub } from '@/components/profile/dynamic-profile-hub';
+import { DiscoveryClientModule } from '@/components/discovery/discovery-client-module';
+import { AnimationSuite } from '@/components/animation/animation-suite';
+import { AutomationPersonalization } from '@/components/automation/automation-personalization';
+
+const sections = [
+  { id: 'discover', label: 'Discover', Component: LandingConstellation },
+  { id: 'explore', label: 'Explore', Component: DashboardVault },
+  { id: 'prototype', label: 'Prototype', Component: DiscoveryClientModule },
+  { id: 'profile', label: 'Engage', Component: DynamicProfileHub },
+  { id: 'animate', label: 'Animate', Component: AnimationSuite },
+  { id: 'automate', label: 'Automate', Component: AutomationPersonalization },
+];
 
 export default function HomePage() {
-  const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'portfolio-dashboard';
-  const INDUSTRY = process.env.NEXT_PUBLIC_INDUSTRY || 'enterprise';
-  const PROJECT_TYPE = process.env.NEXT_PUBLIC_PROJECT_TYPE || 'fullstack';
-
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-          Welcome to {APP_NAME}
-        </h1>
-        <p className="mt-6 text-lg leading-8 text-gray-600">
-          Your {INDUSTRY} {PROJECT_TYPE} solution.
-        </p>
-        <div className="mt-10 flex items-center justify-center gap-x-6">
-          <Link
-            href="/dashboard"
-            className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            Get started
-          </Link>
-          <Link href="/docs" className="text-sm font-semibold leading-6 text-gray-900">
-            Learn more <span aria-hidden="true">→</span>
-          </Link>
-        </div>
-      </div>
+    <div className="relative mx-auto max-w-7xl space-y-24 px-4 py-16">
+      <nav className="sticky top-6 z-40 flex flex-wrap items-center justify-center gap-3 rounded-full border border-slate-200/80 bg-white/80 px-4 py-3 text-xs font-semibold text-slate-600 shadow backdrop-blur">
+        {sections.map((section) => (
+          <a key={section.id} href={`#${section.id}`} className="rounded-full bg-slate-100 px-3 py-1 hover:bg-indigo-50 hover:text-indigo-600">
+            {section.label}
+          </a>
+        ))}
+      </nav>
+      {sections.map(({ id, Component }) => (
+        <section key={id} id={id} className="scroll-mt-24">
+          <Component />
+        </section>
+      ))}
     </div>
   );
 }
