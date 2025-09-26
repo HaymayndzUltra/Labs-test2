@@ -20,6 +20,7 @@ type ChartCardProps = {
   ariaDescription?: string;
   toolbar?: ReactNode;
   tone?: 'default' | 'accent';
+  className?: string;
 };
 
 export function ChartCard({
@@ -33,6 +34,7 @@ export function ChartCard({
   ariaDescription,
   toolbar,
   tone = 'default',
+  className,
 }: ChartCardProps) {
   const borderClass = tone === 'accent' ? 'border-[var(--primary-300)]/50' : 'border-[var(--surface-border)]';
 
@@ -42,7 +44,7 @@ export function ChartCard({
       aria-labelledby={`${id}-title`}
       aria-describedby={ariaDescription ? `${id}-desc` : undefined}
       role="region"
-      className={cn('flex h-full flex-col gap-5 border bg-[var(--surface-s1)]', borderClass)}
+      className={cn('flex h-full flex-col gap-5 border bg-[var(--surface-s1)]', borderClass, className)}
     >
       <div className="flex flex-col gap-2">
         <div className="flex flex-wrap items-start justify-between gap-3">
