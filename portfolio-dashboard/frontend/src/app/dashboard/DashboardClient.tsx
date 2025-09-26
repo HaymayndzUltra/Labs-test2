@@ -41,12 +41,13 @@ import { useThemeContext } from '@/components/theme/ThemeProvider';
 import { useLiveMetrics } from '@/hooks/useLiveMetrics';
 import { KPIBand } from '@/components/ui/KPIBand';
 import { SegmentedTabs } from '@/components/ui/SegmentedTabs';
-import { FilterChip } from '@/components/ui/FilterChip';
+import { StickyFilterBar } from '@/components/ui/StickyFilterBar';
 import { Card } from '@/components/ui/Card';
 import { ChartCard } from '@/components/ui/ChartCard';
 import { AutomationBuilder } from '@/components/ui/AutomationBuilder';
 import { StatusChip } from '@/components/ui/StatusChip';
 import { useToast } from '@/components/ui/ToastProvider';
+import { cn } from '@/lib/utils';
 
 const accentTokens: Record<TabDefinition['id'], string> = {
   saas: '--vertical-saas',
@@ -92,9 +93,9 @@ function AutomationList({
     <Card className="border border-[var(--surface-border)]" padding="md">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h3 className="text-title-sm text-slate-900">Automation orchestration</h3>
+          <h3 className="text-title-sm text-slate-900">Automation backlog</h3>
           <p className="text-xs text-slate-600">
-            Trigger → Action → Channel → Cadence. Workflows expose retries, audit logs, and SLA health.
+            Active workflows with quick actions and health monitoring.
           </p>
         </div>
         <Workflow className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
@@ -105,21 +106,30 @@ function AutomationList({
             key={automation.id}
             className="rounded-[18px] border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3"
           >
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-slate-900">{automation.title}</p>
                 <p className="text-xs text-slate-500">Trigger: {automation.trigger}</p>
+                <p className="mt-1 text-xs text-slate-600">Action: {automation.action}</p>
+                <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.08em] text-slate-500">
+                  <span className="rounded-full bg-slate-100 px-2 py-1">Owner: {automation.owner}</span>
+                  <span className="rounded-full bg-slate-100 px-2 py-1">Channel: {automation.channel}</span>
+                  <span className="rounded-full bg-slate-100 px-2 py-1">Cadence: {automation.cadence}</span>
+                </div>
               </div>
-              <StatusChip
-                label={automation.active ? 'Active' : 'Paused'}
-                tone={automation.active ? 'success' : 'warning'}
-              />
-            </div>
-            <p className="mt-2 text-xs text-slate-600">Action: {automation.action}</p>
-            <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.08em] text-slate-500">
-              <span className="rounded-full bg-slate-100 px-2 py-1">Owner: {automation.owner}</span>
-              <span className="rounded-full bg-slate-100 px-2 py-1">Channel: {automation.channel}</span>
-              <span className="rounded-full bg-slate-100 px-2 py-1">Cadence: {automation.cadence}</span>
+              <div className="flex flex-col items-end gap-2">
+                <StatusChip
+                  label={automation.active ? 'Active' : 'Paused'}
+                  tone={automation.active ? 'success' : 'warning'}
+                />
+                <button
+                  type="button"
+                  className="inline-flex min-h-[32px] items-center gap-1 rounded-full border border-[var(--surface-border)] px-3 py-1 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+                  aria-label={`Quick action for ${automation.title}`}
+                >
+                  {automation.active ? 'Pause' : 'Resume'}
+                </button>
+              </div>
             </div>
           </article>
         ))}
@@ -176,80 +186,113 @@ function SaaSModule({
         />
       </div>
 
-      <div className="col-span-12 lg:col-span-7">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Subscription plans">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Subscription plans</h3>
-              <p className="text-xs text-slate-600">
-                Tiered pricing, seat allocation, and churn performance with activation benchmarks.
-              </p>
-            </div>
-            <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+      {/* PRIMARY BLOCK 1: PLANS + CHURN */}
+      <div className="col-span-12">
+        <div className="grid grid-cols-12 gap-6">
+          {/* Subscription table - dominant width */}
+          <div className="col-span-12 lg:col-span-9">
+            <Card className="border border-[var(--surface-border)] h-[400px]" role="region" aria-label="Subscription plans">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-title-sm text-slate-900">Subscription plans</h3>
+                  <p className="text-xs text-slate-600">
+                    Plan, Price/Seat, Active subs, Allocated API, Overages, Churn %, Net expansion %
+                  </p>
+                </div>
+                <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+              </div>
+              <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
+                <table className="min-w-full" aria-label="Subscription plans table">
+                  <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
+                    <tr>
+                      <th className="px-4 py-3 text-left">Plan</th>
+                      <th className="px-4 py-3 text-right">Price/Seat</th>
+                      <th className="px-4 py-3 text-right">Active subs</th>
+                      <th className="px-4 py-3 text-right">Allocated API</th>
+                      <th className="px-4 py-3 text-right">Overages</th>
+                      <th className="px-4 py-3 text-right">Churn %</th>
+                      <th className="px-4 py-3 text-right">Net expansion %</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
+                    {data.subscriptionPlans.map((plan) => (
+                      <tr key={plan.id} className="hover:bg-[var(--primary-50)]/40">
+                        <td className="px-4 py-[11px]">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-slate-900">{plan.name}</span>
+                            {plan.badge ? (
+                              <span className="rounded-full bg-[var(--primary-50)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary-600)]">
+                                {plan.badge}
+                              </span>
+                            ) : null}
+                          </div>
+                        </td>
+                        <td className="px-4 py-[11px] text-right">{plan.price}</td>
+                        <td className="px-4 py-[11px] text-right">{plan.activeUsers.toLocaleString()}</td>
+                        <td className="px-4 py-[11px] text-right">{plan.apiAllocation}</td>
+                        <td className="px-4 py-[11px] text-right">$0</td>
+                        <td className="px-4 py-[11px] text-right">{plan.churn}</td>
+                        <td className="px-4 py-[11px] text-right">+12.5%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot className="bg-[var(--surface-s0)] text-xs text-slate-600">
+                    <tr>
+                      <td className="px-4 py-3 font-semibold text-slate-900">Totals</td>
+                      <td className="px-4 py-3 text-right">—</td>
+                      <td className="px-4 py-3 text-right">{data.subscriptionPlans.reduce((a, p) => a + p.activeUsers, 0).toLocaleString()}</td>
+                      <td className="px-4 py-3 text-right">—</td>
+                      <td className="px-4 py-3 text-right">—</td>
+                      <td className="px-4 py-3 text-right">—</td>
+                      <td className="px-4 py-3 text-right">—</td>
+                    </tr>
+                    <tr>
+                      <td colSpan={7} className="px-4 py-2 text-right">
+                        <span className="text-[11px] text-slate-500">Last updated </span>
+                        <span className="text-[11px] font-semibold text-slate-800">{new Date().toLocaleDateString()}</span>
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </Card>
           </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Subscription plans table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
-                <tr>
-                  <th className="px-4 py-3 text-left">Plan</th>
-                  <th className="px-4 py-3 text-left">Price</th>
-                  <th className="px-4 py-3 text-left">Active users</th>
-                  <th className="px-4 py-3 text-left">Activation</th>
-                  <th className="px-4 py-3 text-left">API allocation</th>
-                  <th className="px-4 py-3 text-left">Churn</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
-                {data.subscriptionPlans.map((plan) => (
-                  <tr key={plan.id} className="hover:bg-[var(--primary-50)]/40">
-                    <td className="px-4 py-[11px]">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-slate-900">{plan.name}</span>
-                        {plan.badge ? (
-                          <span className="rounded-full bg-[var(--primary-50)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary-600)]">
-                            {plan.badge}
-                          </span>
-                        ) : null}
-                      </div>
-                    </td>
-                    <td className="px-4 py-[11px]">{plan.price}</td>
-                    <td className="px-4 py-[11px]">{plan.activeUsers.toLocaleString()}</td>
-                    <td className="px-4 py-[11px]">{plan.activationRate}</td>
-                    <td className="px-4 py-[11px]">{plan.apiAllocation}</td>
-                    <td className="px-4 py-[11px]">{plan.churn}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+
+          {/* Churn donut - compact width */}
+          <div className="col-span-12 lg:col-span-3">
+            <ChartCard
+              id="saas-churn"
+              title="Churn health distribution"
+              description="Healthy renewals, Expansion upgrades, In-risk, Churned"
+              rows={churnRows}
+              columns={[
+                { key: 'segment', label: 'Segment' },
+                { key: 'share', label: 'Share', align: 'right' },
+              ]}
+            >
+              <div className="flex flex-col items-center h-[400px]">
+                <ResponsiveContainer height={250} width="100%">
+                  <PieChart>
+                    <Pie dataKey="value" data={data.churnSegments} innerRadius={60} outerRadius={100} paddingAngle={3}>
+                      {data.churnSegments.map((segment) => (
+                        <Cell key={segment.id} fill={segment.color} stroke="#1f2937" strokeWidth={1.5} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)', background: 'var(--surface-s1)' }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="mt-2 w-full">
+                  <Legend verticalAlign="bottom" align="center" iconSize={8} wrapperStyle={{ paddingTop: 4 }} />
+                </div>
+              </div>
+            </ChartCard>
           </div>
-        </Card>
+        </div>
       </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
-        <ChartCard
-          id="saas-churn"
-          title="Churn health distribution"
-          description="Colorblind-safe donut with renewal segments"
-          rows={churnRows}
-          columns={[
-            { key: 'segment', label: 'Segment' },
-            { key: 'share', label: 'Share', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={260}>
-            <PieChart>
-              <Pie dataKey="value" data={data.churnSegments} innerRadius={70} outerRadius={110} paddingAngle={3}>
-                {data.churnSegments.map((segment) => (
-                  <Cell key={segment.id} fill={segment.color} stroke="#1f2937" strokeWidth={1.5} />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)', background: 'var(--surface-s1)' }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
+      <div className="col-span-12 lg:col-span-4">
         <Card className="border border-[var(--surface-border)]" role="region" aria-label="Billing cycles">
           <div className="flex items-center justify-between">
             <div>
@@ -276,65 +319,243 @@ function SaaSModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <ChartCard
-          id="saas-growth"
-          title="MRR growth"
-          description="Pre-aggregated monthly recurring revenue"
-          rows={growthRows}
-          columns={[
-            { key: 'month', label: 'Month' },
-            { key: 'mrr', label: 'MRR ($K)', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={280}>
-            <LineChart data={data.growthTrend}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={{ r: 5 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartCard>
+      {/* PRIMARY BLOCK 2: MRR GROWTH (KING SECTION) */}
+      <div className="col-span-12">
+        <div className="grid grid-cols-12 gap-6">
+          {/* MRR Growth Chart - Dominant */}
+          <div className="col-span-12 lg:col-span-8">
+            <ChartCard
+              id="saas-growth"
+              title="MRR growth"
+              description="Pre-aggregated monthly recurring revenue"
+              rows={growthRows}
+              columns={[
+                { key: 'month', label: 'Month' },
+                { key: 'mrr', label: 'MRR ($K)', align: 'right' },
+              ]}
+            >
+              <div className="flex flex-col gap-4">
+                <div className="flex justify-end">
+                  <div className="flex items-center gap-2 text-xs text-slate-600">
+                    <div className="h-2 w-2 rounded-full bg-[var(--primary-500)]" />
+                    <span>MRR Growth</span>
+                  </div>
+                </div>
+                <ResponsiveContainer height={350}>
+                  <LineChart data={data.growthTrend}>
+                    <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
+                    <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                    <YAxis tickLine={false} axisLine={false} />
+                    <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                    <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={{ r: 5 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </ChartCard>
+          </div>
 
-        <ChartCard
-          id="saas-api"
-          title="API usage saturation"
-          description="Live usage vs allocation"
-          rows={apiRows}
-          columns={[
-            { key: 'week', label: 'Week' },
-            { key: 'usage', label: 'Usage (M calls)', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={280}>
-            <AreaChart data={data.apiUsageTrend}>
-              <defs>
-                <linearGradient id="apiGradient" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="5%" stopColor="var(--primary-500)" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="var(--primary-500)" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Area type="monotone" dataKey="value" stroke="var(--primary-500)" fill="url(#apiGradient)" strokeWidth={3} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
+          {/* Compact Monthly Breakdown */}
+          <div className="col-span-12 lg:col-span-4">
+            <Card className="border border-[var(--surface-border)] h-[400px]" role="region" aria-label="Monthly breakdown">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-title-sm text-slate-900">Monthly breakdown</h3>
+                  <p className="text-xs text-slate-600">Top 6 months</p>
+                </div>
+                <button
+                  type="button"
+                  className="inline-flex min-h-[36px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+                >
+                  View all months
+                </button>
+              </div>
+              <div className="overflow-hidden">
+                <table className="min-w-full" aria-label="Monthly breakdown table">
+                  <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
+                    <tr>
+                      <th className="px-4 py-3 text-left">Month</th>
+                      <th className="px-4 py-3 text-right">Net</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
+                    {data.growthTrend.slice(0, 6).map((point, index) => {
+                      const prevValue = index > 0 ? data.growthTrend[index - 1].value : 0;
+                      const growth = prevValue > 0 ? ((point.value - prevValue) / prevValue * 100) : 0;
+                      const net = point.value * 0.32; // Simplified calculation
+                      return (
+                        <tr key={point.label} className="hover:bg-[var(--primary-50)]/40">
+                          <td className="px-4 py-[11px] font-semibold text-slate-900">{point.label}</td>
+                          <td className="px-4 py-[11px] text-right">
+                            <span className={cn(
+                              'text-xs font-semibold',
+                              net > 0 ? 'text-[var(--success-600)]' : net < 0 ? 'text-[var(--danger-600)]' : 'text-slate-600'
+                            )}>
+                              ${net.toFixed(0)}k
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        </div>
       </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <AutomationBuilder
-          verticalAccent={accent}
-          onCreate={async () => {
-            await new Promise((resolve) => setTimeout(resolve, 800));
-          }}
-        />
-        <AutomationList items={data.automation} />
+
+      {/* SECONDARY INSIGHTS: GROWTH DRIVERS */}
+      <div className="col-span-12">
+        <div className="mb-4">
+          <h2 className="text-title-lg text-slate-900">Growth Drivers</h2>
+          <p className="text-sm text-slate-600">Key metrics driving MRR growth</p>
+        </div>
+        <div className="grid grid-cols-12 gap-6">
+          {/* Affiliates growth (left) */}
+          <div className="col-span-12 lg:col-span-6">
+            <Card className="border border-[var(--surface-border)] h-[320px]" role="region" aria-label="Affiliates growth">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-title-sm text-slate-900">Affiliates growth</h3>
+                  <p className="text-xs text-slate-600">Share of total (%)</p>
+                </div>
+                <Activity className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+              </div>
+              <ResponsiveContainer height={240}>
+                <AreaChart data={data.growthTrend}>
+                  <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} />
+                  <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                  <Area type="monotone" dataKey="value" stroke="var(--primary-500)" fill="var(--primary-500)" fillOpacity={0.3} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </Card>
+          </div>
+
+          {/* Top sellers (right) */}
+          <div className="col-span-12 lg:col-span-6">
+            <Card className="border border-[var(--surface-border)] h-[320px]" role="region" aria-label="Top sellers">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-title-sm text-slate-900">Top sellers</h3>
+                  <p className="text-xs text-slate-600">Item/SKU/Plan, Sales/Revenue, Share %</p>
+                </div>
+                <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+              </div>
+              <div className="overflow-hidden">
+                <table className="min-w-full" aria-label="Top sellers table">
+                  <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
+                    <tr>
+                      <th className="px-4 py-2 text-left">Item/SKU/Plan</th>
+                      <th className="px-4 py-2 text-right">Sales/Revenue</th>
+                      <th className="px-4 py-2 text-right">Share %</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
+                    {[
+                      { item: 'Pro Plan', revenue: '$125k', share: '35.2%' },
+                      { item: 'Enterprise', revenue: '$98k', share: '27.6%' },
+                      { item: 'API Access', revenue: '$67k', share: '18.9%' },
+                      { item: 'Premium Support', revenue: '$45k', share: '12.7%' },
+                      { item: 'Custom Integration', revenue: '$20k', share: '5.6%' },
+                    ].map((seller, index) => (
+                      <tr key={index} className="hover:bg-[var(--primary-50)]/40">
+                        <td className="px-4 py-2 font-semibold text-slate-900">{seller.item}</td>
+                        <td className="px-4 py-2 text-right">{seller.revenue}</td>
+                        <td className="px-4 py-2 text-right">{seller.share}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        </div>
       </div>
+
+      {/* SECONDARY INSIGHTS: API HEALTH */}
+      <div className="col-span-12">
+        <div className="mb-4">
+          <h2 className="text-title-lg text-slate-900">API Health</h2>
+          <p className="text-sm text-slate-600">Monitor API performance and endpoint health</p>
+        </div>
+        <div className="grid grid-cols-12 gap-6">
+          {/* API usage (left) */}
+          <div className="col-span-12 lg:col-span-6">
+            <Card className="border border-[var(--surface-border)] h-[320px]" role="region" aria-label="API usage">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-title-sm text-slate-900">API usage</h3>
+                  <p className="text-xs text-slate-600">Rolling avg + peak</p>
+                </div>
+                <Activity className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+              </div>
+              <ResponsiveContainer height={240}>
+                <LineChart data={data.apiUsageTrend}>
+                  <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} />
+                  <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                  <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={2} dot={{ r: 3 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </Card>
+          </div>
+
+          {/* Top endpoints (right) */}
+          <div className="col-span-12 lg:col-span-6">
+            <Card className="border border-[var(--surface-border)] h-[320px]" role="region" aria-label="Top endpoints">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-title-sm text-slate-900">Top endpoints</h3>
+                  <p className="text-xs text-slate-600">Endpoint, Calls, Errors %, Latency p95</p>
+                </div>
+                <Workflow className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+              </div>
+              <div className="overflow-hidden">
+                <table className="min-w-full" aria-label="Top endpoints table">
+                  <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
+                    <tr>
+                      <th className="px-4 py-2 text-left">Endpoint</th>
+                      <th className="px-4 py-2 text-right">Calls</th>
+                      <th className="px-4 py-2 text-right">Errors %</th>
+                      <th className="px-4 py-2 text-right">Latency p95</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
+                    {[
+                      { endpoint: '/api/users', calls: '2.1M', errors: '0.2%', latency: '45ms' },
+                      { endpoint: '/api/auth', calls: '1.8M', errors: '0.1%', latency: '32ms' },
+                      { endpoint: '/api/data', calls: '1.5M', errors: '0.3%', latency: '67ms' },
+                      { endpoint: '/api/analytics', calls: '1.2M', errors: '0.4%', latency: '89ms' },
+                      { endpoint: '/api/reports', calls: '890k', errors: '0.2%', latency: '156ms' },
+                    ].map((endpoint, index) => (
+                      <tr key={index} className="hover:bg-[var(--primary-50)]/40">
+                        <td className="px-4 py-2 font-semibold text-slate-900">{endpoint.endpoint}</td>
+                        <td className="px-4 py-2 text-right">{endpoint.calls}</td>
+                        <td className="px-4 py-2 text-right">
+                          <span className={cn(
+                            'text-xs font-semibold',
+                            parseFloat(endpoint.errors) < 0.5 ? 'text-[var(--success-600)]' : 'text-[var(--danger-600)]'
+                          )}>
+                            {endpoint.errors}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2 text-right">{endpoint.latency}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </div>
+
+
+
     </div>
   );
 }
@@ -1161,10 +1382,20 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
     const dateRangeParam = params.get('dateRange') as DateRange | null;
     const segmentParam = params.get('segment');
     const channelParam = params.get('channel');
+    const orgParam = params.get('org');
+    const regionParam = params.get('region');
+    const planParam = params.get('plan');
+    const tierParam = params.get('tier');
+    const sourceParam = params.get('source');
     if (moduleParam) setModule(moduleParam);
     if (dateRangeParam) setFilters({ dateRange: dateRangeParam });
     if (segmentParam) setFilters({ segment: segmentParam });
     if (channelParam) setFilters({ channel: channelParam });
+    if (orgParam) setFilters({ org: orgParam });
+    if (regionParam) setFilters({ region: regionParam });
+    if (planParam) setFilters({ plan: planParam });
+    if (tierParam) setFilters({ tier: tierParam });
+    if (sourceParam) setFilters({ source: sourceParam });
   }, [setFilters, setModule]);
 
   useEffect(() => {
@@ -1181,6 +1412,31 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
       params.set('channel', filters.channel);
     } else {
       params.delete('channel');
+    }
+    if (filters.org) {
+      params.set('org', filters.org);
+    } else {
+      params.delete('org');
+    }
+    if (filters.region) {
+      params.set('region', filters.region);
+    } else {
+      params.delete('region');
+    }
+    if (filters.plan) {
+      params.set('plan', filters.plan);
+    } else {
+      params.delete('plan');
+    }
+    if (filters.tier) {
+      params.set('tier', filters.tier);
+    } else {
+      params.delete('tier');
+    }
+    if (filters.source) {
+      params.set('source', filters.source);
+    } else {
+      params.delete('source');
     }
     router.replace(`?${params.toString()}`, { scroll: false });
   }, [filters, selectedModule, router]);
@@ -1221,10 +1477,8 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="space-y-3">
               <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Premium Multi-Category Dashboard</p>
-              <h1 className="text-display-lg bg-clip-text text-transparent" style={{ backgroundImage: 'var(--brand-gradient)' }}>
-                {data.hero.title}
-              </h1>
-              <p className="max-w-3xl text-base text-slate-600">{data.hero.description}</p>
+              <h1 className="text-display-lg text-slate-900">{data.hero.title}</h1>
+              <p className="max-w-3xl text-sm text-slate-600">{data.hero.description}</p>
               <button
                 type="button"
                 className="inline-flex min-h-[44px] items-center gap-2 rounded-full px-6 py-2 text-sm font-semibold text-white shadow-lg shadow-purple-500/20 transition-all duration-300 hover:-translate-y-0.5 focus-visible:focus-ring"
@@ -1240,57 +1494,68 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                 {mounted && (
                   <button
                     type="button"
-                    className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+                    className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
                     onClick={toggleTheme}
+                    aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
                   >
                     {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden /> : <Moon className="h-4 w-4" aria-hidden />}
-                    {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+                    <span className="hidden sm:inline">{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
                   </button>
                 )}
                 <button
                   type="button"
-                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+                  className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
                   onClick={() => setDirection(direction === 'ltr' ? 'rtl' : 'ltr')}
+                  aria-label={direction === 'ltr' ? 'Switch to RTL' : 'Switch to LTR'}
                 >
                   <Earth className="h-4 w-4" aria-hidden />
-                  {direction === 'ltr' ? 'Switch to RTL' : 'Switch to LTR'}
+                  <span className="hidden sm:inline">{direction === 'ltr' ? 'Switch to RTL' : 'Switch to LTR'}</span>
                 </button>
               </div>
               <div className="rounded-[18px] border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-xs text-slate-500">
-                Generated at 09/26/2025, 4:14:00 AM
+                Generated at{' '}
+                {new Date(data.generatedAt).toLocaleString('en-US', {
+                  month: '2-digit',
+                  day: '2-digit',
+                  year: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  second: '2-digit',
+                  hour12: true,
+                  timeZone: 'UTC',
+                })}
               </div>
             </div>
           </div>
 
-          <SegmentedTabs tabs={data.tabs} activeId={selectedModule} onChange={setModule} />
-
-          <div className="flex flex-wrap items-center gap-3">
-            {dateRangeOptions.map((option) => (
-              <FilterChip
-                key={option.id}
-                label={option.label}
-                active={filters.dateRange === option.id}
-                onClick={() => setFilters({ dateRange: option.id as typeof filters.dateRange })}
-                icon={filters.dateRange === option.id ? <Check className="h-4 w-4" aria-hidden /> : undefined}
-              />
-            ))}
-            {segmentOptions.map((option) => (
-              <FilterChip
-                key={option.id}
-                label={option.label}
-                active={(filters.segment ?? 'all') === option.id}
-                onClick={() => setFilters({ segment: option.id === 'all' ? null : option.id })}
-              />
-            ))}
-            {channelOptions.map((option) => (
-              <FilterChip
-                key={option.id}
-                label={option.label}
-                active={(filters.channel ?? 'global') === option.id}
-                onClick={() => setFilters({ channel: option.id === 'global' ? null : option.id })}
-              />
-            ))}
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <SegmentedTabs tabs={data.tabs} activeId={selectedModule} onChange={setModule} />
+            </div>
+            <div className="flex shrink-0 items-center gap-2 self-stretch">
+              {/* Keep actions baseline with tabs; lower emphasis styles applied above */}
+              {mounted && (
+                <button
+                  type="button"
+                  className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+                  onClick={toggleTheme}
+                  aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                >
+                  {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden /> : <Moon className="h-4 w-4" aria-hidden />}
+                </button>
+              )}
+              <button
+                type="button"
+                className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+                onClick={() => setDirection(direction === 'ltr' ? 'rtl' : 'ltr')}
+                aria-label={direction === 'ltr' ? 'Switch to RTL' : 'Switch to LTR'}
+              >
+                <Earth className="h-4 w-4" aria-hidden />
+              </button>
+            </div>
           </div>
+
+          <StickyFilterBar />
         </div>
       </header>
 
@@ -1299,7 +1564,87 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
         <div className="rounded-[24px] border border-dashed border-[var(--surface-border)] bg-[var(--surface-s1)] px-6 py-4 text-xs text-slate-500">
           Global filters persist via query params. React Query hydrates instantly, while Zustand keeps inter-module state fast.
         </div>
-        {moduleContent}
+        
+        {/* Main content with right rail */}
+        <div className="flex flex-col gap-6 lg:flex-row">
+          {/* Main content area */}
+          <div className="flex-1">
+            {moduleContent}
+          </div>
+          
+          {/* RIGHT RAIL: AUTOMATION WORKBENCH */}
+          <div className="sticky top-[120px] w-full space-y-6 lg:w-[320px] lg:flex-shrink-0 lg:max-h-[calc(100vh-140px)] lg:overflow-y-auto">
+            <div className="mb-4">
+              <h2 className="text-title-lg text-slate-900">Automation Workbench</h2>
+              <p className="text-sm text-slate-600">Build and manage automated workflows</p>
+            </div>
+            
+            {/* Automation builder (top) */}
+            <AutomationBuilder 
+              onCreate={async (automation) => {
+                console.log('Creating automation:', automation);
+              }} 
+              verticalAccent={accent} 
+            />
+            
+            {/* Automation backlog (middle) */}
+            <Card className="border border-[var(--surface-border)]" role="region" aria-label="Automation backlog">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-title-sm text-slate-900">Automation backlog</h3>
+                  <p className="text-xs text-slate-600">Status chips, active/paused</p>
+                </div>
+                <Workflow className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+              </div>
+              <div className="space-y-3">
+                {[
+                  { title: 'Churn recovery playbook', metric: '+15% retention', status: 'active' },
+                  { title: 'Usage optimization alerts', metric: '-8% support tickets', status: 'active' },
+                  { title: 'Onboarding sequence', metric: '+22% activation', status: 'paused' },
+                  { title: 'Renewal reminders', metric: '+12% renewals', status: 'active' },
+                ].map((automation, index) => (
+                  <div key={index} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
+                    <div className="flex items-center justify-between text-sm text-slate-700">
+                      <span className="font-semibold text-slate-900">{automation.title}</span>
+                      <StatusChip
+                        label={automation.status}
+                        tone={automation.status === 'active' ? 'success' : 'warning'}
+                      />
+                    </div>
+                    <p className="mt-1 text-xs text-slate-500">{automation.metric}</p>
+                    <div className="mt-2 flex gap-2">
+                      <button className="text-xs text-[var(--primary-600)] hover:text-[var(--primary-700)]">
+                        {automation.status === 'active' ? 'Pause' : 'Resume'}
+                      </button>
+                      <button className="text-xs text-slate-500 hover:text-slate-700">Edit</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+            
+            {/* Efficiency showcases (bottom) */}
+            <Card className="border border-[var(--surface-border)]" role="region" aria-label="Efficiency showcases">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-title-sm text-slate-900">Efficiency showcases</h3>
+                  <p className="text-xs text-slate-600">Recent automation wins</p>
+                </div>
+                <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+              </div>
+              <div className="space-y-3">
+                <div className="rounded-[16px] bg-[var(--success-50)] px-4 py-3">
+                  <div className="text-sm font-semibold text-[var(--success-700)]">+23% faster onboarding</div>
+                  <div className="text-xs text-[var(--success-600)]">Automated welcome sequence</div>
+                </div>
+                <div className="rounded-[16px] bg-[var(--primary-50)] px-4 py-3">
+                  <div className="text-sm font-semibold text-[var(--primary-700)]">-45% support load</div>
+                  <div className="text-xs text-[var(--primary-600)]">Smart FAQ automation</div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
       </main>
     </div>
   );

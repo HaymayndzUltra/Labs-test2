@@ -85,7 +85,7 @@ export function ChartCard({
         </div>
         <div className="overflow-auto rounded-[18px] border border-dashed border-[var(--surface-border)]">
           <table className="min-w-full divide-y divide-[var(--surface-border)]" aria-label={`${title} data table`}>
-            <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
+            <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
               <tr>
                 {columns.map((column) => (
                   <th key={column.key} className={cn('px-4 py-3 text-left', column.align === 'right' && 'text-right')}>
@@ -96,7 +96,7 @@ export function ChartCard({
             </thead>
             <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
               {rows.map((row, rowIndex) => (
-                <tr key={`${id}-row-${rowIndex}`} className="focus-within:bg-[var(--primary-50)]">
+                <tr key={`${id}-row-${rowIndex}`} className="hover:bg-[var(--primary-50)]/40">
                   {columns.map((column) => (
                     <td
                       key={`${id}-row-${rowIndex}-${column.key}`}
@@ -108,6 +108,16 @@ export function ChartCard({
                 </tr>
               ))}
             </tbody>
+            {rows.length > 0 && (
+              <tfoot className="bg-[var(--surface-s0)] text-xs text-slate-600">
+                <tr>
+                  <td colSpan={columns.length} className="px-4 py-2 text-right">
+                    <span className="text-[11px] text-slate-500">Last updated </span>
+                    <span className="text-[11px] font-semibold text-slate-800">{new Date().toLocaleDateString()}</span>
+                  </td>
+                </tr>
+              </tfoot>
+            )}
           </table>
         </div>
       </div>

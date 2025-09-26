@@ -7,9 +7,9 @@ type CardProps = HTMLAttributes<HTMLDivElement> & {
 };
 
 const paddingMap: Record<NonNullable<CardProps['padding']>, string> = {
-  sm: 'px-6 py-6',
-  md: 'px-8 py-8',
-  lg: 'px-10 py-10',
+  sm: 'px-4 py-4',
+  md: 'px-6 py-6',
+  lg: 'px-6 py-6',
 };
 
 export function Card({
@@ -22,7 +22,7 @@ export function Card({
   return (
     <Component
       className={cn(
-        'glass-card relative overflow-hidden transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-2xl',
+        'glass-card relative overflow-hidden shadow-xl shadow-purple-500/10 transition-all duration-300 hover:-translate-y-0.5',
         paddingMap[padding],
         className,
       )}

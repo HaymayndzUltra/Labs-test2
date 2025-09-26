@@ -10,6 +10,27 @@ export function formatNumber(value: number, options: Intl.NumberFormatOptions = 
   }).format(value);
 }
 
+export function formatCompact(value: number) {
+  const abs = Math.abs(value);
+  const sign = value < 0 ? -1 : 1;
+  if (abs >= 1_000_000) {
+    const num = (abs / 1_000_000) * sign;
+    return `${num.toFixed(num >= 10 ? 0 : 1)}M`;
+  }
+  if (abs >= 1_000) {
+    const num = (abs / 1_000) * sign;
+    return `${num.toFixed(num >= 10 ? 0 : 1)}k`;
+  }
+  return `${value}`;
+}
+
+export function parseNumericFromString(input: string): number | null {
+  const match = input.match(/-?\d{1,3}(?:,\d{3})*(?:\.\d+)?|-?\d+(?:\.\d+)?/);
+  if (!match) return null;
+  const num = Number(match[0].replace(/,/g, ''));
+  return Number.isFinite(num) ? num : null;
+}
+
 export function downloadAs(type: 'csv' | 'json', filename: string, rows: Record<string, unknown>[]) {
   if (typeof window === 'undefined') return;
   let blob: Blob;

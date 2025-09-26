@@ -10,6 +10,11 @@ export type Filters = {
   dateRange: DateRange;
   segment: string | null;
   channel: string | null;
+  org: string | null;
+  region: string | null;
+  plan: string | null;
+  tier: string | null;
+  source: string | null;
 };
 
 type DashboardState = {
@@ -18,6 +23,7 @@ type DashboardState = {
   featureFlags: Record<string, boolean>;
   setModule: (id: TabDefinition['id']) => void;
   setFilters: (filters: Partial<Filters>) => void;
+  resetFilters: () => void;
   toggleFeatureFlag: (flag: string) => void;
 };
 
@@ -40,12 +46,30 @@ export const useDashboardStore = create<DashboardState>()(
         dateRange: 'last_30',
         segment: null,
         channel: null,
+        org: null,
+        region: null,
+        plan: null,
+        tier: null,
+        source: null,
       },
       featureFlags: {},
       setModule: (id) => set({ selectedModule: id }),
       setFilters: (filters) =>
         set((state) => ({
           filters: { ...state.filters, ...filters },
+        })),
+      resetFilters: () =>
+        set(() => ({
+          filters: {
+            dateRange: 'last_30',
+            segment: null,
+            channel: null,
+            org: null,
+            region: null,
+            plan: null,
+            tier: null,
+            source: null,
+          },
         })),
       toggleFeatureFlag: (flag) =>
         set((state) => ({
