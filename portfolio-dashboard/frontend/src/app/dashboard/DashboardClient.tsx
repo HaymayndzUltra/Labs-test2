@@ -161,6 +161,7 @@ function SectionHeader({
   );
 }
 
+
 function SaaSModule({
   data,
   accent,
@@ -174,92 +175,90 @@ function SaaSModule({
   }));
 
   const growthRows = data.growthTrend.map((point) => ({ month: point.label, mrr: point.value }));
-  const apiRows = data.apiUsageTrend.map((point) => ({ week: point.label, usage: point.value }));
+
+  const monthlyBreakdown = data.growthTrend.slice(0, 6);
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="saas-panel" role="tabpanel" aria-labelledby="saas">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Subscription intelligence & API operations"
-          subtitle="SaaS platform"
-          accent={accent}
-        />
-      </div>
+    <div className="space-y-8" id="saas-panel" role="tabpanel" aria-labelledby="saas">
+      <SectionHeader
+        title="Subscription intelligence & API operations"
+        subtitle="SaaS platform"
+        accent={accent}
+      />
 
-      {/* PRIMARY BLOCK 1: PLANS + CHURN */}
-      <div className="col-span-12">
-        <div className="grid grid-cols-12 gap-6">
-          {/* Subscription table - dominant width */}
-          <div className="col-span-12 lg:col-span-9">
-            <Card className="border border-[var(--surface-border)] h-[400px]" role="region" aria-label="Subscription plans">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <h3 className="text-title-sm text-slate-900">Subscription plans</h3>
-                  <p className="text-xs text-slate-600">
-                    Plan, Price/Seat, Active subs, Allocated API, Overages, Churn %, Net expansion %
-                  </p>
-                </div>
-                <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
-              </div>
-              <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-                <table className="min-w-full" aria-label="Subscription plans table">
-                  <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
-                    <tr>
-                      <th className="px-4 py-3 text-left">Plan</th>
-                      <th className="px-4 py-3 text-right">Price/Seat</th>
-                      <th className="px-4 py-3 text-right">Active subs</th>
-                      <th className="px-4 py-3 text-right">Allocated API</th>
-                      <th className="px-4 py-3 text-right">Overages</th>
-                      <th className="px-4 py-3 text-right">Churn %</th>
-                      <th className="px-4 py-3 text-right">Net expansion %</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
-                    {data.subscriptionPlans.map((plan) => (
-                      <tr key={plan.id} className="hover:bg-[var(--primary-50)]/40">
-                        <td className="px-4 py-[11px]">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-slate-900">{plan.name}</span>
-                            {plan.badge ? (
-                              <span className="rounded-full bg-[var(--primary-50)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary-600)]">
-                                {plan.badge}
-                              </span>
-                            ) : null}
-                          </div>
-                        </td>
-                        <td className="px-4 py-[11px] text-right">{plan.price}</td>
-                        <td className="px-4 py-[11px] text-right">{plan.activeUsers.toLocaleString()}</td>
-                        <td className="px-4 py-[11px] text-right">{plan.apiAllocation}</td>
-                        <td className="px-4 py-[11px] text-right">$0</td>
-                        <td className="px-4 py-[11px] text-right">{plan.churn}</td>
-                        <td className="px-4 py-[11px] text-right">+12.5%</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot className="bg-[var(--surface-s0)] text-xs text-slate-600">
-                    <tr>
-                      <td className="px-4 py-3 font-semibold text-slate-900">Totals</td>
-                      <td className="px-4 py-3 text-right">—</td>
-                      <td className="px-4 py-3 text-right">{data.subscriptionPlans.reduce((a, p) => a + p.activeUsers, 0).toLocaleString()}</td>
-                      <td className="px-4 py-3 text-right">—</td>
-                      <td className="px-4 py-3 text-right">—</td>
-                      <td className="px-4 py-3 text-right">—</td>
-                      <td className="px-4 py-3 text-right">—</td>
-                    </tr>
-                    <tr>
-                      <td colSpan={7} className="px-4 py-2 text-right">
-                        <span className="text-[11px] text-slate-500">Last updated </span>
-                        <span className="text-[11px] font-semibold text-slate-800">{new Date().toLocaleDateString()}</span>
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            </Card>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-8">
+        <Card
+          className="flex h-full min-h-[384px] flex-col overflow-visible border border-[var(--surface-border)] bg-[var(--surface-s1)]"
+          role="region"
+          aria-label="Subscription plans"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="text-title-sm text-slate-900">Subscription plans</h3>
+              <p className="text-xs text-slate-600">
+                Plan, Price/Seat, Active subs, Allocated API, Overages, Churn %, Net expansion %
+              </p>
+            </div>
+            <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
           </div>
+          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
+            <table className="min-w-full" aria-label="Subscription plans table">
+              <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
+                <tr>
+                  <th className="px-4 py-3 text-left">Plan</th>
+                  <th className="px-4 py-3 text-right">Price/Seat</th>
+                  <th className="px-4 py-3 text-right">Active subs</th>
+                  <th className="px-4 py-3 text-right">Allocated API</th>
+                  <th className="px-4 py-3 text-right">Overages</th>
+                  <th className="px-4 py-3 text-right">Churn %</th>
+                  <th className="px-4 py-3 text-right">Net expansion %</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
+                {data.subscriptionPlans.map((plan) => (
+                  <tr key={plan.id} className="hover:bg-[var(--primary-50)]/40">
+                    <td className="px-4 py-[11px]">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-slate-900">{plan.name}</span>
+                        {plan.badge ? (
+                          <span className="rounded-full bg-[var(--primary-50)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary-600)]">
+                            {plan.badge}
+                          </span>
+                        ) : null}
+                      </div>
+                    </td>
+                    <td className="px-4 py-[11px] text-right">{plan.price}</td>
+                    <td className="px-4 py-[11px] text-right">{plan.activeUsers.toLocaleString()}</td>
+                    <td className="px-4 py-[11px] text-right">{plan.apiAllocation}</td>
+                    <td className="px-4 py-[11px] text-right">$0</td>
+                    <td className="px-4 py-[11px] text-right">{plan.churn}</td>
+                    <td className="px-4 py-[11px] text-right">+12.5%</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot className="bg-[var(--surface-s0)] text-xs text-slate-600">
+                <tr>
+                  <td className="px-4 py-3 font-semibold text-slate-900">Totals</td>
+                  <td className="px-4 py-3 text-right">—</td>
+                  <td className="px-4 py-3 text-right">{data.subscriptionPlans.reduce((a, p) => a + p.activeUsers, 0).toLocaleString()}</td>
+                  <td className="px-4 py-3 text-right">—</td>
+                  <td className="px-4 py-3 text-right">—</td>
+                  <td className="px-4 py-3 text-right">—</td>
+                  <td className="px-4 py-3 text-right">—</td>
+                </tr>
+                <tr>
+                  <td colSpan={7} className="px-4 py-2 text-right">
+                    <span className="text-[11px] text-slate-500">Last updated </span>
+                    <span className="text-[11px] font-semibold text-slate-800">{new Date().toLocaleDateString()}</span>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </Card>
 
-          {/* Churn donut - compact width */}
-          <div className="col-span-12 lg:col-span-3">
+        <div className="lg:col-span-4">
+          <div className="h-full min-h-[384px]">
             <ChartCard
               id="saas-churn"
               title="Churn health distribution"
@@ -270,21 +269,34 @@ function SaaSModule({
                 { key: 'share', label: 'Share', align: 'right' },
               ]}
             >
-              <div className="flex flex-col items-center h-[400px]">
-                <ResponsiveContainer height={250} width="100%">
+              <div className="flex h-full flex-col items-center justify-between">
+                <ResponsiveContainer height={220} width="100%">
                   <PieChart>
-                    <Pie dataKey="value" data={data.churnSegments} innerRadius={60} outerRadius={100} paddingAngle={3}>
+                    <Pie dataKey="value" data={data.churnSegments} innerRadius={58} outerRadius={96} paddingAngle={3}>
                       {data.churnSegments.map((segment) => (
                         <Cell key={segment.id} fill={segment.color} stroke="#1f2937" strokeWidth={1.5} />
                       ))}
                     </Pie>
                     <Tooltip
-                      contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)', background: 'var(--surface-s1)' }}
+                      contentStyle={{
+                        borderRadius: 16,
+                        border: '1px solid var(--surface-border)',
+                        background: 'var(--surface-s1)',
+                      }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
-                <div className="mt-2 w-full">
-                  <Legend verticalAlign="bottom" align="center" iconSize={8} wrapperStyle={{ paddingTop: 4 }} />
+                <div className="mt-4 flex w-full items-center justify-center gap-3 overflow-x-auto pb-1 text-xs font-semibold text-slate-600">
+                  {data.churnSegments.map((segment) => (
+                    <div
+                      key={segment.id}
+                      className="inline-flex items-center gap-2 rounded-full bg-white/60 px-3 py-1 shadow-sm"
+                    >
+                      <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: segment.color }} aria-hidden />
+                      <span>{segment.label}</span>
+                      <span className="font-bold">{segment.value}%</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </ChartCard>
@@ -292,274 +304,266 @@ function SaaSModule({
         </div>
       </div>
 
-      <div className="col-span-12 lg:col-span-4">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Billing cycles">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Billing cycle orchestration</h3>
-              <p className="text-xs text-slate-600">Real-time close management with owner accountability.</p>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-8">
+        <div className="space-y-6 lg:col-span-8">
+          <ChartCard
+            id="saas-growth"
+            title="MRR growth"
+            description="Pre-aggregated monthly recurring revenue"
+            rows={growthRows}
+            columns={[
+              { key: 'month', label: 'Month' },
+              { key: 'mrr', label: 'MRR ($K)', align: 'right' },
+            ]}
+          >
+            <div className="flex flex-col gap-6">
+              <ResponsiveContainer height={320}>
+                <LineChart data={data.growthTrend} margin={{ left: 12, right: 12, top: 20, bottom: 12 }}>
+                  <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} domain={[0, (dataMax) => dataMax * 1.15]} />
+                  <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                  <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={{ r: 4 }} />
+                </LineChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-600">
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/60 px-3 py-1 shadow-sm">
+                  <span className="h-2 w-2 rounded-full bg-[var(--primary-500)]" aria-hidden />
+                  MRR growth (USD)
+                </span>
+                <span className="text-[11px] font-medium text-slate-500">
+                  15% headroom applied to emphasize current trajectory.
+                </span>
+              </div>
             </div>
-            <ClipboardList className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
-          </div>
-          <ul className="mt-4 space-y-3">
-            {data.billingCycles.map((cycle) => (
-              <li key={cycle.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <div className="flex items-center justify-between text-sm text-slate-700">
-                  <span className="font-semibold text-slate-900">{cycle.label}</span>
-                  <StatusChip
-                    label={cycle.status}
-                    tone={cycle.status === 'completed' ? 'success' : cycle.status === 'processing' ? 'info' : 'warning'}
-                  />
-                </div>
-                <p className="mt-2 text-xs text-slate-500">Next run {cycle.nextRun}</p>
-                <p className="text-xs text-slate-500">Owners: {cycle.owners.join(', ')}</p>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
+          </ChartCard>
 
-      {/* PRIMARY BLOCK 2: MRR GROWTH (KING SECTION) */}
-      <div className="col-span-12">
-        <div className="grid grid-cols-12 gap-6">
-          {/* MRR Growth Chart - Dominant */}
-          <div className="col-span-12 lg:col-span-8">
-            <ChartCard
-              id="saas-growth"
-              title="MRR growth"
-              description="Pre-aggregated monthly recurring revenue"
-              rows={growthRows}
-              columns={[
-                { key: 'month', label: 'Month' },
-                { key: 'mrr', label: 'MRR ($K)', align: 'right' },
-              ]}
-            >
-              <div className="flex flex-col gap-4">
-                <div className="flex justify-end">
-                  <div className="flex items-center gap-2 text-xs text-slate-600">
-                    <div className="h-2 w-2 rounded-full bg-[var(--primary-500)]" />
-                    <span>MRR Growth</span>
-                  </div>
-                </div>
-                <ResponsiveContainer height={350}>
-                  <LineChart data={data.growthTrend}>
-                    <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-                    <XAxis dataKey="label" tickLine={false} axisLine={false} />
-                    <YAxis tickLine={false} axisLine={false} />
-                    <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-                    <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={{ r: 5 }} />
-                  </LineChart>
-                </ResponsiveContainer>
+          <Card
+            className="flex flex-col gap-4 border border-[var(--surface-border)] bg-[var(--surface-s1)] lg:min-h-[200px]"
+            role="region"
+            aria-label="Monthly breakdown"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h3 className="text-title-sm text-slate-900">Monthly breakdown</h3>
+                <p className="text-xs text-slate-600">Top six months with quick view</p>
               </div>
-            </ChartCard>
-          </div>
-
-          {/* Compact Monthly Breakdown */}
-          <div className="col-span-12 lg:col-span-4">
-            <Card className="border border-[var(--surface-border)] h-[400px]" role="region" aria-label="Monthly breakdown">
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <div>
-                  <h3 className="text-title-sm text-slate-900">Monthly breakdown</h3>
-                  <p className="text-xs text-slate-600">Top 6 months</p>
-                </div>
-                <button
-                  type="button"
-                  className="inline-flex min-h-[36px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
-                >
-                  View all months
-                </button>
-              </div>
-              <div className="overflow-hidden">
-                <table className="min-w-full" aria-label="Monthly breakdown table">
-                  <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
-                    <tr>
-                      <th className="px-4 py-3 text-left">Month</th>
-                      <th className="px-4 py-3 text-right">Net</th>
+              <button
+                type="button"
+                className="inline-flex min-h-[36px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+              >
+                View all months
+              </button>
+            </div>
+            <table className="min-w-full" aria-label="Monthly breakdown table">
+              <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
+                <tr>
+                  <th className="px-4 py-3 text-left">Month</th>
+                  <th className="px-4 py-3 text-right">Net</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
+                {monthlyBreakdown.map((point) => {
+                  const net = point.value * 0.32;
+                  return (
+                    <tr key={point.label} className="hover:bg-[var(--primary-50)]/40">
+                      <td className="px-4 py-[11px] font-semibold text-slate-900">{point.label}</td>
+                      <td className="px-4 py-[11px] text-right">
+                        <span
+                          className={cn(
+                            'text-xs font-semibold',
+                            net > 0 ? 'text-[var(--success-600)]' : net < 0 ? 'text-[var(--danger-600)]' : 'text-slate-600'
+                          )}
+                        >
+                          ${net.toFixed(0)}k
+                        </span>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
-                    {data.growthTrend.slice(0, 6).map((point, index) => {
-                      const prevValue = index > 0 ? data.growthTrend[index - 1].value : 0;
-                      const growth = prevValue > 0 ? ((point.value - prevValue) / prevValue * 100) : 0;
-                      const net = point.value * 0.32; // Simplified calculation
-                      return (
-                        <tr key={point.label} className="hover:bg-[var(--primary-50)]/40">
-                          <td className="px-4 py-[11px] font-semibold text-slate-900">{point.label}</td>
-                          <td className="px-4 py-[11px] text-right">
-                            <span className={cn(
-                              'text-xs font-semibold',
-                              net > 0 ? 'text-[var(--success-600)]' : net < 0 ? 'text-[var(--danger-600)]' : 'text-slate-600'
-                            )}>
-                              ${net.toFixed(0)}k
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
-          </div>
+                  );
+                })}
+              </tbody>
+            </table>
+          </Card>
         </div>
       </div>
 
-
-      {/* SECONDARY INSIGHTS: GROWTH DRIVERS */}
-      <div className="col-span-12">
+      <div>
         <div className="mb-4">
           <h2 className="text-title-lg text-slate-900">Growth Drivers</h2>
           <p className="text-sm text-slate-600">Key metrics driving MRR growth</p>
         </div>
-        <div className="grid grid-cols-12 gap-6">
-          {/* Affiliates growth (left) */}
-          <div className="col-span-12 lg:col-span-6">
-            <Card className="border border-[var(--surface-border)] h-[320px]" role="region" aria-label="Affiliates growth">
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <div>
-                  <h3 className="text-title-sm text-slate-900">Affiliates growth</h3>
-                  <p className="text-xs text-slate-600">Share of total (%)</p>
-                </div>
-                <Activity className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-8">
+          <Card
+            className="flex h-full min-h-[240px] flex-col border border-[var(--surface-border)]"
+            role="region"
+            aria-label="Affiliates growth"
+          >
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div>
+                <h3 className="text-title-sm text-slate-900">Affiliates growth</h3>
+                <p className="text-xs text-slate-600">Share of total (%)</p>
               </div>
-              <ResponsiveContainer height={240}>
-                <AreaChart data={data.growthTrend}>
-                  <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
-                  <YAxis tickLine={false} axisLine={false} />
-                  <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-                  <Area type="monotone" dataKey="value" stroke="var(--primary-500)" fill="var(--primary-500)" fillOpacity={0.3} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </Card>
-          </div>
+              <Activity className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+            </div>
+            <ResponsiveContainer height={220}>
+              <AreaChart data={data.growthTrend}>
+                <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                <Area type="monotone" dataKey="value" stroke="var(--primary-500)" fill="var(--primary-500)" fillOpacity={0.3} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </Card>
 
-          {/* Top sellers (right) */}
-          <div className="col-span-12 lg:col-span-6">
-            <Card className="border border-[var(--surface-border)] h-[320px]" role="region" aria-label="Top sellers">
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <div>
-                  <h3 className="text-title-sm text-slate-900">Top sellers</h3>
-                  <p className="text-xs text-slate-600">Item/SKU/Plan, Sales/Revenue, Share %</p>
-                </div>
-                <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+          <Card
+            className="flex h-full min-h-[240px] flex-col border border-[var(--surface-border)]"
+            role="region"
+            aria-label="Top sellers"
+          >
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div>
+                <h3 className="text-title-sm text-slate-900">Top sellers</h3>
+                <p className="text-xs text-slate-600">Item/SKU/Plan, Sales/Revenue, Share %</p>
               </div>
-              <div className="overflow-hidden">
-                <table className="min-w-full" aria-label="Top sellers table">
-                  <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
-                    <tr>
-                      <th className="px-4 py-2 text-left">Item/SKU/Plan</th>
-                      <th className="px-4 py-2 text-right">Sales/Revenue</th>
-                      <th className="px-4 py-2 text-right">Share %</th>
+              <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <table className="min-w-full" aria-label="Top sellers table">
+                <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
+                  <tr>
+                    <th className="px-4 py-2 text-left">Item/SKU/Plan</th>
+                    <th className="px-4 py-2 text-right">Sales/Revenue</th>
+                    <th className="px-4 py-2 text-right">Share %</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
+                  {[
+                    { item: 'Pro Plan', revenue: '$125k', share: '35.2%' },
+                    { item: 'Enterprise', revenue: '$98k', share: '27.6%' },
+                    { item: 'API Access', revenue: '$67k', share: '18.9%' },
+                    { item: 'Premium Support', revenue: '$45k', share: '12.7%' },
+                    { item: 'Custom Integration', revenue: '$20k', share: '5.6%' },
+                  ].map((seller, index) => (
+                    <tr key={index} className="hover:bg-[var(--primary-50)]/40">
+                      <td className="px-4 py-2 font-semibold text-slate-900">{seller.item}</td>
+                      <td className="px-4 py-2 text-right">{seller.revenue}</td>
+                      <td className="px-4 py-2 text-right">{seller.share}</td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
-                    {[
-                      { item: 'Pro Plan', revenue: '$125k', share: '35.2%' },
-                      { item: 'Enterprise', revenue: '$98k', share: '27.6%' },
-                      { item: 'API Access', revenue: '$67k', share: '18.9%' },
-                      { item: 'Premium Support', revenue: '$45k', share: '12.7%' },
-                      { item: 'Custom Integration', revenue: '$20k', share: '5.6%' },
-                    ].map((seller, index) => (
-                      <tr key={index} className="hover:bg-[var(--primary-50)]/40">
-                        <td className="px-4 py-2 font-semibold text-slate-900">{seller.item}</td>
-                        <td className="px-4 py-2 text-right">{seller.revenue}</td>
-                        <td className="px-4 py-2 text-right">{seller.share}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
-          </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="mt-3 flex justify-end">
+              <button
+                type="button"
+                className="inline-flex min-h-[32px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+              >
+                View all sellers
+              </button>
+            </div>
+          </Card>
         </div>
       </div>
 
-      {/* SECONDARY INSIGHTS: API HEALTH */}
-      <div className="col-span-12">
+      <div>
         <div className="mb-4">
           <h2 className="text-title-lg text-slate-900">API Health</h2>
           <p className="text-sm text-slate-600">Monitor API performance and endpoint health</p>
         </div>
-        <div className="grid grid-cols-12 gap-6">
-          {/* API usage (left) */}
-          <div className="col-span-12 lg:col-span-6">
-            <Card className="border border-[var(--surface-border)] h-[320px]" role="region" aria-label="API usage">
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <div>
-                  <h3 className="text-title-sm text-slate-900">API usage</h3>
-                  <p className="text-xs text-slate-600">Rolling avg + peak</p>
-                </div>
-                <Activity className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-8">
+          <Card
+            className="flex h-full min-h-[240px] flex-col border border-[var(--surface-border)]"
+            role="region"
+            aria-label="API usage"
+          >
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div>
+                <h3 className="text-title-sm text-slate-900">API usage</h3>
+                <p className="text-xs text-slate-600">Rolling avg + peak</p>
               </div>
-              <ResponsiveContainer height={240}>
-                <LineChart data={data.apiUsageTrend}>
-                  <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
-                  <YAxis tickLine={false} axisLine={false} />
-                  <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-                  <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={2} dot={{ r: 3 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </Card>
-          </div>
+              <Activity className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+            </div>
+            <ResponsiveContainer height={220}>
+              <LineChart data={data.apiUsageTrend}>
+                <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={2} dot={{ r: 3 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </Card>
 
-          {/* Top endpoints (right) */}
-          <div className="col-span-12 lg:col-span-6">
-            <Card className="border border-[var(--surface-border)] h-[320px]" role="region" aria-label="Top endpoints">
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <div>
-                  <h3 className="text-title-sm text-slate-900">Top endpoints</h3>
-                  <p className="text-xs text-slate-600">Endpoint, Calls, Errors %, Latency p95</p>
-                </div>
-                <Workflow className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+          <Card
+            className="flex h-full min-h-[240px] flex-col border border-[var(--surface-border)]"
+            role="region"
+            aria-label="Top endpoints"
+          >
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div>
+                <h3 className="text-title-sm text-slate-900">Top endpoints</h3>
+                <p className="text-xs text-slate-600">Endpoint, Calls, Errors %, Latency p95</p>
               </div>
-              <div className="overflow-hidden">
-                <table className="min-w-full" aria-label="Top endpoints table">
-                  <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
-                    <tr>
-                      <th className="px-4 py-2 text-left">Endpoint</th>
-                      <th className="px-4 py-2 text-right">Calls</th>
-                      <th className="px-4 py-2 text-right">Errors %</th>
-                      <th className="px-4 py-2 text-right">Latency p95</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
-                    {[
-                      { endpoint: '/api/users', calls: '2.1M', errors: '0.2%', latency: '45ms' },
-                      { endpoint: '/api/auth', calls: '1.8M', errors: '0.1%', latency: '32ms' },
-                      { endpoint: '/api/data', calls: '1.5M', errors: '0.3%', latency: '67ms' },
-                      { endpoint: '/api/analytics', calls: '1.2M', errors: '0.4%', latency: '89ms' },
-                      { endpoint: '/api/reports', calls: '890k', errors: '0.2%', latency: '156ms' },
-                    ].map((endpoint, index) => (
-                      <tr key={index} className="hover:bg-[var(--primary-50)]/40">
-                        <td className="px-4 py-2 font-semibold text-slate-900">{endpoint.endpoint}</td>
-                        <td className="px-4 py-2 text-right">{endpoint.calls}</td>
-                        <td className="px-4 py-2 text-right">
-                          <span className={cn(
+              <Workflow className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <table className="min-w-full" aria-label="Top endpoints table">
+                <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
+                  <tr>
+                    <th className="px-4 py-2 text-left">Endpoint</th>
+                    <th className="px-4 py-2 text-right">Calls</th>
+                    <th className="px-4 py-2 text-right">Errors %</th>
+                    <th className="px-4 py-2 text-right">Latency p95</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
+                  {[
+                    { endpoint: '/api/users', calls: '2.1M', errors: '0.2%', latency: '45ms' },
+                    { endpoint: '/api/auth', calls: '1.8M', errors: '0.1%', latency: '32ms' },
+                    { endpoint: '/api/data', calls: '1.5M', errors: '0.3%', latency: '67ms' },
+                    { endpoint: '/api/analytics', calls: '1.2M', errors: '0.4%', latency: '89ms' },
+                    { endpoint: '/api/reports', calls: '890k', errors: '0.2%', latency: '156ms' },
+                  ].map((endpoint, index) => (
+                    <tr key={index} className="hover:bg-[var(--primary-50)]/40">
+                      <td className="px-4 py-2 font-semibold text-slate-900">{endpoint.endpoint}</td>
+                      <td className="px-4 py-2 text-right">{endpoint.calls}</td>
+                      <td className="px-4 py-2 text-right">
+                        <span
+                          className={cn(
                             'text-xs font-semibold',
                             parseFloat(endpoint.errors) < 0.5 ? 'text-[var(--success-600)]' : 'text-[var(--danger-600)]'
-                          )}>
-                            {endpoint.errors}
-                          </span>
-                        </td>
-                        <td className="px-4 py-2 text-right">{endpoint.latency}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
-          </div>
+                          )}
+                        >
+                          {endpoint.errors}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2 text-right">{endpoint.latency}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="mt-3 flex justify-end">
+              <button
+                type="button"
+                className="inline-flex min-h-[32px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+              >
+                View all endpoints
+              </button>
+            </div>
+          </Card>
         </div>
       </div>
 
-
-
+      <div className="grid grid-cols-1 lg:grid-cols-8">
+        <div className="rounded-[18px] border border-dashed border-[var(--surface-border)] bg-[var(--surface-s1)] px-5 py-4 text-xs text-slate-500 lg:col-span-8">
+          Last refresh {new Date().toLocaleString()} • Data source: Billing, product analytics, CRM usage telemetry.
+        </div>
+      </div>
     </div>
   );
 }
-
 function CommerceModule({
   data,
   accent,
@@ -1470,6 +1474,8 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
     return null;
   }
 
+  const billingCycles = selectedModule === 'saas' ? data.saas.billingCycles : [];
+
   return (
     <div className="min-h-screen bg-[var(--surface-s0)] pb-16 text-slate-900">
       <header className="border-b border-[var(--surface-border)] bg-white/95 shadow-xl shadow-purple-500/10 backdrop-blur-xl">
@@ -1564,32 +1570,32 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
         <div className="rounded-[24px] border border-dashed border-[var(--surface-border)] bg-[var(--surface-s1)] px-6 py-4 text-xs text-slate-500">
           Global filters persist via query params. React Query hydrates instantly, while Zustand keeps inter-module state fast.
         </div>
-        
+  
         {/* Main content with right rail */}
-        <div className="flex flex-col gap-6 lg:flex-row">
-          {/* Main content area */}
-          <div className="flex-1">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <div className="space-y-8 lg:col-span-8">
             {moduleContent}
           </div>
-          
-          {/* RIGHT RAIL: AUTOMATION WORKBENCH */}
-          <div className="sticky top-[120px] w-full space-y-6 lg:w-[320px] lg:flex-shrink-0 lg:max-h-[calc(100vh-140px)] lg:overflow-y-auto">
-            <div className="mb-4">
+
+          <aside
+            className="space-y-6 lg:col-span-4 lg:sticky"
+            style={{ top: 'calc(var(--dashboard-header, 96px) + var(--dashboard-filters, 72px) + 16px)' }}
+            aria-label="Automation workbench"
+          >
+            <div>
               <h2 className="text-title-lg text-slate-900">Automation Workbench</h2>
               <p className="text-sm text-slate-600">Build and manage automated workflows</p>
             </div>
-            
-            {/* Automation builder (top) */}
-            <AutomationBuilder 
+
+            <AutomationBuilder
               onCreate={async (automation) => {
                 console.log('Creating automation:', automation);
-              }} 
-              verticalAccent={accent} 
+              }}
+              verticalAccent={accent}
             />
-            
-            {/* Automation backlog (middle) */}
+
             <Card className="border border-[var(--surface-border)]" role="region" aria-label="Automation backlog">
-              <div className="flex items-center justify-between gap-4 mb-4">
+              <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-title-sm text-slate-900">Automation backlog</h3>
                   <p className="text-xs text-slate-600">Status chips, active/paused</p>
@@ -1602,30 +1608,33 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                   { title: 'Usage optimization alerts', metric: '-8% support tickets', status: 'active' },
                   { title: 'Onboarding sequence', metric: '+22% activation', status: 'paused' },
                   { title: 'Renewal reminders', metric: '+12% renewals', status: 'active' },
-                ].map((automation, index) => (
-                  <div key={index} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                    <div className="flex items-center justify-between text-sm text-slate-700">
-                      <span className="font-semibold text-slate-900">{automation.title}</span>
-                      <StatusChip
-                        label={automation.status}
-                        tone={automation.status === 'active' ? 'success' : 'warning'}
-                      />
-                    </div>
-                    <p className="mt-1 text-xs text-slate-500">{automation.metric}</p>
-                    <div className="mt-2 flex gap-2">
-                      <button className="text-xs text-[var(--primary-600)] hover:text-[var(--primary-700)]">
-                        {automation.status === 'active' ? 'Pause' : 'Resume'}
+                ].map((automation, index) => {
+                  const isActive = automation.status === 'active';
+                  return (
+                    <div key={index} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
+                      <div className="flex items-center justify-between text-sm text-slate-700">
+                        <span className="font-semibold text-slate-900">{automation.title}</span>
+                        <StatusChip
+                          label={isActive ? 'Active' : 'Paused'}
+                          tone={isActive ? 'success' : 'warning'}
+                        />
+                      </div>
+                      <p className="mt-1 text-xs text-slate-500">{automation.metric}</p>
+                      <button
+                        type="button"
+                        className="mt-3 inline-flex min-h-[32px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1 text-xs font-semibold text-[var(--primary-600)] transition hover:bg-[var(--primary-50)]/70 focus-visible:focus-ring"
+                        aria-label={`${isActive ? 'Pause' : 'Resume'} ${automation.title}`}
+                      >
+                        {isActive ? 'Pause' : 'Resume'}
                       </button>
-                      <button className="text-xs text-slate-500 hover:text-slate-700">Edit</button>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </Card>
-            
-            {/* Efficiency showcases (bottom) */}
+
             <Card className="border border-[var(--surface-border)]" role="region" aria-label="Efficiency showcases">
-              <div className="flex items-center justify-between gap-4 mb-4">
+              <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-title-sm text-slate-900">Efficiency showcases</h3>
                   <p className="text-xs text-slate-600">Recent automation wins</p>
@@ -1642,8 +1651,34 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                   <div className="text-xs text-[var(--primary-600)]">Smart FAQ automation</div>
                 </div>
               </div>
+              {billingCycles.length > 0 ? (
+                <div className="space-y-3 border-t border-[var(--surface-border)] pt-4">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                    <ClipboardList className="h-4 w-4 text-[var(--primary-500)]" aria-hidden />
+                    Billing cycle orchestration
+                  </div>
+                  <ul className="space-y-2">
+                    {billingCycles.map((cycle) => {
+                      const tone = cycle.status === 'completed' ? 'success' : cycle.status === 'processing' ? 'info' : 'warning';
+                      const label = cycle.status === 'completed' ? 'Completed' : cycle.status === 'processing' ? 'Processing' : 'Scheduled';
+                      return (
+                        <li
+                          key={cycle.id}
+                          className="flex items-center justify-between gap-3 rounded-[14px] border border-[var(--surface-border)] px-3 py-2"
+                        >
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-slate-900">{cycle.label}</p>
+                            <p className="text-[11px] text-slate-500">Next run {cycle.nextRun}</p>
+                          </div>
+                          <StatusChip label={label} tone={tone} />
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ) : null}
             </Card>
-          </div>
+          </aside>
         </div>
       </main>
     </div>
