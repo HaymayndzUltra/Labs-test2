@@ -59,6 +59,29 @@ const accentTokens: Record<TabDefinition['id'], string> = {
   specialized: '--vertical-specialized',
 };
 
+type LegendPayload = { value?: string; color?: string };
+
+function InlineLegend({ payload }: { payload?: LegendPayload[] }) {
+  if (!payload?.length) {
+    return null;
+  }
+
+  return (
+    <ul className="mt-4 flex flex-wrap justify-center gap-4 text-xs text-slate-600">
+      {payload.map((entry, index) => (
+        <li key={entry?.value ?? index} className="flex items-center gap-2">
+          <span
+            className="h-2.5 w-2.5 rounded-full"
+            style={{ backgroundColor: entry?.color ?? 'var(--surface-border)' }}
+            aria-hidden
+          />
+          <span className="font-semibold text-slate-700">{entry?.value}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 const dateRangeOptions = [
   { id: 'last_7', label: 'Last 7 days' },
   { id: 'last_30', label: 'Last 30 days' },
@@ -172,9 +195,26 @@ function SaaSModule({
     segment: segment.label,
     share: `${segment.value}%`,
   }));
+  const churnLegend = data.churnSegments.map((segment) => ({
+    value: segment.label,
+    color: segment.color,
+  }));
 
-  const growthRows = data.growthTrend.map((point) => ({ month: point.label, mrr: point.value }));
-  const apiRows = data.apiUsageTrend.map((point) => ({ week: point.label, usage: point.value }));
+  const growthRowsChrono = data.growthTrend.map((point, index) => {
+    const prevValue = index > 0 ? data.growthTrend[index - 1].value : null;
+    const net = prevValue == null ? null : point.value - prevValue;
+    return {
+      month: point.label,
+      mrr: point.value,
+      net,
+    };
+  });
+  const growthRows = [...growthRowsChrono].reverse().map((row) => ({
+    month: row.month,
+    mrr: row.mrr.toLocaleString(),
+    net: row.net == null ? '—' : `${row.net > 0 ? '+' : ''}${row.net.toLocaleString()}`,
+  }));
+  const growthLegend = [{ value: 'MRR growth', color: 'var(--primary-500)' }];
 
   return (
     <div className="grid grid-cols-12 gap-6" id="saas-panel" role="tabpanel" aria-labelledby="saas">
@@ -269,23 +309,26 @@ function SaaSModule({
                 { key: 'segment', label: 'Segment' },
                 { key: 'share', label: 'Share', align: 'right' },
               ]}
+              className="h-[400px]"
             >
-              <div className="flex flex-col items-center h-[400px]">
-                <ResponsiveContainer height={250} width="100%">
+              <div className="flex h-full flex-col items-center justify-between">
+                <ResponsiveContainer height={220} width="100%">
                   <PieChart>
-                    <Pie dataKey="value" data={data.churnSegments} innerRadius={60} outerRadius={100} paddingAngle={3}>
+                    <Pie dataKey="value" data={data.churnSegments} innerRadius={60} outerRadius={98} paddingAngle={3}>
                       {data.churnSegments.map((segment) => (
                         <Cell key={segment.id} fill={segment.color} stroke="#1f2937" strokeWidth={1.5} />
                       ))}
                     </Pie>
                     <Tooltip
-                      contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)', background: 'var(--surface-s1)' }}
+                      contentStyle={{
+                        borderRadius: 16,
+                        border: '1px solid var(--surface-border)',
+                        background: 'var(--surface-s1)',
+                      }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
-                <div className="mt-2 w-full">
-                  <Legend verticalAlign="bottom" align="center" iconSize={8} wrapperStyle={{ paddingTop: 4 }} />
-                </div>
+                <InlineLegend payload={churnLegend} />
               </div>
             </ChartCard>
           </div>
@@ -321,87 +364,47 @@ function SaaSModule({
 
       {/* PRIMARY BLOCK 2: MRR GROWTH (KING SECTION) */}
       <div className="col-span-12">
-        <div className="grid grid-cols-12 gap-6">
-          {/* MRR Growth Chart - Dominant */}
-          <div className="col-span-12 lg:col-span-8">
-            <ChartCard
-              id="saas-growth"
-              title="MRR growth"
-              description="Pre-aggregated monthly recurring revenue"
-              rows={growthRows}
-              columns={[
-                { key: 'month', label: 'Month' },
-                { key: 'mrr', label: 'MRR ($K)', align: 'right' },
-              ]}
+        <ChartCard
+          id="saas-growth"
+          title="MRR growth"
+          description="Pre-aggregated monthly recurring revenue"
+          rows={growthRows}
+          columns={[
+            { key: 'month', label: 'Month' },
+            { key: 'mrr', label: 'MRR ($K)', align: 'right' },
+            { key: 'net', label: 'Net new ($K)', align: 'right' },
+          ]}
+          maxDisplayRows={6}
+          className="min-h-[520px]"
+          toolbar={(
+            <button
+              type="button"
+              className="inline-flex min-h-[36px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
             >
-              <div className="flex flex-col gap-4">
-                <div className="flex justify-end">
-                  <div className="flex items-center gap-2 text-xs text-slate-600">
-                    <div className="h-2 w-2 rounded-full bg-[var(--primary-500)]" />
-                    <span>MRR Growth</span>
-                  </div>
-                </div>
-                <ResponsiveContainer height={350}>
-                  <LineChart data={data.growthTrend}>
-                    <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-                    <XAxis dataKey="label" tickLine={false} axisLine={false} />
-                    <YAxis tickLine={false} axisLine={false} />
-                    <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-                    <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={{ r: 5 }} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </ChartCard>
+              View full history
+            </button>
+          )}
+        >
+          <div className="flex flex-col gap-6">
+            <ResponsiveContainer height={380}>
+              <LineChart
+                data={data.growthTrend}
+                margin={{ top: 24, right: 32, left: 8, bottom: 8 }}
+              >
+                <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.15)]}
+                />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={{ r: 5 }} />
+              </LineChart>
+            </ResponsiveContainer>
+            <InlineLegend payload={growthLegend} />
           </div>
-
-          {/* Compact Monthly Breakdown */}
-          <div className="col-span-12 lg:col-span-4">
-            <Card className="border border-[var(--surface-border)] h-[400px]" role="region" aria-label="Monthly breakdown">
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <div>
-                  <h3 className="text-title-sm text-slate-900">Monthly breakdown</h3>
-                  <p className="text-xs text-slate-600">Top 6 months</p>
-                </div>
-                <button
-                  type="button"
-                  className="inline-flex min-h-[36px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
-                >
-                  View all months
-                </button>
-              </div>
-              <div className="overflow-hidden">
-                <table className="min-w-full" aria-label="Monthly breakdown table">
-                  <thead className="sticky top-0 z-10 bg-white text-xs uppercase tracking-[0.08em] text-slate-500">
-                    <tr>
-                      <th className="px-4 py-3 text-left">Month</th>
-                      <th className="px-4 py-3 text-right">Net</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
-                    {data.growthTrend.slice(0, 6).map((point, index) => {
-                      const prevValue = index > 0 ? data.growthTrend[index - 1].value : 0;
-                      const growth = prevValue > 0 ? ((point.value - prevValue) / prevValue * 100) : 0;
-                      const net = point.value * 0.32; // Simplified calculation
-                      return (
-                        <tr key={point.label} className="hover:bg-[var(--primary-50)]/40">
-                          <td className="px-4 py-[11px] font-semibold text-slate-900">{point.label}</td>
-                          <td className="px-4 py-[11px] text-right">
-                            <span className={cn(
-                              'text-xs font-semibold',
-                              net > 0 ? 'text-[var(--success-600)]' : net < 0 ? 'text-[var(--danger-600)]' : 'text-slate-600'
-                            )}>
-                              ${net.toFixed(0)}k
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
-          </div>
-        </div>
+        </ChartCard>
       </div>
 
 
@@ -469,6 +472,14 @@ function SaaSModule({
                     ))}
                   </tbody>
                 </table>
+              </div>
+              <div className="flex justify-end px-4 py-3">
+                <button
+                  type="button"
+                  className="text-xs font-semibold text-[var(--primary-600)] transition hover:text-[var(--primary-700)]"
+                >
+                  View all sellers
+                </button>
               </div>
             </Card>
           </div>
@@ -548,6 +559,14 @@ function SaaSModule({
                     ))}
                   </tbody>
                 </table>
+              </div>
+              <div className="flex justify-end px-4 py-3">
+                <button
+                  type="button"
+                  className="text-xs font-semibold text-[var(--primary-600)] transition hover:text-[var(--primary-700)]"
+                >
+                  View all endpoints
+                </button>
               </div>
             </Card>
           </div>
@@ -1573,7 +1592,7 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
           </div>
           
           {/* RIGHT RAIL: AUTOMATION WORKBENCH */}
-          <div className="sticky top-[120px] w-full space-y-6 lg:w-[320px] lg:flex-shrink-0 lg:max-h-[calc(100vh-140px)] lg:overflow-y-auto">
+          <div className="sticky top-[140px] w-full space-y-6 lg:w-[320px] lg:flex-shrink-0">
             <div className="mb-4">
               <h2 className="text-title-lg text-slate-900">Automation Workbench</h2>
               <p className="text-sm text-slate-600">Build and manage automated workflows</p>
@@ -1612,11 +1631,13 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                       />
                     </div>
                     <p className="mt-1 text-xs text-slate-500">{automation.metric}</p>
-                    <div className="mt-2 flex gap-2">
-                      <button className="text-xs text-[var(--primary-600)] hover:text-[var(--primary-700)]">
+                    <div className="mt-2 flex justify-end">
+                      <button
+                        type="button"
+                        className="text-xs font-semibold text-[var(--primary-600)] transition hover:text-[var(--primary-700)]"
+                      >
                         {automation.status === 'active' ? 'Pause' : 'Resume'}
                       </button>
-                      <button className="text-xs text-slate-500 hover:text-slate-700">Edit</button>
                     </div>
                   </div>
                 ))}
