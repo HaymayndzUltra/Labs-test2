@@ -94,6 +94,17 @@ export type CommerceSection = {
     description: string;
     status: 'healthy' | 'attention' | 'delayed';
   }>;
+  monthlyBreakdown: Array<{
+    month: string;
+    net: number;
+  }>;
+  inventoryAlerts: Array<{
+    id: string;
+    title: string;
+    type: 'returns' | 'low-stock';
+    impact: string;
+    status: 'urgent' | 'monitor' | 'healthy';
+  }>;
 };
 
 export type CorporateSection = {
@@ -106,6 +117,20 @@ export type CorporateSection = {
     delta: number;
   }>;
   leadSources: PieSegment[];
+  conversionCampaigns: ChartPoint[];
+  channelPerformance: Array<{
+    id: string;
+    channel: string;
+    spend: string;
+    pipeline: string;
+    roi: string;
+  }>;
+  segmentImpact: Array<{
+    id: string;
+    segment: string;
+    influence: string;
+    winRate: string;
+  }>;
   automation: AutomationWorkflow[];
   insights: Array<{
     id: string;
@@ -131,6 +156,21 @@ export type CustomAppSection = {
   workloadDistribution: ChartPoint[];
   automation: AutomationWorkflow[];
   backlogIdeas: string[];
+  usageTracking: ChartPoint[];
+  quickstartAutomations: Array<{
+    id: string;
+    name: string;
+    adoption: number;
+    impact: string;
+    category: string;
+  }>;
+  opsBacklog: Array<{
+    id: string;
+    request: string;
+    owner: string;
+    status: 'queued' | 'in-progress' | 'blocked';
+    eta: string;
+  }>;
 };
 
 export type ContentSection = {
@@ -151,6 +191,13 @@ export type ContentSection = {
     topic: string;
     editor: string;
     status: 'ready' | 'in-review' | 'blocked';
+  }>;
+  highlights: Array<{
+    id: string;
+    title: string;
+    owner: string;
+    status: 'approved' | 'needs-review' | 'in-progress';
+    timestamp: string;
   }>;
 };
 
@@ -178,6 +225,17 @@ export type EdTechSection = {
     message: string;
     severity: 'info' | 'warning' | 'critical';
   }>;
+  successSummary: {
+    uplift: string;
+    delta: number;
+    narrative: string;
+    breakdown: Array<{
+      id: string;
+      label: string;
+      value: string;
+      trend: MetricTrend;
+    }>;
+  };
 };
 
 export type SpecializedSection = {
@@ -211,6 +269,12 @@ export type SpecializedSection = {
     }>;
     automation: AutomationWorkflow[];
   };
+  industrySignals: Array<{
+    id: string;
+    title: string;
+    detail: string;
+    confidence: string;
+  }>;
 };
 
 export type PortfolioDashboardResponse = {
@@ -508,6 +572,15 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         inventory: 520,
         trend: 'up',
       },
+      {
+        id: 'prod-5',
+        name: 'Everyday Commuter Backpack',
+        category: 'Gear',
+        revenue: '$244K',
+        conversionRate: '6.9%',
+        inventory: 358,
+        trend: 'up',
+      },
     ],
     salesTrend: [
       { label: 'Mar', value: 210 },
@@ -573,6 +646,38 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         status: 'attention',
       },
     ],
+    monthlyBreakdown: [
+      { month: 'Jun', net: 1.92 },
+      { month: 'Jul', net: 2.04 },
+      { month: 'Aug', net: 2.21 },
+      { month: 'Sep', net: 2.38 },
+      { month: 'Oct', net: 2.57 },
+      { month: 'Nov', net: 2.88 },
+      { month: 'Dec', net: 3.14 },
+    ],
+    inventoryAlerts: [
+      {
+        id: 'alert-1',
+        title: 'Return spike – Smart Hydration Bottle',
+        type: 'returns',
+        impact: '2.8% ↑ vs goal',
+        status: 'monitor',
+      },
+      {
+        id: 'alert-2',
+        title: 'Low stock – Studio Performance Set',
+        type: 'low-stock',
+        impact: '14 days of cover left',
+        status: 'urgent',
+      },
+      {
+        id: 'alert-3',
+        title: 'Low stock – Minimalist Trainer',
+        type: 'low-stock',
+        impact: 'Next shipment ETA 4 days',
+        status: 'monitor',
+      },
+    ],
   },
   corporate: {
     metrics: [
@@ -622,6 +727,28 @@ const portfolioDashboard: PortfolioDashboardResponse = {
       { id: 'events', label: 'Events & webinars', value: 18, color: '#06b6d4' },
       { id: 'partners', label: 'Partner referrals', value: 14, color: '#f97316' },
       { id: 'direct', label: 'Direct & outbound', value: 9, color: '#10b981' },
+    ],
+    conversionCampaigns: [
+      { label: 'Jul', value: 2.1, secondary: 1.4 },
+      { label: 'Aug', value: 2.4, secondary: 1.6 },
+      { label: 'Sep', value: 2.8, secondary: 1.9 },
+      { label: 'Oct', value: 3.1, secondary: 2.2 },
+      { label: 'Nov', value: 3.4, secondary: 2.5 },
+      { label: 'Dec', value: 3.9, secondary: 2.9 },
+    ],
+    channelPerformance: [
+      { id: 'channel-1', channel: 'Paid search', spend: '$184K', pipeline: '$2.6M', roi: '6.2x' },
+      { id: 'channel-2', channel: 'Paid social', spend: '$136K', pipeline: '$1.9M', roi: '5.1x' },
+      { id: 'channel-3', channel: 'Field events', spend: '$92K', pipeline: '$1.4M', roi: '4.7x' },
+      { id: 'channel-4', channel: 'Partner co-marketing', spend: '$54K', pipeline: '$1.1M', roi: '7.8x' },
+      { id: 'channel-5', channel: 'Outbound SDR', spend: '$76K', pipeline: '$980K', roi: '4.2x' },
+    ],
+    segmentImpact: [
+      { id: 'seg-1', segment: 'Enterprise', influence: '$5.8M', winRate: '32%' },
+      { id: 'seg-2', segment: 'Upper mid-market', influence: '$3.2M', winRate: '28%' },
+      { id: 'seg-3', segment: 'Mid-market', influence: '$2.1M', winRate: '24%' },
+      { id: 'seg-4', segment: 'SMB', influence: '$1.1M', winRate: '19%' },
+      { id: 'seg-5', segment: 'Public sector', influence: '$780K', winRate: '22%' },
     ],
     automation: [
       {
@@ -803,6 +930,27 @@ const portfolioDashboard: PortfolioDashboardResponse = {
       'Revenue workspace with finance system sync',
       'Customer health scoring scenario planner',
     ],
+    usageTracking: [
+      { label: 'Jul', value: 54, secondary: 42 },
+      { label: 'Aug', value: 62, secondary: 48 },
+      { label: 'Sep', value: 68, secondary: 51 },
+      { label: 'Oct', value: 74, secondary: 57 },
+      { label: 'Nov', value: 81, secondary: 63 },
+      { label: 'Dec', value: 88, secondary: 69 },
+    ],
+    quickstartAutomations: [
+      { id: 'qa-1', name: 'Schedule stand-up summary', adoption: 86, impact: '+12% throughput', category: 'Engineering' },
+      { id: 'qa-2', name: 'Auto-provision workspaces', adoption: 74, impact: '-18% setup time', category: 'IT Ops' },
+      { id: 'qa-3', name: 'Feedback triage labels', adoption: 69, impact: '+9 pt CSAT', category: 'Product' },
+      { id: 'qa-4', name: 'Exec digest compiler', adoption: 63, impact: '4 hrs saved/wk', category: 'Leadership' },
+    ],
+    opsBacklog: [
+      { id: 'ops-1', request: 'Contract renewal workflow', owner: 'RevOps', status: 'queued', eta: 'Jan 12' },
+      { id: 'ops-2', request: 'Usage-to-billing sync', owner: 'Finance', status: 'in-progress', eta: 'Dec 22' },
+      { id: 'ops-3', request: 'CS escalation routing', owner: 'Support Ops', status: 'queued', eta: 'Jan 5' },
+      { id: 'ops-4', request: 'Data residency selector', owner: 'Security', status: 'blocked', eta: 'TBD' },
+      { id: 'ops-5', request: 'Role audit trail', owner: 'Compliance', status: 'in-progress', eta: 'Jan 18' },
+    ],
   },
   content: {
     metrics: [
@@ -945,6 +1093,36 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         status: 'blocked',
       },
     ],
+    highlights: [
+      {
+        id: 'highlight-1',
+        title: 'Executive newsletter approved for syndication',
+        owner: 'Editorial board',
+        status: 'approved',
+        timestamp: 'Updated 14m ago',
+      },
+      {
+        id: 'highlight-2',
+        title: 'Legal review pending on brand partnership script',
+        owner: 'Legal ops',
+        status: 'needs-review',
+        timestamp: 'Due in 2h',
+      },
+      {
+        id: 'highlight-3',
+        title: 'Community Q&A highlight reel stitching',
+        owner: 'Video lab',
+        status: 'in-progress',
+        timestamp: 'ETA today 5:30 PM',
+      },
+      {
+        id: 'highlight-4',
+        title: 'Spotlight series guest confirmed (Week 49)',
+        owner: 'Guest booking',
+        status: 'approved',
+        timestamp: 'Logged 32m ago',
+      },
+    ],
   },
   edtech: {
     metrics: [
@@ -1009,6 +1187,13 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         enrollment: 4873,
         completion: '71%',
         avgScore: '79%',
+      },
+      {
+        id: 'course-5',
+        title: 'Revenue Operations Foundations',
+        enrollment: 3628,
+        completion: '74%',
+        avgScore: '83%',
       },
     ],
     activityHeatmap: {
@@ -1101,6 +1286,16 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         severity: 'info',
       },
     ],
+    successSummary: {
+      uplift: '+6.4 pt graduation uplift',
+      delta: 6.4,
+      narrative: 'Personalized pacing plans and mentor rotations increased graduation odds across priority cohorts.',
+      breakdown: [
+        { id: 'ss-1', label: 'At-risk cohort uplift', value: '+9.1 pts', trend: 'up' },
+        { id: 'ss-2', label: 'Mentor satisfaction', value: '94%', trend: 'up' },
+        { id: 'ss-3', label: 'Scholarship retention', value: '87%', trend: 'steady' },
+      ],
+    },
   },
   specialized: {
     realEstate: {
@@ -1301,6 +1496,22 @@ const portfolioDashboard: PortfolioDashboardResponse = {
           channel: 'Virtual',
           status: 'Confirmed',
         },
+        {
+          id: 'appt-4',
+          patient: 'Noah Bennett',
+          clinician: 'Dr. Camille Hart',
+          start: 'Dec 10 • 16:20',
+          channel: 'In-person',
+          status: 'Confirmed',
+        },
+        {
+          id: 'appt-5',
+          patient: 'Emi Nakamura',
+          clinician: 'Dr. Luis Romero',
+          start: 'Dec 11 • 10:05',
+          channel: 'Virtual',
+          status: 'Awaiting Intake',
+        },
       ],
       automation: [
         {
@@ -1325,6 +1536,32 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         },
       ],
     },
+    industrySignals: [
+      {
+        id: 'signal-1',
+        title: 'Fintech compliance automation demand spiking',
+        detail: 'Inbound RFPs up 18% month-over-month across regulated fintech segments.',
+        confidence: 'High',
+      },
+      {
+        id: 'signal-2',
+        title: 'Hybrid care clinics expanding asynchronous consults',
+        detail: 'Clinics piloting AI triage tools report 2.6x faster routing.',
+        confidence: 'Medium',
+      },
+      {
+        id: 'signal-3',
+        title: 'Proptech marketplaces consolidating data feeds',
+        detail: 'MLS API consolidation driving demand for workflow standardization.',
+        confidence: 'Medium',
+      },
+      {
+        id: 'signal-4',
+        title: 'Sustainability reporting mandates accelerating',
+        detail: 'EU CSRD readiness programs triggering automation backlogs for suppliers.',
+        confidence: 'High',
+      },
+    ],
   },
 };
 
