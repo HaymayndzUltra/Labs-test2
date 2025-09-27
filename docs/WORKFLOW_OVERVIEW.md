@@ -10,6 +10,22 @@ Understanding → Planning        Draft PRD & architecture (dev-workflow)    PRD
                                 Define DB/API/UI, estimates                Wireframes/mockups
                                                                             Sign-off: PRD + Architecture OK
 
+### PRD + Architecture Gate Automation
+
+- **Generator:** `scripts/generate_prd_assets.py` consumes `PLAN.md` / `PLAN.tasks.json` and writes `PRD.md` and `ARCHITECTURE.md` inside the active project directory.
+- **Validator:** `scripts/validate_prd_gate.py` halts the lifecycle when either file is missing, required sections are absent, or the sign-off metadata is incomplete.
+- **Required front matter:**
+
+  ```yaml
+  ---
+  signoff_stage: PRD + Architecture OK
+  signoff_approver: <approver name or automation id>
+  signoff_timestamp: 2024-01-01T00:00:00Z
+  ---
+  ```
+
+  The approver must be populated (no `TBD`/`pending` placeholders) and the timestamp must be ISO-8601.
+
 Planning → Generation           Dry-run scaffold                           Structure preview
                                 Generate repo(s)                           Generated project(s)
                                 CI/CD, docs, rules emitted                 Sign-off: Scaffold OK
