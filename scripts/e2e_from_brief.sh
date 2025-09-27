@@ -141,6 +141,25 @@ echo "[E2E] Plan from brief"
 echo "[E2E] Validate tasks graph"
 "$PY_BIN" scripts/validate_tasks.py --input "$PLAN_TASKS_PATH"
 
+echo "[E2E] Generate PRD & architecture"
+"$PY_BIN" scripts/generate_prd_assets.py \
+  --name "$NAME" \
+  --plan "$PLAN_PATH" \
+  --tasks "$PLAN_TASKS_PATH" \
+  --output-dir "$PROJECT_DIR" \
+  --frontend "$FE" \
+  --backend "$BE" \
+  --database "$DB" \
+  --auth "${AUTH:-}" \
+  --deploy "${DEPLOY:-}" \
+  --industry "${INDUSTRY:-}" \
+  --project-type "${PROJECT_TYPE:-}"
+
+echo "[E2E] Validate PRD gate"
+"$PY_BIN" scripts/validate_prd_gate.py \
+  --prd "$PROJECT_DIR/PRD.md" \
+  --architecture "$PROJECT_DIR/ARCHITECTURE.md"
+
 echo "[E2E] Preflight selection gate"
 selection_cmd=(
   "$PY_BIN" scripts/select_stacks.py

@@ -84,7 +84,26 @@ python scripts/validate_tasks.py --input "${PROJECT_DIR}/PLAN.tasks.json"
 
 Ensures unique IDs, valid dependency edges, and enum integrity before generation.
 
-### 4. Preflight stack selection
+### 4. Generate PRD & architecture summary
+
+```bash
+python scripts/generate_prd_assets.py \
+  --name "$NAME" \
+  --plan "${PROJECT_DIR}/PLAN.md" \
+  --tasks "${PROJECT_DIR}/PLAN.tasks.json" \
+  --output-dir "$PROJECT_DIR" \
+  --frontend "$FE" --backend "$BE" --database "$DB" \
+  --auth "${AUTH:-}" --deploy "${DEPLOY:-}" \
+  --industry "$INDUSTRY" --project-type "$PROJECT_TYPE"
+
+python scripts/validate_prd_gate.py \
+  --prd "${PROJECT_DIR}/PRD.md" \
+  --architecture "${PROJECT_DIR}/ARCHITECTURE.md"
+```
+
+This step applies the `dev-workflow/1-create-prd.md` protocol automatically, producing `PRD.md` and `ARCHITECTURE.md` under the project directory. The validator halts the lifecycle if either file is missing, if required sections are absent, or if the front matter omits the sign-off metadata shown in [Workflow Overview](WORKFLOW_OVERVIEW.md#prd--architecture-gate-automation).
+
+### 5. Preflight stack selection
 
 ```bash
 python scripts/select_stacks.py \
@@ -99,7 +118,7 @@ python scripts/select_stacks.py \
 
 Add `--compliance "$COMPLIANCE"` or `--nestjs-orm "$NESTJS_ORM"` when required. Exit code `3` indicates unmet engine version requirements.
 
-### 5. Dry-run generation (no writes)
+### 6. Dry-run generation (no writes)
 
 ```bash
 ./scripts/generate_client_project.py \
@@ -111,7 +130,7 @@ Add `--compliance "$COMPLIANCE"` or `--nestjs-orm "$NESTJS_ORM"` when required. 
 
 Review the printed tree to confirm the scaffold layout.
 
-### 6. Generate the project
+### 7. Generate the project
 
 ```bash
 ./scripts/generate_client_project.py \
@@ -123,7 +142,7 @@ Review the printed tree to confirm the scaffold layout.
 
 All files are written beneath `${OUTPUT_ROOT}/${NAME}`.
 
-### 7. Install dependencies & run tests
+### 8. Install dependencies & run tests
 
 ```bash
 PROJECT_ROOT="$PROJECT_DIR" ./scripts/install_and_test.sh
@@ -131,7 +150,7 @@ PROJECT_ROOT="$PROJECT_DIR" ./scripts/install_and_test.sh
 
 The helper script detects which stacks were generated and executes language-appropriate installs and tests, writing logs and artifacts inside `${PROJECT_ROOT}`.
 
-### 8. Sync tasks and revalidate
+### 9. Sync tasks and revalidate
 
 ```bash
 python scripts/sync_from_scaffold.py --input "${PROJECT_DIR}/PLAN.tasks.json" --root "$PROJECT_DIR"
@@ -141,7 +160,7 @@ python scripts/validate_tasks.py --input "${PROJECT_DIR}/tasks.json"
 
 Keeps the tasks DAG aligned with generated assets.
 
-### 9. Collect metrics and enforce gates
+### 10. Collect metrics and enforce gates
 
 ```bash
 PROJECT_ROOT="$PROJECT_DIR" python scripts/collect_coverage.py || true
@@ -152,7 +171,7 @@ PROJECT_ROOT="$PROJECT_DIR" python scripts/enforce_gates.py
 
 Gate thresholds are defined in [`gates_config.yaml`](../gates_config.yaml).
 
-### 10. Build the submission pack
+### 11. Build the submission pack
 
 ```bash
 PROJECT_ROOT="$PROJECT_DIR" NAME="$NAME" ./scripts/build_submission_pack.sh
@@ -160,7 +179,7 @@ PROJECT_ROOT="$PROJECT_DIR" NAME="$NAME" ./scripts/build_submission_pack.sh
 
 Bundles evidence, metrics, and manifests under `${PROJECT_ROOT}/dist/` for hand-off.
 
-### 11. Validate compliance assets
+### 12. Validate compliance assets
 
 ```bash
 python scripts/validate_compliance_assets.py | tee "${PROJECT_DIR}/evidence/validate_compliance_assets.log"
