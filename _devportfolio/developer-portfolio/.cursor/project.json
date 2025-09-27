@@ -1,0 +1,26 @@
+{
+  "name": "developer-portfolio",
+  "industry": "enterprise",
+  "project_type": "web",
+  "stack": {
+    "frontend": "nextjs",
+    "backend": "none",
+    "database": "none",
+    "auth": "none",
+    "deploy": "vercel"
+  },
+  "features": [
+    "api_gateway",
+    "audit_logging",
+    "compliance_reporting",
+    "data_governance",
+    "enterprise_auth",
+    "reporting",
+    "role_based_access",
+    "sso_integration"
+  ],
+  "compliance": [
+    "accessibility",
+    "performance"
+  ]
+}

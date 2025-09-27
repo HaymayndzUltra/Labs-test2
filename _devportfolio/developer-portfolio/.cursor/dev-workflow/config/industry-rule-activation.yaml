@@ -1,0 +1,214 @@
+# Industry Rule Activation Configuration
+# Defines how industry patterns map to specific rules and compliance requirements
+
+industry_patterns:
+  healthcare:
+    primary_rules:
+      - "common-rule-client-industry-patterns"
+      - "healthcare-compliance"
+      - "hipaa-patterns"
+      - "patient-data-protection"
+    
+    compliance_rules:
+      - "hipaa-compliance"
+      - "hitECH-compliance"
+      - "fda-compliance"
+    
+    security_rules:
+      - "encryption-at-rest"
+      - "audit-logging"
+      - "rbac-patterns"
+      - "session-management"
+    
+    tech_stack_rules:
+      - "healthcare-apis"
+      - "medical-software-patterns"
+      - "patient-portal-ux"
+    
+    triggers:
+      keywords: ["patient", "medical", "health", "clinic", "hospital", "hipaa"]
+      tech_stack: ["healthcare-apis", "epic", "cerner", "hl7", "fhir"]
+      directories: ["patient-portal", "medical-records", "appointment-scheduling"]
+      files: ["patient", "medical", "health", "hipaa", "clinical"]
+
+  finance:
+    primary_rules:
+      - "common-rule-client-industry-patterns"
+      - "finance-compliance"
+      - "sox-patterns"
+      - "pci-dss-security"
+    
+    compliance_rules:
+      - "sox-compliance"
+      - "pci-dss-compliance"
+      - "basel-iii-compliance"
+    
+    security_rules:
+      - "fraud-detection"
+      - "transaction-monitoring"
+      - "audit-trails"
+      - "secure-payments"
+    
+    tech_stack_rules:
+      - "payment-processing"
+      - "financial-apis"
+      - "banking-software"
+      - "trading-systems"
+    
+    triggers:
+      keywords: ["payment", "transaction", "banking", "financial", "sox", "pci"]
+      tech_stack: ["stripe", "paypal", "financial-apis", "trading", "banking"]
+      directories: ["payment-processing", "account-management", "fraud-detection"]
+      files: ["payment", "transaction", "banking", "financial", "sox", "pci"]
+
+  ecommerce:
+    primary_rules:
+      - "common-rule-client-industry-patterns"
+      - "ecommerce-optimization"
+      - "gdpr-privacy"
+      - "payment-security"
+    
+    compliance_rules:
+      - "gdpr-compliance"
+      - "ccpa-compliance"
+      - "pci-dss-compliance"
+    
+    security_rules:
+      - "secure-checkout"
+      - "data-privacy"
+      - "cart-protection"
+      - "inventory-security"
+    
+    tech_stack_rules:
+      - "product-catalog"
+      - "shopping-cart"
+      - "payment-gateways"
+      - "inventory-management"
+    
+    triggers:
+      keywords: ["shop", "store", "product", "cart", "checkout", "gdpr"]
+      tech_stack: ["shopify", "woocommerce", "stripe", "payment-gateways"]
+      directories: ["product-catalog", "shopping-cart", "order-management"]
+      files: ["shop", "store", "product", "cart", "checkout", "ecommerce"]
+
+  enterprise:
+    primary_rules:
+      - "common-rule-client-industry-patterns"
+      - "enterprise-saas"
+      - "multi-tenant-architecture"
+      - "sso-integration"
+    
+    compliance_rules:
+      - "soc2-compliance"
+      - "iso27001-compliance"
+      - "fedramp-compliance"
+    
+    security_rules:
+      - "multi-tenant-security"
+      - "sso-patterns"
+      - "api-management"
+      - "enterprise-auth"
+    
+    tech_stack_rules:
+      - "admin-dashboards"
+      - "user-management"
+      - "api-gateways"
+      - "enterprise-integrations"
+    
+    triggers:
+      keywords: ["enterprise", "saas", "multi-tenant", "sso", "admin"]
+      tech_stack: ["auth0", "okta", "salesforce", "microsoft-365"]
+      directories: ["admin-dashboard", "user-management", "api-management"]
+      files: ["enterprise", "admin", "user", "organization", "team"]
+
+  consumer_mobile:
+    primary_rules:
+      - "common-rule-client-industry-patterns"
+      - "mobile-first-design"
+      - "pwa-patterns"
+      - "app-store-compliance"
+    
+    compliance_rules:
+      - "app-store-guidelines"
+      - "google-play-guidelines"
+      - "accessibility-compliance"
+    
+    security_rules:
+      - "mobile-security"
+      - "biometric-auth"
+      - "offline-security"
+      - "push-notification-security"
+    
+    tech_stack_rules:
+      - "react-native"
+      - "flutter"
+      - "pwa"
+      - "mobile-apis"
+    
+    triggers:
+      keywords: ["mobile", "app", "ios", "android", "pwa", "progressive"]
+      tech_stack: ["react-native", "expo", "flutter", "pwa"]
+      directories: ["mobile-app", "pwa", "mobile", "app"]
+      files: ["mobile", "app", "ios", "android", "pwa"]
+
+# Rule precedence configuration
+rule_precedence:
+  - "security-compliance-overlay"  # Highest priority
+  - "auditor-validator-protocol"
+  - "code-modification-safety-protocol"
+  - "code-quality-checklist"
+  - "complex-feature-context-preservation"
+  - "ai-collaboration-guidelines"
+  - "documentation-and-context-guidelines"
+  - "dev-workflow-command-router"
+  - "project-rules"  # Lowest priority
+
+# Confidence thresholds
+confidence_thresholds:
+  high_confidence: 0.8
+  medium_confidence: 0.6
+  low_confidence: 0.4
+  minimum_threshold: 0.3
+
+# Rule activation behavior
+activation_behavior:
+  high_confidence:
+    - activate_all_industry_rules: true
+    - activate_compliance_rules: true
+    - activate_security_rules: true
+    - activate_tech_stack_rules: true
+  
+  medium_confidence:
+    - activate_all_industry_rules: true
+    - activate_compliance_rules: true
+    - activate_security_rules: false
+    - activate_tech_stack_rules: true
+  
+  low_confidence:
+    - activate_all_industry_rules: true
+    - activate_compliance_rules: false
+    - activate_security_rules: false
+    - activate_tech_stack_rules: false
+  
+  below_threshold:
+    - activate_all_industry_rules: false
+    - activate_compliance_rules: false
+    - activate_security_rules: false
+    - activate_tech_stack_rules: false
+    - fallback_to_generic_rules: true
+
+# Integration with existing dev-workflow
+dev_workflow_integration:
+  context_discovery_enhancement: true
+  automatic_rule_loading: true
+  industry_specific_templates: true
+  compliance_automation: true
+  performance_optimization: true
+
+# Monitoring and analytics
+monitoring:
+  track_industry_detection_accuracy: true
+  track_rule_activation_performance: true
+  track_compliance_coverage: true
+  generate_analytics_reports: true
+  alert_on_low_confidence: true

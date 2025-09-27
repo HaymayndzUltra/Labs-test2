@@ -1,0 +1,25 @@
+{
+  "mode": "full",
+  "included_master_rules": true,
+  "included_common_rules": true,
+  "emitted_project_rules": [
+    "project-rules/client-specific-rules.mdc",
+    "project-rules/industry-compliance-accessibility.mdc",
+    "project-rules/industry-compliance-performance.mdc",
+    "project-rules/project-workflow.mdc"
+  ],
+  "manifest_includes": [],
+  "selected_includes": [
+    "project-rules/accessibility.mdc",
+    "project-rules/nextjs-a11y.mdc",
+    "project-rules/nextjs-formatting.mdc",
+    "project-rules/nextjs-rsc-and-client.mdc",
+    "project-rules/nextjs.mdc",
+    "project-rules/typescript.mdc"
+  ],
+  "fallbacks_written": [
+    "project-rules/accessibility.mdc",
+    "project-rules/nextjs-a11y.mdc",
+    "project-rules/nextjs-rsc-and-client.mdc"
+  ]
+}

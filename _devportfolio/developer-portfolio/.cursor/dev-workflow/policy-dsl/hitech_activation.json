@@ -1,0 +1,7 @@
+{
+  "name": "HITECH-compliance",
+  "scope": "industry:healthcare",
+  "priority": 60,
+  "conditions": ["industry:healthcare", "compliance:hitech"],
+  "actions": ["activate:hitech"]
+}

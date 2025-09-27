@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  dev:
+    build: .
+    volumes:
+      - .:/workspace
+    ports:
+      - 6001:6001
+    environment:
+      - NODE_ENV=development

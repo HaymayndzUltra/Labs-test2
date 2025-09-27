@@ -1,0 +1,32 @@
+---
+description: "developer-portfolio web project for the enterprise industry with a nextjs frontend and without a backend service."
+globs:
+  - "frontend/**/*"
+  - "docs/**/*"
+  - "scripts/**/*"
+  - "tests/**/*"
+alwaysApply: true
+---
+
+# developer-portfolio Project Overview
+
+- **Industry:** enterprise
+- **Project Type:** web
+- **Features:** api_gateway, audit_logging, compliance_reporting, data_governance, enterprise_auth, reporting, role_based_access, sso_integration
+
+## Technology Stack
+
+- **Frontend:** nextjs
+- **Deploy:** vercel
+
+## Compliance Considerations
+
+- Adhere to ACCESSIBILITY controls across all services and data flows.
+- Adhere to PERFORMANCE controls across all services and data flows.
+
+## Project Rules
+
+- Keep the `nextjs` frontend synchronized with backend contracts and shared APIs.
+- Prioritize delivery of key features: api_gateway, audit_logging, compliance_reporting, data_governance, enterprise_auth, reporting, role_based_access, sso_integration.
+- Document how ACCESSIBILITY obligations are met in infrastructure, code, and operations.
+- Document how PERFORMANCE obligations are met in infrastructure, code, and operations.
