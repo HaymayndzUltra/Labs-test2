@@ -123,8 +123,20 @@ Outputs include:
 - `selection.json` – machine-readable summary of layers, variants, engine checks, and template-derived layer summaries.
 - `evidence/stack-selection.md` – human-readable overview including links to each layer summary.
 - `evidence/ui-summary.md`, `evidence/api-summary.md`, `evidence/database-summary.md` – Markdown syntheses extracted from the selected template READMEs.
+- `evidence/engine-substitutions.json` – emitted only when substitutions are declared for required tooling (for example, Podman standing in for Docker). Records the declared source, resolution status, and detected version so reviewers can audit the deviation.
 
 Reviewers should open the three layer summary files and confirm the descriptions match the chosen template variant (including any downgrade notes) and that the highlighted features align with the template README. If discrepancies surface, regenerate with the correct stack or update the template documentation before continuing.
+
+#### Airgapped Docker exceptions
+
+Some regulated networks block Docker entirely. When a sanctioned substitute (e.g., Podman or NerdCTL) is approved for lifecycle use, declare it through one of the supported channels so the preflight gate knows to accept the alternative and document it for reviewers:
+
+- Set `STACK_ENGINE_SUBSTITUTIONS="docker=podman"` (comma-separated `engine=replacement` pairs), or provide JSON via `STACK_ENGINE_SUBSTITUTIONS_JSON='{"docker": "podman"}'`.
+- Point `STACK_ENGINE_SUBSTITUTIONS_FILE` to a JSON document with the same mapping when the environment cannot export long strings safely.
+- Add an `engine_substitutions` object to `workflow.config.json` for CI contexts; `scripts/e2e_from_brief.sh` forwards it automatically.
+- Legacy `ENGINE_SUBSTITUTIONS` / `ENGINE_SUBSTITUTIONS_JSON` env names remain supported for compatibility with older CI templates.
+
+The substitutions are merged in the order above, with CLI arguments taking precedence when you invoke `scripts/select_stacks.py` directly. Whenever a substitution is applied, `stack-selection.md` annotates the engine check with the override details and the run emits `evidence/engine-substitutions.json`. That evidence file captures the declared source, whether the replacement binary was detected, and the reported version output so auditors can verify the exception. Missing or invalid substitutions surface as warnings and still fail the gate if no acceptable engine can be found.
 
 ### 6. Dry-run generation (no writes)
 

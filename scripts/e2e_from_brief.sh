@@ -180,6 +180,46 @@ if [[ -n "${NESTJS_ORM:-}" ]]; then
   selection_cmd+=(--nestjs-orm "$NESTJS_ORM")
 fi
 
+ENGINE_SUBSTITUTIONS_CFG="${ENGINE_SUBSTITUTIONS_CFG:-}" 
+if [[ -z "$ENGINE_SUBSTITUTIONS_CFG" ]]; then
+  ENGINE_SUBSTITUTIONS_CFG="$(read_cfg "$CONFIG_FILE" engine_substitutions || true)"
+fi
+
+if [[ -n "$ENGINE_SUBSTITUTIONS_CFG" ]]; then
+  selection_cmd+=(--engine-substitutions-json "$ENGINE_SUBSTITUTIONS_CFG")
+  echo "[E2E] Engine substitutions from config detected." >&2
+fi
+
+if [[ -n "${STACK_ENGINE_SUBSTITUTIONS_FILE:-}" ]]; then
+  if [[ -f "$STACK_ENGINE_SUBSTITUTIONS_FILE" ]]; then
+    selection_cmd+=(--engine-substitutions-file "$STACK_ENGINE_SUBSTITUTIONS_FILE")
+    echo "[E2E] Using engine substitutions file: $STACK_ENGINE_SUBSTITUTIONS_FILE" >&2
+  else
+    echo "[E2E] STACK_ENGINE_SUBSTITUTIONS_FILE not found: $STACK_ENGINE_SUBSTITUTIONS_FILE" >&2
+  fi
+fi
+
+ENGINE_SUBSTITUTIONS_ENV="${STACK_ENGINE_SUBSTITUTIONS_JSON:-${ENGINE_SUBSTITUTIONS_JSON:-}}"
+if [[ -z "$ENGINE_SUBSTITUTIONS_ENV" ]]; then
+  ENGINE_SUBSTITUTIONS_ENV="${STACK_ENGINE_SUBSTITUTIONS:-${ENGINE_SUBSTITUTIONS:-}}"
+fi
+
+if [[ -n "$ENGINE_SUBSTITUTIONS_ENV" ]]; then
+  trimmed_env="$(printf '%s' "$ENGINE_SUBSTITUTIONS_ENV" | sed -e 's/^\s*//' -e 's/\s*$//')"
+  if [[ "${trimmed_env:0:1}" == "{" || "${trimmed_env:0:1}" == "[" ]]; then
+    selection_cmd+=(--engine-substitutions-json "$ENGINE_SUBSTITUTIONS_ENV")
+  else
+    IFS=',' read -r -a _engine_sub_pairs <<< "$ENGINE_SUBSTITUTIONS_ENV"
+    for pair in "${_engine_sub_pairs[@]}"; do
+      if [[ -n "$pair" ]]; then
+        selection_cmd+=(--engine-substitution "$pair")
+      fi
+    done
+    unset _engine_sub_pairs
+  fi
+  echo "[E2E] Engine substitutions from environment applied." >&2
+fi
+
 if ! "${selection_cmd[@]}"; then
   sel_status=$?
   if [[ $sel_status -eq 3 ]]; then
