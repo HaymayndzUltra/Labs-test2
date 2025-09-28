@@ -1,111 +1,233 @@
+# Local Development Workflow
 
+This guide walks through the non-interactive lifecycle that turns a client brief into a production-ready scaffold. Every step is executed inside an isolated project directory so factory assets remain untouched.
 
-STEP 1
+## Prerequisites
 
-1. Insert a PRD/architecture generation and validation block in `scripts/e2e_from_brief.sh` immediately after the planning tasks, invoking the existing automation in `dev-workflow/1-create-prd.md`.
-2. Fail the script when `PRD.md` or required sign-off metadata is missing or invalid, matching the criteria in `docs/WORKFLOW_OVERVIEW.md`.
-3. Document the new gate sequencing in `docs/LOCAL_DEV_WORKFLOW.md` and any other lifecycle guidance.
+- Python 3.11+, Node.js 18+ (if the selected stack includes a frontend), Docker (for containerized checks), and Git installed locally.
+- Approved brief stored at `docs/briefs/<NAME>/brief.md`.
+- Baseline defaults live in `workflow.config.json`. It ships with the most common Next.js + FastAPI stack so that only `NAME` needs to be provided for matching projects. Per-project overrides come from brief metadata (frontmatter or `docs/briefs/<NAME>/metadata.json`) and are merged automatically by `pre_lifecycle_plan.py`.
+- Optional overrides: `AUTH`, `DEPLOY`, `COMPLIANCE`, and `NESTJS_ORM` depending on the client requirements.
 
-DONE ✅
+> ℹ️ Use the [`Makefile`](../Makefile) `lifecycle` target for a single entrypoint once the environment variables are in place. The steps below describe what the script executes under the hood.
 
-Summary
+## Quick Bootstrap
 
-Inserted a PRD and architecture gate into the lifecycle script, invoking new generator and validator utilities to create the deliverables from planning artifacts and halt execution when sign-off metadata is incomplete.
+Invoke the helper to scaffold the brief, sync `workflow.config.json`, and run the full `e2e_from_brief.sh` pipeline in one command:
 
-Documented the automated gate, required front matter, and updated sequencing in the workflow guides so local runs reflect the enforced PRD approval step.
+```bash
+# From the factory repo
+NAME=portfolio-dashboard make bootstrap
+# or
+python3 scripts/bootstrap_project.py --name portfolio-dashboard --update-config
+```
 
-Testing
+The bootstrapper reads overrides from CLI flags, environment variables, or `workflow.config.json`, ensures the brief folder exists via `scaffold_briefs.py`, then delegates to the lifecycle script. Continue with the detailed steps below when you need fine-grained control or to rerun individual stages.
 
-✅ python -m compileall scripts/generate_prd_assets.py scripts/validate_prd_gate.py
+## Metadata-driven configuration
 
+Briefs now carry lightweight metadata so you rarely need to pass stack flags manually:
 
-DONE ✅ STEP 2
+- Add YAML frontmatter or a sibling `metadata.json` next to each `brief.md` with fields like `frontend`, `backend`, `database`, `auth`, and `deploy`.
+- `pre_lifecycle_plan.py` loads the baseline configuration, then merges the brief metadata and parsed scaffold spec to determine the effective stack.
+- If the brief matches the default Next.js + FastAPI profile, running `python scripts/pre_lifecycle_plan.py --name <NAME>` is sufficient—the script infers everything else.
+- Any explicit values in `metadata.json` or frontmatter override both the defaults and heuristic guesses from the parser, keeping unusual stacks flexible without touching the global config file.
 
-1. Remove `|| true` from the `install_and_test.sh` invocation in `scripts/e2e_from_brief.sh` and rely on `set -euo pipefail` for fail-fast behavior.
-2. Update `scripts/install_and_test.sh` to fall back to npm when no `pnpm-lock.yaml` exists, emit clear status logs, and exit non-zero on failure.
-3. Reflect the stricter failure handling in `docs/LOCAL_DEV_WORKFLOW.md` so operators know how to interpret CI results.
+## Step-by-Step Lifecycle
 
-Removed the guard that suppressed install/test failures so the lifecycle run stops immediately when dependencies or tests break. 
+### 0. Provision an isolated project directory
 
-Reworked scripts/install_and_test.sh to emit structured logs, pick npm automatically when pnpm-lock.yaml is absent, and fail fast across frontend, Python, Node, and Go backends. 
+All generator outputs live outside the factory repo. The `scripts/e2e_from_brief.sh` wrapper provisions a project root before any artifacts are produced.
 
-Updated the local workflow guide to document the stricter install gate behavior and package manager fallback. 
+```bash
+export NAME=acme
+export INDUSTRY=enterprise
+export PROJECT_TYPE=fullstack
+export FE=nextjs
+export BE=fastapi
+export DB=postgres
+export OUTPUT_ROOT="${OUTPUT_ROOT:-../_generated}"
 
-Testing
+mkdir -p "${OUTPUT_ROOT}"
+PROJECT_DIR="${OUTPUT_ROOT}/${NAME}"
+rm -rf "${PROJECT_DIR}" # optional; required when FORCE_OUTPUT=1
+mkdir -p "${PROJECT_DIR}/evidence"
+```
 
-✅ bash -n scripts/install_and_test.sh 
+Set `FORCE_OUTPUT=1` (or `E2E_FORCE_OUTPUT=1`) to wipe a prior run. `scripts/e2e_from_brief.sh` performs the same provisioning automatically.
 
-✅ bash -n scripts/e2e_from_brief.sh
+### 1. Bootstrap tooling
 
-DONE ✅  STEP 3
+```bash
+python scripts/doctor.py --strict || true
+./scripts/generate_client_project.py --list-templates \
+  --name "$NAME" --industry "$INDUSTRY" --project-type "$PROJECT_TYPE" | cat
+```
 
-1. Raise coverage/security targets in `gates_config.yaml` to ≥80 % coverage and zero critical/high vulnerabilities to match `docs/SLO_TARGETS.md`.
-2. Extend `scripts/collect_perf.py` (and, if necessary, `scripts/enforce_gates.py`) so the pipeline fails when no real performance measurement is provided.
-3. Update lifecycle and utility documentation to describe the enforced thresholds and required perf evidence.
+Purpose: verify required CLIs exist and confirm template availability.
 
-Summary
+### 2. Plan from the brief
 
-Raised gate thresholds to require at least 80 % coverage and zero critical/high vulnerabilities, aligning with the documented SLO targets.
+```bash
+python scripts/plan_from_brief.py \
+  --brief "docs/briefs/${NAME}/brief.md" \
+  --out "${PROJECT_DIR}/PLAN.md"
+```
 
-Hardened performance collection by requiring a positive, validated P95 latency before writing metrics/perf.json, and ensured the gate enforcer rejects missing or invalid perf evidence.
+Outputs `PLAN.md` and `PLAN.tasks.json` in the project directory.
 
-Updated lifecycle and utility guides to call out the stricter thresholds and the need for real performance measurements, plus refreshed developer docs to reflect the 80 % coverage requirement.
+### 3. Validate the task graph
 
-Testing
+```bash
+python scripts/validate_tasks.py --input "${PROJECT_DIR}/PLAN.tasks.json"
+```
 
-✅ python -m compileall scripts/collect_perf.py scripts/enforce_gates.py
+Ensures unique IDs, valid dependency edges, and enum integrity before generation.
 
-DONE ✅ STEP 4 
+### 4. Generate PRD & architecture summary
 
-1. Enhance `scripts/select_stacks.py` (or a companion module) to synthesize API, database, and UI summaries based on the chosen template and write them into the project evidence directory.
-2. Surface these artifacts in the stack-selection summary so later gates can rely on them.
-3. Extend workflow documentation to reference the new outputs and how reviewers should validate them.
+```bash
+python scripts/generate_prd_assets.py \
+  --name "$NAME" \
+  --plan "${PROJECT_DIR}/PLAN.md" \
+  --tasks "${PROJECT_DIR}/PLAN.tasks.json" \
+  --output-dir "$PROJECT_DIR" \
+  --frontend "$FE" --backend "$BE" --database "$DB" \
+  --auth "${AUTH:-}" --deploy "${DEPLOY:-}" \
+  --industry "$INDUSTRY" --project-type "$PROJECT_TYPE"
 
-Added template README summarization utilities with token replacement, feature extraction, and graceful fallbacks so UI, API, and database evidence artifacts are generated and linked during stack selection. 
+python scripts/validate_prd_gate.py \
+  --prd "${PROJECT_DIR}/PRD.md" \
+  --architecture "${PROJECT_DIR}/ARCHITECTURE.md"
+```
 
-Documented the new layer summaries in the local workflow, compliance evidence guide, and system overview so reviewers know how to validate the outputs. 
+This step applies the `dev-workflow/1-create-prd.md` protocol automatically, producing `PRD.md` and `ARCHITECTURE.md` under the project directory. The validator halts the lifecycle if either file is missing, if required sections are absent, or if the front matter omits the sign-off metadata shown in [Workflow Overview](WORKFLOW_OVERVIEW.md#prd--architecture-gate-automation).
 
-Testing
+### 5. Preflight stack selection
 
-✅ python -m compileall scripts/select_stacks.py 
+```bash
+python scripts/select_stacks.py \
+  --industry "$INDUSTRY" \
+  --project-type "$PROJECT_TYPE" \
+  --frontend "$FE" \
+  --backend "$BE" \
+  --database "$DB" \
+  --output "${PROJECT_DIR}/selection.json" \
+  --summary "${PROJECT_DIR}/evidence/stack-selection.md"
+```
 
-✅ python scripts/select_stacks.py --industry healthcare --project-type platform --frontend angular --backend nestjs --database postgres --output tmp/selection.json --summary tmp/evidence/stack-selection.md --node v20.20.0 --python 3.12.1 --go 1.21.0 --docker 24.0.0 
+Add `--compliance "$COMPLIANCE"` or `--nestjs-orm "$NESTJS_ORM"` when required. Exit code `3` indicates unmet engine version requirements.
 
+Outputs include:
 
-DONE ✅  5
+- `selection.json` – machine-readable summary of layers, variants, engine checks, and template-derived layer summaries.
+- `evidence/stack-selection.md` – human-readable overview including links to each layer summary.
+- `evidence/ui-summary.md`, `evidence/api-summary.md`, `evidence/database-summary.md` – Markdown syntheses extracted from the selected template READMEs.
+- `evidence/engine-substitutions.json` – emitted only when substitutions are declared for required tooling (for example, Podman standing in for Docker). Records the declared source, resolution status, and detected version so reviewers can audit the deviation.
 
-1. Allow CI/airgapped configurations (e.g., env vars or config files) in `scripts/select_stacks.py` and `scripts/e2e_from_brief.sh` to declare acceptable engine substitutions when Docker is unavailable.
-2. Ensure overrides are logged into the evidence directory so reviewers can audit deviations.
-3. Document sanctioned override procedures and prerequisites in `docs/LOCAL_DEV_WORKFLOW.md`.
+Reviewers should open the three layer summary files and confirm the descriptions match the chosen template variant (including any downgrade notes) and that the highlighted features align with the template README. If discrepancies surface, regenerate with the correct stack or update the template documentation before continuing.
 
-Added CLI, JSON, and environment hooks to scripts/select_stacks.py so lifecycle runs can declare engine substitutions and pass them into the preflight gate.
+#### Airgapped Docker exceptions
 
-Captured substitution outcomes in engine checks, surfaced them in markdown summaries, and persisted engine-substitutions.json for auditors when overrides are used.
+Some regulated networks block Docker entirely. When a sanctioned substitute (e.g., Podman or NerdCTL) is approved for lifecycle use, declare it through one of the supported channels so the preflight gate knows to accept the alternative and document it for reviewers:
 
-Wired scripts/e2e_from_brief.sh and docs/LOCAL_DEV_WORKFLOW.md to propagate sanctioned Docker alternatives from configs or env vars and document the approval path.
+- Set `STACK_ENGINE_SUBSTITUTIONS="docker=podman"` (comma-separated `engine=replacement` pairs), or provide JSON via `STACK_ENGINE_SUBSTITUTIONS_JSON='{"docker": "podman"}'`.
+- Point `STACK_ENGINE_SUBSTITUTIONS_FILE` to a JSON document with the same mapping when the environment cannot export long strings safely.
+- Add an `engine_substitutions` object to `workflow.config.json` for CI contexts; `scripts/e2e_from_brief.sh` forwards it automatically.
+- Legacy `ENGINE_SUBSTITUTIONS` / `ENGINE_SUBSTITUTIONS_JSON` env names remain supported for compatibility with older CI templates.
 
-Testing
+The substitutions are merged in the order above, with CLI arguments taking precedence when you invoke `scripts/select_stacks.py` directly. Whenever a substitution is applied, `stack-selection.md` annotates the engine check with the override details and the run emits `evidence/engine-substitutions.json`. That evidence file captures the declared source, whether the replacement binary was detected, and the reported version output so auditors can verify the exception. Missing or invalid substitutions surface as warnings and still fail the gate if no acceptable engine can be found.
 
-✅ python -m compileall scripts/select_stacks.py 
+### 6. Dry-run generation (no writes)
 
-✅ bash -n scripts/e2e_from_brief.sh 
+```bash
+./scripts/generate_client_project.py \
+  --name "$NAME" --industry "$INDUSTRY" --project-type "$PROJECT_TYPE" \
+  --frontend "$FE" --backend "$BE" --database "$DB" \
+  --auth "${AUTH:-}" --deploy "${DEPLOY:-}" \
+  --workers 8 --output-dir "$OUTPUT_ROOT" --yes --dry-run
+```
 
-Quality Checks
+Review the printed tree to confirm the scaffold layout.
 
-Algorithm Choice: Not applicable—changes focus on configuration parsing and evidence logging rather than introducing sorting logic.
+### 7. Generate the project
 
-Edge Cases: Handles unreadable files, invalid mappings, missing replacements, and native engines with explicit warnings and notes.
+```bash
+./scripts/generate_client_project.py \
+  --name "$NAME" --industry "$INDUSTRY" --project-type "$PROJECT_TYPE" \
+  --frontend "$FE" --backend "$BE" --database "$DB" \
+  --auth "${AUTH:-}" --deploy "${DEPLOY:-}" \
+  --workers 8 --output-dir "$OUTPUT_ROOT" --yes ${FORCE_OUTPUT:+--force}
+```
 
-Performance: Workloads are lightweight dictionary and string operations executed once per lifecycle run.
+All files are written beneath `${OUTPUT_ROOT}/${NAME}`.
 
-Error Handling: Propagates warnings into the console, markdown summary, and evidence JSON for full auditability.
+### 8. Install dependencies & run tests
 
-Code Quality: Maintains structured CLI wiring and organized reporting with dedicated override sections for reviewers.
+```bash
+PROJECT_ROOT="$PROJECT_DIR" ./scripts/install_and_test.sh
+```
 
-Testing: Verified via compile check and shell syntax validation listed above.
+The helper script detects which stacks were generated and executes language-appropriate installs and tests, writing logs and artifacts inside `${PROJECT_ROOT}`. It now emits explicit status lines for each workspace, falls back to `npm` automatically whenever no `pnpm-lock.yaml` is present, and exits non-zero on dependency or test failures. Because `scripts/e2e_from_brief.sh` no longer masks the exit code, lifecycle runs will halt here if installs or tests break—treat a failure at this stage as a required remediation before continuing.
 
-Alternatives: A centralized substitution registry could be introduced later, but the documented lightweight mapping satisfies the approved override workflow.
+### 9. Sync tasks and revalidate
 
-🎯 Note
+```bash
+python scripts/sync_from_scaffold.py --input "${PROJECT_DIR}/PLAN.tasks.json" --root "$PROJECT_DIR"
+python scripts/sync_from_scaffold.py --input "${PROJECT_DIR}/PLAN.tasks.json" --root "$PROJECT_DIR" --output "${PROJECT_DIR}/tasks.json" --apply
+python scripts/validate_tasks.py --input "${PROJECT_DIR}/tasks.json"
+```
 
-Adds engine substitution support (e.g., Podman for Docker) to the selection gate, passes overrides from config/env/CLI, and emits audited evidence and notes.
+Keeps the tasks DAG aligned with generated assets.
+
+### 10. Collect metrics and enforce gates
+
+```bash
+PROJECT_ROOT="$PROJECT_DIR" python scripts/collect_coverage.py || true
+PROJECT_ROOT="$PROJECT_DIR" python scripts/collect_perf.py
+PROJECT_ROOT="$PROJECT_DIR" python scripts/scan_deps.py || true
+PROJECT_ROOT="$PROJECT_DIR" python scripts/enforce_gates.py
+```
+
+Gate thresholds are defined in [`gates_config.yaml`](../gates_config.yaml) and
+now require **≥80 % line coverage** plus **zero critical/high dependency
+vulnerabilities**. `collect_perf.py` exits non-zero when it cannot read a real
+P95 latency value from `PERF_P95_MS` or `metrics/input_perf.txt`, preventing the
+gate from running without documented performance evidence. The generated
+`metrics/perf.json` must therefore contain a positive finite value before the
+pipeline proceeds.
+
+### 11. Build the submission pack
+
+```bash
+PROJECT_ROOT="$PROJECT_DIR" NAME="$NAME" ./scripts/build_submission_pack.sh
+```
+
+Bundles evidence, metrics, and manifests under `${PROJECT_ROOT}/dist/` for hand-off.
+
+### 12. Validate compliance assets
+
+```bash
+python scripts/validate_compliance_assets.py | tee "${PROJECT_DIR}/evidence/validate_compliance_assets.log"
+python scripts/check_compliance_docs.py || true
+```
+
+Ensures compliance controls match generated code and documentation. See the [Compliance & Evidence Guide](COMPLIANCE_EVIDENCE.md) for expectations and remediation tips.
+
+## Convenience Wrapper
+
+To run the entire sequence non-interactively:
+
+```bash
+NAME=$NAME INDUSTRY=$INDUSTRY PROJECT_TYPE=$PROJECT_TYPE \
+FE=$FE BE=$BE DB=$DB OUTPUT_ROOT=$OUTPUT_ROOT \
+make lifecycle
+```
+
+The Make target invokes `scripts/e2e_from_brief.sh`, which performs every step listed above and prints the location of the generated project on completion.
+
+## Next Steps
+
+- Follow the [Deployment Guide](DEPLOYMENT.md) to promote builds through staging and production.
+- Monitor pipelines using the [CI/CD Overview](CI_CD_OVERVIEW.md).
+- Maintain audit artifacts as described in the [Compliance & Evidence Guide](COMPLIANCE_EVIDENCE.md).
