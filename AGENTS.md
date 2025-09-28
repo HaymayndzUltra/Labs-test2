@@ -55,8 +55,25 @@ Testing
 
 ✅ python -m compileall scripts/collect_perf.py scripts/enforce_gates.py
 
-NEXT STEP 4 
+DONE ✅ STEP 4 
 
 1. Enhance `scripts/select_stacks.py` (or a companion module) to synthesize API, database, and UI summaries based on the chosen template and write them into the project evidence directory.
 2. Surface these artifacts in the stack-selection summary so later gates can rely on them.
 3. Extend workflow documentation to reference the new outputs and how reviewers should validate them.
+
+Added template README summarization utilities with token replacement, feature extraction, and graceful fallbacks so UI, API, and database evidence artifacts are generated and linked during stack selection. 
+
+Documented the new layer summaries in the local workflow, compliance evidence guide, and system overview so reviewers know how to validate the outputs. 
+
+Testing
+
+✅ python -m compileall scripts/select_stacks.py 
+
+✅ python scripts/select_stacks.py --industry healthcare --project-type platform --frontend angular --backend nestjs --database postgres --output tmp/selection.json --summary tmp/evidence/stack-selection.md --node v20.20.0 --python 3.12.1 --go 1.21.0 --docker 24.0.0 
+
+
+NEXT STEP 5
+
+1. Allow CI/airgapped configurations (e.g., env vars or config files) in `scripts/select_stacks.py` and `scripts/e2e_from_brief.sh` to declare acceptable engine substitutions when Docker is unavailable.
+2. Ensure overrides are logged into the evidence directory so reviewers can audit deviations.
+3. Document sanctioned override procedures and prerequisites in `docs/LOCAL_DEV_WORKFLOW.md`.
