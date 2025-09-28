@@ -1,0 +1,8 @@
+{
+  "points": [
+    {"building": "Tower A", "activity_index": 0.82},
+    {"building": "Tower B", "activity_index": 0.67},
+    {"building": "Garden Flats", "activity_index": 0.58},
+    {"building": "Skyline Lofts", "activity_index": 0.74}
+  ]
+}

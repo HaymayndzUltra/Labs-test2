@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+echo "Docker version 25.0.0, build mock"

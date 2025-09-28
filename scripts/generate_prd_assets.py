@@ -41,10 +41,13 @@ def extract_template_sections(protocol_path: Path) -> dict[str, str]:
     text = protocol_path.read_text(encoding="utf-8", errors="ignore") if protocol_path.exists() else ""
     marker = "```markdown"
     start = text.find(marker)
-    end = text.find("```", start + len(marker)) if start != -1 else -1
-    if start == -1 or end == -1:
+    if start == -1:
         return {}
-    block = text[start + len(marker):end]
+    remainder = text[start + len(marker):]
+    end = remainder.rfind("```")
+    if end == -1:
+        return {}
+    block = remainder[:end]
     return {"template": dedent(block).strip()}
 
 
