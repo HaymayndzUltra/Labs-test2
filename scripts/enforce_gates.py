@@ -15,6 +15,7 @@ Metrics files expected:
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 import sys
@@ -84,7 +85,12 @@ def read_perf_p95_ms() -> float:
     if not p.exists():
         raise SystemExit("[GATES] metrics/perf.json missing")
     d = _read_json(p)
-    return float(d.get("http_p95_ms") or d.get("p95_ms") or d.get("p95"))
+    val = float(d.get("http_p95_ms") or d.get("p95_ms") or d.get("p95"))
+    if not math.isfinite(val) or val <= 0:
+        raise SystemExit(
+            f"[GATES] Invalid perf measurement in {p}: expected positive finite number, got {val!r}"
+        )
+    return val
 
 
 def thresholds_from_quality_gates(gates: dict) -> dict:

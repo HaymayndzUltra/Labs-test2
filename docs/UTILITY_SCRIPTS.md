@@ -310,36 +310,27 @@ python scripts/collect_coverage.py --format xml --output-file coverage.xml
 
 ### collect_perf.py
 
-Collects performance metrics.
+Collects performance metrics and refuses to emit placeholder data.
 
 #### Purpose
-- Runs performance tests
-- Collects performance metrics
-- Generates performance reports
+- Fails the run unless a real performance measurement is supplied.
+- Normalizes the input and writes `metrics/perf.json` for the gates pipeline.
+- Provides a consistent hand-off for CI/CD evidence bundles.
 
 #### Usage
 ```bash
-python scripts/collect_perf.py [options]
-```
+# Provide the latency explicitly
+PERF_P95_MS=420 python scripts/collect_perf.py
 
-#### Options
-- `--test-file` - Performance test file (default: `tests/performance.py`)
-- `--output-file` - Performance report output file
-- `--format` - Report format: json, csv, html (default: json)
-- `--iterations` - Number of test iterations (default: 10)
-- `--warmup` - Warmup iterations (default: 3)
-
-#### Example
-```bash
-# Collect performance metrics
+# Or drop a measurement in metrics/input_perf.txt first
+echo 420 > metrics/input_perf.txt
 python scripts/collect_perf.py
-
-# Collect with custom iterations
-python scripts/collect_perf.py --iterations 20 --warmup 5
-
-# Generate CSV report
-python scripts/collect_perf.py --format csv --output-file perf-report.csv
 ```
+
+The script validates that the captured latency is a positive, finite number and
+exits with status `1` when the input is missing or malformed. Downstream gates
+will also fail if `metrics/perf.json` contains a non-positive value, so ensure
+your load/perf tooling populates one of the inputs before enforcing thresholds.
 
 ## Usage Examples
 
