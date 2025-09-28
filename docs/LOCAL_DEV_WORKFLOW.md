@@ -148,7 +148,7 @@ All files are written beneath `${OUTPUT_ROOT}/${NAME}`.
 PROJECT_ROOT="$PROJECT_DIR" ./scripts/install_and_test.sh
 ```
 
-The helper script detects which stacks were generated and executes language-appropriate installs and tests, writing logs and artifacts inside `${PROJECT_ROOT}`.
+The helper script detects which stacks were generated and executes language-appropriate installs and tests, writing logs and artifacts inside `${PROJECT_ROOT}`. It now emits explicit status lines for each workspace, falls back to `npm` automatically whenever no `pnpm-lock.yaml` is present, and exits non-zero on dependency or test failures. Because `scripts/e2e_from_brief.sh` no longer masks the exit code, lifecycle runs will halt here if installs or tests break—treat a failure at this stage as a required remediation before continuing.
 
 ### 9. Sync tasks and revalidate
 
