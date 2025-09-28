@@ -6,7 +6,7 @@ export default function HomePage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-10">
       <section className="text-center space-y-4">
-        <h1 className="text-4xl sm:text-5xl font-bold text-gray-900">{APP_NAME}</h1>
+        <h1 className="text-4xl sm:text-5xl font-bold text-gray-900">Welcome to {APP_NAME}</h1>
         <p className="text-lg text-gray-600">
           Multi-tenant property operations with real-time analytics, automation cues, and secure organization-level isolation.
         </p>
