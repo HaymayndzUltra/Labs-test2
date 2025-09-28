@@ -129,6 +129,26 @@ maybe_run_package_script() {
   local dir="$1"
   local pm="$2"
   local script="$3"
+  if [[ "$dir" == "$FRONTEND_DIR" ]]; then
+    if [[ "$script" == "build" && "${SKIP_FRONTEND_BUILD:-0}" == "1" ]]; then
+      log "Skipping '$script' script in $dir (SKIP_FRONTEND_BUILD=1)"
+      return 0
+    fi
+    if [[ "$script" == "test" && "${SKIP_FRONTEND_TESTS:-0}" == "1" ]]; then
+      log "Skipping '$script' script in $dir (SKIP_FRONTEND_TESTS=1)"
+      return 0
+    fi
+  fi
+  if [[ "$dir" == "$BACKEND_DIR" ]]; then
+    if [[ "$script" == "build" && "${SKIP_BACKEND_BUILD:-0}" == "1" ]]; then
+      log "Skipping '$script' script in $dir (SKIP_BACKEND_BUILD=1)"
+      return 0
+    fi
+    if [[ "$script" == "test" && "${SKIP_BACKEND_TESTS:-0}" == "1" ]]; then
+      log "Skipping '$script' script in $dir (SKIP_BACKEND_TESTS=1)"
+      return 0
+    fi
+  fi
   case "$pm" in
     pnpm)
       log "Executing '$script' script with pnpm (if present)"
@@ -156,42 +176,54 @@ maybe_run_package_script() {
 run_node_workflow() {
   local dir="$1"
   local pm="$2"
-  case "$pm" in
-    pnpm)
-      log "Installing Node dependencies in $dir with pnpm"
-      local install_args=(install)
-      if [[ -f "$dir/pnpm-lock.yaml" ]]; then
-        install_args+=(--frozen-lockfile)
-      fi
-      run_in_dir "$dir" pnpm "${install_args[@]}"
-      maybe_run_package_script "$dir" "$pm" build
-      maybe_run_package_script "$dir" "$pm" test
-      ;;
-    npm)
-      log "Installing Node dependencies in $dir with npm"
-      if [[ -f "$dir/package-lock.json" ]]; then
-        run_in_dir "$dir" npm ci
-      else
-        run_in_dir "$dir" npm install
-      fi
-      maybe_run_package_script "$dir" "$pm" build
-      maybe_run_package_script "$dir" "$pm" test
-      ;;
-    yarn)
-      log "Installing Node dependencies in $dir with yarn"
-      local install_args=(install)
-      if [[ -f "$dir/yarn.lock" ]]; then
-        install_args+=(--frozen-lockfile)
-      fi
-      run_in_dir "$dir" yarn "${install_args[@]}"
-      maybe_run_package_script "$dir" "$pm" build
-      maybe_run_package_script "$dir" "$pm" test
-      ;;
-    *)
-      log "ERROR: Unsupported package manager '$pm' for $dir" >&2
-      exit 1
-      ;;
-  esac
+  local skip_install="false"
+  local skip_reason=""
+
+  if [[ "$dir" == "$FRONTEND_DIR" && "${SKIP_FRONTEND_INSTALL:-0}" == "1" ]]; then
+    skip_install="true"
+    skip_reason="SKIP_FRONTEND_INSTALL=1"
+  elif [[ "$dir" == "$BACKEND_DIR" && "${SKIP_BACKEND_INSTALL:-0}" == "1" ]]; then
+    skip_install="true"
+    skip_reason="SKIP_BACKEND_INSTALL=1"
+  fi
+
+  if [[ "$skip_install" == "true" ]]; then
+    log "Skipping dependency install in $dir ($skip_reason)"
+  else
+    case "$pm" in
+      pnpm)
+        log "Installing Node dependencies in $dir with pnpm"
+        local install_args=(install)
+        if [[ -f "$dir/pnpm-lock.yaml" ]]; then
+          install_args+=(--frozen-lockfile)
+        fi
+        run_in_dir "$dir" pnpm "${install_args[@]}"
+        ;;
+      npm)
+        log "Installing Node dependencies in $dir with npm"
+        if [[ -f "$dir/package-lock.json" ]]; then
+          run_in_dir "$dir" npm ci
+        else
+          run_in_dir "$dir" npm install
+        fi
+        ;;
+      yarn)
+        log "Installing Node dependencies in $dir with yarn"
+        local install_args=(install)
+        if [[ -f "$dir/yarn.lock" ]]; then
+          install_args+=(--frozen-lockfile)
+        fi
+        run_in_dir "$dir" yarn "${install_args[@]}"
+        ;;
+      *)
+        log "ERROR: Unsupported package manager '$pm' for $dir" >&2
+        exit 1
+        ;;
+    esac
+  fi
+
+  maybe_run_package_script "$dir" "$pm" build
+  maybe_run_package_script "$dir" "$pm" test
 }
 
 handle_frontend() {
@@ -213,14 +245,22 @@ handle_backend_python() {
   local has_manifest="false"
   if [[ -f "$BACKEND_DIR/requirements.txt" ]]; then
     has_manifest="true"
-    ensure_python "installing backend dependencies"
-    log "Installing Python dependencies from requirements.txt in $BACKEND_DIR"
-    run_in_dir "$BACKEND_DIR" "$PYTHON_BIN" -m pip install -r requirements.txt
+    if [[ "${SKIP_BACKEND_INSTALL:-0}" == "1" ]]; then
+      log "Skipping Python dependency install in $BACKEND_DIR (SKIP_BACKEND_INSTALL=1)"
+    else
+      ensure_python "installing backend dependencies"
+      log "Installing Python dependencies from requirements.txt in $BACKEND_DIR"
+      run_in_dir "$BACKEND_DIR" "$PYTHON_BIN" -m pip install -r requirements.txt
+    fi
   elif [[ -f "$BACKEND_DIR/pyproject.toml" ]]; then
     has_manifest="true"
-    ensure_python "installing backend project"
-    log "Installing Python project defined by pyproject.toml in $BACKEND_DIR"
-    run_in_dir "$BACKEND_DIR" "$PYTHON_BIN" -m pip install .
+    if [[ "${SKIP_BACKEND_INSTALL:-0}" == "1" ]]; then
+      log "Skipping Python project install in $BACKEND_DIR (SKIP_BACKEND_INSTALL=1)"
+    else
+      ensure_python "installing backend project"
+      log "Installing Python project defined by pyproject.toml in $BACKEND_DIR"
+      run_in_dir "$BACKEND_DIR" "$PYTHON_BIN" -m pip install .
+    fi
   fi
 
   local pytest_trigger="false"
@@ -229,9 +269,13 @@ handle_backend_python() {
   fi
 
   if [[ "$pytest_trigger" == "true" ]]; then
-    ensure_python "running backend tests"
-    log "Running backend pytest suite"
-    run_in_dir "$BACKEND_DIR" "$PYTHON_BIN" -m pytest -q
+    if [[ "${SKIP_BACKEND_TESTS:-0}" == "1" ]]; then
+      log "Skipping backend pytest suite (SKIP_BACKEND_TESTS=1)"
+    else
+      ensure_python "running backend tests"
+      log "Running backend pytest suite"
+      run_in_dir "$BACKEND_DIR" "$PYTHON_BIN" -m pytest -q
+    fi
   elif [[ "$has_manifest" == "true" ]]; then
     log "Skip: no pytest configuration detected in $BACKEND_DIR"
   fi

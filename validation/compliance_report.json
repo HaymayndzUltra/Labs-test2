@@ -1,19 +1,19 @@
 {
   "02_TECHNICAL_PLANNING.md": {
-    "encryption_at_rest": true,
-    "encryption_in_transit": true,
-    "rbac": true,
-    "audit_logging": true,
-    "session_timeout": true
+    "encryption_at_rest": false,
+    "encryption_in_transit": false,
+    "rbac": false,
+    "audit_logging": false,
+    "session_timeout": false
   },
   "08_SECURITY_COMPLIANCE.md": {
-    "encryption_at_rest": true,
-    "encryption_in_transit": true,
-    "rbac": true,
-    "audit_logging": true,
-    "session_timeout": true
+    "encryption_at_rest": false,
+    "encryption_in_transit": false,
+    "rbac": false,
+    "audit_logging": false,
+    "session_timeout": false
   },
   "10_MONITORING_OBSERVABILITY.md": {
-    "no_phi_in_logs": true
+    "no_phi_in_logs": false
   }
 }
