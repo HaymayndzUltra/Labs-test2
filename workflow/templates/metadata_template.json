@@ -1,0 +1,10 @@
+{
+  "frontend": "nextjs",
+  "backend": "fastapi",
+  "database": "postgres",
+  "auth": "auth0",
+  "deploy": "vercel",
+  "compliance": ["soc2", "hipaa"],
+  "risk_profile": "moderate",
+  "notes": "Add client-specific overrides here."
+}

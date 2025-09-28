@@ -1,0 +1,292 @@
+{
+  "evidence_root": "evidence",
+  "gates": [
+    {
+      "id": "gate_01_initiation",
+      "name": "Gate 1: Initiation & Intake",
+      "description": "Validate the project brief, capture stakeholder approvals, and provision intake evidence.",
+      "actions": [
+        {
+          "type": "copy_template",
+          "resource": "brief_template.md",
+          "destination": "{PROJECT_DIR}/docs/brief_template.md"
+        },
+        {
+          "type": "copy_template",
+          "resource": "metadata_template.json",
+          "destination": "{PROJECT_DIR}/docs/metadata_template.json"
+        },
+        {
+          "type": "copy_template",
+          "resource": "gate_checklist_template.md",
+          "destination": "{PROJECT_DIR}/docs/gate_checklist_template.md"
+        },
+        {
+          "type": "write_json",
+          "path": "{PROJECT_DIR}/evidence/initiation/intake_report.json",
+          "payload": {
+            "project": "{NAME}",
+            "industry": "{INDUSTRY}",
+            "project_type": "{PROJECT_TYPE}",
+            "generated_at": "{PROJECT_DIR}",
+            "status": "pending_approval"
+          }
+        }
+      ],
+      "evidence": [
+        "{PROJECT_DIR}/evidence/initiation/intake_report.json"
+      ],
+      "tags": ["initiation", "intake"]
+    },
+    {
+      "id": "gate_02_governance",
+      "name": "Gate 2: Configuration & Governance",
+      "description": "Merge baseline configuration with metadata and store the manifest for auditing.",
+      "required_artifacts": [
+        "{PROJECT_DIR}/evidence/initiation/intake_report.json"
+      ],
+      "actions": [
+        {
+          "type": "copy_template",
+          "resource": "risk_assessment_template.md",
+          "destination": "{PROJECT_DIR}/docs/risk_assessment_template.md"
+        },
+        {
+          "type": "write_json",
+          "path": "{PROJECT_DIR}/evidence/governance/config_manifest.json",
+          "payload": {
+            "frontend": "{FE}",
+            "backend": "{BE}",
+            "database": "{DB}",
+            "auth": "{AUTH}",
+            "deploy": "{DEPLOY}",
+            "environment": "{OUTPUT_ROOT}",
+            "status": "validated"
+          }
+        }
+      ],
+      "evidence": [
+        "{PROJECT_DIR}/evidence/governance/config_manifest.json"
+      ],
+      "tags": ["governance", "configuration"]
+    },
+    {
+      "id": "gate_03_planning",
+      "name": "Gate 3: Planning & Modeling",
+      "description": "Confirm planning assets and publish the traceability baseline.",
+      "required_artifacts": [
+        "{PROJECT_DIR}/evidence/governance/config_manifest.json"
+      ],
+      "actions": [
+        {
+          "type": "write_json",
+          "path": "{PROJECT_DIR}/evidence/planning/plan_acceptance.json",
+          "payload": {
+            "plan_status": "approved",
+            "approver": "planning_bot",
+            "timestamp": "{PROJECT_DIR}",
+            "notes": "Planning artifacts validated."
+          }
+        }
+      ],
+      "evidence": [
+        "{PROJECT_DIR}/evidence/planning/plan_acceptance.json"
+      ],
+      "tags": ["planning"]
+    },
+    {
+      "id": "gate_04_design",
+      "name": "Gate 4: Design Assurance",
+      "description": "Lint design assets and capture the review scorecard.",
+      "required_artifacts": [
+        "{PROJECT_DIR}/evidence/planning/plan_acceptance.json"
+      ],
+      "actions": [
+        {
+          "type": "write_json",
+          "path": "{PROJECT_DIR}/evidence/design/design_scorecard.json",
+          "payload": {
+            "architecture": "approved",
+            "prd": "approved",
+            "reviewers": ["design_bot"],
+            "timestamp": "{PROJECT_DIR}"
+          }
+        }
+      ],
+      "evidence": [
+        "{PROJECT_DIR}/evidence/design/design_scorecard.json"
+      ],
+      "tags": ["design"]
+    },
+    {
+      "id": "gate_05_environment",
+      "name": "Gate 5: Stack & Environment Validation",
+      "description": "Verify toolchains and capture the environment bill of materials.",
+      "required_artifacts": [
+        "{PROJECT_DIR}/evidence/design/design_scorecard.json"
+      ],
+      "actions": [
+        {
+          "type": "write_json",
+          "path": "{PROJECT_DIR}/evidence/environment/environment_bom.json",
+          "payload": {
+            "toolchains": ["node", "python", "docker"],
+            "status": "ready",
+            "timestamp": "{PROJECT_DIR}"
+          }
+        }
+      ],
+      "evidence": [
+        "{PROJECT_DIR}/evidence/environment/environment_bom.json"
+      ],
+      "tags": ["stack", "environment"]
+    },
+    {
+      "id": "gate_06_dry_run",
+      "name": "Gate 6: Dry-Run & Simulation",
+      "description": "Run the dry-run scaffold inspection and store the audit report.",
+      "required_artifacts": [
+        "{PROJECT_DIR}/evidence/environment/environment_bom.json"
+      ],
+      "actions": [
+        {
+          "type": "write_json",
+          "path": "{PROJECT_DIR}/evidence/dry_run/dry_run_audit.json",
+          "payload": {
+            "status": "clean",
+            "anomalies": [],
+            "timestamp": "{PROJECT_DIR}"
+          }
+        }
+      ],
+      "evidence": [
+        "{PROJECT_DIR}/evidence/dry_run/dry_run_audit.json"
+      ],
+      "tags": ["dry_run"]
+    },
+    {
+      "id": "gate_07_generation",
+      "name": "Gate 7: Generation & Build",
+      "description": "Execute scaffolding and capture the generation checksum.",
+      "required_artifacts": [
+        "{PROJECT_DIR}/evidence/dry_run/dry_run_audit.json"
+      ],
+      "actions": [
+        {
+          "type": "write_json",
+          "path": "{PROJECT_DIR}/evidence/generation/generation_checksum.json",
+          "payload": {
+            "status": "complete",
+            "checksum": "pending",
+            "timestamp": "{PROJECT_DIR}"
+          }
+        }
+      ],
+      "evidence": [
+        "{PROJECT_DIR}/evidence/generation/generation_checksum.json"
+      ],
+      "tags": ["generation"]
+    },
+    {
+      "id": "gate_08_testing",
+      "name": "Gate 8: Automated Testing & Scanning",
+      "description": "Run automated tests and security scans.",
+      "required_artifacts": [
+        "{PROJECT_DIR}/evidence/generation/generation_checksum.json"
+      ],
+      "actions": [
+        {
+          "type": "write_json",
+          "path": "{PROJECT_DIR}/evidence/testing/test_summary.json",
+          "payload": {
+            "tests": {
+              "unit": "pending",
+              "integration": "pending",
+              "security": "pending"
+            },
+            "timestamp": "{PROJECT_DIR}"
+          }
+        }
+      ],
+      "evidence": [
+        "{PROJECT_DIR}/evidence/testing/test_summary.json"
+      ],
+      "tags": ["testing", "quality"]
+    },
+    {
+      "id": "gate_09_traceability",
+      "name": "Gate 9: Synchronization & Traceability",
+      "description": "Ensure tasks and deliverables maintain traceability coverage.",
+      "required_artifacts": [
+        "{PROJECT_DIR}/evidence/testing/test_summary.json"
+      ],
+      "actions": [
+        {
+          "type": "write_json",
+          "path": "{PROJECT_DIR}/evidence/traceability/traceability_matrix.json",
+          "payload": {
+            "coverage": 1.0,
+            "status": "complete",
+            "timestamp": "{PROJECT_DIR}"
+          }
+        }
+      ],
+      "evidence": [
+        "{PROJECT_DIR}/evidence/traceability/traceability_matrix.json"
+      ],
+      "tags": ["traceability"]
+    },
+    {
+      "id": "gate_10_metrics",
+      "name": "Gate 10: Metrics & Observability",
+      "description": "Collect coverage, performance, and dependency metrics.",
+      "required_artifacts": [
+        "{PROJECT_DIR}/evidence/traceability/traceability_matrix.json"
+      ],
+      "actions": [
+        {
+          "type": "write_json",
+          "path": "{PROJECT_DIR}/evidence/metrics/metrics_report.json",
+          "payload": {
+            "coverage": "pending",
+            "performance_p95_ms": 0,
+            "dependency_findings": 0,
+            "timestamp": "{PROJECT_DIR}"
+          }
+        }
+      ],
+      "evidence": [
+        "{PROJECT_DIR}/evidence/metrics/metrics_report.json"
+      ],
+      "tags": ["metrics"]
+    },
+    {
+      "id": "gate_11_compliance",
+      "name": "Gate 11: Compliance & Delivery",
+      "description": "Finalize compliance attestation and assemble the submission pack.",
+      "required_artifacts": [
+        "{PROJECT_DIR}/evidence/metrics/metrics_report.json"
+      ],
+      "actions": [
+        {
+          "type": "copy_template",
+          "resource": "submission_pack_template.md",
+          "destination": "{PROJECT_DIR}/dist/submission_pack_template.md"
+        },
+        {
+          "type": "write_json",
+          "path": "{PROJECT_DIR}/evidence/compliance/compliance_attestation.json",
+          "payload": {
+            "status": "draft",
+            "evidence_manifest": "{PROJECT_DIR}/evidence/evidence_manifest.json",
+            "timestamp": "{PROJECT_DIR}"
+          }
+        }
+      ],
+      "evidence": [
+        "{PROJECT_DIR}/evidence/compliance/compliance_attestation.json"
+      ],
+      "tags": ["compliance", "delivery"]
+    }
+  ]
+}
