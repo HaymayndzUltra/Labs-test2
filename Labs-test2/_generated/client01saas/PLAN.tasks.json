@@ -1,0 +1,296 @@
+{
+  "product": [
+    {
+      "id": "PD-BRIEF",
+      "title": "Translate brief into measurable outcomes",
+      "area": "product",
+      "estimate": "0.5d",
+      "blocked_by": [],
+      "labels": ["brief"],
+      "acceptance": ["Objectives captured", "Success metrics listed"],
+      "dod": ["Stakeholders aligned"],
+      "state": "pending"
+    },
+    {
+      "id": "PD-JOURNEY",
+      "title": "Map core user journeys",
+      "area": "product",
+      "estimate": "0.5d",
+      "blocked_by": ["PD-BRIEF"],
+      "labels": ["ux"],
+      "acceptance": ["Admin + tenant swimlanes"],
+      "dod": ["Edge cases documented"],
+      "state": "pending"
+    },
+    {
+      "id": "PD-SCOPE",
+      "title": "Lock MVP scope",
+      "area": "product",
+      "estimate": "0.25d",
+      "blocked_by": ["PD-JOURNEY"],
+      "labels": ["scope"],
+      "acceptance": ["Route list confirmed", "Optional modules classified"],
+      "dod": ["Risks noted"],
+      "state": "pending"
+    }
+  ],
+  "backend": [
+    {
+      "id": "BE-SCHEMA",
+      "title": "Finalize multi-tenant schema",
+      "area": "backend",
+      "estimate": "1d",
+      "blocked_by": ["PD-SCOPE"],
+      "labels": ["database"],
+      "acceptance": ["Org + RLS columns present", "Audit trail tables"],
+      "dod": ["Alembic migration seeded"],
+      "state": "pending"
+    },
+    {
+      "id": "BE-AUTH",
+      "title": "Implement JWT auth + PBKDF2",
+      "area": "backend",
+      "estimate": "0.5d",
+      "blocked_by": ["BE-SCHEMA"],
+      "labels": ["auth"],
+      "acceptance": ["Token issuance", "Password hashing"],
+      "dod": ["Happy path test"],
+      "state": "pending"
+    },
+    {
+      "id": "BE-RLS",
+      "title": "Request-level org enforcement",
+      "area": "backend",
+      "estimate": "0.5d",
+      "blocked_by": ["BE-AUTH"],
+      "labels": ["security"],
+      "acceptance": ["Org dependency wired", "Unauthorized access rejected"],
+      "dod": ["Audit log on mutation"],
+      "state": "pending"
+    },
+    {
+      "id": "BE-SEED",
+      "title": "Seed minimal dataset",
+      "area": "backend",
+      "estimate": "0.5d",
+      "blocked_by": ["BE-SCHEMA"],
+      "labels": ["seed"],
+      "acceptance": ["Org + tenant + ticket sample"],
+      "dod": ["Script runnable"],
+      "state": "pending"
+    },
+    {
+      "id": "BE-DASH",
+      "title": "Dashboard metrics services",
+      "area": "backend",
+      "estimate": "0.5d",
+      "blocked_by": ["BE-RLS"],
+      "labels": ["analytics"],
+      "acceptance": ["KPI aggregation", "Trend queries"],
+      "dod": ["Serializer coverage"],
+      "state": "pending"
+    },
+    {
+      "id": "BE-TENANTS",
+      "title": "Tenant endpoints",
+      "area": "backend",
+      "estimate": "0.5d",
+      "blocked_by": ["BE-RLS"],
+      "labels": ["api"],
+      "acceptance": ["List scoped tenants"],
+      "dod": ["201 on create"],
+      "state": "pending"
+    },
+    {
+      "id": "BE-PAY",
+      "title": "Payments endpoints",
+      "area": "backend",
+      "estimate": "0.5d",
+      "blocked_by": ["BE-RLS"],
+      "labels": ["api"],
+      "acceptance": ["Ledger sorted", "Invalid tenant rejected"],
+      "dod": ["Audit log"],
+      "state": "pending"
+    },
+    {
+      "id": "BE-TICKETS",
+      "title": "Ticket queue endpoints",
+      "area": "backend",
+      "estimate": "0.5d",
+      "blocked_by": ["BE-RLS"],
+      "labels": ["api"],
+      "acceptance": ["List + detail scoped"],
+      "dod": ["Status update persists"],
+      "state": "pending"
+    },
+    {
+      "id": "BE-AI",
+      "title": "Rules-based AI summary",
+      "area": "backend",
+      "estimate": "0.5d",
+      "blocked_by": ["BE-DASH"],
+      "labels": ["ai"],
+      "acceptance": ["Summary response", "Automation recommendations"],
+      "dod": ["Fixture backed test"],
+      "state": "pending"
+    },
+    {
+      "id": "BE-REPORT",
+      "title": "PDF report service",
+      "area": "backend",
+      "estimate": "0.5d",
+      "blocked_by": ["BE-AI"],
+      "labels": ["reports"],
+      "acceptance": ["PDF stream returns"],
+      "dod": ["Content check"],
+      "state": "pending"
+    },
+    {
+      "id": "BE-TEST",
+      "title": "Backend test coverage",
+      "area": "backend",
+      "estimate": "0.5d",
+      "blocked_by": ["BE-REPORT"],
+      "labels": ["testing"],
+      "acceptance": ["Coverage ≥80%", "Auth fixtures"],
+      "dod": ["CI green"],
+      "state": "pending"
+    }
+  ],
+  "frontend": [
+    {
+      "id": "FE-SHELL",
+      "title": "Layout and providers",
+      "area": "frontend",
+      "estimate": "0.5d",
+      "blocked_by": ["PD-SCOPE"],
+      "labels": ["layout"],
+      "acceptance": ["Global nav", "Providers wired"],
+      "dod": ["Responsive header"],
+      "state": "pending"
+    },
+    {
+      "id": "FE-AUTH",
+      "title": "Auth context + login",
+      "area": "frontend",
+      "estimate": "0.5d",
+      "blocked_by": ["FE-SHELL", "BE-AUTH"],
+      "labels": ["auth"],
+      "acceptance": ["Token stored", "Error state"],
+      "dod": ["Redirect to dashboard"],
+      "state": "pending"
+    },
+    {
+      "id": "FE-DASH",
+      "title": "Dashboard experience",
+      "area": "frontend",
+      "estimate": "1d",
+      "blocked_by": ["FE-SHELL", "BE-DASH"],
+      "labels": ["dashboard"],
+      "acceptance": ["Cards match brief", "Charts render"],
+      "dod": ["Loading state"],
+      "state": "pending"
+    },
+    {
+      "id": "FE-TENANTS",
+      "title": "Tenant directory",
+      "area": "frontend",
+      "estimate": "0.5d",
+      "blocked_by": ["FE-AUTH", "BE-TENANTS"],
+      "labels": ["table"],
+      "acceptance": ["Org scoped list"],
+      "dod": ["Empty state"],
+      "state": "pending"
+    },
+    {
+      "id": "FE-PAY",
+      "title": "Payments ledger",
+      "area": "frontend",
+      "estimate": "0.5d",
+      "blocked_by": ["FE-AUTH", "BE-PAY"],
+      "labels": ["table"],
+      "acceptance": ["Status badge", "Outstanding total"],
+      "dod": ["Error banner"],
+      "state": "pending"
+    },
+    {
+      "id": "FE-TICKETS",
+      "title": "Ticket queue + detail",
+      "area": "frontend",
+      "estimate": "0.75d",
+      "blocked_by": ["FE-AUTH", "BE-TICKETS"],
+      "labels": ["tickets"],
+      "acceptance": ["List view", "Detail view"],
+      "dod": ["Back navigation"],
+      "state": "pending"
+    },
+    {
+      "id": "FE-REPORT",
+      "title": "Reports + AI summary",
+      "area": "frontend",
+      "estimate": "0.5d",
+      "blocked_by": ["FE-AUTH", "BE-REPORT", "BE-AI"],
+      "labels": ["reports"],
+      "acceptance": ["PDF trigger", "Summary display"],
+      "dod": ["Error handling"],
+      "state": "pending"
+    },
+    {
+      "id": "FE-QA",
+      "title": "Frontend smoke validation",
+      "area": "frontend",
+      "estimate": "0.5d",
+      "blocked_by": ["FE-TICKETS", "FE-REPORT"],
+      "labels": ["testing"],
+      "acceptance": ["Critical flows exercised"],
+      "dod": ["Issues triaged"],
+      "state": "pending"
+    }
+  ],
+  "operations": [
+    {
+      "id": "OPS-ENV",
+      "title": "Environment + compose",
+      "area": "operations",
+      "estimate": "0.25d",
+      "blocked_by": ["PD-SCOPE"],
+      "labels": ["devops"],
+      "acceptance": [".env example", "Docker compose updated"],
+      "dod": ["Docs mention ports"],
+      "state": "pending"
+    },
+    {
+      "id": "OPS-DOCS",
+      "title": "Documentation bundle",
+      "area": "operations",
+      "estimate": "0.5d",
+      "blocked_by": ["OPS-ENV"],
+      "labels": ["docs"],
+      "acceptance": ["PLAN/PRD/ARCH updated"],
+      "dod": ["Tasks synced"],
+      "state": "pending"
+    },
+    {
+      "id": "OPS-EVIDENCE",
+      "title": "Metrics + compliance evidence",
+      "area": "operations",
+      "estimate": "0.5d",
+      "blocked_by": ["BE-TEST", "FE-QA"],
+      "labels": ["compliance"],
+      "acceptance": ["Coverage + perf captured", "Security scan recorded"],
+      "dod": ["Gates passing"],
+      "state": "pending"
+    },
+    {
+      "id": "OPS-PACK",
+      "title": "Submission packaging",
+      "area": "operations",
+      "estimate": "0.25d",
+      "blocked_by": ["OPS-EVIDENCE"],
+      "labels": ["release"],
+      "acceptance": ["Manifest + checksums"],
+      "dod": ["Validation report updated"],
+      "state": "pending"
+    }
+  ]
+}
