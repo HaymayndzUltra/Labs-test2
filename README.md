@@ -9,6 +9,7 @@ This repository houses the automation that turns an approved client brief into a
 - **Lifecycle scripts** – [`scripts/e2e_from_brief.sh`](scripts/e2e_from_brief.sh) orchestrates the non-interactive flow; helper scripts handle planning, stack selection, installs/tests, metrics, gates, and compliance validation.
 - **Automation** – [`Makefile`](Makefile) exposes convenience targets (`lifecycle`, `pipeline-validate`) and GitHub Actions workflows manage secrets preflight, staging deploys, production promotion, and nightly health checks.
 - **Documentation** – The refreshed docs under `docs/` form the single source of truth for architecture, local workflows, deployment, and compliance expectations.
+- **Workflow optimization system** – [`workflow_optimizer`](workflow_optimizer/) provides a production-ready gate orchestration engine with evidence collection, universal templates, and deployment scripts. See [Workflow Optimization System](docs/WORKFLOW_OPTIMIZER.md).
 
 Legacy documentation for the retired AI Governor workflow has been archived under [`archive/legacy-ai-governor/`](archive/legacy-ai-governor/).
 
