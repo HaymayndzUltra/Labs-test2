@@ -231,3 +231,87 @@ The Make target invokes `scripts/e2e_from_brief.sh`, which performs every step l
 - Follow the [Deployment Guide](DEPLOYMENT.md) to promote builds through staging and production.
 - Monitor pipelines using the [CI/CD Overview](CI_CD_OVERVIEW.md).
 - Maintain audit artifacts as described in the [Compliance & Evidence Guide](COMPLIANCE_EVIDENCE.md).
+
+## Orchestrated Workflow (Automation Framework)
+
+Use the merged automation framework when you want a declarative, gate-driven pipeline. This reads `workflow/gate_controller.yaml` and writes evidence under `evidence/`.
+
+### Prerequisites (one-time)
+
+```bash
+pip install -r requirements.txt
+```
+
+### Project layout requirements
+
+- Project root must contain (or you must point to):
+  - `docs/brief.md` and optional `docs/metadata.json` (required by Intake gate)
+  - Planning artifacts: `PLAN.md`, `PLAN.tasks.json`
+  - Generation artifacts produced by the standard lifecycle scripts:
+    - `dryrun_snapshot.json`, `file_manifest.json`, `stack_report.json`
+    - `test_results.json`, `metrics_report.json`, `compliance_report.json`
+  - Distribution directory: `dist/` with deliverables and `submission_index.md`
+
+Tip: Run the standard "Step-by-Step Lifecycle" first to produce these artifacts, then run the orchestrator to validate them end-to-end.
+
+### Run the orchestrator (default config)
+
+```bash
+# From repo root
+python3 scripts/run_workflow.py \
+  --config workflow/gate_controller.yaml \
+  --project-root .
+```
+
+- This executes all enabled gates in `workflow/gate_controller.yaml`.
+- Evidence and reports are written under `evidence/`.
+- Non-zero exit code indicates which gate failed; details are in `evidence/gates/gates_report.json`.
+
+### Common adjustments
+
+- Use verbose logs:
+```bash
+python3 scripts/run_workflow.py --config workflow/gate_controller.yaml --project-root . --verbose
+```
+
+- Target a generated project directory (e.g., `_generated/client01saas`):
+```bash
+python3 scripts/run_workflow.py \
+  --config workflow/gate_controller.yaml \
+  --project-root ../_generated/client01saas
+```
+
+- Customize gate thresholds/paths: edit `workflow/gate_controller.yaml` (e.g., `minimum_coverage`, `maximum_latency_ms`, file names).
+
+### Gate expectations (from `workflow/gate_controller.yaml`)
+
+- Intake: `docs/metadata.json` with required fields and existing `docs/brief.md`
+- Environment: `python3`, `node`, `git` at minimum versions
+- Planning: `PLAN.md`, `PLAN.tasks.json` covering required topics
+- Task Graph: valid IDs/edges (no cycles)
+- PRD: `PRD.md`, `ARCHITECTURE.md` with required sections
+- Stack: `stack_report.json` with frontend/backend/database/auth/deploy
+- Dry Run: `dryrun_snapshot.json` with expected modules
+- Generation: `file_manifest.json` without duplicates
+- Testing: `test_results.json` with coverage ≥ threshold
+- Metrics: `metrics_report.json` meeting coverage/perf/vuln limits
+- Compliance: `compliance_report.json` satisfying required IDs
+- Submission: `dist/` populated and `submission_index.md` present
+
+### Recommended sequence (actionable)
+
+1) Produce artifacts via the existing lifecycle:
+```bash
+NAME=$NAME INDUSTRY=$INDUSTRY PROJECT_TYPE=$PROJECT_TYPE \
+FE=$FE BE=$BE DB=$DB OUTPUT_ROOT=$OUTPUT_ROOT \
+make lifecycle
+```
+
+2) Run orchestrator to validate end-to-end:
+```bash
+python3 scripts/run_workflow.py --config workflow/gate_controller.yaml --project-root ../_generated/$NAME
+```
+
+3) Inspect evidence and fix failures:
+- Open `../_generated/$NAME/evidence/gates/gates_report.json`
+- Address the failing gate’s missing/invalid artifact, then re-run step 2.
