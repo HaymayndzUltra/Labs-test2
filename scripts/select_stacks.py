@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 from dataclasses import dataclass
@@ -229,8 +230,91 @@ def _pkg_engines_node_for_frontend(tech: str) -> Optional[str]:
     return None
 
 
-def _current_versions() -> Dict[str, str]:
+def _collect_engine_substitutions(
+    cli_pairs: List[str],
+    json_sources: List[Tuple[str, str]],
+    pair_sources: List[Tuple[str, str]],
+) -> Tuple[Dict[str, Dict[str, str]], List[str]]:
+    substitutions: Dict[str, Dict[str, str]] = {}
+    warnings: List[str] = []
+
+    def record(engine: str, replacement: str, source: str) -> None:
+        norm_engine = str(engine).strip().lower()
+        norm_replacement = str(replacement).strip()
+        if not norm_engine or not norm_replacement:
+            warnings.append(
+                f"Engine substitution from {source} is invalid; require engine=replacement."
+            )
+            return
+        previous = substitutions.get(norm_engine)
+        if previous and previous.get("replacement") != norm_replacement:
+            warnings.append(
+                f"Engine substitution for {norm_engine} overridden by {source} (was {previous.get('replacement')}, now {norm_replacement})."
+            )
+        substitutions[norm_engine] = {"replacement": norm_replacement, "source": source}
+
+    def parse_pairs(pairs: List[str], source: str) -> None:
+        for pair in pairs:
+            if not pair:
+                continue
+            if "=" not in pair:
+                warnings.append(
+                    f"Engine substitution '{pair}' from {source} is invalid; expected engine=replacement."
+                )
+                continue
+            engine, replacement = pair.split("=", 1)
+            record(engine, replacement, source)
+
+    def parse_json_text(text: str, source: str) -> None:
+        try:
+            data = json.loads(text)
+        except Exception:
+            warnings.append(f"Unable to parse engine substitutions from {source} (invalid JSON).")
+            return
+        if isinstance(data, dict):
+            for engine, replacement in data.items():
+                if isinstance(replacement, str):
+                    record(str(engine), replacement, source)
+                else:
+                    warnings.append(
+                        f"Engine substitution for {engine} in {source} must be a string command."
+                    )
+        elif isinstance(data, list):
+            for idx, item in enumerate(data):
+                if not isinstance(item, dict):
+                    warnings.append(
+                        f"Entry {idx} in {source} is not a mapping with engine/replacement keys."
+                    )
+                    continue
+                engine = item.get("engine")
+                replacement = item.get("replacement")
+                if engine is None or replacement is None:
+                    warnings.append(
+                        f"Entry {idx} in {source} missing engine or replacement field."
+                    )
+                    continue
+                record(str(engine), str(replacement), source)
+        else:
+            warnings.append(f"Unsupported engine substitution shape in {source}; expected dict or list of objects.")
+
+    for source, text in json_sources:
+        parse_json_text(text, source)
+
+    for source, text in pair_sources:
+        parts = [p.strip() for p in text.split(",") if p.strip()]
+        parse_pairs(parts, source)
+
+    for idx, pair in enumerate(cli_pairs):
+        parse_pairs([pair], f"cli --engine-substitution[{idx}]")
+
+    return substitutions, warnings
+
+
+def _current_versions(
+    substitutions: Optional[Dict[str, Dict[str, str]]] = None,
+) -> Tuple[Dict[str, str], Dict[str, Dict[str, str]]]:
     versions: Dict[str, str] = {}
+    substitution_states: Dict[str, Dict[str, str]] = {}
 
     def run(cmd: List[str]) -> Optional[str]:
         try:
@@ -243,7 +327,33 @@ def _current_versions() -> Dict[str, str]:
     versions["python"] = run(["python3", "--version"]) or run(["python", "--version"]) or ""
     versions["go"] = run(["go", "version"]) or ""
     versions["docker"] = run(["docker", "--version"]) or ""
-    return versions
+
+    for engine, meta in (substitutions or {}).items():
+        replacement = meta.get("replacement", "").strip()
+        source = meta.get("source", "")
+        state: Dict[str, str] = {"engine": engine, "replacement": replacement, "source": source}
+        if not replacement:
+            state["status"] = "invalid"
+            state["message"] = "Replacement command not provided."
+            substitution_states[engine] = state
+            continue
+        current_detected = versions.get(engine, "")
+        if current_detected:
+            state["status"] = "native"
+            state["detected"] = current_detected
+            substitution_states[engine] = state
+            continue
+        detected = run([replacement, "--version"])
+        if detected:
+            versions[engine] = f"{replacement} (substitution) {detected}"
+            state["status"] = "applied"
+            state["detected"] = detected
+        else:
+            state["status"] = "missing"
+            state["message"] = "Replacement command not found or failed to report version."
+        substitution_states[engine] = state
+
+    return versions, substitution_states
 
 
 @dataclass
@@ -271,6 +381,20 @@ def main() -> int:
     ap.add_argument("--python")
     ap.add_argument("--go")
     ap.add_argument("--docker")
+    ap.add_argument(
+        "--engine-substitution",
+        action="append",
+        default=[],
+        help="Declare acceptable engine substitution in engine=replacement form.",
+    )
+    ap.add_argument(
+        "--engine-substitutions-json",
+        help="JSON mapping of engine substitutions (e.g., {\"docker\": \"podman\"}).",
+    )
+    ap.add_argument(
+        "--engine-substitutions-file",
+        help="Path to JSON file declaring engine substitutions.",
+    )
     args = ap.parse_args()
 
     # Validate requested tech exists
@@ -349,8 +473,73 @@ def main() -> int:
         prev = required.get("node")
         required["node"] = _max_requirement(prev, node_pkg_req) if prev else node_pkg_req
 
+    json_sources: List[Tuple[str, str]] = []
+    pair_sources: List[Tuple[str, str]] = []
+    substitution_notice: List[str] = []
+
+    if args.engine_substitutions_json:
+        json_sources.append(("cli --engine-substitutions-json", args.engine_substitutions_json))
+
+    if args.engine_substitutions_file:
+        file_path = Path(args.engine_substitutions_file)
+        if file_path.exists():
+            try:
+                json_sources.append((f"file {file_path}", file_path.read_text(encoding="utf-8")))
+            except Exception:
+                substitution_notice.append(
+                    f"Failed to read engine substitutions from {file_path}."
+                )
+        else:
+            substitution_notice.append(f"Engine substitutions file not found: {file_path}")
+
+    env_json = [
+        ("env STACK_ENGINE_SUBSTITUTIONS_JSON", os.environ.get("STACK_ENGINE_SUBSTITUTIONS_JSON")),
+        ("env ENGINE_SUBSTITUTIONS_JSON", os.environ.get("ENGINE_SUBSTITUTIONS_JSON")),
+    ]
+    for source, value in env_json:
+        if value:
+            json_sources.append((source, value))
+
+    env_pairs = [
+        ("env STACK_ENGINE_SUBSTITUTIONS", os.environ.get("STACK_ENGINE_SUBSTITUTIONS")),
+        ("env ENGINE_SUBSTITUTIONS", os.environ.get("ENGINE_SUBSTITUTIONS")),
+    ]
+    for source, value in env_pairs:
+        if not value:
+            continue
+        stripped = value.strip()
+        if stripped.startswith("{") or stripped.startswith("["):
+            json_sources.append((source, value))
+        else:
+            pair_sources.append((source, value))
+
+    if os.environ.get("STACK_ENGINE_SUBSTITUTIONS_FILE"):
+        file_env = Path(os.environ["STACK_ENGINE_SUBSTITUTIONS_FILE"])
+        if file_env.exists():
+            try:
+                json_sources.append((f"env file {file_env}", file_env.read_text(encoding="utf-8")))
+            except Exception:
+                substitution_notice.append(
+                    f"Failed to read engine substitutions from {file_env} declared in STACK_ENGINE_SUBSTITUTIONS_FILE."
+                )
+        else:
+            substitution_notice.append(
+                f"STACK_ENGINE_SUBSTITUTIONS_FILE points to missing file: {file_env}"
+            )
+
+    engine_substitutions, substitution_warnings = _collect_engine_substitutions(
+        args.engine_substitution, json_sources, pair_sources
+    )
+
+    substitution_warnings = substitution_notice + substitution_warnings
+
+    for warning in substitution_warnings:
+        print(f"[SELECTION] {warning}")
+
+    warnings.extend(substitution_warnings)
+
     # Current versions
-    current = _current_versions()
+    current, substitution_states = _current_versions(engine_substitutions)
     if args.node:
         current["node"] = args.node
     if args.python:
@@ -360,17 +549,53 @@ def main() -> int:
     if args.docker:
         current["docker"] = args.docker
 
+    overrides_output: List[Dict[str, str]] = []
+
     engine_checks: List[Dict[str, object]] = []
     unmet = False
     for eng, req in required.items():
         op, rv = _parse_requirement(req)
         cv = _parse_version_raw(current.get(eng, ""))
         ok = _satisfies(cv, op, rv)
+        override_note = ""
+        if eng in substitution_states:
+            state = substitution_states[eng]
+            override_entry = {
+                "engine": eng,
+                "replacement": state.get("replacement", ""),
+                "source": state.get("source", ""),
+                "status": state.get("status", ""),
+                "detected": state.get("detected", ""),
+                "message": state.get("message", ""),
+            }
+            status = state.get("status")
+            if status == "applied":
+                ok = True
+                detected = state.get("detected", "")
+                if detected:
+                    override_note = f"substituted with {state.get('replacement')} ({detected})"
+                else:
+                    override_note = f"substituted with {state.get('replacement')}"
+            elif status == "missing":
+                override_note = (
+                    f"override declared but replacement {state.get('replacement')} missing"
+                )
+                warnings.append(
+                    f"Engine override declared for {eng} but replacement {state.get('replacement')} not available."
+                )
+            elif status == "invalid":
+                override_note = "override declared without replacement command"
+                warnings.append(f"Engine override for {eng} missing replacement command.")
+            elif status == "native":
+                override_note = "override unused; native engine present"
+            override_entry["note"] = override_note
+            overrides_output.append(override_entry)
         engine_checks.append({
             "engine": eng,
             "required": req,
             "current": current.get(eng, ""),
             "ok": ok,
+            "override": override_note,
         })
         if not ok:
             unmet = True
@@ -409,6 +634,7 @@ def main() -> int:
         "compliance": compliance,
         "engine_checks": engine_checks,
         "warnings": warnings,
+        "engine_overrides": overrides_output,
         "status": "ok" if not unmet else "engine_unmet",
         "summaries": {
             "ui": {
@@ -456,16 +682,66 @@ def main() -> int:
         lines.append(f"| Compliance | {', '.join(compliance)} | — | {', '.join(compliance)} | overlay | rule-based overlay |\n")
     lines.append("\n## Engine Checks\n")
     for chk in engine_checks:
-        lines.append(f"- {chk['engine']}: required {chk['required']}, current {chk['current']} → {'OK' if chk['ok'] else 'FAIL'}\n")
+        note_suffix = f" ({chk['override']})" if chk.get("override") else ""
+        lines.append(
+            f"- {chk['engine']}: required {chk['required']}, current {chk['current']} → {'OK' if chk['ok'] else 'FAIL'}{note_suffix}\n"
+        )
+    if substitution_states:
+        for eng, state in substitution_states.items():
+            if not any(o.get("engine") == eng for o in overrides_output):
+                overrides_output.append(
+                    {
+                        "engine": eng,
+                        "replacement": state.get("replacement", ""),
+                        "source": state.get("source", ""),
+                        "status": state.get("status", ""),
+                        "detected": state.get("detected", ""),
+                        "message": state.get("message", ""),
+                        "note": state.get("message", ""),
+                    }
+                )
+
     if warnings:
         lines.append("\n## Warnings\n")
         for w in warnings:
             lines.append(f"- {w}\n")
+    if overrides_output:
+        lines.append("\n## Engine Overrides\n")
+        for override in overrides_output:
+            details: List[str] = []
+            status = override.get("status", "")
+            if status:
+                details.append(status)
+            replacement = override.get("replacement")
+            if replacement:
+                details.append(f"replacement: {replacement}")
+            source = override.get("source")
+            if source:
+                details.append(f"source: {source}")
+            detected = override.get("detected")
+            if detected:
+                details.append(f"detected: {detected}")
+            message = override.get("message")
+            if message:
+                details.append(message)
+            note = override.get("note")
+            if note and note not in details:
+                details.append(note)
+            lines.append(f"- {override['engine']}: {', '.join(details)}\n")
     lines.append("\n## Layer Summaries\n")
     lines.append(f"- **UI**: {_excerpt(ui_summary)} ([details]({ui_summary_path.name}))\n")
     lines.append(f"- **API**: {_excerpt(api_summary)} ([details]({api_summary_path.name}))\n")
     lines.append(f"- **Database**: {_excerpt(db_summary)} ([details]({db_summary_path.name}))\n")
     md_path.write_text("".join(lines), encoding="utf-8")
+
+    if overrides_output:
+        overrides_path = evidence_dir / "engine-substitutions.json"
+        overrides_payload = {
+            "overrides": overrides_output,
+            "notes": [w for w in substitution_warnings if w],
+        }
+        overrides_path.write_text(json.dumps(overrides_payload, indent=2), encoding="utf-8")
+        out["engine_overrides_evidence"] = str(overrides_path)
 
     if unmet:
         print("[SELECTION] Engine requirements not met. See:", md_path)
