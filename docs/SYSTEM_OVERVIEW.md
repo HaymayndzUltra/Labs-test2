@@ -16,7 +16,7 @@ This repository is the factory that turns an approved client brief into a fully 
 
 1. **Brief ingestion and planning** – `scripts/plan_from_brief.py` parses the client brief and produces `PLAN.md` and `PLAN.tasks.json` inside an isolated project directory.
 2. **Task validation** – `scripts/validate_tasks.py` confirms dependency IDs, enums, and graph topology for the generated plan.
-3. **Stack preflight** – `scripts/select_stacks.py` records the stack selection, verifies engine requirements, and writes evidence in the project directory.
+3. **Stack preflight** – `scripts/select_stacks.py` records the stack selection, verifies engine requirements, and writes evidence plus layer summaries in the project directory for downstream gates.
 4. **Generation** – `scripts/generate_client_project.py` performs a dry-run preview and the final scaffold using the template packs.
 5. **Post-generation lifecycle** – install/tests, task sync, metric collection, gate enforcement, submission pack, and compliance validation all run against the isolated project root.
 6. **CI/CD** – the supported workflows run secrets preflight, stage deployments, production promotion, and nightly health validation using the same scripts.

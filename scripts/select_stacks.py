@@ -3,13 +3,128 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
-import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
+
+
+# -----------------------------
+# Utility: markdown summarization
+# -----------------------------
+
+SUMMARY_REPLACEMENTS = {
+    "PROJECT_NAME": "Project",
+}
+
+
+def _read_text(path: Path) -> Optional[str]:
+    try:
+        return path.read_text(encoding="utf-8")
+    except Exception:
+        return None
+
+
+def _replace_tokens(text: str, replacements: Dict[str, str]) -> str:
+    for token, value in replacements.items():
+        text = text.replace(f"{{{{{token}}}}}", value)
+    return text
+
+
+def _find_readme(base: Path) -> Optional[Path]:
+    candidates = [
+        base / "README.summary.md",
+        base / "README.md",
+        base.parent / "README.summary.md",
+        base.parent / "README.md",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def _extract_paragraph(text: str) -> str:
+    lines = text.splitlines()
+    paragraph: List[str] = []
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            if paragraph:
+                break
+            continue
+        if stripped.startswith("#"):
+            # Skip headings at the top of the file
+            if not paragraph:
+                continue
+            break
+        if stripped.startswith("-") and not paragraph:
+            # Avoid leading bullet lists being treated as summary
+            continue
+        if stripped.startswith("##"):
+            break
+        paragraph.append(stripped)
+    return " ".join(paragraph).strip()
+
+
+def _extract_features(text: str, limit: int = 3) -> List[str]:
+    lines = text.splitlines()
+    features: List[str] = []
+    collecting = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("##"):
+            collecting = stripped.lower().startswith("## features")
+            continue
+        if collecting:
+            if not stripped or stripped.startswith("#"):
+                if features:
+                    break
+                continue
+            if stripped.startswith("-"):
+                features.append(stripped)
+                if len(features) >= limit:
+                    break
+            else:
+                if features:
+                    break
+    return features
+
+
+def _summarize_template(base: Path, replacements: Dict[str, str]) -> str:
+    readme = _find_readme(base)
+    if not readme:
+        return f"No README found for template at {base}."
+    raw = _read_text(readme)
+    if not raw:
+        return f"Unable to read README for template at {base}."
+    text = _replace_tokens(raw, replacements)
+    paragraph = _extract_paragraph(text)
+    features = _extract_features(text)
+    summary_parts: List[str] = []
+    if paragraph:
+        summary_parts.append(paragraph)
+    if features:
+        summary_parts.append("Key features:\n" + "\n".join(features))
+    return "\n\n".join(summary_parts).strip() or f"README for {base} did not contain descriptive text."
+
+
+def _write_summary_file(path: Path, title: str, content: str) -> None:
+    normalized = content.strip() if content else ""
+    if not normalized:
+        normalized = "Summary unavailable."
+    path.write_text(f"# {title}\n\n{normalized}\n", encoding="utf-8")
+
+
+def _excerpt(text: str, limit: int = 220) -> str:
+    if not text:
+        return ""
+    first_block = text.split("\n\n", 1)[0]
+    cleaned = " ".join(first_block.strip().split())
+    if len(cleaned) > limit:
+        return cleaned[: limit - 1].rstrip() + "…"
+    return cleaned
 
 
 # -----------------------------
@@ -262,6 +377,19 @@ def main() -> int:
 
     compliance = [s for s in (args.compliance.split(",") if args.compliance else []) if s]
 
+    replacements = dict(SUMMARY_REPLACEMENTS)
+    replacements.update(
+        {
+            "INDUSTRY": args.industry,
+            "PROJECT_TYPE": args.project_type,
+        }
+    )
+    replacements.setdefault("COMPLIANCE", ", ".join(compliance) if compliance else "standard")
+
+    ui_summary = _summarize_template(fe_dir / fe_variant, replacements)
+    api_summary = _summarize_template(be_dir / be_variant, replacements)
+    db_summary = _summarize_template(db_dir / "base", replacements)
+
     out = {
         "frontend": Selection(
             requested=args.frontend,
@@ -282,6 +410,20 @@ def main() -> int:
         "engine_checks": engine_checks,
         "warnings": warnings,
         "status": "ok" if not unmet else "engine_unmet",
+        "summaries": {
+            "ui": {
+                "path": str(Path(args.summary).parent / "ui-summary.md"),
+                "summary": ui_summary,
+            },
+            "api": {
+                "path": str(Path(args.summary).parent / "api-summary.md"),
+                "summary": api_summary,
+            },
+            "database": {
+                "path": str(Path(args.summary).parent / "database-summary.md"),
+                "summary": db_summary,
+            },
+        },
     }
 
     # Write outputs
@@ -290,7 +432,17 @@ def main() -> int:
     sel_path.write_text(json.dumps(out, indent=2), encoding="utf-8")
 
     md_path = Path(args.summary)
-    md_path.parent.mkdir(parents=True, exist_ok=True)
+    evidence_dir = md_path.parent
+    evidence_dir.mkdir(parents=True, exist_ok=True)
+
+    ui_summary_path = evidence_dir / "ui-summary.md"
+    api_summary_path = evidence_dir / "api-summary.md"
+    db_summary_path = evidence_dir / "database-summary.md"
+
+    _write_summary_file(ui_summary_path, "UI Summary", ui_summary)
+    _write_summary_file(api_summary_path, "API Summary", api_summary)
+    _write_summary_file(db_summary_path, "Database Summary", db_summary)
+
     lines: List[str] = []
     lines.append("# Stack Selection (Preflight)\n")
     lines.append("| Layer | Requested | Variant Req. | Chosen | Variant | Note |\n")
@@ -309,6 +461,10 @@ def main() -> int:
         lines.append("\n## Warnings\n")
         for w in warnings:
             lines.append(f"- {w}\n")
+    lines.append("\n## Layer Summaries\n")
+    lines.append(f"- **UI**: {_excerpt(ui_summary)} ([details]({ui_summary_path.name}))\n")
+    lines.append(f"- **API**: {_excerpt(api_summary)} ([details]({api_summary_path.name}))\n")
+    lines.append(f"- **Database**: {_excerpt(db_summary)} ([details]({db_summary_path.name}))\n")
     md_path.write_text("".join(lines), encoding="utf-8")
 
     if unmet:
