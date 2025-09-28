@@ -15,78 +15,268 @@ cd "$ROOT_DIR"
 FRONTEND_DIR=${FRONTEND_DIR:-frontend}
 BACKEND_DIR=${BACKEND_DIR:-backend}
 
-run_if_dir() {
-  local dir="$1"; shift || true
-  if [[ -d "$dir" ]]; then
-    ( cd "$dir" && echo "[INSTALL_TEST] In $(pwd)" && "$@" )
+log() {
+  echo "[INSTALL_TEST] $*"
+}
+
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+run_in_dir() {
+  local dir="$1"
+  shift
+  if [[ ! -d "$dir" ]]; then
+    log "Skip: directory '$dir' not found"
+    return 0
+  fi
+  log "Running in $dir: $*"
+  (cd "$dir" && "$@")
+}
+
+PYTHON_BIN=""
+ensure_python() {
+  local purpose="$1"
+  if [[ -n "$PYTHON_BIN" ]]; then
+    return 0
+  fi
+  if command_exists python; then
+    PYTHON_BIN=python
+  elif command_exists python3; then
+    PYTHON_BIN=python3
   else
-    echo "[INSTALL_TEST] Skip: directory '$dir' not found"
+    log "ERROR: Python is required for $purpose but was not found on PATH." >&2
+    exit 1
   fi
 }
 
-# Frontend: nextjs/nuxt/angular/expo (node based)
-if [[ -d "$FRONTEND_DIR" ]]; then
-  if command -v pnpm >/dev/null 2>&1; then PM=pnpm; elif command -v npm >/dev/null 2>&1; then PM=npm; elif command -v yarn >/dev/null 2>&1; then PM=yarn; else PM=""; fi
-  if [[ -n "${PM}" ]]; then
-    case "$PM" in
-      pnpm)
-        run_if_dir "$FRONTEND_DIR" pnpm install --frozen-lockfile
-        run_if_dir "$FRONTEND_DIR" pnpm run build || true
-        run_if_dir "$FRONTEND_DIR" pnpm test || true
-        ;;
-      npm)
-        run_if_dir "$FRONTEND_DIR" npm ci
-        run_if_dir "$FRONTEND_DIR" npm run build || true
-        run_if_dir "$FRONTEND_DIR" npm test || true
-        ;;
-      yarn)
-        run_if_dir "$FRONTEND_DIR" yarn install --frozen-lockfile || yarn install
-        run_if_dir "$FRONTEND_DIR" yarn build || true
-        run_if_dir "$FRONTEND_DIR" yarn test || true
-        ;;
-    esac
-  else
-    echo "[INSTALL_TEST] No Node package manager found (pnpm/npm/yarn)." >&2
+package_has_script() {
+  local dir="$1"
+  local script="$2"
+  if [[ ! -f "$dir/package.json" ]]; then
+    return 1
   fi
-fi
+  if ! command_exists node; then
+    return 1
+  fi
+  node <<'NODE' "$dir/package.json" "$script"
+const fs = require('fs');
+const path = process.argv[2];
+const scriptName = process.argv[3];
+try {
+  const pkg = JSON.parse(fs.readFileSync(path, 'utf8'));
+  if (pkg.scripts && Object.prototype.hasOwnProperty.call(pkg.scripts, scriptName)) {
+    process.exit(0);
+  }
+} catch (err) {
+  process.exit(1);
+}
+process.exit(1);
+NODE
+}
 
-# Backend: fastapi/django/nestjs/go
-if [[ -d "$BACKEND_DIR" ]]; then
-  # Detect Python backend (fastapi/django)
-  if [[ -f "$BACKEND_DIR/requirements.txt" || -f "$BACKEND_DIR/pyproject.toml" ]]; then
-    run_if_dir "$BACKEND_DIR" python -m pip install -r requirements.txt || true
-    run_if_dir "$BACKEND_DIR" pytest -q || true
-  fi
-  # Detect NestJS (node)
-  if [[ -f "$BACKEND_DIR/package.json" ]]; then
-    if command -v pnpm >/dev/null 2>&1; then PM=pnpm; elif command -v npm >/dev/null 2>&1; then PM=npm; elif command -v yarn >/dev/null 2>&1; then PM=yarn; else PM=""; fi
-    if [[ -n "${PM}" ]]; then
-      case "$PM" in
-        pnpm)
-          run_if_dir "$BACKEND_DIR" pnpm install --frozen-lockfile
-          run_if_dir "$BACKEND_DIR" pnpm run build || true
-          run_if_dir "$BACKEND_DIR" pnpm test || true
-          ;;
-        npm)
-          run_if_dir "$BACKEND_DIR" npm ci
-          run_if_dir "$BACKEND_DIR" npm run build || true
-          run_if_dir "$BACKEND_DIR" npm test || true
-          ;;
-        yarn)
-          run_if_dir "$BACKEND_DIR" yarn install --frozen-lockfile || yarn install
-          run_if_dir "$BACKEND_DIR" yarn build || true
-          run_if_dir "$BACKEND_DIR" yarn test || true
-          ;;
-      esac
-    else
-      echo "[INSTALL_TEST] No Node package manager found for backend." >&2
+NODE_PM_REASON=""
+choose_node_pm() {
+  local dir="$1"
+  NODE_PM_REASON=""
+  local has_pnpm_lock="false"
+
+  if [[ -f "$dir/pnpm-lock.yaml" ]]; then
+    has_pnpm_lock="true"
+    if command_exists pnpm; then
+      NODE_PM_REASON="pnpm-lock.yaml detected"
+      printf '%s' pnpm
+      return 0
+    fi
+    if command_exists npm; then
+      NODE_PM_REASON="pnpm-lock.yaml detected but pnpm missing; falling back to npm"
+      printf '%s' npm
+      return 0
     fi
   fi
-  # Detect Go backend
-  if [[ -f "$BACKEND_DIR/go.mod" ]]; then
-    run_if_dir "$BACKEND_DIR" go mod download
-    run_if_dir "$BACKEND_DIR" go test ./... -count=1 || true
-  fi
-fi
 
-echo "[INSTALL_TEST] Completed"
+  if [[ -f "$dir/package-lock.json" ]] && command_exists npm; then
+    NODE_PM_REASON="package-lock.json detected"
+    printf '%s' npm
+    return 0
+  fi
+
+  if [[ -f "$dir/yarn.lock" ]] && command_exists yarn; then
+    NODE_PM_REASON="yarn.lock detected"
+    printf '%s' yarn
+    return 0
+  fi
+
+  if [[ "$has_pnpm_lock" == "false" ]] && command_exists npm; then
+    NODE_PM_REASON="pnpm-lock.yaml not found; defaulting to npm"
+    printf '%s' npm
+    return 0
+  fi
+
+  for candidate in npm pnpm yarn; do
+    if command_exists "$candidate"; then
+      NODE_PM_REASON="fallback to available package manager ($candidate)"
+      printf '%s' "$candidate"
+      return 0
+    fi
+  done
+
+  NODE_PM_REASON="no supported package manager found"
+  return 1
+}
+
+maybe_run_package_script() {
+  local dir="$1"
+  local pm="$2"
+  local script="$3"
+  case "$pm" in
+    pnpm)
+      log "Executing '$script' script with pnpm (if present)"
+      run_in_dir "$dir" pnpm run --if-present "$script"
+      ;;
+    npm)
+      log "Executing '$script' script with npm (if present)"
+      run_in_dir "$dir" npm run "$script" --if-present
+      ;;
+    yarn)
+      if package_has_script "$dir" "$script"; then
+        log "Executing '$script' script with yarn"
+        run_in_dir "$dir" yarn run "$script"
+      else
+        log "Skip: package.json has no '$script' script in $dir"
+      fi
+      ;;
+    *)
+      log "ERROR: Unsupported package manager '$pm' for $dir" >&2
+      exit 1
+      ;;
+  esac
+}
+
+run_node_workflow() {
+  local dir="$1"
+  local pm="$2"
+  case "$pm" in
+    pnpm)
+      log "Installing Node dependencies in $dir with pnpm"
+      local install_args=(install)
+      if [[ -f "$dir/pnpm-lock.yaml" ]]; then
+        install_args+=(--frozen-lockfile)
+      fi
+      run_in_dir "$dir" pnpm "${install_args[@]}"
+      maybe_run_package_script "$dir" "$pm" build
+      maybe_run_package_script "$dir" "$pm" test
+      ;;
+    npm)
+      log "Installing Node dependencies in $dir with npm"
+      if [[ -f "$dir/package-lock.json" ]]; then
+        run_in_dir "$dir" npm ci
+      else
+        run_in_dir "$dir" npm install
+      fi
+      maybe_run_package_script "$dir" "$pm" build
+      maybe_run_package_script "$dir" "$pm" test
+      ;;
+    yarn)
+      log "Installing Node dependencies in $dir with yarn"
+      local install_args=(install)
+      if [[ -f "$dir/yarn.lock" ]]; then
+        install_args+=(--frozen-lockfile)
+      fi
+      run_in_dir "$dir" yarn "${install_args[@]}"
+      maybe_run_package_script "$dir" "$pm" build
+      maybe_run_package_script "$dir" "$pm" test
+      ;;
+    *)
+      log "ERROR: Unsupported package manager '$pm' for $dir" >&2
+      exit 1
+      ;;
+  esac
+}
+
+handle_frontend() {
+  if [[ ! -d "$FRONTEND_DIR" ]]; then
+    log "Skip: frontend directory '$FRONTEND_DIR' not found"
+    return 0
+  fi
+  log "Detected frontend workspace at '$FRONTEND_DIR'"
+  local pm
+  if ! pm="$(choose_node_pm "$FRONTEND_DIR")"; then
+    log "ERROR: Unable to determine package manager for $FRONTEND_DIR (${NODE_PM_REASON})" >&2
+    exit 1
+  fi
+  log "Frontend package manager: $pm (${NODE_PM_REASON})"
+  run_node_workflow "$FRONTEND_DIR" "$pm"
+}
+
+handle_backend_python() {
+  local has_manifest="false"
+  if [[ -f "$BACKEND_DIR/requirements.txt" ]]; then
+    has_manifest="true"
+    ensure_python "installing backend dependencies"
+    log "Installing Python dependencies from requirements.txt in $BACKEND_DIR"
+    run_in_dir "$BACKEND_DIR" "$PYTHON_BIN" -m pip install -r requirements.txt
+  elif [[ -f "$BACKEND_DIR/pyproject.toml" ]]; then
+    has_manifest="true"
+    ensure_python "installing backend project"
+    log "Installing Python project defined by pyproject.toml in $BACKEND_DIR"
+    run_in_dir "$BACKEND_DIR" "$PYTHON_BIN" -m pip install .
+  fi
+
+  local pytest_trigger="false"
+  if [[ -d "$BACKEND_DIR/tests" || -d "$BACKEND_DIR/test" || -f "$BACKEND_DIR/pytest.ini" ]]; then
+    pytest_trigger="true"
+  fi
+
+  if [[ "$pytest_trigger" == "true" ]]; then
+    ensure_python "running backend tests"
+    log "Running backend pytest suite"
+    run_in_dir "$BACKEND_DIR" "$PYTHON_BIN" -m pytest -q
+  elif [[ "$has_manifest" == "true" ]]; then
+    log "Skip: no pytest configuration detected in $BACKEND_DIR"
+  fi
+}
+
+handle_backend_node() {
+  if [[ ! -f "$BACKEND_DIR/package.json" ]]; then
+    return 0
+  fi
+  log "Detected Node backend workspace at '$BACKEND_DIR'"
+  local pm
+  if ! pm="$(choose_node_pm "$BACKEND_DIR")"; then
+    log "ERROR: Unable to determine package manager for $BACKEND_DIR (${NODE_PM_REASON})" >&2
+    exit 1
+  fi
+  log "Backend package manager: $pm (${NODE_PM_REASON})"
+  run_node_workflow "$BACKEND_DIR" "$pm"
+}
+
+handle_backend_go() {
+  if [[ ! -f "$BACKEND_DIR/go.mod" ]]; then
+    return 0
+  fi
+  if ! command_exists go; then
+    log "ERROR: Go is required for backend tests but was not found on PATH." >&2
+    exit 1
+  fi
+  log "Installing Go modules in $BACKEND_DIR"
+  run_in_dir "$BACKEND_DIR" go mod download
+  log "Running Go tests"
+  run_in_dir "$BACKEND_DIR" go test ./... -count=1
+}
+
+handle_backend() {
+  if [[ ! -d "$BACKEND_DIR" ]]; then
+    log "Skip: backend directory '$BACKEND_DIR' not found"
+    return 0
+  fi
+  log "Detected backend workspace at '$BACKEND_DIR'"
+  handle_backend_python
+  handle_backend_node
+  handle_backend_go
+}
+
+handle_frontend
+handle_backend
+
+log "Completed install_and_test pipeline"

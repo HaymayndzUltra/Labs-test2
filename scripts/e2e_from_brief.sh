@@ -199,7 +199,7 @@ echo "[E2E] Generate"
 
 echo "[E2E] Install & test"
 chmod +x scripts/install_and_test.sh
-PROJECT_ROOT="$PROJECT_DIR" ./scripts/install_and_test.sh || true
+PROJECT_ROOT="$PROJECT_DIR" ./scripts/install_and_test.sh
 
 echo "[E2E] Sync & validate"
 "$PY_BIN" scripts/sync_from_scaffold.py --input "$PLAN_TASKS_PATH" --root "$PROJECT_DIR"
