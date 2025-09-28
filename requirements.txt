@@ -29,3 +29,4 @@ flake8==6.1.0
 
 # Additional utilities
 requests==2.31.0
+PyYAML==6.0.1
