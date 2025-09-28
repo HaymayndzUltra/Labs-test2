@@ -2,8 +2,6 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-import subprocess
-import os
 
 
 def _run(cmd: list[str], cwd: str | None = None) -> subprocess.CompletedProcess:
@@ -56,11 +54,14 @@ def _fastapi_health_ok(backend_dir: Path) -> bool:
         sys.path.remove(str(backend_dir))
 
 
+GENERATOR_SCRIPT = Path(__file__).resolve().parents[2] / "scripts" / "generate_client_project.py"
+
+
 def test_generate_fastapi_fullstack_health(tmp_path):
     outdir = tmp_path / 'gen'
     outdir.mkdir(parents=True, exist_ok=True)
     cmd = [
-        sys.executable, '/workspace/scripts/generate_client_project.py',
+        sys.executable, str(GENERATOR_SCRIPT),
         '--name', 'stack-fastapi',
         '--industry', 'ecommerce',
         '--project-type', 'fullstack',
@@ -86,7 +87,7 @@ def test_generate_fastapi_api_health(tmp_path):
     outdir = tmp_path / 'gen_api'
     outdir.mkdir(parents=True, exist_ok=True)
     cmd = [
-        sys.executable, '/workspace/scripts/generate_client_project.py',
+        sys.executable, str(GENERATOR_SCRIPT),
         '--name', 'api-fastapi',
         '--industry', 'saas',
         '--project-type', 'api',

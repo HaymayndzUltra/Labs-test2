@@ -1,0 +1,133 @@
+name: Enhanced Workflow Optimization
+version: "1.0"
+description: >-
+  Governance-driven lifecycle with eleven automated gates, evidence manifesting,
+  and AI-executable outputs.
+global_context:
+  project_name: Demo Project
+gates:
+  - id: initiation_intake
+    name: Gate 1 - Initiation & Intake
+    description: Validate the client brief and capture intake approvals.
+    checks:
+      - id: bootstrap_project_structure
+        type: python
+        target: workflow_optimization.automation.bootstrap_project_structure
+        description: Provision project and evidence directories.
+        args:
+          required_dirs:
+            - reports
+            - dist
+      - id: validate_brief_metadata
+        type: python
+        target: workflow_optimization.automation.validate_brief_metadata
+        description: Ensure the client brief satisfies metadata requirements.
+        args:
+          required_fields:
+            - "Title:"
+            - "Stakeholders:"
+            - "Objectives:"
+  - id: configuration_governance
+    name: Gate 2 - Configuration & Governance
+    description: Merge configuration defaults and record risk assessments.
+    checks:
+      - id: merge_configuration
+        type: python
+        target: workflow_optimization.automation.merge_configuration
+        description: Merge workflow configuration with runtime overrides.
+        args:
+          baseline_path: workflow.config.json
+          overrides:
+            compliance: strict
+            automation_owner: AI Governor
+      - id: record_governance_risk
+        type: python
+        target: workflow_optimization.automation.record_governance_risk
+        description: Capture governance risk attestation.
+        args:
+          reviewers:
+            - Chief Architect
+            - Compliance Officer
+  - id: planning_modeling
+    name: Gate 3 - Planning & Modeling
+    description: Generate planning documents and task graph.
+    checks:
+      - id: generate_planning_assets
+        type: python
+        target: workflow_optimization.automation.generate_planning_assets
+        description: Produce plan summary and task graph evidence.
+  - id: design_assurance
+    name: Gate 4 - Design Assurance
+    description: Produce PRD and architecture outputs for review.
+    checks:
+      - id: generate_design_artifacts
+        type: python
+        target: workflow_optimization.automation.generate_design_artifacts
+        description: Generate PRD and architecture documents.
+  - id: environment_validation
+    name: Gate 5 - Stack & Environment Validation
+    description: Validate environment readiness and dependency baselines.
+    checks:
+      - id: validate_environment_readiness
+        type: python
+        target: workflow_optimization.automation.validate_environment_readiness
+        description: Ensure mandatory files exist prior to build.
+        args:
+          required_files:
+            - requirements.txt
+            - package.json
+            - Makefile
+  - id: dry_run_simulation
+    name: Gate 6 - Dry Run & Simulation
+    description: Capture dry run output and reviewer summary.
+    checks:
+      - id: produce_dry_run_report
+        type: python
+        target: workflow_optimization.automation.produce_dry_run_report
+        description: Generate dry run report evidence.
+  - id: generation_build
+    name: Gate 7 - Generation & Build
+    description: Capture build outputs and integrity checksums.
+    checks:
+      - id: record_generation_artifacts
+        type: python
+        target: workflow_optimization.automation.record_generation_artifacts
+        description: Store generation metadata and checksum evidence.
+  - id: quality_testing
+    name: Gate 8 - Automated Testing & Scanning
+    description: Register automated quality and security command matrix.
+    checks:
+      - id: execute_quality_suite
+        type: python
+        target: workflow_optimization.automation.execute_quality_suite
+        description: Produce automated test plan evidence.
+  - id: traceability_sync
+    name: Gate 9 - Synchronization & Traceability
+    description: Update requirement traceability matrix coverage.
+    checks:
+      - id: sync_traceability_matrix
+        type: python
+        target: workflow_optimization.automation.sync_traceability_matrix
+        description: Emit traceability coverage metrics.
+        args:
+          coverage_threshold: 0.95
+  - id: metrics_observability
+    name: Gate 10 - Metrics & Observability
+    description: Capture operational metrics snapshots.
+    checks:
+      - id: collect_metrics_dashboard
+        type: python
+        target: workflow_optimization.automation.collect_metrics_dashboard
+        description: Produce metrics dashboard evidence.
+  - id: compliance_delivery
+    name: Gate 11 - Compliance & Delivery
+    description: Finalize compliance attestation and client delivery notes.
+    checks:
+      - id: finalize_compliance_package
+        type: python
+        target: workflow_optimization.automation.finalize_compliance_package
+        description: Generate compliance attestation artifact.
+      - id: build_delivery_package
+        type: python
+        target: workflow_optimization.automation.build_delivery_package
+        description: Build client delivery notes package.
