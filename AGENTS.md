@@ -37,8 +37,26 @@ Testing
 
 ✅ bash -n scripts/e2e_from_brief.sh
 
-NEXT STEP 3
+DONE ✅  STEP 3
 
 1. Raise coverage/security targets in `gates_config.yaml` to ≥80 % coverage and zero critical/high vulnerabilities to match `docs/SLO_TARGETS.md`.
 2. Extend `scripts/collect_perf.py` (and, if necessary, `scripts/enforce_gates.py`) so the pipeline fails when no real performance measurement is provided.
 3. Update lifecycle and utility documentation to describe the enforced thresholds and required perf evidence.
+
+Summary
+
+Raised gate thresholds to require at least 80 % coverage and zero critical/high vulnerabilities, aligning with the documented SLO targets.
+
+Hardened performance collection by requiring a positive, validated P95 latency before writing metrics/perf.json, and ensured the gate enforcer rejects missing or invalid perf evidence.
+
+Updated lifecycle and utility guides to call out the stricter thresholds and the need for real performance measurements, plus refreshed developer docs to reflect the 80 % coverage requirement.
+
+Testing
+
+✅ python -m compileall scripts/collect_perf.py scripts/enforce_gates.py
+
+NEXT STEP 4 
+
+1. Enhance `scripts/select_stacks.py` (or a companion module) to synthesize API, database, and UI summaries based on the chosen template and write them into the project evidence directory.
+2. Surface these artifacts in the stack-selection summary so later gates can rely on them.
+3. Extend workflow documentation to reference the new outputs and how reviewers should validate them.
