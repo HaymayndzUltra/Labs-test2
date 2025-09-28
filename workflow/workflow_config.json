@@ -1,0 +1,96 @@
+{
+  "project": {
+    "name": "workflow-optimization-sample",
+    "industry": "saas",
+    "project_type": "fullstack",
+    "stakeholders": ["Delivery Lead", "QA Manager"],
+    "approvals": [
+      {"name": "Delivery Lead", "role": "product"},
+      {"name": "QA Manager", "role": "quality"}
+    ],
+    "brief_location": "workflow/assets/brief.md"
+  },
+  "governance": {
+    "approvers": ["CTO", "Security Officer"],
+    "risk_profile": {
+      "level": "medium",
+      "mitigations": ["Add targeted penetration test", "Enable enhanced logging"]
+    },
+    "policy_checks": ["gdpr", "soc2", "hipaa"]
+  },
+  "planning": {
+    "plan_documents": ["workflow/assets/plan.md"],
+    "traceability_matrix": {
+      "requirements": 24,
+      "covered": 24,
+      "completeness": 0.98,
+      "threshold": 0.95
+    }
+  },
+  "design": {
+    "design_documents": ["workflow/assets/architecture.md"],
+    "owner": "Principal Architect",
+    "checklists": ["Security review complete", "Scalability validated"]
+  },
+  "environment": {
+    "stacks": [
+      {"name": "frontend", "runtime": "node18"},
+      {"name": "backend", "runtime": "python311"},
+      {"name": "database", "engine": "postgres"}
+    ],
+    "telemetry": {"docker": "24.0.5", "node": "18.18.0", "python": "3.11.6"}
+  },
+  "dry_run": {
+    "scenarios": ["generate_scaffold", "sync_requirements"],
+    "expected_tree_hash": "abc123"
+  },
+  "generation": {
+    "artifacts": ["src/frontend", "src/backend", "docs/architecture.md"]
+  },
+  "testing": {
+    "thresholds": {"coverage": 0.8, "vulnerabilities": 0}
+  },
+  "synchronization": {
+    "traceability": {
+      "completeness": 0.99,
+      "threshold": 0.95,
+      "matrix_path": "workflow/assets/plan.md"
+    }
+  },
+  "metrics": {
+    "coverage": {"actual": 0.87, "threshold": 0.8},
+    "performance": {"p95_ms": 850, "threshold_ms": 950},
+    "build_time": 420
+  },
+  "compliance": {
+    "controls": ["AC-2", "CM-6", "IA-5"],
+    "score": 0.96,
+    "threshold": 0.9,
+    "mappings": {"AC-2": "User provisioning automation", "CM-6": "Change control scripts"}
+  },
+  "delivery": {
+    "version": "1.0.0",
+    "environments": [
+      {"name": "staging", "strategy": "rolling"},
+      {"name": "production", "strategy": "blue-green"}
+    ],
+    "post_deploy_checks": ["Smoke tests", "Telemetry verification"],
+    "rollback": {"plan": "Revert to previous manifest and clear caches"}
+  },
+  "automation": {
+    "checks": [
+      {"name": "format", "cmd": ["python3", "-c", "print('format-ok')"]}
+    ],
+    "tests": [
+      {"name": "unit", "cmd": ["python3", "-c", "print('tests-ok')"]}
+    ],
+    "scans": [
+      {"name": "security", "cmd": ["python3", "-c", "print('scan-ok')"]}
+    ]
+  },
+  "paths": {
+    "run_root": "workflow/runs",
+    "evidence_root": "workflow/evidence",
+    "template_root": "templates/universal"
+  }
+}

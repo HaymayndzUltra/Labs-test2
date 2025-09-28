@@ -2,8 +2,10 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-import subprocess
-import os
+
+
+ROOT = Path(__file__).resolve().parents[2]
+SCRIPT = ROOT / "scripts" / "generate_client_project.py"
 
 
 def _run(cmd: list[str], cwd: str | None = None) -> subprocess.CompletedProcess:
@@ -60,7 +62,7 @@ def test_generate_fastapi_fullstack_health(tmp_path):
     outdir = tmp_path / 'gen'
     outdir.mkdir(parents=True, exist_ok=True)
     cmd = [
-        sys.executable, '/workspace/scripts/generate_client_project.py',
+        sys.executable, str(SCRIPT),
         '--name', 'stack-fastapi',
         '--industry', 'ecommerce',
         '--project-type', 'fullstack',
@@ -86,7 +88,7 @@ def test_generate_fastapi_api_health(tmp_path):
     outdir = tmp_path / 'gen_api'
     outdir.mkdir(parents=True, exist_ok=True)
     cmd = [
-        sys.executable, '/workspace/scripts/generate_client_project.py',
+        sys.executable, str(SCRIPT),
         '--name', 'api-fastapi',
         '--industry', 'saas',
         '--project-type', 'api',
