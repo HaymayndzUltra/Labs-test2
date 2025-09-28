@@ -1,44 +1,139 @@
-# Pipeline Evaluation Report
+Feasibility Answer
+PARTIAL. The lifecycle yields structured artifacts, but multiple production-readiness gaps remain:
 
-## 1. Source Report Versions Reviewed
-- **Version 1** – Highlights missing PRD gate, absent architecture outputs from stack selection, relaxed quality thresholds, and placeholder performance collection.【F:AGENTS.md†L1-L4】
-- **Version 2** – Reiterates PRD gate omission, notes swallowed test failures, and inconsistent compliance enforcement across documentation and scripts.【F:AGENTS.md†L9-L14】
-- **Version 3** – Expands governance gaps around PRD/SLO/architecture sequencing, quality threshold drift, compliance validation scope, and missing change-control loop.【F:AGENTS.md†L16-L22】
-- **Version 4** – Confirms pipeline ordering but again flags unenforced PRD/architecture gate, masked install/test failures, weak thresholds, and dormant performance gate.【F:AGENTS.md†L24-L27】
+Requirements & Integration: The frontend reports UI expects monthly summaries with overdue_total and automation_opportunities, yet the FastAPI schema/service omit those fields, so Phase‑2 validation must fail until the contract is fixed and re-tested.
+• Needed artifacts: Updated backend schema/service/tests plus regenerated frontend contract notes.
 
-## 2. Pipeline Workflow Walkthrough
-1. **Bootstrap & Planning** – `scripts/e2e_from_brief.sh` verifies tooling, generates planning artifacts from the selected brief, and validates task structure before stack selection.【F:scripts/e2e_from_brief.sh†L133-L188】  
-2. **Stack Selection** – `scripts/select_stacks.py` checks template availability and engine requirements but does not emit downstream architectural specifications.【F:scripts/e2e_from_brief.sh†L144-L170】【F:scripts/select_stacks.py†L149-L211】  
-3. **Generation** – The generator runs dry-run and full scaffolding steps with arguments derived from configuration.【F:scripts/e2e_from_brief.sh†L172-L179】  
-4. **Build & Test** – `install_and_test.sh` executes stack-specific installs/tests yet swallows failures with `|| true`, preventing pipeline stop-on-error.【F:scripts/e2e_from_brief.sh†L181-L183】【F:scripts/install_and_test.sh†L33-L89】  
-5. **Task Sync & Validation** – Synchronizes generated scaffold with plan, ensuring tasks file consistency.【F:scripts/e2e_from_brief.sh†L185-L188】  
-6. **Gate Metrics** – Collects coverage, perf, dependency scan data, and enforces thresholds from `gates_config.yaml`; performance defaults to 9999 ms when no measurement provided.【F:scripts/e2e_from_brief.sh†L190-L194】【F:scripts/collect_perf.py†L19-L34】【F:gates_config.yaml†L1-L16】  
-7. **Submission & Compliance** – Builds submission pack and runs compliance validator, which currently compares repository-level artifacts rather than generated project outputs.【F:scripts/e2e_from_brief.sh†L196-L210】【F:scripts/validate_compliance_assets.py†L17-L64】
+Documentation & Stack Clarity: API docs still reference template “items” endpoints and the backend README advertises Redis/Celery that are not present, so reviewers lack accurate operational guidance.
+• Needed artifacts: Regenerated API & backend READMEs aligned with actual modules.
 
-## 3. Detected Conflicts & Gaps
-- **PRD/Architecture Gate Missing** – Workflow documentation requires a PRD and architecture sign-off between planning and generation, but the pipeline proceeds directly from plan to stack selection without verifying these artifacts.【F:docs/WORKFLOW_OVERVIEW.md†L5-L15】【F:scripts/e2e_from_brief.sh†L138-L188】  
-- **Sequencing Misalignment** – Dev workflow mandates SLO budgeting and architecture outputs prior to gate approval, yet automation never requests or validates those deliverables.【F:dev-workflow/GPTAyawmaniwala.txt†L8-L113】【F:scripts/e2e_from_brief.sh†L138-L210】  
-- **Quality Threshold Drift** – Published SLOs call for ≥80 % coverage and zero critical vulnerabilities, but `gates_config.yaml` enforces 70 % coverage and allows high-severity issues, weakening governance.【F:docs/SLO_TARGETS.md†L93-L105】【F:gates_config.yaml†L7-L16】  
-- **Test Failure Masking** – The install/test helper guards nearly all commands with `|| true`, so dependency, build, or test failures never fail the pipeline, contradicting the "Code review + QA pass" gate.【F:scripts/install_and_test.sh†L33-L89】  
-- **Compliance Validation Scope** – `validate_compliance_assets.py` regenerates repo-level compliance docs using default stack metadata instead of validating the generated project artifacts, leaving per-project compliance unchecked.【F:scripts/validate_compliance_assets.py†L17-L64】  
-- **Performance Gate Ineffective** – `collect_perf.py` writes a 9999 ms placeholder when no input is provided, and there is no performance threshold defined, so performance regressions pass unnoticed.【F:scripts/collect_perf.py†L19-L34】【F:gates_config.yaml†L7-L16】
+Quality Gates & Evidence: The brief requires ≥80 % coverage and strict security/perf thresholds, but the generated gate config drops coverage to 70 % and the evidence folder only holds a PRD log—no coverage, perf, or security proof—so compliance cannot pass.
+• Needed artifacts: Updated gate config, coverage/perf/security reports, and compliance logs aligned with success criteria.
 
-## 4. Correctness & Efficiency Assessment
-- **Control Flow** – Shell script uses `set -euo pipefail`, but explicit `|| true` clauses negate fail-fast behavior at critical stages, undermining correctness.【F:scripts/e2e_from_brief.sh†L181-L210】【F:scripts/install_and_test.sh†L33-L89】  
-- **Artifact Generation** – Planning and generation steps produce expected artifacts; however, absence of PRD/SLO/architecture outputs creates traceability gaps versus documented lifecycle.【F:docs/WORKFLOW_OVERVIEW.md†L5-L18】【F:dev-workflow/GPTAyawmaniwala.txt†L8-L113】  
-- **Efficiency** – Stack selection and generator reuse template metadata efficiently but do not materialize architecture deliverables, forcing manual rework downstream.【F:scripts/select_stacks.py†L149-L211】  
-- **Gate Coverage** – Coverage and security gates execute quickly but operate on relaxed thresholds and missing metrics, reducing effectiveness despite low runtime cost.【F:gates_config.yaml†L7-L16】【F:scripts/enforce_gates.py†L85-L142】
+Phase 1 – Design & Stack Validation
+Purpose – Convert the brief into an approved implementation blueprint with validated task graph and stack readiness.
 
-## 5. Recommendations
-1. **Introduce PRD/SLO/Architecture Gate** – Add generation/validation steps after planning that require PRD, SLO, and architecture artifacts to exist and pass schema checks before stack selection proceeds.【F:docs/WORKFLOW_OVERVIEW.md†L5-L15】【F:dev-workflow/GPTAyawmaniwala.txt†L8-L44】  
-2. **Emit Architecture Specifications** – Extend `select_stacks.py` (or companion module) to derive database schema, API, and UI blueprints for downstream teams, storing results in the project evidence directory.【F:scripts/select_stacks.py†L149-L211】  
-3. **Propagate Build/Test Failures** – Remove or gate the `|| true` fallbacks in `install_and_test.sh` (and the caller) so install/build/test commands fail fast, aligning with QA gate requirements.【F:scripts/e2e_from_brief.sh†L181-L183】【F:scripts/install_and_test.sh†L33-L89】  
-4. **Align Quality Thresholds** – Update `gates_config.yaml` (and generator defaults) to require ≥80 % coverage and zero high/critical vulnerabilities, matching SLO documentation and compliance guidance.【F:docs/SLO_TARGETS.md†L93-L105】【F:gates_config.yaml†L7-L16】  
-5. **Activate Performance Gate** – Enhance `collect_perf.py` to integrate real measurements (or fail when absent) and define a `quality_gates.performance.p95_ms` threshold so `enforce_gates.py` enforces performance budgets.【F:scripts/collect_perf.py†L19-L34】【F:scripts/enforce_gates.py†L101-L140】  
-6. **Scope Compliance Validation to Generated Project** – Modify `validate_compliance_assets.py` to inspect the generated project directory and ensure compliance artifacts reflect the selected stack, not the template defaults.【F:scripts/validate_compliance_assets.py†L17-L64】  
-7. **Document Change-Control Loop** – Update dev-workflow docs and automation to record approved scope changes, matching lifecycle guidance for iterative delivery.【F:dev-workflow/GPTAyawmaniwala.txt†L71-L83】
+Scope
 
-## 6. Pipeline Execution Summary
-- Command: `NAME=portfolio-dashboard OUTPUT_ROOT=_generated E2E_FORCE_OUTPUT=1 ./scripts/e2e_from_brief.sh`  
-- Result: Pipeline halted during stack selection because Docker (required by template metadata) is unavailable in the current environment; engine summary logged to `_generated/portfolio-dashboard/evidence/stack-selection.md` showing the failed Docker requirement.【25712b†L1-L10】【4b6e98†L1-L23】【40977e†L1-L5】【F:_generated/portfolio-dashboard/evidence/stack-selection.md†L1-L11】  
-- Recommendation: Install Docker or adjust engine requirements for environments where Docker is intentionally absent before rerunning end-to-end.
+In: Config merge, plan/task generation, PRD & architecture drafting, stack/tooling verification.
+
+Out: Scaffold generation, dependency installs, testing, metrics collection.
+
+Inputs
+
+Brief metadata (docs/briefs/<NAME>/brief.md) and baseline config (workflow.config.json).
+
+Factory scripts (scripts/pre_lifecycle_plan.py, plan_from_brief.py, generate_prd_assets.py, validate_prd_gate.py, select_stacks.py).
+
+Outputs/Artifacts
+
+Provisioned ${PROJECT_DIR} with evidence/.
+
+PLAN.md, PLAN.tasks.json, task-validator log.
+
+PRD.md, ARCHITECTURE.md, PRD gate log.
+
+stack-selection.md + engine evidence (when substitutions applied).
+
+Validation Gates & Exit Criteria
+
+Tooling doctor/template listing confirms prerequisites (halt on missing CLI).
+
+Task graph validator passes with no schema errors.
+
+PRD/Architecture gate confirms required sections & sign-off metadata.
+
+Stack selection report matches intended templates; discrepancies remediated before proceeding.
+
+Dependencies & Assumptions – Requires Python 3.11+, Node 18+, Docker, Git, approved brief, and accessible scripts as documented.
+
+Risks & Recovery – If validators fail, revise brief metadata/plan inputs, regenerate affected artifacts, and re-run gates before advancing.
+
+Phase 2 – Generation & Quality Enforcement
+Purpose – Materialize the scaffold, execute automated quality controls, and assemble the submission package.
+
+Scope
+
+In: Dry-run verification, code generation, installs/tests, task sync, metrics & security scans, gate enforcement, compliance pack creation.
+
+Out: Changes to Phase‑1 plan or stack definition (requires rollback to Phase 1 if needed).
+
+Inputs
+
+Approved Phase‑1 artifacts (PLAN.md, PLAN.tasks.json, PRD.md, ARCHITECTURE.md, stack evidence).
+
+Effective stack parameters (FE/BE/DB/auth/deploy).
+
+Outputs/Artifacts
+
+Generated frontend/backend/database/docs sources plus README.md.
+
+Install/test logs, coverage.xml, perf and dependency scan reports.
+
+Updated tasks.json, enforcement logs, compliance validation outputs.
+
+Submission bundle under dist/ with manifests and evidence.
+
+Validation Gates & Exit Criteria
+
+Dry-run confirms expected structure before writes.
+
+Full generation completes without missing files.
+
+Install & test helper exits success; failures block until fixed.
+
+Task sync validator passes on regenerated DAG.
+
+Coverage, perf, and security scans meet configured thresholds; gates enforced.
+
+Compliance validators succeed with documented skips where applicable.
+
+Dependencies & Assumptions – Uses Phase‑1 outputs, language toolchains, database/LLM stubs as required; assumes access to Docker or approved substitution per stack selection notes.
+
+Risks & Recovery – On gate failure, remediate code/tests/config, regenerate affected evidence, and re-run failing gate before packaging.
+
+Boundaries & Handoffs
+Phase 1 → Phase 2 Boundary: Triggered after PRD/Architecture and stack selection validations succeed and are archived.
+
+Artifacts Crossing Boundary: PLAN.md, PLAN.tasks.json, PRD.md, ARCHITECTURE.md, task validation log, stack selection report/evidence.
+
+Ownership at Boundary: Phase‑1 author (planning/architecture lead) hands off approved bundle to Phase‑2 implementer; automation maintains evidence store.
+
+Implementation Order (1..N)
+Baseline config + brief → Provision isolated ${PROJECT_DIR} with evidence/ → Clean workspace ready for artifacts.
+
+Provisioned dir + env → Run tooling bootstrap (doctor, template listing) [Validation] → Prerequisite report for auditors.
+
+Brief → Execute plan_from_brief.py → PLAN.md & PLAN.tasks.json drafted.
+
+PLAN.tasks.json → Task graph validator [Validation] → Validator log confirming DAG integrity.
+
+Plan + stack config → Generate PRD/Architecture → PRD.md, ARCHITECTURE.md.
+
+PRD/Architecture + stack inputs → Run PRD gate & stack selection [Validation] → Gate log, stack-selection.md (or remediation notes).
+
+Approved stack → Perform dry-run generation [Validation] → Dry-run manifest for review.
+
+Dry-run approved → Run full generate_client_project.py → Populated scaffold under ${PROJECT_DIR}.
+
+Generated code → Execute install/test helper [Validation] → Test logs, coverage data.
+
+Code + tasks → Sync scaffold and revalidate tasks [Validation] → Updated tasks.json, validator log.
+
+Test outputs → Collect coverage/perf, scan deps, enforce gates [Validation] → Metrics + gate compliance evidence.
+
+Passing gates → Build submission pack & validate compliance [Validation] → dist/ bundle, compliance logs.
+
+Quality Model
+Minimum Gates before Phase 2: Tooling bootstrap check, task graph validation, PRD/Architecture gate, stack selection (including dry-run review).
+
+Final Acceptance Gates (end of Phase 2): Install/test helper success, task sync validation, coverage/perf/dependency enforcement, compliance asset validation, submission pack creation.
+
+Evidence to Retain: Tooling doctor output, task validator logs, PRD/Architecture gate log, stack-selection report, dry-run manifest, install/test logs, coverage/perf/dependency reports, gate enforcement log, compliance validation logs, submission pack manifest.
+
+Gaps & Unknowns
+Frontend/backend contract mismatch for AI summary requires remediation and retest.
+
+Operational documentation misrepresents available endpoints and infrastructure (placeholder API doc, Redis/Celery claims).
+
+Gate configuration and evidence do not satisfy brief-mandated coverage/security/perf thresholds; only PRD evidence captured so far.

@@ -1,33 +1,177 @@
-# Pipeline Evaluation and Execution Notes
+Feasibility Answer
+PARTIAL — The lifecycle scripts cover planning and generation, yet the latest run leaves multiple blockers that prevent a production-ready delivery. Requirements are compromised because the login screen ships with the wrong seeded password, breaking the very first acceptance flow. Architecture and data readiness are incomplete: the database init script only provisions an audit table, Postgres RLS from the brief is absent, and there are no Alembic migrations to materialize the schema. Deployment and operations assets are insufficient because docker-compose.yml collapses everything into a single “dev” container instead of discrete API/web services that match the target topology. Documentation is misleading (lists Redis/Celery flows and legacy endpoints that do not exist), requiring rewrite before any handoff. Testing and compliance evidence are too thin: the only frontend test checks a welcome header, and the evidence folder lacks the coverage, performance, dependency, and compliance artifacts mandated by the workflow gates. Closing these gaps requires: aligning seeded credentials, producing real migrations/DDL + RLS policies, authoring accurate deployment docs and compose services, expanding automated tests (especially FE auth/dashboard flows), and rerunning the gate steps to capture coverage/perf/security/compliance evidence packages.
 
-## Review of Historical AI Reports
-- **Version 1** focused on the absence of an automated PRD gate, missing architecture deliverables from stack selection, misaligned quality thresholds, and a placeholder performance collector, establishing the core governance gaps in the lifecycle automation.【F:AGENTS.md†L3-L3】
-- **Version 2** reiterated the missing PRD checkpoint, highlighted swallowed QA failures, and called out divergences between compliance expectations and enforcement scripts, showing that the foundational issues persisted despite documentation updates.【F:AGENTS.md†L11-L11】
-- **Version 3** broadened the critique to sequencing and governance mismatches (e.g., deadlocks without architecture sign-off, inconsistent quality targets, absent change-control loops), indicating that process alignment problems extended beyond the main script.【F:AGENTS.md†L19-L19】
-- **Version 4** confirmed the automation order while restating the unresolved PRD gate, test failure propagation, threshold misalignment, and dormant performance enforcement, demonstrating that successive reviews have converged on the same high-priority fixes.【F:AGENTS.md†L27-L27】
+Phase 1
+Purpose
+Establish an authoritative plan, task graph, and architecture that faithfully reflect the brief before any code generation occurs.
 
-## Pipeline Workflow Mapping
-The documented local workflow and the `e2e_from_brief.sh` script agree on the major stages: environment checks, plan generation from the brief, task validation, stack selection, dry-run and real generation, installation/tests, task sync, metrics collection with gate enforcement, submission packaging, and compliance validation.【F:docs/LOCAL_DEV_WORKFLOW.md†L61-L159】【F:scripts/e2e_from_brief.sh†L133-L215】
+Scope
+Includes provisioning an isolated project directory, pulling metadata, generating PLAN.md/PLAN.tasks.json, validating the DAG, and producing signed PRD/architecture summaries. Excludes any scaffold generation, dependency installs, or code artefact creation.
 
-## Conflicts and Logical Gaps
-1. **PRD & Architecture Gate Missing in Automation** – The workflow overview demands a PRD and architecture sign-off between planning and generation, but the automation jumps directly from `plan_from_brief` to stack selection without creating or validating PRD artifacts, so governance gating cannot be satisfied automatically.【F:docs/WORKFLOW_OVERVIEW.md†L5-L15】【F:scripts/e2e_from_brief.sh†L138-L155】
-2. **Environment Requirements Stall Execution** – Stack selection halts when Docker is unavailable, and the generator also blocks unless `--skip-system-checks` or manual overrides are used, forcing human intervention to bypass infrastructure checks (e.g., the run stopped with an unmet Docker requirement until a manual `--docker 24` override was issued).【22822e†L15-L20】【1b0097†L1-L4】【a4e39f†L1-L8】【bf1608†L1-L16】
-3. **Install/Test Stage Masks Failures and Prefers pnpm** – The automation swallows all errors from `install_and_test.sh` by appending `|| true` at the call site, while the script prioritizes `pnpm` with `--frozen-lockfile`, causing hard failures when only npm lockfiles exist; this combination hides real install/test failures from the pipeline.【F:scripts/e2e_from_brief.sh†L181-L194】【F:scripts/install_and_test.sh†L27-L92】【dcc355†L1-L7】
-4. **Quality Gates Out of Sync with Standards** – `gates_config.yaml` still enforces only 70 % coverage and allows up to five high vulnerabilities, conflicting with SLO targets that require >80 % coverage and zero critical vulns, leaving compliance promises unenforced.【F:gates_config.yaml†L1-L16】【F:docs/SLO_TARGETS.md†L95-L104】
-5. **Performance Gate Ineffective** – `collect_perf.py` writes a default 9,999 ms P95 when no measurement is supplied, so the enforcer never exercises the performance threshold despite documentation expecting perf validation.【F:scripts/collect_perf.py†L1-L35】【F:docs/LOCAL_DEV_WORKFLOW.md†L144-L150】
+Inputs
 
-## Correctness and Efficiency Assessment
-- The sequential orchestration matches the documented lifecycle, but the absence of the PRD/architecture gate and the reliance on manual overrides for engine checks prevent a fully automated governance flow, limiting correctness for regulated deliveries.【F:docs/WORKFLOW_OVERVIEW.md†L5-L15】【F:scripts/e2e_from_brief.sh†L138-L215】
-- Efficiency suffers from repeated tool detection and interactive prompts (e.g., generator asking to run setup) along with repeated `|| true` guards that require manual log review to detect regressions, undermining CI effectiveness.【F:scripts/e2e_from_brief.sh†L173-L199】【bf1608†L1-L16】
+Approved brief: docs/briefs/client01saas/brief.md
 
-## Recommendations
-1. **Insert Automated PRD Checkpoint** – Extend `e2e_from_brief.sh` to generate/verify `PRD.md` (e.g., by invoking `dev-workflow/1-create-prd.md` automation) before stack selection, failing fast when artifacts or approvals are missing, and document the step in the local workflow guide.【F:scripts/e2e_from_brief.sh†L138-L155】【F:docs/WORKFLOW_OVERVIEW.md†L5-L15】
-2. **Provide Engine Requirement Overrides & Non-Interactive Mode** – Allow configuration (env vars or config file) to supply explicit engine versions, and ensure generator respects `--skip-system-checks` automatically in CI to avoid Docker gating when unavailable, while still warning operators.【22822e†L15-L20】【1b0097†L1-L4】【a4e39f†L1-L8】
-3. **Fail Fast on Install/Test Errors** – Remove the `|| true` wrappers in the E2E script, add explicit pass/fail reporting inside `install_and_test.sh`, and let npm run when pnpm lockfiles are absent so dependency installations fail loudly when incompatible with generated artifacts.【F:scripts/e2e_from_brief.sh†L181-L194】【F:scripts/install_and_test.sh†L27-L92】【dcc355†L1-L7】
-4. **Align Gate Thresholds with SLOs** – Update `gates_config.yaml` to enforce ≥80 % coverage and zero critical/high vulnerabilities, and adjust `collect_perf.py` plus gate configuration to require real performance measurements before allowing success.【F:gates_config.yaml†L1-L16】【F:docs/SLO_TARGETS.md†L95-L104】【F:scripts/collect_perf.py†L1-L35】
-5. **Document Manual Overrides and Evidence Handling** – Augment `docs/LOCAL_DEV_WORKFLOW.md` with guidance for Docker-less environments, pnpm/npm selection, and where to capture override evidence so reviewers understand deviations from the nominal path.【F:docs/LOCAL_DEV_WORKFLOW.md†L100-L150】【22822e†L15-L20】【dcc355†L1-L7】
+Baseline workflow config (implicit via scripts)
 
-## Pipeline Execution Summary
-- Attempted to run `scripts/e2e_from_brief.sh` with the portfolio-dashboard brief; execution stopped at stack selection because Docker was unavailable, demonstrating the hard dependency on local container tooling.【22822e†L1-L20】
-- Manually resumed by overriding engine checks (`--docker 24`), skipping system checks, and forcing generation, which succeeded but required acknowledging interactive prompts and bypassing the default Docker enforcement.【1b0097†L1-L4】【bf1608†L1-L16】【f78797†L1-L2】
-- The install/test script failed under pnpm because no `pnpm-lock.yaml` existed, confirming the tooling mismatch noted above; further stages were not pursued to avoid obscuring failures behind `|| true` guards.【dcc355†L1-L7】【F:scripts/e2e_from_brief.sh†L181-L194】
+Existing planning outputs (PLAN.md, PLAN.tasks.json) from prior run for comparison/reference.
+
+Outputs/Artifacts
+
+Refreshed PLAN.md and PLAN.tasks.json scoped to the brief.
+
+Validated PRD.md and ARCHITECTURE.md with sign-off metadata.
+
+Stack selection evidence (selection.json, evidence/stack-selection.md, layer summaries).
+
+Validation Gates & Exit Criteria
+
+validate_tasks.py passes on PLAN.tasks.json (no cycles, IDs unique).
+
+validate_prd_gate.py confirms required sections/sign-offs in PRD and architecture files.
+
+select_stacks.py succeeds with tooling checks documented in evidence files.
+
+Dependencies & Assumptions
+
+Toolchain availability per prerequisites (Python 3.11+, Node 18+, Docker, Git).
+
+Brief metadata remains canonical; overrides (AUTH, DEPLOY, COMPLIANCE) provided if needed.
+
+Unknown: Any external compliance constraints beyond the brief (flag as “Unknown”).
+
+Risks & Recovery
+
+Risk: Plan/PRD divergence from brief due to parser errors → regenerate plan after updating brief metadata or override files, then rerun validations.
+
+Risk: Tooling prerequisites missing → run scripts/doctor.py --strict to identify and remediate before reattempting.
+
+Phase 2
+Purpose
+Generate the scaffold, execute automated quality gates (tests, coverage, security, performance, compliance), and assemble the submission package based on Phase 1 artefacts.
+
+Scope
+Includes dry-run confirmation, full generation, dependency installation, automated tests, task sync, coverage/perf/security collection, gate enforcement, submission pack build, and compliance validation. Excludes upstream plan/PRD authoring (must be frozen from Phase 1).
+
+Inputs
+
+Phase 1 outputs: PLAN.md, PLAN.tasks.json, PRD.md, ARCHITECTURE.md, stack selection evidence.
+
+Environment variables derived from brief metadata (FE/BE/DB/auth/deploy).
+
+Existing scaffold (for diff comparison) under _generated/client01saas if reuse is needed.
+
+Outputs/Artifacts
+
+Generated project directory with frontend/backend/database assets.
+
+Updated tasks.json synchronized with scaffold.
+
+Metrics & evidence: coverage.xml, metrics/perf.json, dependency scan output, gate logs, compliance validation logs.
+
+Distribution bundle under dist/ (submission pack).
+
+Validation Gates & Exit Criteria
+
+Dry-run tree review approved before actual write.
+
+install_and_test.sh completes without errors (all workspace tests pass).
+
+Coverage ≥80%, perf metric documented, dependency scan clean per gates_config.
+
+enforce_gates.py, build_submission_pack.sh, and compliance validators succeed, producing logs in evidence/.
+
+Dependencies & Assumptions
+
+Requires artefacts and approvals from Phase 1.
+
+Assumes access to required package registries and Docker runtime; substitutions documented if applicable.
+
+Unknown: Availability of external PDF tooling or AI keys beyond rules-based fallback (mark “Unknown”).
+
+Risks & Recovery
+
+Risk: Generation fails due to stack mismatch → revisit stack selection evidence, adjust overrides, rerun dry-run/generation.
+
+Risk: Gates fail (coverage/perf/security) → remediate code/tests, regenerate metrics, rerun gate scripts before attempting submission.
+
+Risk: Compliance validation gaps → fill missing docs/evidence, rerun validators to produce updated logs.
+
+Boundaries & Handoffs
+Phase 1 → Phase 2 boundary: Triggered once PLAN.md, PLAN.tasks.json, PRD.md, ARCHITECTURE.md, and stack evidence are validated and stored in the project directory.
+
+Artifacts handed off: PLAN.md, PLAN.tasks.json, PRD.md, ARCHITECTURE.md, selection.json, evidence/stack-selection.md, layer summaries.
+
+Ownership at boundary: Phase 1 author (planner) signs off on documentation; Phase 2 executor (generator/test lead) consumes these artefacts. Reviewers verify signatures and evidence before proceeding.
+
+Implementation Order (1..N)
+Input: Brief metadata → Action: Provision isolated project directory (mkdir, env vars) → Output: Empty ${PROJECT_DIR} with evidence/ folder.
+
+Input: Toolchain → Action: Run scripts/doctor.py --strict & template listing to confirm prerequisites → Output: Tooling report (Validation).
+
+Input: Brief → Action: plan_from_brief.py generates PLAN.md, PLAN.tasks.json → Output: Updated planning docs.
+
+Input: PLAN.tasks.json → Action: validate_tasks.py → Output: Validation report (Validation).
+
+Input: Plan/tasks + stack params → Action: generate_prd_assets.py → Output: PRD.md, ARCHITECTURE.md.
+
+Input: PRD & architecture → Action: validate_prd_gate.py → Output: Gate pass/fail log (Validation).
+
+Input: Stack parameters → Action: select_stacks.py → Output: selection.json, evidence markdowns (Validation).
+
+Input: Validated plan & stack → Action: Dry-run generation (generate_client_project.py --dry-run) → Output: Reviewed tree summary.
+
+Input: Approved dry-run → Action: Full generation (generate_client_project.py) → Output: Scaffolded project.
+
+Input: Scaffold → Action: install_and_test.sh installs dependencies & runs tests → Output: Test logs (Validation).
+
+Input: Tasks + scaffold → Action: sync_from_scaffold.py (dry + apply) + revalidate tasks → Output: Updated tasks.json, validation log.
+
+Input: Project root → Action: Collect coverage/perf/dep metrics, enforce gates → Output: Metrics artefacts, gate results (Validation).
+
+Input: Gate-passed project → Action: Build submission pack → Output: dist/ bundle.
+
+Input: Generated evidence → Action: Run compliance validators → Output: Compliance logs (Validation).
+
+Quality Model
+Minimum gates before Phase 2: Task graph validation, PRD/architecture validation, stack selection evidence (Steps 4, 6, 7).
+
+Final acceptance gates (end of Phase 2): Successful install_and_test.sh, coverage/perf/security gate passes, submission pack built, compliance validation logs present.
+
+Audit evidence to retain: PLAN.md, PLAN.tasks.json, PRD.md, ARCHITECTURE.md, selection.json, stack evidence markdowns, tasks.json, coverage.xml, metrics/perf.json, dependency scan report, gate logs, dist/ package, compliance validator logs, plus updated docs in docs/.
+
+Gaps & Unknowns
+Requirements – Seeded credentials vs. login defaults: The login page hardcodes password while seeds set propwise, breaking the “Login → dashboard visible” acceptance test from the brief.
+
+Suggested task
+Align login defaults with seeded credentials
+
+Start task
+Architecture – Database schema/RLS missing: The init script only creates an audit table and placeholder comment; Alembic has no version scripts despite the brief’s mandate for multi-tenant tables and RLS.
+
+Suggested task
+Implement database schema and RLS
+
+Start task
+Documentation – Backend/API guides inaccurate: Backend README references Redis, Celery, and legacy endpoints that are absent, and API docs still describe /items placeholders.
+
+Suggested task
+Refresh backend and API documentation
+
+Start task
+Deployment – Compose topology incomplete: docker-compose.yml only defines a monolithic “dev” container with bind mounts, conflicting with the brief’s expectation of API and web services.
+
+Suggested task
+Split docker-compose into API, web, and db services
+
+Start task
+Quality evidence & testing gaps: Frontend automated coverage only verifies a welcome heading, and the evidence folder lacks the coverage/perf/security/compliance artefacts required by gates.
+
+Suggested task
+Expand frontend tests and capture gate evidence
+
+Start task
+Compliance artefacts missing: No compliance validation logs or submission bundle are present even though the workflow mandates them.
+
+Suggested task
+Produce compliance validation outputs
