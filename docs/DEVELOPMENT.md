@@ -63,7 +63,7 @@
   ```
 
 ### Full Suite & Coverage
-- `make test` runs the frontend and backend suites with coverage, enforces the 70% line
+- `make test` runs the frontend and backend suites with coverage, enforces the 80% line
   threshold defined in `gates_config.yaml`, and aggregates results into
   `coverage/coverage-summary.json` for the quality gate pipeline.
 - Individual reports are left in `frontend/coverage/coverage-summary.json` and

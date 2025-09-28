@@ -164,12 +164,18 @@ Keeps the tasks DAG aligned with generated assets.
 
 ```bash
 PROJECT_ROOT="$PROJECT_DIR" python scripts/collect_coverage.py || true
-PROJECT_ROOT="$PROJECT_DIR" python scripts/collect_perf.py || true
+PROJECT_ROOT="$PROJECT_DIR" python scripts/collect_perf.py
 PROJECT_ROOT="$PROJECT_DIR" python scripts/scan_deps.py || true
 PROJECT_ROOT="$PROJECT_DIR" python scripts/enforce_gates.py
 ```
 
-Gate thresholds are defined in [`gates_config.yaml`](../gates_config.yaml).
+Gate thresholds are defined in [`gates_config.yaml`](../gates_config.yaml) and
+now require **≥80 % line coverage** plus **zero critical/high dependency
+vulnerabilities**. `collect_perf.py` exits non-zero when it cannot read a real
+P95 latency value from `PERF_P95_MS` or `metrics/input_perf.txt`, preventing the
+gate from running without documented performance evidence. The generated
+`metrics/perf.json` must therefore contain a positive finite value before the
+pipeline proceeds.
 
 ### 11. Build the submission pack
 
