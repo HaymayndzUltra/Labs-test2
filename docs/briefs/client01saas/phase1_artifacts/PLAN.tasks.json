@@ -1,0 +1,525 @@
+{
+  "backend": [
+    {
+      "id": "BE-SCHEMA",
+      "title": "Design multi-tenant schema",
+      "area": "backend",
+      "estimate": "1d",
+      "blocked_by": [],
+      "labels": [
+        "database",
+        "tenancy"
+      ],
+      "acceptance": [
+        "ERD covers organizations, buildings, units, tenants, payments, tickets, audit_log",
+        "org_id column enforced on every tenant-scoped table",
+        "Relationships documented for report generation"
+      ],
+      "dod": [
+        "Schema doc committed",
+        "RLS policy list drafted"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "BE-RLS",
+      "title": "Implement row-level security policies",
+      "area": "backend",
+      "estimate": "0.5d",
+      "blocked_by": [
+        "BE-SCHEMA"
+      ],
+      "labels": [
+        "security"
+      ],
+      "acceptance": [
+        "RLS enabled on tenant tables",
+        "Policies restrict access by org_id and role",
+        "FastAPI dependency enforces decoded org context"
+      ],
+      "dod": [
+        "Policy tests passing"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "BE-SEEDS",
+      "title": "Author minimal seed loaders",
+      "area": "backend",
+      "estimate": "0.5d",
+      "blocked_by": [
+        "BE-SCHEMA"
+      ],
+      "labels": [
+        "data"
+      ],
+      "acceptance": [
+        "Seed script creates organizations, users, units, tenants, payments, tickets",
+        "Seed data matches brief fixtures",
+        "Script idempotent"
+      ],
+      "dod": [
+        "Seed CI job runs"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "BE-AUTH",
+      "title": "Deliver JWT auth endpoints",
+      "area": "backend",
+      "estimate": "1d",
+      "blocked_by": [
+        "BE-SCHEMA"
+      ],
+      "labels": [
+        "security",
+        "api"
+      ],
+      "acceptance": [
+        "POST /auth/login and /auth/register implemented",
+        "Passwords hashed with PBKDF2",
+        "Tokens embed org_id and role"
+      ],
+      "dod": [
+        "Unit tests for login/register"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "BE-TENANTS",
+      "title": "Build tenant & unit APIs",
+      "area": "backend",
+      "estimate": "1d",
+      "blocked_by": [
+        "BE-AUTH",
+        "BE-RLS"
+      ],
+      "labels": [
+        "api"
+      ],
+      "acceptance": [
+        "CRUD endpoints for tenants and units scoped by org_id",
+        "Search and pagination parameters supported",
+        "Org admins prevented from cross-org access"
+      ],
+      "dod": [
+        "Integration tests for tenant isolation"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "BE-PAYMENTS",
+      "title": "Expose payments APIs",
+      "area": "backend",
+      "estimate": "1d",
+      "blocked_by": [
+        "BE-TENANTS"
+      ],
+      "labels": [
+        "api"
+      ],
+      "acceptance": [
+        "Endpoints for listing, updating payment status",
+        "Overdue detection aggregated for dashboard",
+        "Rent trend query matches brief SQL"
+      ],
+      "dod": [
+        "Unit tests for overdue calculation"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "BE-TICKETS",
+      "title": "Implement maintenance ticket workflows",
+      "area": "backend",
+      "estimate": "1d",
+      "blocked_by": [
+        "BE-TENANTS"
+      ],
+      "labels": [
+        "api"
+      ],
+      "acceptance": [
+        "CRUD endpoints for tickets with assignment",
+        "Status transitions logged",
+        "Ticket detail join includes tenant context"
+      ],
+      "dod": [
+        "Tests cover open\u2192closed transitions"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "BE-AI",
+      "title": "Ship AI monthly summary stub",
+      "area": "backend",
+      "estimate": "0.5d",
+      "blocked_by": [
+        "BE-PAYMENTS",
+        "BE-TICKETS"
+      ],
+      "labels": [
+        "ai"
+      ],
+      "acceptance": [
+        "`/ai/summary` aggregates KPIs per org",
+        "Respects ENABLE_AI flag",
+        "Returns deterministic JSON for rules-based mode"
+      ],
+      "dod": [
+        "Contract tests for endpoint"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "BE-AUDIT",
+      "title": "Capture audit logs",
+      "area": "backend",
+      "estimate": "0.5d",
+      "blocked_by": [
+        "BE-SCHEMA"
+      ],
+      "labels": [
+        "audit"
+      ],
+      "acceptance": [
+        "Middleware records actor, entity, action, payload",
+        "Audit entries immutable",
+        "Evidence stored for compliance pack"
+      ],
+      "dod": [
+        "Audit unit test verifying write"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "BE-REPORT",
+      "title": "Implement monthly PDF report pipeline",
+      "area": "backend",
+      "estimate": "0.5d",
+      "blocked_by": [
+        "BE-PAYMENTS",
+        "BE-AUDIT"
+      ],
+      "labels": [
+        "reporting"
+      ],
+      "acceptance": [
+        "Template `templates/org_summary.md` populated with KPIs",
+        "Report stored under organization context",
+        "CLI/endpoint to trigger generation"
+      ],
+      "dod": [
+        "Smoke test for report output"
+      ],
+      "state": "pending"
+    }
+  ],
+  "frontend": [
+    {
+      "id": "FE-SHELL",
+      "title": "Set up layout and navigation",
+      "area": "frontend",
+      "estimate": "0.5d",
+      "blocked_by": [],
+      "labels": [
+        "ui"
+      ],
+      "acceptance": [
+        "App Router shell with sidebar/topbar",
+        "Route placeholders for dashboard, tenants, payments, tickets, login",
+        "Shared context provider for auth state"
+      ],
+      "dod": [
+        "Linting passes"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "FE-AUTH",
+      "title": "Build auth flows",
+      "area": "frontend",
+      "estimate": "0.5d",
+      "blocked_by": [
+        "FE-SHELL",
+        "BE-AUTH"
+      ],
+      "labels": [
+        "security"
+      ],
+      "acceptance": [
+        "Login/register forms integrated with JWT endpoints",
+        "Tokens stored securely (httpOnly fallback documented)",
+        "Route guards protect tenant-only views"
+      ],
+      "dod": [
+        "Playwright smoke for login"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "FE-DASHBOARD",
+      "title": "Implement dashboard analytics",
+      "area": "frontend",
+      "estimate": "1d",
+      "blocked_by": [
+        "FE-SHELL",
+        "BE-PAYMENTS"
+      ],
+      "labels": [
+        "analytics"
+      ],
+      "acceptance": [
+        "Cards render total tenants, occupied units, overdue payments, open tickets",
+        "Charts bound to rent collection and ticket closure data",
+        "Heatmap uses `analytics/student_activity.json` fixture"
+      ],
+      "dod": [
+        "Visual regression snapshot"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "FE-TENANTS",
+      "title": "Tenants & units management UI",
+      "area": "frontend",
+      "estimate": "0.75d",
+      "blocked_by": [
+        "FE-SHELL",
+        "BE-TENANTS"
+      ],
+      "labels": [
+        "ui"
+      ],
+      "acceptance": [
+        "Table supports filters, pagination, and scoped CRUD",
+        "Forms validate contact details",
+        "Org admins cannot view other org data"
+      ],
+      "dod": [
+        "E2E test for tenant create"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "FE-PAYMENTS",
+      "title": "Payments views",
+      "area": "frontend",
+      "estimate": "0.75d",
+      "blocked_by": [
+        "FE-SHELL",
+        "BE-PAYMENTS"
+      ],
+      "labels": [
+        "ui"
+      ],
+      "acceptance": [
+        "Table highlights overdue rows",
+        "Trend chart reflects backend aggregate",
+        "Balance summary matches API"
+      ],
+      "dod": [
+        "E2E covers overdue badge"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "FE-TICKETS",
+      "title": "Ticket board and detail",
+      "area": "frontend",
+      "estimate": "0.75d",
+      "blocked_by": [
+        "FE-SHELL",
+        "BE-TICKETS"
+      ],
+      "labels": [
+        "ui"
+      ],
+      "acceptance": [
+        "Kanban/list hybrid view for tickets",
+        "Detail page `/tickets/[id]` shows history",
+        "Admin assignment workflow surfaced"
+      ],
+      "dod": [
+        "UX review completed"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "FE-NOTIFY",
+      "title": "Notification stub",
+      "area": "frontend",
+      "estimate": "0.25d",
+      "blocked_by": [
+        "FE-TICKETS"
+      ],
+      "labels": [
+        "notifications"
+      ],
+      "acceptance": [
+        "Settings surface stub toggles",
+        "Call to backend stub logged",
+        "Documentation links to future provider integration"
+      ],
+      "dod": [
+        "Copy reviewed"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "FE-REPORT",
+      "title": "Report trigger UI",
+      "area": "frontend",
+      "estimate": "0.25d",
+      "blocked_by": [
+        "FE-SHELL",
+        "BE-REPORT"
+      ],
+      "labels": [
+        "reporting"
+      ],
+      "acceptance": [
+        "Button to request monthly report",
+        "Status indicator for last generated timestamp",
+        "Download link wired once artifact ready"
+      ],
+      "dod": [
+        "Happy path manual test"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "FE-TEST",
+      "title": "Front-end automated tests",
+      "area": "frontend",
+      "estimate": "0.5d",
+      "blocked_by": [
+        "FE-AUTH",
+        "FE-DASHBOARD",
+        "FE-TENANTS",
+        "FE-TICKETS"
+      ],
+      "labels": [
+        "testing"
+      ],
+      "acceptance": [
+        "Playwright smoke covers login\u2192dashboard",
+        "Component tests for KPI cards and tables",
+        "Accessibility audit script added"
+      ],
+      "dod": [
+        "CI script green"
+      ],
+      "state": "pending"
+    }
+  ],
+  "platform": [
+    {
+      "id": "PL-ENV",
+      "title": "Environment & tooling setup",
+      "area": "platform",
+      "estimate": "0.5d",
+      "blocked_by": [
+        "BE-SCHEMA"
+      ],
+      "labels": [
+        "devops"
+      ],
+      "acceptance": [
+        "Docker Compose updated with web/api/db",
+        "`.env.example` mirrors brief values",
+        "Make targets for lint/test documented"
+      ],
+      "dod": [
+        "Docs updated"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "PL-OBS",
+      "title": "Observability foundation",
+      "area": "platform",
+      "estimate": "0.5d",
+      "blocked_by": [
+        "BE-AUDIT"
+      ],
+      "labels": [
+        "observability"
+      ],
+      "acceptance": [
+        "Structured logs with correlation IDs",
+        "Metrics exporter emits request latency",
+        "Alert thresholds drafted"
+      ],
+      "dod": [
+        "Logging smoke test"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "PL-TESTS",
+      "title": "Automated test harness",
+      "area": "platform",
+      "estimate": "0.75d",
+      "blocked_by": [
+        "BE-PAYMENTS",
+        "FE-DASHBOARD"
+      ],
+      "labels": [
+        "testing"
+      ],
+      "acceptance": [
+        "Backend pytest suite executes with coverage \u226580%",
+        "k6 or equivalent P95 capture \u2264300ms",
+        "Seeds verified during CI run"
+      ],
+      "dod": [
+        "CI pipeline green"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "PL-GATES",
+      "title": "Configure quality gates",
+      "area": "platform",
+      "estimate": "0.5d",
+      "blocked_by": [
+        "PL-TESTS"
+      ],
+      "labels": [
+        "governance"
+      ],
+      "acceptance": [
+        "Coverage, performance, and dependency thresholds enforced",
+        "Workflow automation job scripted",
+        "Gate evidence stored under `metrics/`"
+      ],
+      "dod": [
+        "Gate run evidence uploaded"
+      ],
+      "state": "pending"
+    },
+    {
+      "id": "PL-COMPLIANCE",
+      "title": "Compile compliance evidence",
+      "area": "platform",
+      "estimate": "0.5d",
+      "blocked_by": [
+        "PL-GATES",
+        "BE-AUDIT"
+      ],
+      "labels": [
+        "compliance"
+      ],
+      "acceptance": [
+        "PRD.md and ARCHITECTURE.md updated",
+        "Audit log and RLS proof attached",
+        "Acceptance test checklist completed"
+      ],
+      "dod": [
+        "Submission pack assembled"
+      ],
+      "state": "pending"
+    }
+  ]
+}
