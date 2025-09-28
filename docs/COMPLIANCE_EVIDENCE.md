@@ -7,6 +7,7 @@ Compliance requirements are enforced throughout the lifecycle so every generated
 | Component | Purpose | Location |
 | --- | --- | --- |
 | Stack selection evidence | Captures the chosen variants, engine versions, and compliance modes before generation. | `${PROJECT_ROOT}/selection.json`, `${PROJECT_ROOT}/evidence/stack-selection.md` |
+| Layer summaries | Documents the selected UI, API, and database templates with synthesized descriptions for review. | `${PROJECT_ROOT}/evidence/ui-summary.md`, `${PROJECT_ROOT}/evidence/api-summary.md`, `${PROJECT_ROOT}/evidence/database-summary.md` |
 | Gate thresholds | Defines minimum coverage, performance, and vulnerability tolerances. | [`gates_config.yaml`](../gates_config.yaml) |
 | Gate enforcement | Aggregates metrics and fails the run when thresholds are missed. | [`scripts/enforce_gates.py`](../scripts/enforce_gates.py) |
 | Compliance validator | Confirms required controls, policies, and documentation are emitted. | [`scripts/validate_compliance_assets.py`](../scripts/validate_compliance_assets.py) |
@@ -15,7 +16,7 @@ Compliance requirements are enforced throughout the lifecycle so every generated
 
 ## Evidence Flow
 
-1. **Preflight (`scripts/select_stacks.py`)** – When `--compliance` is set, the stack selection records which regimes (HIPAA, GDPR, PCI, etc.) were requested. The command writes machine-readable (`selection.json`) and human-readable (`evidence/stack-selection.md`) outputs.
+1. **Preflight (`scripts/select_stacks.py`)** – When `--compliance` is set, the stack selection records which regimes (HIPAA, GDPR, PCI, etc.) were requested. The command writes machine-readable (`selection.json`), human-readable (`evidence/stack-selection.md`), and template-driven layer summaries (`evidence/ui-summary.md`, `evidence/api-summary.md`, `evidence/database-summary.md`). Reviewers should confirm the summaries match the selected variants and that any downgrade notes appear both in the stack-selection table and the detailed files.
 2. **Generation** – Template packs emit code, policies, and docs that match the selected compliance modes.
 3. **Testing & Metrics** – `scripts/install_and_test.sh` plus the metric collectors gather coverage, dependency, and performance data under `${PROJECT_ROOT}`.
 4. **Gate Enforcement** – `scripts/enforce_gates.py` reads `gates_config.yaml` and fails if thresholds are not met. Adjust the config when regimes demand stricter requirements, but coordinate changes with CI to keep parity.

@@ -118,6 +118,14 @@ python scripts/select_stacks.py \
 
 Add `--compliance "$COMPLIANCE"` or `--nestjs-orm "$NESTJS_ORM"` when required. Exit code `3` indicates unmet engine version requirements.
 
+Outputs include:
+
+- `selection.json` – machine-readable summary of layers, variants, engine checks, and template-derived layer summaries.
+- `evidence/stack-selection.md` – human-readable overview including links to each layer summary.
+- `evidence/ui-summary.md`, `evidence/api-summary.md`, `evidence/database-summary.md` – Markdown syntheses extracted from the selected template READMEs.
+
+Reviewers should open the three layer summary files and confirm the descriptions match the chosen template variant (including any downgrade notes) and that the highlighted features align with the template README. If discrepancies surface, regenerate with the correct stack or update the template documentation before continuing.
+
 ### 6. Dry-run generation (no writes)
 
 ```bash
