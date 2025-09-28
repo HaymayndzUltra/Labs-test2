@@ -1,0 +1,21 @@
+{
+  "lane": "backend",
+  "cap": 3,
+  "commit": "101055b4",
+  "suggested_order": [
+    "BE-SCH",
+    "BE-AUTH",
+    "BE-OBS",
+    "BE-SEED",
+    "BE-MDL",
+    "BE-API-KPI",
+    "BE-API-REV",
+    "BE-API-CAT",
+    "BE-API-PLT",
+    "BE-API-CUS",
+    "BE-API-FDB",
+    "BE-EXP",
+    "BE-TST"
+  ],
+  "blocked": []
+}

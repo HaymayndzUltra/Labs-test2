@@ -105,3 +105,7 @@ Code Quality: Maintains structured CLI wiring and organized reporting with dedic
 Testing: Verified via compile check and shell syntax validation listed above.
 
 Alternatives: A centralized substitution registry could be introduced later, but the documented lightweight mapping satisfies the approved override workflow.
+
+🎯 Note
+
+Adds engine substitution support (e.g., Podman for Docker) to the selection gate, passes overrides from config/env/CLI, and emits audited evidence and notes.
