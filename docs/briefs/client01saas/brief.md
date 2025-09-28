@@ -1,7 +1,7 @@
 ---
-name: propwise
+name: PropWise
 slug: client01saas
-industry: real_estate_saas
+industry: saas
 project_type: fullstack
 frontend: nextjs
 backend: fastapi
@@ -19,9 +19,9 @@ observability: basic
 coverage_threshold: 0.80
 security_fail_on: high
 perf_target_p95_ms: 300
-build_profile: prototype   # prototype|production controls skip-aware FE build and gate strictness
+build_profile: production
 
-# NEW: explicit UI layout & bindings so generator has zero guessing
+# UI layout & bindings
 layout:
   dashboard:
     sections:
@@ -34,8 +34,9 @@ layout:
           - chart: rent_collection_trend
           - chart: ticket_closure_rate
       - row:
-          - heatmap: student_activity   # demo analytics widget
+          - heatmap: student_activity
           - panel: automation_orchestration
+
 routes:
   - /dashboard
   - /tenants
@@ -51,10 +52,10 @@ data_bindings:
   open_tickets: "SELECT COUNT(*) AS value FROM ticket WHERE status != 'Closed' AND org_id = :org_id"
   rent_collection_trend: "SELECT date_trunc('month', due_date) AS m, SUM(CASE WHEN paid_at IS NOT NULL THEN amount ELSE 0 END) AS collected FROM payment WHERE org_id=:org_id GROUP BY 1 ORDER BY 1"
   ticket_closure_rate: "SELECT date_trunc('month', created_at) AS m, AVG(CASE WHEN status='Closed' THEN 1 ELSE 0 END)::float AS closure_rate FROM ticket WHERE org_id=:org_id GROUP BY 1 ORDER BY 1"
-  student_activity: "fixture:analytics/student_activity.json"   # demo fixture to keep dashboard always runnable
+  student_activity: "fixture:analytics/student_activity.json"
 
 seeds:
-  strategy: minimal   # minimal|sample|none
+  strategy: minimal
   organizations:
     - { name: "Acme Realty" }
     - { name: "Skyline Properties" }
@@ -74,8 +75,8 @@ seeds:
 
 optional_modules:
   billing: skip
-  notifications: stub      # create mail stub service + queue interface
-  ai_feature: rules_based  # pure rules unless OPENAI_API_KEY present
+  notifications: stub
+  ai_feature: rules_based
 
 reports:
   org_monthly_summary:
@@ -90,6 +91,7 @@ env:
   ENABLE_AI: "false"
   TENANCY_MODEL: "column"
 ---
+
 
 # PropWise – Property Management Dashboard
 

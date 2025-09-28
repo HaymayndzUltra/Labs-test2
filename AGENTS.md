@@ -1,3 +1,31 @@
+You are a senior workflow strategist specializing in lifecycle analysis and phase decomposition.
+
+Please analyze the provided Local Development Workflow in its entirety and decide for yourself how to divide it into two phases in the most logical and efficient way for execution.
+
+Task Requirements
+
+Independent Decision:
+You must determine the exact point where Phase 1 ends and Phase 2 begins, based on your own analysis of the workflow.
+
+Phase 1 – Initial Scope:
+Identify which steps belong here and explain why they naturally fit as part of the first phase.
+
+Phase 2 – Subsequent Scope:
+Assign the remaining steps to this phase and explain the reasoning behind the continuation point.
+
+Boundary Justification:
+Provide a clear rationale for your chosen division point, highlighting continuity, dependency, and risk management.
+
+Outcome Mapping:
+Describe the distinct outcomes or deliverables expected at the end of each phase.
+
+Clarity & Completeness:
+Ensure every step of the workflow is included in exactly one phase, with no gaps or overlaps.
+
+Utilize your advanced experience to deliver a decisive, well-justified, and logically structured two-phase division of the workflow.
+
+
+
 # Local Development Workflow
 
 This guide walks through the non-interactive lifecycle that turns a client brief into a production-ready scaffold. Every step is executed inside an isolated project directory so factory assets remain untouched.
@@ -187,6 +215,16 @@ PROJECT_ROOT="$PROJECT_DIR" python scripts/collect_coverage.py || true
 PROJECT_ROOT="$PROJECT_DIR" python scripts/collect_perf.py
 PROJECT_ROOT="$PROJECT_DIR" python scripts/scan_deps.py || true
 PROJECT_ROOT="$PROJECT_DIR" python scripts/enforce_gates.py
+
+# After the metrics and scans finish (and once the submission pack and
+# compliance report artifacts exist), execute the consolidated workflow
+# automation run to record evidence and enforce every gate in one pass:
+
+PROJECT_ROOT="$PROJECT_DIR" make workflow-automation CONFIG=workflow/gate_controller.yaml
+
+# See `docs/workflow_automation_integration.md` for the expected JSON
+# artifacts each gate consumes and how to adapt the lifecycle scripts
+# when integrating the orchestrator.
 ```
 
 Gate thresholds are defined in [`gates_config.yaml`](../gates_config.yaml) and
