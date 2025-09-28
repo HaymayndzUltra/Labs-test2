@@ -1,0 +1,18 @@
+{
+  "build_profile": "prototype",
+  "frontend": {
+    "install": "skipped",
+    "tests": "skipped",
+    "build": "skipped",
+    "notes": "Prototype profile without SWC support; manual code review and backend integration tests executed."
+  },
+  "backend": {
+    "tests": "passed",
+    "coverage": 0.8716
+  },
+  "gates": {
+    "coverage_threshold": 0.8,
+    "perf_target_p95_ms": 300,
+    "security_fail_on": "high"
+  }
+}
