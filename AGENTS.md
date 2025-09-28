@@ -72,8 +72,36 @@ Testing
 ✅ python scripts/select_stacks.py --industry healthcare --project-type platform --frontend angular --backend nestjs --database postgres --output tmp/selection.json --summary tmp/evidence/stack-selection.md --node v20.20.0 --python 3.12.1 --go 1.21.0 --docker 24.0.0 
 
 
-NEXT STEP 5
+DONE ✅  5
 
 1. Allow CI/airgapped configurations (e.g., env vars or config files) in `scripts/select_stacks.py` and `scripts/e2e_from_brief.sh` to declare acceptable engine substitutions when Docker is unavailable.
 2. Ensure overrides are logged into the evidence directory so reviewers can audit deviations.
 3. Document sanctioned override procedures and prerequisites in `docs/LOCAL_DEV_WORKFLOW.md`.
+
+Added CLI, JSON, and environment hooks to scripts/select_stacks.py so lifecycle runs can declare engine substitutions and pass them into the preflight gate.
+
+Captured substitution outcomes in engine checks, surfaced them in markdown summaries, and persisted engine-substitutions.json for auditors when overrides are used.
+
+Wired scripts/e2e_from_brief.sh and docs/LOCAL_DEV_WORKFLOW.md to propagate sanctioned Docker alternatives from configs or env vars and document the approval path.
+
+Testing
+
+✅ python -m compileall scripts/select_stacks.py 
+
+✅ bash -n scripts/e2e_from_brief.sh 
+
+Quality Checks
+
+Algorithm Choice: Not applicable—changes focus on configuration parsing and evidence logging rather than introducing sorting logic.
+
+Edge Cases: Handles unreadable files, invalid mappings, missing replacements, and native engines with explicit warnings and notes.
+
+Performance: Workloads are lightweight dictionary and string operations executed once per lifecycle run.
+
+Error Handling: Propagates warnings into the console, markdown summary, and evidence JSON for full auditability.
+
+Code Quality: Maintains structured CLI wiring and organized reporting with dedicated override sections for reviewers.
+
+Testing: Verified via compile check and shell syntax validation listed above.
+
+Alternatives: A centralized substitution registry could be introduced later, but the documented lightweight mapping satisfies the approved override workflow.
