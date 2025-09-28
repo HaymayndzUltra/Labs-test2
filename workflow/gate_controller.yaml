@@ -1,0 +1,102 @@
+# Declarative configuration describing the 11 gates that comprise the production workflow.
+# This file is consumed by `scripts/run_workflow.py` and can be customised per-project.
+
+evidence_root: evidence
+metadata_file: docs/metadata.json
+brief_file: docs/brief.md
+
+gates:
+  - name: intake
+    implementation: workflow_automation.gates.implementations.IntakeGate
+    settings:
+      metadata_file: docs/metadata.json
+      brief_file: docs/brief.md
+      required_fields:
+        - project_name
+        - industry
+        - project_type
+        - owners
+        - compliance
+  - name: environment
+    implementation: workflow_automation.gates.implementations.EnvironmentGate
+    settings:
+      required_tools:
+        - name: python
+          command: python3
+          min_version: "3.10.0"
+        - name: node
+          command: node
+          min_version: "18.0.0"
+          version_command: node --version
+        - name: git
+          command: git
+  - name: planning
+    implementation: workflow_automation.gates.implementations.PlanningGate
+    settings:
+      plan_file: PLAN.md
+      tasks_file: PLAN.tasks.json
+      required_topics:
+        - compliance
+        - testing
+        - deployment
+        - architecture
+  - name: task_graph
+    implementation: workflow_automation.gates.implementations.TaskGraphGate
+    settings:
+      tasks_file: PLAN.tasks.json
+  - name: prd
+    implementation: workflow_automation.gates.implementations.PrdGate
+    settings:
+      prd_file: PRD.md
+      architecture_file: ARCHITECTURE.md
+      required_sections:
+        - "# Product Requirements"
+        - "## Acceptance Criteria"
+        - "# Architecture Overview"
+  - name: stack
+    implementation: workflow_automation.gates.implementations.StackGate
+    settings:
+      stack_file: stack_report.json
+      required_keys:
+        - frontend
+        - backend
+        - database
+        - auth
+        - deploy
+  - name: dry_run
+    implementation: workflow_automation.gates.implementations.DryRunGate
+    settings:
+      snapshot_file: dryrun_snapshot.json
+      expected_modules:
+        - frontend
+        - backend
+        - database
+  - name: generation
+    implementation: workflow_automation.gates.implementations.GenerationGate
+    settings:
+      manifest_file: file_manifest.json
+  - name: testing
+    implementation: workflow_automation.gates.implementations.TestingGate
+    settings:
+      results_file: test_results.json
+      minimum_coverage: 80
+  - name: metrics
+    implementation: workflow_automation.gates.implementations.MetricsGate
+    settings:
+      metrics_file: metrics_report.json
+      minimum_coverage: 80
+      maximum_latency_ms: 400
+      maximum_vulnerabilities: 0
+  - name: compliance
+    implementation: workflow_automation.gates.implementations.ComplianceGate
+    settings:
+      compliance_file: compliance_report.json
+      requirements:
+        - id: soc2
+        - id: accessibility
+        - id: security
+  - name: submission
+    implementation: workflow_automation.gates.implementations.SubmissionGate
+    settings:
+      checklist_file: submission_index.md
+      dist_dir: dist

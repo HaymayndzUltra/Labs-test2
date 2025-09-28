@@ -1,0 +1,41 @@
+# Universal workflow template for fullstack projects.
+workflow:
+  project_type: fullstack
+  gates_config: workflow/gate_controller.yaml
+  evidence_structure:
+    - intake
+    - environment
+    - planning
+    - prd
+    - stack
+    - dryrun
+    - generation
+    - testing
+    - metrics
+    - compliance
+    - submission
+  stacks:
+    frontend: nextjs
+    backend: fastapi
+    database: postgres
+    auth: auth0
+    deploy: docker
+  compliance_matrix:
+    - id: soc2
+      description: SOC2 controls validated via automation
+    - id: accessibility
+      description: WCAG AA coverage documented
+    - id: security
+      description: Security scans captured in metrics gate
+  readiness_checklist:
+    - Intake metadata validated
+    - Environments verified
+    - Planning approved
+    - PRD and architecture complete
+    - Stack selection confirmed
+    - Dry run reviewed
+    - Generation complete
+    - Tests passing
+    - Metrics thresholds satisfied
+    - Compliance attested
+    - Submission pack assembled

@@ -86,3 +86,6 @@ pipeline-validate:
 
 bootstrap:
 	@python3 scripts/bootstrap_project.py $(if $(NAME),--name "$(NAME)") $(if $(INDUSTRY),--industry "$(INDUSTRY)") $(if $(PROJECT_TYPE),--project-type "$(PROJECT_TYPE)") $(if $(FE),--frontend "$(FE)") $(if $(BE),--backend "$(BE)") $(if $(DB),--database "$(DB)") $(if $(AUTH),--auth "$(AUTH)") $(if $(DEPLOY),--deploy "$(DEPLOY)") $(if $(COMPLIANCE),--compliance "$(COMPLIANCE)") $(if $(CONFIG_FILE),--config-file "$(CONFIG_FILE)") $(if $(OUTPUT_ROOT),--output-root "$(OUTPUT_ROOT)") $(if $(FORCE_OUTPUT),--force) $(if $(BOOTSTRAP_UPDATE_CONFIG),--update-config)
+
+workflow-automation:
+	python scripts/run_workflow.py $(if $(CONFIG),--config "$(CONFIG)") $(if $(PROJECT_ROOT),--project-root "$(PROJECT_ROOT)")
