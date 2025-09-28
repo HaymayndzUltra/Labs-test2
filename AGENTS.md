@@ -19,8 +19,26 @@ Testing
 ✅ python -m compileall scripts/generate_prd_assets.py scripts/validate_prd_gate.py
 
 
-NEXT STEP 2
+DONE ✅ STEP 2
 
 1. Remove `|| true` from the `install_and_test.sh` invocation in `scripts/e2e_from_brief.sh` and rely on `set -euo pipefail` for fail-fast behavior.
 2. Update `scripts/install_and_test.sh` to fall back to npm when no `pnpm-lock.yaml` exists, emit clear status logs, and exit non-zero on failure.
 3. Reflect the stricter failure handling in `docs/LOCAL_DEV_WORKFLOW.md` so operators know how to interpret CI results.
+
+Removed the guard that suppressed install/test failures so the lifecycle run stops immediately when dependencies or tests break. 
+
+Reworked scripts/install_and_test.sh to emit structured logs, pick npm automatically when pnpm-lock.yaml is absent, and fail fast across frontend, Python, Node, and Go backends. 
+
+Updated the local workflow guide to document the stricter install gate behavior and package manager fallback. 
+
+Testing
+
+✅ bash -n scripts/install_and_test.sh 
+
+✅ bash -n scripts/e2e_from_brief.sh
+
+NEXT STEP 3
+
+1. Raise coverage/security targets in `gates_config.yaml` to ≥80 % coverage and zero critical/high vulnerabilities to match `docs/SLO_TARGETS.md`.
+2. Extend `scripts/collect_perf.py` (and, if necessary, `scripts/enforce_gates.py`) so the pipeline fails when no real performance measurement is provided.
+3. Update lifecycle and utility documentation to describe the enforced thresholds and required perf evidence.
