@@ -187,6 +187,16 @@ PROJECT_ROOT="$PROJECT_DIR" python scripts/collect_coverage.py || true
 PROJECT_ROOT="$PROJECT_DIR" python scripts/collect_perf.py
 PROJECT_ROOT="$PROJECT_DIR" python scripts/scan_deps.py || true
 PROJECT_ROOT="$PROJECT_DIR" python scripts/enforce_gates.py
+
+# After the metrics and scans finish (and once the submission pack and
+# compliance report artifacts exist), execute the consolidated workflow
+# automation run to record evidence and enforce every gate in one pass:
+
+PROJECT_ROOT="$PROJECT_DIR" make workflow-automation CONFIG=workflow/gate_controller.yaml
+
+# See `docs/workflow_automation_integration.md` for the expected JSON
+# artifacts each gate consumes and how to adapt the lifecycle scripts
+# when integrating the orchestrator.
 ```
 
 Gate thresholds are defined in [`gates_config.yaml`](../gates_config.yaml) and
