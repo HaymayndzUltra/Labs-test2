@@ -1,0 +1,38 @@
+# Universal workflow template for backend-only projects.
+workflow:
+  project_type: backend
+  gates_config: workflow/gate_controller.yaml
+  evidence_structure:
+    - intake
+    - environment
+    - planning
+    - prd
+    - stack
+    - dryrun
+    - generation
+    - testing
+    - metrics
+    - compliance
+    - submission
+  stacks:
+    backend: fastapi
+    database: postgres
+    auth: internal
+    deploy: terraform
+  compliance_matrix:
+    - id: soc2
+      description: SOC2 automation evidence
+    - id: gdpr
+      description: GDPR data handling checklist
+  readiness_checklist:
+    - Metadata confirmed
+    - Tooling verified
+    - Planning approved
+    - Architecture reviewed
+    - Stack validated
+    - Dry run captured
+    - Code generated
+    - Tests passed
+    - Metrics reviewed
+    - Compliance attested
+    - Submission packaged
