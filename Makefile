@@ -1,9 +1,10 @@
-.PHONY: setup dev test lint build deploy clean lifecycle pipeline-validate bootstrap
+.PHONY: setup dev test lint build deploy clean lifecycle pipeline-validate bootstrap workflow-optimize
 
 ENV ?= staging
 FRONTEND_URL ?=
 API_URL ?=
 DB_URL ?=
+WORKFLOW_CONFIG ?= workflow/workflow_config.json
 LIFECYCLE_ENV := $(strip \
   $(if $(NAME),NAME="$(NAME)") \
   $(if $(INDUSTRY),INDUSTRY="$(INDUSTRY)") \
@@ -86,3 +87,6 @@ pipeline-validate:
 
 bootstrap:
 	@python3 scripts/bootstrap_project.py $(if $(NAME),--name "$(NAME)") $(if $(INDUSTRY),--industry "$(INDUSTRY)") $(if $(PROJECT_TYPE),--project-type "$(PROJECT_TYPE)") $(if $(FE),--frontend "$(FE)") $(if $(BE),--backend "$(BE)") $(if $(DB),--database "$(DB)") $(if $(AUTH),--auth "$(AUTH)") $(if $(DEPLOY),--deploy "$(DEPLOY)") $(if $(COMPLIANCE),--compliance "$(COMPLIANCE)") $(if $(CONFIG_FILE),--config-file "$(CONFIG_FILE)") $(if $(OUTPUT_ROOT),--output-root "$(OUTPUT_ROOT)") $(if $(FORCE_OUTPUT),--force) $(if $(BOOTSTRAP_UPDATE_CONFIG),--update-config)
+
+workflow-optimize:
+	@python3 scripts/run_workflow_optimization.py run --config "$(WORKFLOW_CONFIG)"

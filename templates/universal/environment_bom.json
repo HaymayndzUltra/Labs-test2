@@ -1,0 +1,10 @@
+{
+  "schema": "https://workflow.example.com/schemas/environment-bom.json",
+  "description": "Baseline structure for stack and environment evidence.",
+  "fields": [
+    "component",
+    "version",
+    "source",
+    "validation_status"
+  ]
+}
