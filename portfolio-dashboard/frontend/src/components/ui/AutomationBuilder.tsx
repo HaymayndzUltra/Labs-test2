@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { Loader2, Play } from 'lucide-react';
 import { useToast } from './ToastProvider';
 import { Card } from './Card';
+import { cn } from '@/lib/utils';
 
 const automationSchema = z.object({
   name: z.string().min(3, 'Name is required'),
@@ -21,9 +22,10 @@ type AutomationForm = z.infer<typeof automationSchema>;
 type AutomationBuilderProps = {
   onCreate: (automation: AutomationForm) => Promise<void>;
   verticalAccent: string;
+  className?: string;
 };
 
-export function AutomationBuilder({ onCreate, verticalAccent }: AutomationBuilderProps) {
+export function AutomationBuilder({ onCreate, verticalAccent, className }: AutomationBuilderProps) {
   const { push } = useToast();
   const {
     register,
@@ -62,7 +64,7 @@ export function AutomationBuilder({ onCreate, verticalAccent }: AutomationBuilde
   });
 
   return (
-    <Card className="border border-[var(--surface-border)] bg-[var(--surface-s1)]">
+    <Card className={cn('border border-[var(--surface-border)] bg-[var(--surface-s1)]', className)}>
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4">
           <div>

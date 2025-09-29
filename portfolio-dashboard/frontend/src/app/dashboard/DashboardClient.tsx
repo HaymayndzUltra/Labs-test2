@@ -47,6 +47,7 @@ import { ChartCard } from '@/components/ui/ChartCard';
 import { AutomationBuilder } from '@/components/ui/AutomationBuilder';
 import { StatusChip } from '@/components/ui/StatusChip';
 import { useToast } from '@/components/ui/ToastProvider';
+import { cn } from '@/lib/utils';
 
 const accentTokens: Record<TabDefinition['id'], string> = {
   saas: '--vertical-saas',
@@ -79,17 +80,21 @@ const channelOptions = [
   { id: 'apac', label: 'APAC' },
 ];
 
+const moduleGridClass = 'grid grid-cols-12 gap-x-6 gap-y-8 auto-rows-[minmax(0,1fr)]';
+
 type DashboardClientProps = {
   initialData: PortfolioDashboardResponse;
 };
 
 function AutomationList({
   items,
+  className,
 }: {
   items: PortfolioDashboardResponse['saas']['automation'];
+  className?: string;
 }) {
   return (
-    <Card className="border border-[var(--surface-border)]" padding="md">
+    <Card className={cn('border border-[var(--surface-border)]', className)} padding="md">
       <div className="flex items-center justify-between gap-4">
         <div>
           <h3 className="text-title-sm text-slate-900">Automation orchestration</h3>
@@ -167,7 +172,12 @@ function SaaSModule({
   const apiRows = data.apiUsageTrend.map((point) => ({ week: point.label, usage: point.value }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="saas-panel" role="tabpanel" aria-labelledby="saas">
+    <section
+      className={moduleGridClass}
+      id="saas-panel"
+      role="tabpanel"
+      aria-labelledby="saas"
+    >
       <div className="col-span-12">
         <SectionHeader
           title="Subscription intelligence & API operations"
@@ -176,8 +186,12 @@ function SaaSModule({
         />
       </div>
 
-      <div className="col-span-12 lg:col-span-7">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Subscription plans">
+      <div className="col-span-12 xl:col-span-7">
+        <Card
+          className="h-full border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Subscription plans"
+        >
           <div className="flex items-center justify-between gap-4">
             <div>
               <h3 className="text-title-sm text-slate-900">Subscription plans</h3>
@@ -225,7 +239,7 @@ function SaaSModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
+      <div className="col-span-12 xl:col-span-5 grid gap-6 auto-rows-[minmax(0,1fr)]">
         <ChartCard
           id="saas-churn"
           title="Churn health distribution"
@@ -250,7 +264,11 @@ function SaaSModule({
           </ResponsiveContainer>
         </ChartCard>
 
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Billing cycles">
+        <Card
+          className="h-full border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Billing cycles"
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-title-sm text-slate-900">Billing cycle orchestration</h3>
@@ -276,66 +294,69 @@ function SaaSModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <ChartCard
-          id="saas-growth"
-          title="MRR growth"
-          description="Pre-aggregated monthly recurring revenue"
-          rows={growthRows}
-          columns={[
-            { key: 'month', label: 'Month' },
-            { key: 'mrr', label: 'MRR ($K)', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={280}>
-            <LineChart data={data.growthTrend}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={{ r: 5 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartCard>
+      <div className="col-span-12 xl:col-span-7">
+        <div className="grid gap-6 lg:grid-cols-2 auto-rows-[minmax(0,1fr)]">
+          <ChartCard
+            id="saas-growth"
+            title="MRR growth"
+            description="Pre-aggregated monthly recurring revenue"
+            rows={growthRows}
+            columns={[
+              { key: 'month', label: 'Month' },
+              { key: 'mrr', label: 'MRR ($K)', align: 'right' },
+            ]}
+          >
+            <ResponsiveContainer height={280}>
+              <LineChart data={data.growthTrend}>
+                <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={{ r: 5 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </ChartCard>
 
-        <ChartCard
-          id="saas-api"
-          title="API usage saturation"
-          description="Live usage vs allocation"
-          rows={apiRows}
-          columns={[
-            { key: 'week', label: 'Week' },
-            { key: 'usage', label: 'Usage (M calls)', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={280}>
-            <AreaChart data={data.apiUsageTrend}>
-              <defs>
-                <linearGradient id="apiGradient" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="5%" stopColor="var(--primary-500)" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="var(--primary-500)" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Area type="monotone" dataKey="value" stroke="var(--primary-500)" fill="url(#apiGradient)" strokeWidth={3} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
+          <ChartCard
+            id="saas-api"
+            title="API usage saturation"
+            description="Live usage vs allocation"
+            rows={apiRows}
+            columns={[
+              { key: 'week', label: 'Week' },
+              { key: 'usage', label: 'Usage (M calls)', align: 'right' },
+            ]}
+          >
+            <ResponsiveContainer height={280}>
+              <AreaChart data={data.apiUsageTrend}>
+                <defs>
+                  <linearGradient id="apiGradient" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="5%" stopColor="var(--primary-500)" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="var(--primary-500)" stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                <Area type="monotone" dataKey="value" stroke="var(--primary-500)" fill="url(#apiGradient)" strokeWidth={3} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </div>
       </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
+      <div className="col-span-12 xl:col-span-5 grid gap-6 auto-rows-[minmax(0,1fr)]">
         <AutomationBuilder
+          className="h-full"
           verticalAccent={accent}
           onCreate={async () => {
             await new Promise((resolve) => setTimeout(resolve, 800));
           }}
         />
-        <AutomationList items={data.automation} />
+        <AutomationList className="h-full" items={data.automation} />
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -349,7 +370,12 @@ function CommerceModule({
   const salesRows = data.salesTrend.map((point) => ({ month: point.label, revenue: point.value }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="commerce-panel" role="tabpanel" aria-labelledby="commerce">
+    <section
+      className={moduleGridClass}
+      id="commerce-panel"
+      role="tabpanel"
+      aria-labelledby="commerce"
+    >
       <div className="col-span-12">
         <SectionHeader
           title="Merchandising, orders & fulfillment"
@@ -358,8 +384,12 @@ function CommerceModule({
         />
       </div>
 
-      <div className="col-span-12 lg:col-span-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Top products leaderboard">
+      <div className="col-span-12 xl:col-span-7">
+        <Card
+          className="h-full border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Top products leaderboard"
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-title-sm text-slate-900">Top products leaderboard</h3>
@@ -398,7 +428,7 @@ function CommerceModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
+      <div className="col-span-12 xl:col-span-5 grid gap-6 auto-rows-[minmax(0,1fr)]">
         <ChartCard
           id="commerce-sales"
           title="Sales trends"
@@ -420,7 +450,11 @@ function CommerceModule({
           </ResponsiveContainer>
         </ChartCard>
 
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Operational health">
+        <Card
+          className="h-full border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Operational health"
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-title-sm text-slate-900">Operational health</h3>
@@ -445,19 +479,20 @@ function CommerceModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6">
-        <AutomationList items={data.automation} />
+      <div className="col-span-12 xl:col-span-7">
+        <AutomationList className="h-full" items={data.automation} />
       </div>
 
-      <div className="col-span-12 lg:col-span-6">
+      <div className="col-span-12 xl:col-span-5">
         <AutomationBuilder
+          className="h-full"
           verticalAccent={accent}
           onCreate={async () => {
             await new Promise((resolve) => setTimeout(resolve, 800));
           }}
         />
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -478,7 +513,12 @@ function CorporateModule({
   const sourceRows = data.leadSources.map((source) => ({ source: source.label, share: `${source.value}%` }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="corporate-panel" role="tabpanel" aria-labelledby="corporate">
+    <section
+      className={moduleGridClass}
+      id="corporate-panel"
+      role="tabpanel"
+      aria-labelledby="corporate"
+    >
       <div className="col-span-12">
         <SectionHeader
           title="Growth marketing & pipeline analytics"
@@ -487,7 +527,7 @@ function CorporateModule({
         />
       </div>
 
-      <div className="col-span-12 lg:col-span-7 space-y-6">
+      <div className="col-span-12 xl:col-span-7 flex flex-col gap-6">
         <ChartCard
           id="corporate-funnel"
           title="Conversion funnel"
@@ -512,7 +552,11 @@ function CorporateModule({
           </ResponsiveContainer>
         </ChartCard>
 
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Executive insights">
+        <Card
+          className="h-full border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Executive insights"
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-title-sm text-slate-900">Executive insights</h3>
@@ -531,7 +575,7 @@ function CorporateModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
+      <div className="col-span-12 xl:col-span-5 grid gap-6 auto-rows-[minmax(0,1fr)]">
         <ChartCard
           id="corporate-leads"
           title="Lead source mix"
@@ -555,9 +599,9 @@ function CorporateModule({
           </ResponsiveContainer>
         </ChartCard>
 
-        <AutomationList items={data.automation} />
+        <AutomationList className="h-full" items={data.automation} />
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -569,7 +613,12 @@ function CustomAppModule({
   accent: string;
 }) {
   return (
-    <div className="grid grid-cols-12 gap-6" id="customApp-panel" role="tabpanel" aria-labelledby="customApp">
+    <section
+      className={moduleGridClass}
+      id="customApp-panel"
+      role="tabpanel"
+      aria-labelledby="customApp"
+    >
       <div className="col-span-12">
         <SectionHeader
           title="Productivity suite & automation"
@@ -579,7 +628,11 @@ function CustomAppModule({
       </div>
 
       <div className="col-span-12 xl:col-span-7">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Kanban delivery board">
+        <Card
+          className="h-full border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Kanban delivery board"
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-title-sm text-slate-900">Kanban delivery board</h3>
@@ -615,8 +668,12 @@ function CustomAppModule({
         </Card>
       </div>
 
-      <div className="col-span-12 xl:col-span-5 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Idea backlog">
+      <div className="col-span-12 xl:col-span-5 grid gap-6 auto-rows-[minmax(0,1fr)]">
+        <Card
+          className="h-full border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Idea backlog"
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-title-sm text-slate-900">Idea backlog intake</h3>
@@ -656,19 +713,18 @@ function CustomAppModule({
         </ChartCard>
       </div>
 
-      <div className="col-span-12 lg:col-span-6">
+      <div className="col-span-12 grid gap-6 lg:grid-cols-2 auto-rows-[minmax(0,1fr)]">
         <AutomationBuilder
+          className="h-full"
           verticalAccent={accent}
           onCreate={async () => {
             await new Promise((resolve) => setTimeout(resolve, 700));
           }}
         />
-      </div>
 
-      <div className="col-span-12 lg:col-span-6">
-        <AutomationList items={data.automation} />
+        <AutomationList className="h-full" items={data.automation} />
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -682,7 +738,12 @@ function ContentModule({
   const engagementRows = data.engagementTrend.map((point) => ({ period: point.label, score: point.value }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="content-panel" role="tabpanel" aria-labelledby="content">
+    <section
+      className={moduleGridClass}
+      id="content-panel"
+      role="tabpanel"
+      aria-labelledby="content"
+    >
       <div className="col-span-12">
         <SectionHeader
           title="Publishing workflow & engagement"
@@ -691,7 +752,7 @@ function ContentModule({
         />
       </div>
 
-      <div className="col-span-12 lg:col-span-7 space-y-6">
+      <div className="col-span-12 xl:col-span-7 grid gap-6 auto-rows-[minmax(0,1fr)]">
         <ChartCard
           id="content-engagement"
           title="Engagement trend"
@@ -713,7 +774,11 @@ function ContentModule({
           </ResponsiveContainer>
         </ChartCard>
 
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Publishing queue">
+        <Card
+          className="h-full border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Publishing queue"
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-title-sm text-slate-900">Publishing queue</h3>
@@ -745,8 +810,12 @@ function ContentModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Top performing stories">
+      <div className="col-span-12 xl:col-span-5 grid gap-6 auto-rows-[minmax(0,1fr)]">
+        <Card
+          className="h-full border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Top performing stories"
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-title-sm text-slate-900">Top performing stories</h3>
@@ -779,9 +848,9 @@ function ContentModule({
           </div>
         </Card>
 
-        <AutomationList items={data.automation} />
+        <AutomationList className="h-full" items={data.automation} />
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -795,7 +864,12 @@ function EdTechModule({
   const heatmapMax = Math.max(...data.activityHeatmap.values.map((entry) => entry.score));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="edtech-panel" role="tabpanel" aria-labelledby="edtech">
+    <section
+      className={moduleGridClass}
+      id="edtech-panel"
+      role="tabpanel"
+      aria-labelledby="edtech"
+    >
       <div className="col-span-12">
         <SectionHeader
           title="Learning analytics & student success"
@@ -804,8 +878,12 @@ function EdTechModule({
         />
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Program performance">
+      <div className="col-span-12 xl:col-span-6 grid gap-6 auto-rows-[minmax(0,1fr)]">
+        <Card
+          className="h-full border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Program performance"
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-title-sm text-slate-900">Program performance</h3>
@@ -836,11 +914,15 @@ function EdTechModule({
           </div>
         </Card>
 
-        <AutomationList items={data.automation} />
+        <AutomationList className="h-full" items={data.automation} />
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Student activity heatmap">
+      <div className="col-span-12 xl:col-span-6 grid gap-6 auto-rows-[minmax(0,1fr)]">
+        <Card
+          className="h-full border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Student activity heatmap"
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-title-sm text-slate-900">Student activity heatmap</h3>
@@ -887,7 +969,11 @@ function EdTechModule({
           </div>
         </Card>
 
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Alerts">
+        <Card
+          className="h-full border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Alerts"
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-title-sm text-slate-900">Alerts</h3>
@@ -907,7 +993,7 @@ function EdTechModule({
           </ul>
         </Card>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -923,7 +1009,12 @@ function SpecializedModule({
   const roiRows = data.finance.roiBreakdown.map((item) => ({ channel: item.label, share: `${item.value}%` }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="specialized-panel" role="tabpanel" aria-labelledby="specialized">
+    <section
+      className={moduleGridClass}
+      id="specialized-panel"
+      role="tabpanel"
+      aria-labelledby="specialized"
+    >
       <div className="col-span-12">
         <SectionHeader
           title="Specialized niches"
@@ -932,7 +1023,7 @@ function SpecializedModule({
         />
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
+      <div className="col-span-12 xl:col-span-6 grid gap-6 auto-rows-[minmax(0,1fr)]">
         <ChartCard
           id="specialized-momentum"
           title="Market momentum"
@@ -960,7 +1051,11 @@ function SpecializedModule({
           </ResponsiveContainer>
         </ChartCard>
 
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Listings & inquiries">
+        <Card
+          className="h-full border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Listings & inquiries"
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-title-sm text-slate-900">Listings & inquiries</h3>
@@ -980,7 +1075,7 @@ function SpecializedModule({
         </Card>
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
+      <div className="col-span-12 xl:col-span-6 grid gap-6 auto-rows-[minmax(0,1fr)]">
         <ChartCard
           id="specialized-expenses"
           title="Expense vs budget"
@@ -1029,8 +1124,12 @@ function SpecializedModule({
         </ChartCard>
       </div>
 
-      <div className="col-span-12 lg:col-span-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Healthcare appointments">
+      <div className="col-span-12 xl:col-span-6">
+        <Card
+          className="h-full border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Healthcare appointments"
+        >
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-title-sm text-slate-900">Healthcare appointments</h3>
@@ -1064,12 +1163,12 @@ function SpecializedModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <AutomationList items={data.realEstate.automation} />
-        <AutomationList items={data.finance.automation} />
-        <AutomationList items={data.healthcare.automation} />
+      <div className="col-span-12 xl:col-span-6 grid gap-6 md:grid-cols-3 auto-rows-[minmax(0,1fr)]">
+        <AutomationList className="h-full" items={data.realEstate.automation} />
+        <AutomationList className="h-full" items={data.finance.automation} />
+        <AutomationList className="h-full" items={data.healthcare.automation} />
       </div>
-    </div>
+    </section>
   );
 }
 
