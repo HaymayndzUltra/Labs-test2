@@ -23,9 +23,11 @@ type AutomationBuilderProps = {
   onCreate: (automation: AutomationForm) => Promise<void>;
   verticalAccent: string;
   className?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
-export function AutomationBuilder({ onCreate, verticalAccent, className }: AutomationBuilderProps) {
+export function AutomationBuilder({ onCreate, verticalAccent, className, open, onOpenChange }: AutomationBuilderProps) {
   const { push } = useToast();
   const {
     register,
@@ -63,7 +65,7 @@ export function AutomationBuilder({ onCreate, verticalAccent, className }: Autom
     }
   });
 
-  return (
+  const content = (
     <Card className={cn('border border-[var(--surface-border)] bg-[var(--surface-s1)]', className)}>
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4">
@@ -150,4 +152,29 @@ export function AutomationBuilder({ onCreate, verticalAccent, className }: Autom
       </div>
     </Card>
   );
+
+  if (typeof open === 'boolean') {
+    if (!open) {
+      return null;
+    }
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-4 sm:items-center">
+        <div className="w-full max-w-xl">
+          <div className="flex justify-end pb-2">
+            <button
+              type="button"
+              className="inline-flex min-h-[32px] items-center rounded-full border border-[var(--surface-border)] px-3 py-1 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+              onClick={() => onOpenChange?.(false)}
+            >
+              Close builder
+            </button>
+          </div>
+          {content}
+        </div>
+      </div>
+    );
+  }
+
+  return content;
 }
