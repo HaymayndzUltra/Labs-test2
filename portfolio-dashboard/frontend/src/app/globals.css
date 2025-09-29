@@ -50,8 +50,8 @@
     --vertical-corporate: #1d4ed8;
     --vertical-custom: #9333ea;
     --vertical-content: #fb923c;
-    --vertical-edtech: #db2777;
-    --vertical-specialized: #475569;
+    --vertical-edtech: #6366f1;
+    --vertical-specialized: #0f766e;
 
     /* Typography */
     --font-body: var(--font-sans, 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
@@ -299,6 +299,122 @@
     animation: automation-pill-shimmer 0.6s linear;
   }
 
+  .legend-chip {
+    opacity: 0;
+    transform: translateY(6px);
+    animation: legend-chip-rise 0.24s var(--motion-ease) forwards;
+  }
+
+  .queue-status {
+    transition: background-color 0.24s ease, color 0.24s ease, border-color 0.24s ease;
+  }
+
+  .heatmap-cell {
+    border-radius: 8px;
+    min-width: 44px;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: box-shadow 0.18s ease, transform 0.18s ease;
+  }
+
+  .heatmap-cell:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .animate-heatmap {
+    opacity: 0;
+    animation: heatmap-wave 0.3s var(--motion-ease) forwards;
+  }
+
+  .heatmap-cell-peak {
+    animation: heatmap-peak 1.1s ease-out forwards;
+  }
+
+  .assessment-bar {
+    background: linear-gradient(135deg, rgba(15, 118, 110, 0.18) 12%, transparent 12%, transparent 24%, rgba(15, 118, 110, 0.18) 24%, rgba(15, 118, 110, 0.18) 36%, transparent 36%, transparent 48%);
+    background-size: 16px 16px;
+    background-color: color-mix(in srgb, var(--vertical-specialized,#0f766e) 35%, white);
+  }
+
+  .intervention-card {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s var(--motion-ease), box-shadow 0.2s var(--motion-ease);
+  }
+
+  .intervention-card::after {
+    content: '';
+    position: absolute;
+    inset: -40%;
+    background: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.12) 0%, transparent 45%),
+      radial-gradient(circle at 80% 30%, rgba(99, 102, 241, 0.18) 0%, transparent 45%),
+      radial-gradient(circle at 40% 80%, rgba(99, 102, 241, 0.12) 0%, transparent 45%);
+    opacity: 0;
+    transform: scale(0.6);
+    pointer-events: none;
+  }
+
+  .intervention-card[data-active='true']::after {
+    animation: intervention-confetti 0.32s ease-out forwards;
+  }
+
+  .intervention-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .automation-spotlight {
+    transition: transform 0.2s var(--motion-ease), box-shadow 0.2s var(--motion-ease);
+  }
+
+  .automation-spotlight:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .automation-spotlight-card {
+    transition: transform 0.2s var(--motion-ease), box-shadow 0.2s var(--motion-ease);
+  }
+
+  .automation-spotlight-card:hover,
+  .automation-spotlight-card:focus-within {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .queue-row {
+    position: relative;
+    transition: transform var(--motion-duration) var(--motion-ease),
+      box-shadow var(--motion-duration) var(--motion-ease);
+  }
+
+  .queue-row::before {
+    content: '';
+    position: absolute;
+    inset-block: 8px;
+    inset-inline-start: 0;
+    width: 4px;
+    border-radius: 999px;
+    background: var(--queue-accent, var(--vertical-content));
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.16s var(--motion-ease);
+  }
+
+  .queue-row:hover::before,
+  .queue-row:focus-within::before {
+    transform: scaleY(1);
+  }
+
+  .queue-row:hover,
+  .queue-row:focus-within {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
   .data-row {
     position: relative;
   }
@@ -308,7 +424,7 @@
     position: absolute;
     inset-block: 0;
     inset-inline-start: 0;
-    width: 4px;
+    width: var(--row-accent-width, 4px);
     background: var(--row-accent, var(--primary-500));
     transform: translateX(-100%);
     transition: transform 0.1s ease;
@@ -343,6 +459,52 @@
     background: linear-gradient(90deg, rgba(231, 234, 240, 0.16) 25%, rgba(231, 234, 240, 0.48) 37%, rgba(231, 234, 240, 0.16) 63%);
     background-size: 400% 100%;
     animation: skeleton-wave 1.2s linear infinite;
+  }
+
+  @keyframes legend-chip-rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes heatmap-wave {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes heatmap-peak {
+    0% {
+      box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.35);
+    }
+    100% {
+      box-shadow: 0 0 0 12px rgba(99, 102, 241, 0);
+    }
+  }
+
+  @keyframes intervention-confetti {
+    0% {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    40% {
+      opacity: 0.45;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.12);
+    }
   }
 
   @keyframes dashboard-header-enter {
@@ -413,6 +575,15 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .legend-chip,
+  .animate-heatmap,
+  .heatmap-cell-peak,
+  .intervention-card::after {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
   .animate-dashboard-header,
   .animate-dashboard-kpi,
   .animate-dashboard-panel,
@@ -430,6 +601,17 @@
   .automation-pill::after,
   .automation-toggle[data-state='active'] .automation-check {
     animation: none !important;
+  }
+
+  .queue-row {
+    transition: none !important;
+    transform: none !important;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .queue-row::before {
+    transition: none !important;
+    transform: none !important;
   }
 
   .kanban-card:hover {

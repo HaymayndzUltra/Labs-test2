@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState, useId } from 'react';
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import {
   Area,
   AreaChart,
@@ -1630,6 +1630,7 @@ function CustomAppModule({
   );
 }
 
+
 function ContentModule({
   data,
   accent,
@@ -1637,109 +1638,487 @@ function ContentModule({
   data: PortfolioDashboardResponse['content'];
   accent: string;
 }) {
-  const engagementRows = data.engagementTrend.map((point) => ({ period: point.label, score: point.value }));
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const channelFilters = ['All channels', 'Owned', 'Paid', 'Earned'];
+  const formatFilters = useMemo(
+    () => {
+      const formats = Array.from(new Set(data.topStories.map((story) => story.format)));
+      return ['All types', ...formats];
+    },
+    [data.topStories]
+  );
+
+  const channelMix = useMemo(() => {
+    const counts = data.topStories.reduce<Record<string, number>>((accum, story) => {
+      accum[story.format] = (accum[story.format] ?? 0) + 1;
+      return accum;
+    }, {});
+    const palette = ['#fb923c', '#f97316', '#fbbf24', '#fed7aa'];
+    const total = Object.values(counts).reduce((sum, value) => sum + value, 0);
+    return Object.entries(counts).map(([label, value], index) => ({
+      id: `${label}-${index}`,
+      label,
+      value,
+      percent: total === 0 ? 0 : Math.round((value / total) * 100),
+      color: palette[index % palette.length] ?? '#fb923c',
+    }));
+  }, [data.topStories]);
+
+  const cadenceData = useMemo(
+    () =>
+      data.engagementTrend.map((point, index) => {
+        const posts = Math.max(3, Math.round(point.value / 75));
+        return {
+          period: point.label,
+          posts,
+          engagement: point.value,
+          sentiment: index % 3 === 0 ? '↑' : '→',
+        };
+      }),
+    [data.engagementTrend]
+  );
+
+  const latestEngagement = data.engagementTrend[data.engagementTrend.length - 1]?.value ?? 0;
+
+  const queueStatusMeta: Record<
+    PortfolioDashboardResponse['content']['publishingQueue'][number]['status'],
+    {
+      label: string;
+      tone: 'success' | 'info' | 'danger';
+      icon: ReactNode;
+      accent: string;
+    }
+  > = {
+    ready: {
+      label: 'Ready',
+      tone: 'success',
+      icon: <Check className="h-3.5 w-3.5" aria-hidden />,
+      accent: 'var(--success-600)',
+    },
+    'in-review': {
+      label: 'In review',
+      tone: 'info',
+      icon: <Timer className="h-3.5 w-3.5" aria-hidden />,
+      accent: 'var(--info-600)',
+    },
+    blocked: {
+      label: 'Blocked',
+      tone: 'danger',
+      icon: <Minus className="h-3.5 w-3.5" aria-hidden />,
+      accent: 'var(--danger-600)',
+    },
+  };
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="content-panel" role="tabpanel" aria-labelledby="content">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Publishing workflow & engagement"
-          subtitle="Content & media"
-          accent={accent}
-        />
+    <section className="space-y-8" id="content-panel" role="tabpanel" aria-labelledby="content">
+      <Card
+        as="header"
+        padding="md"
+        className="animate-dashboard-panel border border-[var(--surface-border)]"
+        role="region"
+        aria-label="Content and media overview"
+      >
+        <div className="grid grid-cols-12 items-start gap-6">
+          <div className="col-span-12 lg:col-span-5 space-y-2">
+            <h2 className="text-[24px] font-semibold text-[var(--neutral-900,#0b0d12)]">Content &amp; Media</h2>
+            <p className="text-[13px] text-[var(--neutral-600,#5e6673)]">
+              Orchestrate storytelling velocity with unified filters cascading through trendlines, tables, and automations.
+            </p>
+          </div>
+          <div className="col-span-12 lg:col-span-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+                  Channel
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {channelFilters.map((label, index) => (
+                    <FilterChip key={label} label={label} active={index === 0} onClick={() => {}} />
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+                  Type
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {formatFilters.map((label, index) => (
+                    <FilterChip key={label} label={label} active={index === 0} onClick={() => {}} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="col-span-12 lg:col-span-3 flex flex-col items-start gap-3 lg:items-end">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--surface-border)] bg-white/90 px-3 py-2">
+              <CalendarRange className="h-4 w-4 text-[var(--vertical-content)]" aria-hidden />
+              <span className="text-[13px] font-semibold text-[var(--neutral-900,#0b0d12)]">Last 30 days</span>
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-dashed border-[var(--surface-border)] px-3 py-2 text-[12px] text-[var(--neutral-600,#5e6673)]">
+              <SlidersHorizontal className="h-4 w-4 text-[var(--vertical-content)]" aria-hidden />
+              <span>Workspace filters pinned</span>
+            </div>
+          </div>
+          <div className="col-span-12 h-px border-t border-dashed border-[var(--surface-border)]" aria-hidden />
+        </div>
+      </Card>
+
+      <KPIBand metrics={data.metrics} accentToken={accent} />
+
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          padding="md"
+          className="col-span-12 xl:col-span-7 border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Engagement trend"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="space-y-2">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">
+                Engagement trend
+              </p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Multi-channel resonance</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Streams, reads, and watch time aggregated weekly.</p>
+            </div>
+            <div className="flex flex-col items-end gap-2">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">
+                Latest pulse
+              </span>
+              <AnimatedCounter
+                id="content-latest-engagement"
+                value={latestEngagement}
+                formatter={(value) => `${Math.round(value).toLocaleString()} interactions`}
+                duration={400}
+              />
+            </div>
+          </div>
+          <div className="mt-4 h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={data.engagementTrend} margin={{ left: 12, right: 12, top: 16, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="contentEngagement" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stopColor="var(--vertical-content)" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="var(--vertical-content)" stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 6" stroke="rgba(249, 115, 22, 0.2)" />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} />
+                <Tooltip
+                  contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }}
+                  formatter={(value: number) => [`${value.toLocaleString()} interactions`, 'Engagement']}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="var(--vertical-content)"
+                  strokeWidth={2}
+                  fill="url(#contentEngagement)"
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={400}
+                  animationEasing="ease-out"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        <Card
+          padding="md"
+          className="col-span-12 xl:col-span-5 border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Top performing stories"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Top performing stories</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Thumbnails, window, engagement delta.</p>
+            </div>
+          </div>
+          <div className="mt-4 overflow-hidden rounded-xl border border-[var(--surface-border)]">
+            <div className="max-h-[340px] overflow-auto">
+              <table className="min-w-full" aria-label="Top stories table">
+                <thead className="sticky top-0 z-10 bg-[var(--surface-s1)] text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--neutral-500,#5e6673)]">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Story</th>
+                    <th className="px-4 py-3 text-left">Type</th>
+                    <th className="px-4 py-3 text-left">Window</th>
+                    <th className="px-4 py-3 text-right">Engagement</th>
+                  </tr>
+                </thead>
+                <tbody className="text-[13px] text-[var(--neutral-700,#384150)]">
+                  {data.topStories.map((story, index) => (
+                    <tr
+                      key={story.id}
+                      className={cn(
+                        'data-row group transition hover:bg-[rgba(249,115,22,0.06)] focus-within:bg-[rgba(249,115,22,0.06)]',
+                        index % 2 === 0 ? 'bg-white' : 'bg-[rgba(249,115,22,0.04)]'
+                      )}
+                      style={{
+                        '--row-accent': 'var(--vertical-content)',
+                        '--row-accent-width': '3px',
+                        animationDelay: prefersReducedMotion ? undefined : `${index * 60}ms`,
+                      } as CSSProperties}
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-[rgba(249,115,22,0.18)] to-[rgba(251,191,36,0.4)] text-[14px] font-semibold text-[var(--vertical-content)]"
+                            aria-hidden
+                          >
+                            {story.format.slice(0, 1)}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="truncate font-semibold text-[var(--neutral-900,#0b0d12)]" title={story.title}>
+                              {story.title}
+                            </p>
+                            <span className="text-[12px] text-[var(--neutral-500,#5e6673)]">Status: {story.status}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-[var(--neutral-600,#5e6673)]">{story.format}</td>
+                      <td className="px-4 py-3 text-[var(--neutral-600,#5e6673)]">{story.publishedAt}</td>
+                      <td className="px-4 py-3 text-right font-semibold text-[var(--neutral-900,#0b0d12)]">
+                        {story.engagement}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-7 space-y-6">
-        <ChartCard
-          id="content-engagement"
-          title="Engagement trend"
-          description="Plays, reads, and watch time"
-          rows={engagementRows}
-          columns={[
-            { key: 'period', label: 'Period' },
-            { key: 'score', label: 'Engagement', align: 'right' },
-          ]}
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          padding="md"
+          className="col-span-12 lg:col-span-6 border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Channel mix"
         >
-          <ResponsiveContainer height={280}>
-            <LineChart data={data.engagementTrend}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(251, 146, 60, 0.25)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Line type="monotone" dataKey="value" stroke="var(--vertical-content)" strokeWidth={3} dot={{ r: 5 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Publishing queue">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h3 className="text-title-sm text-slate-900">Publishing queue</h3>
-              <p className="text-xs text-slate-600">Ready, review, and blocked statuses with guardrails.</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Channel mix</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Share of top-performing formats.</p>
+            </div>
+          </div>
+          <div className="mt-5 grid gap-6 lg:grid-cols-[minmax(220px,240px)_1fr]">
+            <div className="mx-auto h-[220px] w-[220px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={channelMix}
+                    dataKey="value"
+                    nameKey="label"
+                    innerRadius={70}
+                    outerRadius={105}
+                    startAngle={90}
+                    endAngle={-270}
+                    stroke="#f8fafc"
+                    strokeWidth={2}
+                    isAnimationActive={!prefersReducedMotion}
+                    animationDuration={240}
+                  >
+                    {channelMix.map((segment) => (
+                      <Cell key={segment.id} fill={segment.color} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <ul className="flex flex-col gap-3" aria-label="Channel mix legend">
+              {channelMix.map((segment, index) => (
+                <li
+                  key={segment.id}
+                  className="legend-chip flex items-center justify-between gap-4 rounded-xl border border-[var(--surface-border)] bg-white/85 px-3 py-2"
+                  style={{ animationDelay: prefersReducedMotion ? undefined : `${index * 60}ms` }}
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="h-3.5 w-3.5 rounded-full"
+                      style={{ backgroundColor: segment.color }}
+                      aria-hidden
+                    />
+                    <span className="text-[13px] text-[var(--neutral-600,#5e6673)]">{segment.label}</span>
+                  </div>
+                  <span className="tabular-nums text-[13px] font-semibold text-[var(--neutral-900,#0b0d12)]">
+                    {segment.percent}%
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Card>
+
+        <Card
+          padding="md"
+          className="col-span-12 lg:col-span-6 border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Content cadence versus performance"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Cadence vs. performance</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Posts published versus average engagement.</p>
+            </div>
+          </div>
+          <div className="mt-4 h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={cadenceData} margin={{ left: 12, right: 16, top: 8, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="4 6" stroke="rgba(148, 163, 184, 0.25)" />
+                <XAxis dataKey="period" tickLine={false} axisLine={false} />
+                <YAxis
+                  yAxisId="posts"
+                  tickLine={false}
+                  axisLine={false}
+                  width={40}
+                  tickFormatter={(value) => `${value}`}
+                />
+                <YAxis
+                  yAxisId="engagement"
+                  orientation="right"
+                  tickLine={false}
+                  axisLine={false}
+                  width={48}
+                  tickFormatter={(value) => `${value}`}
+                />
+                <Tooltip
+                  contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }}
+                  formatter={(value: number, key) =>
+                    key === 'posts' ? [`${value} posts`, 'Posts'] : [`${Math.round(value)} engagement`, 'Avg engagement']
+                  }
+                />
+                <Bar
+                  yAxisId="posts"
+                  dataKey="posts"
+                  radius={[6, 6, 0, 0]}
+                  fill="rgba(251, 146, 60, 0.45)"
+                  stroke="rgba(249, 115, 22, 0.65)"
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={280}
+                />
+                <Line
+                  yAxisId="engagement"
+                  type="monotone"
+                  dataKey="engagement"
+                  stroke="var(--vertical-content)"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={320}
+                  animationEasing="ease-out"
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          padding="md"
+          className="col-span-12 xl:col-span-7 border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Publishing queue"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Publishing queue</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Status-aware slots sequenced by editor readiness.</p>
             </div>
           </div>
           <ul className="mt-4 space-y-3">
-            {data.publishingQueue.map((item) => (
-              <li key={item.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">{item.topic}</p>
-                    <p className="text-xs text-slate-500">Slot {item.slot} • Editor {item.editor}</p>
+            {data.publishingQueue.map((item, index) => {
+              const meta = queueStatusMeta[item.status];
+              return (
+                <li
+                  key={item.id}
+                  className="queue-row group relative overflow-hidden rounded-xl border border-[var(--surface-border)] bg-white/90 px-4 py-3"
+                  style={{
+                    animationDelay: prefersReducedMotion ? undefined : `${index * 80}ms`,
+                    '--queue-accent': meta.accent,
+                  } as CSSProperties}
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                      <p className="text-[14px] font-semibold text-[var(--neutral-900,#0b0d12)]">{item.topic}</p>
+                      <p className="text-[12px] text-[var(--neutral-500,#5e6673)]">
+                        Slot {item.slot} • Editor {item.editor}
+                      </p>
+                    </div>
+                    <span
+                      className={cn(
+                        'queue-status inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] transition',
+                        meta.tone === 'success'
+                          ? 'border-[var(--success-500)]/40 bg-[var(--success-50)] text-[var(--success-600)]'
+                          : meta.tone === 'danger'
+                          ? 'border-[var(--danger-500)]/45 bg-[var(--danger-50)] text-[var(--danger-600)]'
+                          : 'border-[var(--info-500)]/40 bg-[var(--info-50)] text-[var(--info-600)]'
+                      )}
+                    >
+                      {meta.icon}
+                      {meta.label}
+                    </span>
                   </div>
-                  <StatusChip
-                    label={item.status}
-                    tone={
-                      item.status === 'ready'
-                        ? 'success'
-                        : item.status === 'blocked'
-                        ? 'danger'
-                        : 'info'
-                    }
-                  />
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         </Card>
-      </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Top performing stories">
-          <div className="flex items-center justify-between">
+        <Card
+          padding="md"
+          className="col-span-12 xl:col-span-5 border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Automations"
+        >
+          <div className="flex items-center justify-between gap-4">
             <div>
-              <h3 className="text-title-sm text-slate-900">Top performing stories</h3>
-              <p className="text-xs text-slate-600">Format, window, engagement, status.</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Automation control tower</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Trigger | Channel | Cadence</p>
             </div>
           </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Stories table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
-                <tr>
-                  <th className="px-4 py-3 text-left">Title</th>
-                  <th className="px-4 py-3 text-left">Format</th>
-                  <th className="px-4 py-3 text-left">Window</th>
-                  <th className="px-4 py-3 text-right">Engagement</th>
-                  <th className="px-4 py-3 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
-                {data.topStories.map((story) => (
-                  <tr key={story.id}>
-                    <td className="px-4 py-[11px] font-semibold text-slate-900">{story.title}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{story.format}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{story.publishedAt}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{story.engagement}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{story.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="mt-4 grid gap-6 sm:grid-cols-3">
+            {data.automation.map((automation, index) => (
+              <div
+                key={automation.id}
+                className="automation-spotlight flex h-full flex-col justify-between rounded-xl border border-[var(--surface-border)] bg-white/90 px-4 py-3"
+                style={{ animationDelay: prefersReducedMotion ? undefined : `${index * 80}ms` }}
+              >
+                <div className="space-y-2">
+                  <p className="text-[13px] font-semibold text-[var(--neutral-900,#0b0d12)]">{automation.title}</p>
+                </div>
+                <div className="mt-3 grid gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+                  <span
+                    className="automation-pill max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-[var(--surface-border)] bg-white/70 px-2 py-1"
+                    title={automation.trigger}
+                  >
+                    Trigger · {automation.trigger}
+                  </span>
+                  <span
+                    className="automation-pill max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-[var(--surface-border)] bg-white/70 px-2 py-1"
+                    title={automation.channel}
+                  >
+                    Channel · {automation.channel}
+                  </span>
+                  <span
+                    className="automation-pill max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-[var(--surface-border)] bg-white/70 px-2 py-1"
+                    title={automation.cadence}
+                  >
+                    Cadence · {automation.cadence}
+                  </span>
+                </div>
+                <div className="mt-3 flex items-center justify-between text-[11px] text-[var(--neutral-500,#5e6673)]">
+                  <span>{automation.owner}</span>
+                  <StatusChip label={automation.active ? 'Active' : 'Paused'} tone={automation.active ? 'success' : 'warning'} />
+                </div>
+              </div>
+            ))}
           </div>
         </Card>
-
-        <AutomationList items={data.automation} />
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -1750,64 +2129,187 @@ function EdTechModule({
   data: PortfolioDashboardResponse['edtech'];
   accent: string;
 }) {
-  const heatmapMax = Math.max(...data.activityHeatmap.values.map((entry) => entry.score));
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const heatmapValues = data.activityHeatmap.values;
+  const heatmapMax = useMemo(
+    () => Math.max(...heatmapValues.map((entry) => entry.score), 1),
+    [heatmapValues]
+  );
+  const peakCell = useMemo(() => {
+    if (heatmapValues.length === 0) {
+      return { week: '', day: '', score: 0 };
+    }
+    return heatmapValues.reduce((best, entry) => (entry.score > best.score ? entry : best), heatmapValues[0]);
+  }, [heatmapValues]);
+  const [waveComplete, setWaveComplete] = useState(prefersReducedMotion);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    const timeout = window.setTimeout(() => setWaveComplete(true), 420);
+    return () => window.clearTimeout(timeout);
+  }, [prefersReducedMotion]);
+
+  const courseFilters = useMemo(
+    () => ['All courses', ...data.courses.slice(0, 3).map((course) => course.title)],
+    [data.courses]
+  );
+
+  const gradeDistribution = useMemo(() => {
+    const bands = [
+      { id: 'a', label: 'A (90-100)', min: 90, max: 100 },
+      { id: 'b', label: 'B (80-89)', min: 80, max: 89 },
+      { id: 'c', label: 'C (70-79)', min: 70, max: 79 },
+      { id: 'd', label: 'D (60-69)', min: 60, max: 69 },
+      { id: 'e', label: 'E (<60)', min: 0, max: 59 },
+    ];
+    const buckets = bands.map((band) => ({ ...band, count: 0 }));
+    data.courses.forEach((course) => {
+      const numeric = Number.parseFloat(course.avgScore.replace('%', ''));
+      const bucket = buckets.find((band) => numeric >= band.min && numeric <= band.max);
+      if (bucket) {
+        bucket.count += 1;
+      }
+    });
+    const total = buckets.reduce((sum, band) => sum + band.count, 0) || 1;
+    return buckets.map((band) => ({
+      id: band.id,
+      label: band.label,
+      share: Math.round((band.count / total) * 100),
+    }));
+  }, [data.courses]);
+
+  const retentionCurve = useMemo(() => {
+    const totals = data.activityHeatmap.weeks.map((week) =>
+      heatmapValues
+        .filter((entry) => entry.week === week)
+        .reduce((sum, entry) => sum + entry.score, 0)
+    );
+    const baseline = totals[0] || 1;
+    return totals.map((value, index) => ({
+      week: data.activityHeatmap.weeks[index],
+      retention: Math.min(120, Math.round((value / baseline) * 100)),
+    }));
+  }, [data.activityHeatmap.weeks, heatmapValues]);
+
+  const cohortFilters = ['All cohorts', 'Cohort D3', 'Cohort E7'];
+  const rangeFilters = ['Last 5 weeks', 'Quarter to date'];
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="edtech-panel" role="tabpanel" aria-labelledby="edtech">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Learning analytics & student success"
-          subtitle="EdTech"
-          accent={accent}
-        />
-      </div>
-
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Program performance">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Program performance</h3>
-              <p className="text-xs text-slate-600">Enrollment, completion, average scores.</p>
+    <section className="space-y-8" id="edtech-panel" role="tabpanel" aria-labelledby="edtech">
+      <Card
+        as="header"
+        padding="md"
+        className="animate-dashboard-panel border border-[var(--surface-border)]"
+        role="region"
+        aria-label="EdTech overview"
+      >
+        <div className="grid grid-cols-12 items-start gap-6">
+          <div className="col-span-12 lg:col-span-5 space-y-2">
+            <h2 className="text-[24px] font-semibold text-[var(--neutral-900,#0b0d12)]">EdTech</h2>
+            <p className="text-[13px] text-[var(--neutral-600,#5e6673)]">
+              Monitor cohorts, mastery, and retention readiness across the programme lifecycle.
+            </p>
+          </div>
+          <div className="col-span-12 lg:col-span-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+                  Cohort
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {cohortFilters.map((label, index) => (
+                    <FilterChip key={label} label={label} active={index === 0} onClick={() => {}} />
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+                  Course
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {courseFilters.map((label, index) => (
+                    <FilterChip key={label} label={label} active={index === 0} onClick={() => {}} />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Program performance table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
-                <tr>
-                  <th className="px-4 py-3 text-left">Course</th>
-                  <th className="px-4 py-3 text-right">Enrollment</th>
-                  <th className="px-4 py-3 text-right">Completion</th>
-                  <th className="px-4 py-3 text-right">Avg score</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
-                {data.courses.map((course) => (
-                  <tr key={course.id}>
-                    <td className="px-4 py-[11px] font-semibold text-slate-900">{course.title}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{course.enrollment.toLocaleString()}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{course.completion}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{course.avgScore}</td>
+          <div className="col-span-12 lg:col-span-3 flex flex-col items-start gap-3 lg:items-end">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--surface-border)] bg-white/90 px-3 py-2">
+              <CalendarRange className="h-4 w-4 text-[var(--vertical-edtech,#6366f1)]" aria-hidden />
+              <span className="text-[13px] font-semibold text-[var(--neutral-900,#0b0d12)]">Last 5 weeks</span>
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-dashed border-[var(--surface-border)] px-3 py-2 text-[12px] text-[var(--neutral-600,#5e6673)]">
+              <Sparkles className="h-4 w-4 text-[var(--vertical-edtech,#6366f1)]" aria-hidden />
+              <span>Adaptive insights enabled</span>
+            </div>
+          </div>
+          <div className="col-span-12 h-px border-t border-dashed border-[var(--surface-border)]" aria-hidden />
+        </div>
+      </Card>
+
+      <KPIBand metrics={data.metrics} accentToken={accent} />
+
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          padding="md"
+          className="col-span-12 xl:col-span-7 border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Program performance"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Program performance</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Enrollment, completion, average scores.</p>
+            </div>
+          </div>
+          <div className="mt-4 overflow-hidden rounded-xl border border-[var(--surface-border)]">
+            <div className="max-h-[320px] overflow-auto">
+              <table className="min-w-full" aria-label="Program performance table">
+                <thead className="sticky top-0 z-10 bg-[var(--surface-s1)] text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--neutral-500,#5e6673)]">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Course</th>
+                    <th className="px-4 py-3 text-right">Enrollment</th>
+                    <th className="px-4 py-3 text-right">Completion</th>
+                    <th className="px-4 py-3 text-right">Avg score</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="text-[13px] text-[var(--neutral-700,#384150)]">
+                  {data.courses.map((course, index) => (
+                    <tr
+                      key={course.id}
+                      className={cn(
+                        'transition hover:bg-[rgba(99,102,241,0.06)] focus-within:bg-[rgba(99,102,241,0.06)]',
+                        index % 2 === 0 ? 'bg-white' : 'bg-[rgba(99,102,241,0.04)]'
+                      )}
+                    >
+                      <td className="px-4 py-2 font-semibold text-[var(--neutral-900,#0b0d12)]">{course.title}</td>
+                      <td className="px-4 py-2 text-right">{course.enrollment.toLocaleString()}</td>
+                      <td className="px-4 py-2 text-right">{course.completion}</td>
+                      <td className="px-4 py-2 text-right">{course.avgScore}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </Card>
 
-        <AutomationList items={data.automation} />
-      </div>
-
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Student activity heatmap">
-          <div className="flex items-center justify-between">
+        <Card
+          padding="md"
+          className="col-span-12 xl:col-span-5 border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Student activity heatmap"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h3 className="text-title-sm text-slate-900">Student activity heatmap</h3>
-              <p className="text-xs text-slate-600">Keyboard navigation supported — use arrow keys to traverse.</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Student activity heatmap</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Weeks versus days with accessible ramp.</p>
             </div>
           </div>
           <div className="mt-4 overflow-x-auto">
             <table className="min-w-full text-center" aria-label="Student activity heatmap table">
-              <thead className="text-xs uppercase tracking-[0.08em] text-slate-500">
+              <thead className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--neutral-500,#5e6673)]">
                 <tr>
                   <th className="px-2 py-2 text-left">Week</th>
                   {data.activityHeatmap.days.map((day) => (
@@ -1817,22 +2319,33 @@ function EdTechModule({
                   ))}
                 </tr>
               </thead>
-              <tbody className="text-sm">
-                {data.activityHeatmap.weeks.map((week) => (
+              <tbody className="text-[12px]">
+                {data.activityHeatmap.weeks.map((week, weekIndex) => (
                   <tr key={week}>
-                    <td className="px-2 py-2 text-left font-semibold text-slate-900">{week}</td>
-                    {data.activityHeatmap.days.map((day) => {
-                      const cell = data.activityHeatmap.values.find((value) => value.week === week && value.day === day);
+                    <th scope="row" className="px-2 py-2 text-left font-semibold text-[var(--neutral-900,#0b0d12)]">
+                      {week}
+                    </th>
+                    {data.activityHeatmap.days.map((day, dayIndex) => {
+                      const cell = heatmapValues.find((value) => value.week === week && value.day === day);
                       const score = cell?.score ?? 0;
-                      const intensity = score / heatmapMax;
+                      const intensity = heatmapMax === 0 ? 0 : score / heatmapMax;
+                      const isPeak = peakCell.week === week && peakCell.day === day;
                       return (
                         <td
                           key={`${week}-${day}`}
-                          className="px-2 py-2 text-xs font-semibold text-slate-700"
+                          className={cn(
+                            'heatmap-cell text-[11px] font-semibold text-white',
+                            !prefersReducedMotion && 'animate-heatmap',
+                            isPeak && waveComplete && 'heatmap-cell-peak'
+                          )}
                           style={{
-                            background: `rgba(107, 70, 193, ${0.2 + intensity * 0.5})`,
-                            borderRadius: 12,
+                            backgroundColor: `rgba(99, 102, 241, ${(0.16 + intensity * 0.6).toFixed(2)})`,
+                            animationDelay: prefersReducedMotion
+                              ? undefined
+                              : `${(weekIndex * data.activityHeatmap.days.length + dayIndex) * 60}ms`,
                           }}
+                          tabIndex={0}
+                          aria-label={`${week} ${day}: ${score} active learners`}
                         >
                           {score}
                         </td>
@@ -1843,29 +2356,120 @@ function EdTechModule({
               </tbody>
             </table>
           </div>
+          <div className="mt-4 flex items-center justify-end gap-2 text-[11px] text-[var(--neutral-500,#5e6673)]">
+            <span className="inline-flex h-3 w-8 rounded-full bg-[rgba(99,102,241,0.2)]" aria-hidden /> Low
+            <span className="inline-flex h-3 w-8 rounded-full bg-[rgba(99,102,241,0.7)]" aria-hidden /> High
+          </div>
         </Card>
+      </div>
 
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Alerts">
-          <div className="flex items-center justify-between">
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          padding="md"
+          className="col-span-12 lg:col-span-6 border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Assessment outcomes"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h3 className="text-title-sm text-slate-900">Alerts</h3>
-              <p className="text-xs text-slate-600">FERPA-ready alerts with remediation guidance.</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Assessment outcomes</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Grade distribution across cohorts.</p>
             </div>
           </div>
           <ul className="mt-4 space-y-3">
-            {data.alerts.map((alert) => (
-              <li key={alert.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <StatusChip
-                  label={alert.severity}
-                  tone={alert.severity === 'critical' ? 'danger' : alert.severity === 'warning' ? 'warning' : 'info'}
-                />
-                <p className="mt-2 text-sm text-slate-700">{alert.message}</p>
+            {gradeDistribution.map((band) => (
+              <li key={band.id} className="flex items-center gap-4">
+                <span className="w-28 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+                  {band.label}
+                </span>
+                <div className="relative h-3 flex-1 rounded-full bg-[rgba(99,102,241,0.1)]">
+                  <div
+                    className="assessment-bar absolute inset-y-0 left-0 rounded-full"
+                    style={{ width: `${band.share}%` }}
+                    aria-hidden
+                  />
+                </div>
+                <span className="tabular-nums text-[12px] font-semibold text-[var(--neutral-900,#0b0d12)]">{band.share}%</span>
               </li>
             ))}
           </ul>
         </Card>
+
+        <Card
+          padding="md"
+          className="col-span-12 lg:col-span-6 border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Cohort retention curve"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Cohort retention curve</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Week-over-week active learner retention.</p>
+            </div>
+          </div>
+          <div className="mt-4 h-[260px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={retentionCurve} margin={{ left: 12, right: 16, top: 12, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 6" stroke="rgba(99, 102, 241, 0.18)" />
+                <XAxis dataKey="week" tickLine={false} axisLine={false} />
+                <YAxis tickFormatter={(value) => `${value}%`} tickLine={false} axisLine={false} domain={[0, 120]} />
+                <Tooltip
+                  contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }}
+                  formatter={(value: number) => [`${value}%`, 'Retention']}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="retention"
+                  stroke="var(--vertical-edtech,#6366f1)"
+                  strokeWidth={2.5}
+                  dot={{ r: 3 }}
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={360}
+                  animationEasing="ease-out"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
       </div>
-    </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        {data.automation.map((automation, index) => (
+          <Card
+            key={automation.id}
+            padding="md"
+            className="intervention-card flex h-full flex-col justify-between border border-[var(--surface-border)]"
+            data-active={automation.active}
+            style={{ animationDelay: prefersReducedMotion ? undefined : `${index * 80}ms` }}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <h3 className="text-[16px] font-semibold text-[var(--neutral-900,#0b0d12)]">{automation.title}</h3>
+              <StatusChip label={automation.active ? 'Active' : 'Paused'} tone={automation.active ? 'success' : 'warning'} />
+            </div>
+            <div className="mt-3 grid gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+              <span
+                className="automation-pill max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-[var(--surface-border)] bg-white/70 px-2 py-1"
+                title={automation.trigger}
+              >
+                Trigger · {automation.trigger}
+              </span>
+              <span
+                className="automation-pill max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-[var(--surface-border)] bg-white/70 px-2 py-1"
+                title={automation.channel}
+              >
+                Channel · {automation.channel}
+              </span>
+              <span
+                className="automation-pill max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-[var(--surface-border)] bg-white/70 px-2 py-1"
+                title={automation.cadence}
+              >
+                Cadence · {automation.cadence}
+              </span>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -1876,161 +2480,393 @@ function SpecializedModule({
   data: PortfolioDashboardResponse['specialized'];
   accent: string;
 }) {
-  const momentumRows = data.realEstate.trend.map((point) => ({ month: point.label, momentum: point.value }));
-  const expenseRows = data.finance.expenses.map((point) => ({ week: point.label, actual: point.value, budget: point.secondary }));
-  const roiRows = data.finance.roiBreakdown.map((item) => ({ channel: item.label, share: `${item.value}%` }));
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const momentumData = data.realEstate.trend;
+  const expenseData = data.finance.expenses;
+  const latestExpense = expenseData[expenseData.length - 1] ?? { value: 0, secondary: 0 };
+  const lifecycleAutomations = useMemo(
+    () =>
+      [
+        ...data.realEstate.automation,
+        ...data.finance.automation,
+        ...data.healthcare.automation,
+      ].slice(0, 3),
+    [data.finance.automation, data.healthcare.automation, data.realEstate.automation]
+  );
+  const automationSpotlights = useMemo(
+    () =>
+      [
+        data.realEstate.automation.find((item) => item.id === 'agent-alerts'),
+        data.realEstate.automation.find((item) => item.id === 'listing-drip'),
+        data.healthcare.automation.find((item) => item.id === 'intake-automation'),
+      ].filter((item): item is NonNullable<typeof item> => Boolean(item)),
+    [data.healthcare.automation, data.realEstate.automation]
+  );
+
+  const specializedMetrics = useMemo(
+    () =>
+      [
+        data.realEstate.metrics.find((metric) => metric.id === 'inventory'),
+        data.finance.metrics.find((metric) => metric.id === 'burn'),
+        data.healthcare.metrics.find((metric) => metric.id === 'appointments'),
+        data.healthcare.metrics.find((metric) => metric.id === 'show-rate'),
+      ].filter((metric): metric is NonNullable<(typeof data.realEstate.metrics)[number]> => Boolean(metric)),
+    [data]
+  );
+
+  const industryFilters = ['All verticals', 'Real estate', 'Finance', 'Healthcare'];
+  const rangeFilters = ['Last 6 months', 'Year to date'];
+
+  const statusTone: Record<string, 'success' | 'info' | 'warning'> = {
+    Confirmed: 'success',
+    'Awaiting Intake': 'warning',
+    Rescheduled: 'info',
+  };
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="specialized-panel" role="tabpanel" aria-labelledby="specialized">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Specialized niches"
-          subtitle="Real estate, finance, healthcare"
-          accent={accent}
-        />
-      </div>
-
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <ChartCard
-          id="specialized-momentum"
-          title="Market momentum"
-          description="Real estate listings velocity"
-          rows={momentumRows}
-          columns={[
-            { key: 'month', label: 'Month' },
-            { key: 'momentum', label: 'Momentum', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={220}>
-            <AreaChart data={data.realEstate.trend}>
-              <defs>
-                <linearGradient id="momentumGradient" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="5%" stopColor="var(--vertical-specialized)" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="var(--vertical-specialized)" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Area type="monotone" dataKey="value" stroke="var(--vertical-specialized)" fill="url(#momentumGradient)" strokeWidth={3} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Listings & inquiries">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Listings & inquiries</h3>
-              <p className="text-xs text-slate-600">Key real estate pipeline with agent accountability.</p>
+    <section className="space-y-8" id="specialized-panel" role="tabpanel" aria-labelledby="specialized">
+      <Card
+        as="header"
+        padding="md"
+        className="animate-dashboard-panel border border-[var(--surface-border)]"
+        role="region"
+        aria-label="Specialized niches overview"
+      >
+        <div className="grid grid-cols-12 items-start gap-6">
+          <div className="col-span-12 lg:col-span-5 space-y-2">
+            <h2 className="text-[24px] font-semibold text-[var(--neutral-900,#0b0d12)]">Specialized Niches</h2>
+            <p className="text-[13px] text-[var(--neutral-600,#5e6673)]">
+              Synchronise market momentum, financial guardrails, and patient access workflows.
+            </p>
+          </div>
+          <div className="col-span-12 lg:col-span-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+                  Industry
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {industryFilters.map((label, index) => (
+                    <FilterChip key={label} label={label} active={index === 0} onClick={() => {}} />
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+                  Date range
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {rangeFilters.map((label, index) => (
+                    <FilterChip key={label} label={label} active={index === 0} onClick={() => {}} />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-          <ul className="mt-4 space-y-3">
-            {data.realEstate.pipeline.map((item) => (
-              <li key={item.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <p className="text-sm font-semibold text-slate-900">{item.address}</p>
-                <p className="text-xs text-slate-500">Stage: {item.stage}</p>
-                <p className="text-xs text-slate-500">Inquiries: {item.inquiries}</p>
-                <p className="text-xs text-slate-500">Agent: {item.agent}</p>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
-
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <ChartCard
-          id="specialized-expenses"
-          title="Expense vs budget"
-          description="Finance automation keeps spend in check"
-          rows={expenseRows}
-          columns={[
-            { key: 'week', label: 'Week' },
-            { key: 'actual', label: 'Actual ($K)', align: 'right' },
-            { key: 'budget', label: 'Budget ($K)', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={220}>
-            <LineChart data={data.finance.expenses}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={false} name="Actual" />
-              <Line type="monotone" dataKey="secondary" stroke="#10b981" strokeWidth={3} dot={false} name="Budget" />
-              <Legend verticalAlign="bottom" height={36} />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard
-          id="specialized-roi"
-          title="ROI breakdown"
-          description="Attribution-safe ROI mix"
-          rows={roiRows}
-          columns={[
-            { key: 'channel', label: 'Channel' },
-            { key: 'share', label: 'Share', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={220}>
-            <PieChart>
-              <Pie dataKey="value" data={data.finance.roiBreakdown} innerRadius={70} outerRadius={110} paddingAngle={2}>
-                {data.finance.roiBreakdown.map((segment) => (
-                  <Cell key={segment.id} fill={segment.color} stroke="#1f2937" strokeWidth={1.4} />
-                ))}
-              </Pie>
-              <Legend verticalAlign="bottom" height={50} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
-
-      <div className="col-span-12 lg:col-span-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Healthcare appointments">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Healthcare appointments</h3>
-              <p className="text-xs text-slate-600">Omni-channel reminders, smart rescheduling, PHI-safe.</p>
+          <div className="col-span-12 lg:col-span-3 flex flex-col items-start gap-3 lg:items-end">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--surface-border)] bg-white/90 px-3 py-2">
+              <CalendarRange className="h-4 w-4 text-[var(--vertical-specialized,#0f766e)]" aria-hidden />
+              <span className="text-[13px] font-semibold text-[var(--neutral-900,#0b0d12)]">Last 6 months</span>
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-dashed border-[var(--surface-border)] px-3 py-2 text-[12px] text-[var(--neutral-600,#5e6673)]">
+              <Workflow className="h-4 w-4 text-[var(--vertical-specialized,#0f766e)]" aria-hidden />
+              <span>Automation sync on</span>
             </div>
           </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Appointments table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
-                <tr>
-                  <th className="px-4 py-3 text-left">Patient</th>
-                  <th className="px-4 py-3 text-left">Clinician</th>
-                  <th className="px-4 py-3 text-left">Start</th>
-                  <th className="px-4 py-3 text-left">Channel</th>
-                  <th className="px-4 py-3 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
-                {data.healthcare.appointments.map((appt) => (
-                  <tr key={appt.id}>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.patient}</td>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.clinician}</td>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.start}</td>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.channel}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-700">{appt.status}</td>
+          <div className="col-span-12 h-px border-t border-dashed border-[var(--surface-border)]" aria-hidden />
+        </div>
+      </Card>
+
+      <KPIBand metrics={specializedMetrics} accentToken={accent} />
+
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          padding="md"
+          className="col-span-12 xl:col-span-7 border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Market momentum"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Market momentum</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Listing velocity and demand signals.</p>
+            </div>
+          </div>
+          <div className="mt-4 grid h-full gap-5" style={{ gridTemplateRows: '3fr 2fr' }}>
+            <div className="h-[240px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={momentumData} margin={{ left: 12, right: 12, top: 12, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 6" stroke="rgba(15, 118, 110, 0.18)" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} />
+                  <Tooltip
+                    contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }}
+                    formatter={(value: number) => [`${value}`, 'Momentum']}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="var(--vertical-specialized,#0f766e)"
+                    strokeWidth={2.5}
+                    dot={{ r: 3 }}
+                    isAnimationActive={!prefersReducedMotion}
+                    animationDuration={360}
+                    animationEasing="ease-out"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="overflow-hidden rounded-xl border border-[var(--surface-border)] bg-white/90">
+              <table className="min-w-full" aria-label="Momentum by month">
+                <thead className="sticky top-0 z-10 bg-[var(--surface-s1)] text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--neutral-500,#5e6673)]">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Month</th>
+                    <th className="px-4 py-3 text-right">Momentum</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="text-[13px] text-[var(--neutral-700,#384150)]">
+                  {momentumData.map((point, index) => (
+                    <tr
+                      key={point.label}
+                      className={index % 2 === 0 ? 'bg-white' : 'bg-[rgba(15,118,110,0.04)]'}
+                    >
+                      <td className="px-4 py-2.5 font-semibold text-[var(--neutral-900,#0b0d12)]">{point.label}</td>
+                      <td className="px-4 py-2.5 text-right">
+                        <AnimatedCounter
+                          id={`momentum-${point.label}`}
+                          value={point.value}
+                          formatter={(value) => `${Math.round(value).toLocaleString()}`}
+                          duration={320}
+                          delay={prefersReducedMotion ? 0 : index * 40}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </Card>
+
+        <Card
+          padding="md"
+          className="col-span-12 xl:col-span-5 border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Expense versus budget"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Expense vs. budget</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Actual spend against guardrail budgets.</p>
+            </div>
+          </div>
+          <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_200px]">
+            <div className="h-[260px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={expenseData} margin={{ left: 12, right: 12, top: 12, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 6" stroke="rgba(148, 163, 184, 0.25)" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} />
+                  <Tooltip
+                    contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }}
+                    formatter={(value: number, key) =>
+                      key === 'value' ? [`$${value}K`, 'Actual'] : [`$${value}K`, 'Budget']
+                    }
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    name="Actual"
+                    stroke="var(--vertical-specialized,#0f766e)"
+                    strokeWidth={2.5}
+                    dot={{ r: 3 }}
+                    isAnimationActive={!prefersReducedMotion}
+                    animationDuration={360}
+                    animationEasing="ease-out"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="secondary"
+                    name="Budget"
+                    stroke="#1f2937"
+                    strokeWidth={2}
+                    strokeDasharray="6 6"
+                    dot={{ r: 3 }}
+                    isAnimationActive={!prefersReducedMotion}
+                    animationDuration={360}
+                    animationEasing="ease-out"
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+            <ul className="flex flex-col gap-3 text-[13px] text-[var(--neutral-600,#5e6673)]">
+              <li className="flex items-center justify-between gap-3">
+                <span className="inline-flex h-3 w-3 rounded-full bg-[var(--vertical-specialized,#0f766e)]" aria-hidden />
+                <span className="flex-1">Actual spend</span>
+                <span className="tabular-nums font-semibold text-[var(--neutral-900,#0b0d12)]">{`${latestExpense.value.toLocaleString()}K`}</span>
+              </li>
+              <li className="flex items-center justify-between gap-3">
+                <span className="inline-flex h-3 w-3 rounded-full bg-[#1f2937]" aria-hidden />
+                <span className="flex-1">Budget guardrail</span>
+                <span className="tabular-nums font-semibold text-[var(--neutral-900,#0b0d12)]">{`${latestExpense.secondary.toLocaleString()}K`}</span>
+              </li>
+              <li className="flex items-start gap-3 text-[11px] text-[var(--neutral-500,#5e6673)]">
+                <Sparkles className="mt-0.5 h-3.5 w-3.5 text-[var(--vertical-specialized,#0f766e)]" aria-hidden />
+                Automation flags variance &gt; 8% and dispatches alerts to FP&amp;A.
+              </li>
+            </ul>
           </div>
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <AutomationList items={data.realEstate.automation} />
-        <AutomationList items={data.finance.automation} />
-        <AutomationList items={data.healthcare.automation} />
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          padding="md"
+          className="col-span-12 xl:col-span-7 border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Appointments"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Appointments</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Patient access across omni-channel touchpoints.</p>
+            </div>
+          </div>
+          <div className="mt-4 overflow-hidden rounded-xl border border-[var(--surface-border)]">
+            <div className="max-h-[320px] overflow-auto">
+              <table className="min-w-full" aria-label="Appointments table">
+                <thead className="sticky top-0 z-10 bg-[var(--surface-s1)] text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--neutral-500,#5e6673)]">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Patient</th>
+                    <th className="px-4 py-3 text-left">Clinician</th>
+                    <th className="px-4 py-3 text-left">Start</th>
+                    <th className="px-4 py-3 text-left">Channel</th>
+                    <th className="px-4 py-3 text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="text-[13px] text-[var(--neutral-700,#384150)]">
+                  {data.healthcare.appointments.map((appointment, index) => (
+                    <tr
+                      key={appointment.id}
+                      className={cn(
+                        'transition hover:bg-[rgba(14,116,144,0.08)] focus-within:bg-[rgba(14,116,144,0.08)]',
+                        index % 2 === 0 ? 'bg-white' : 'bg-[rgba(14,116,144,0.05)]'
+                      )}
+                    >
+                      <td className="px-4 py-2.5 font-semibold text-[var(--neutral-900,#0b0d12)]">{appointment.patient}</td>
+                      <td className="px-4 py-2.5">{appointment.clinician}</td>
+                      <td className="px-4 py-2.5">{appointment.start}</td>
+                      <td className="px-4 py-2.5">{appointment.channel}</td>
+                      <td className="px-4 py-2.5 text-right">
+                        <StatusChip
+                          label={appointment.status}
+                          tone={statusTone[appointment.status] ?? 'info'}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </Card>
+
+        <Card
+          padding="md"
+          className="col-span-12 xl:col-span-5 border border-[var(--surface-border)]"
+          role="region"
+          aria-label="Lifecycle and CRM automations"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Lifecycle &amp; CRM automations</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Top-running flows with trigger context.</p>
+            </div>
+          </div>
+          <div className="mt-4 space-y-3">
+            {lifecycleAutomations.map((automation, index) => (
+              <div
+                key={automation.id}
+                className="rounded-xl border border-[var(--surface-border)] bg-white/90 px-4 py-3"
+                style={{ animationDelay: prefersReducedMotion ? undefined : `${index * 80}ms` }}
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <p className="text-[14px] font-semibold text-[var(--neutral-900,#0b0d12)]">{automation.title}</p>
+                  <StatusChip label={automation.active ? 'Active' : 'Paused'} tone={automation.active ? 'success' : 'warning'} />
+                </div>
+                <div className="mt-3 grid gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+                  <span
+                    className="automation-pill max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-[var(--surface-border)] bg-white/70 px-2 py-1"
+                    title={automation.trigger}
+                  >
+                    Trigger · {automation.trigger}
+                  </span>
+                  <span
+                    className="automation-pill max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-[var(--surface-border)] bg-white/70 px-2 py-1"
+                    title={automation.channel}
+                  >
+                    Channel · {automation.channel}
+                  </span>
+                  <span
+                    className="automation-pill max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-[var(--surface-border)] bg-white/70 px-2 py-1"
+                    title={automation.cadence}
+                  >
+                    Cadence · {automation.cadence}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex justify-end">
+            <button
+              type="button"
+              className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-[12px] font-semibold text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
+            >
+              View all automations
+            </button>
+          </div>
+        </Card>
       </div>
-    </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        {automationSpotlights.map((automation, index) => (
+          <Card
+            key={automation.id}
+            padding="md"
+            className="automation-spotlight-card flex h-full flex-col justify-between border border-[var(--surface-border)]"
+            style={{ animationDelay: prefersReducedMotion ? undefined : `${index * 80}ms` }}
+          >
+            <div className="space-y-2">
+              <h3 className="text-[16px] font-semibold text-[var(--neutral-900,#0b0d12)]">{automation.title}</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">{automation.action}</p>
+            </div>
+            <div className="mt-3 grid gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+              <span
+                className="automation-pill max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-[var(--surface-border)] bg-white/70 px-2 py-1"
+                title={automation.trigger}
+              >
+                Trigger · {automation.trigger}
+              </span>
+              <span
+                className="automation-pill max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-[var(--surface-border)] bg-white/70 px-2 py-1"
+                title={automation.channel}
+              >
+                Channel · {automation.channel}
+              </span>
+              <span
+                className="automation-pill max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-[var(--surface-border)] bg-white/70 px-2 py-1"
+                title={automation.cadence}
+              >
+                Cadence · {automation.cadence}
+              </span>
+            </div>
+            <div className="mt-3 text-[11px] text-[var(--neutral-500,#5e6673)]">Owner: {automation.owner}</div>
+          </Card>
+        ))}
+      </div>
+    </section>
   );
 }
-
 function getModuleMetrics(
   moduleId: TabDefinition['id'],
   data: PortfolioDashboardResponse
@@ -2114,8 +2950,10 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
   const accent = accentTokens[selectedModule];
   const moduleMetrics = data ? getModuleMetrics(selectedModule, data) : [];
   const isPrimaryDashboard = selectedModule === 'saas' || selectedModule === 'commerce';
+  const usesInPanelKpis =
+    selectedModule === 'content' || selectedModule === 'edtech' || selectedModule === 'specialized';
   const showGlobalModuleKpis =
-    !isPrimaryDashboard && selectedModule !== 'corporate' && selectedModule !== 'customApp';
+    !isPrimaryDashboard && selectedModule !== 'corporate' && selectedModule !== 'customApp' && !usesInPanelKpis;
 
   const moduleContent = useMemo(() => {
     if (!data) return null;
