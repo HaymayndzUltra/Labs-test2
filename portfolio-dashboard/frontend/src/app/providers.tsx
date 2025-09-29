@@ -1,26 +1,26 @@
 'use client';
 
 import { ReactNode, useRef } from 'react';
-import { SWRConfig, type SWRConfiguration } from 'swr';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from '@/components/theme/ThemeProvider';
+import { ToastProvider } from '@/components/ui/ToastProvider';
 
 interface ProvidersProps {
   children: ReactNode;
 }
 
 export function Providers({ children }: ProvidersProps) {
-  const cacheRef = useRef<Map<string, unknown>>();
+  const queryClientRef = useRef<QueryClient | null>(null);
 
-  if (!cacheRef.current) {
-    cacheRef.current = new Map();
+  if (!queryClientRef.current) {
+    queryClientRef.current = new QueryClient();
   }
 
-  const swrConfig: SWRConfiguration = {
-    provider: () => cacheRef.current as Map<string, unknown>,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: true,
-    revalidateIfStale: true,
-    dedupingInterval: 60_000,
-  };
-
-  return <SWRConfig value={swrConfig}>{children}</SWRConfig>;
+  return (
+    <ThemeProvider>
+      <QueryClientProvider client={queryClientRef.current}>
+        <ToastProvider>{children}</ToastProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
+  );
 }
