@@ -207,7 +207,8 @@
     box-shadow: var(--shadow-md);
   }
 
-  .kpi-value {
+  .kpi-value,
+  .tabular-nums {
     font-variant-numeric: tabular-nums lining-nums;
     font-feature-settings: 'tnum' 1, 'lnum' 1;
   }
@@ -227,25 +228,25 @@
   .animate-dashboard-header {
     opacity: 0;
     transform: translateY(-8px);
-    animation: dashboard-header-enter 0.18s var(--motion-ease) forwards;
+    animation: dashboard-header-enter 0.12s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   }
 
   .animate-dashboard-kpi {
     opacity: 0;
     transform: translateY(12px);
-    animation: dashboard-kpi-enter 0.16s var(--motion-ease) forwards;
+    animation: dashboard-kpi-enter 0.16s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   }
 
   .animate-dashboard-panel {
     opacity: 0;
     transform: scale(0.98);
-    animation: dashboard-panel-enter 0.24s var(--motion-ease) forwards;
+    animation: dashboard-panel-enter 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     transform-origin: center top;
   }
 
   .animate-dashboard-chart {
     opacity: 0;
-    animation: dashboard-chart-fade 0.24s var(--motion-ease) forwards;
+    animation: dashboard-chart-fade 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   }
 
   .kpi-hover:hover {
@@ -259,6 +260,81 @@
 
   .dashboard-pill:hover {
     box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.35);
+  }
+
+  .automation-card {
+    position: relative;
+    animation: dashboard-panel-enter 0.24s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .automation-toggle[data-state='active'] {
+    border-color: color-mix(in srgb, var(--automation-accent) 60%, white);
+    background: color-mix(in srgb, var(--automation-accent) 10%, white);
+  }
+
+  .automation-toggle[data-state='active'] .automation-check {
+    stroke: color-mix(in srgb, var(--automation-accent) 65%, #1f2937);
+    stroke-dasharray: 18;
+    stroke-dashoffset: 18;
+    animation: automation-check-draw 0.18s ease-out forwards;
+  }
+
+  .automation-pill {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .automation-pill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.5) 45%, transparent 90%);
+    opacity: 0;
+    transform: translateX(-100%);
+    transition: opacity 0.2s ease;
+  }
+
+  .automation-pill:hover::after {
+    opacity: 0.35;
+    animation: automation-pill-shimmer 0.6s linear;
+  }
+
+  .data-row {
+    position: relative;
+  }
+
+  .data-row::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 4px;
+    background: var(--row-accent, var(--primary-500));
+    transform: translateX(-100%);
+    transition: transform 0.1s ease;
+  }
+
+  .data-row:hover::before,
+  .data-row:focus-within::before {
+    transform: translateX(0);
+  }
+
+  .data-row:hover td,
+  .data-row:focus-within td {
+    background: color-mix(in srgb, var(--row-accent, var(--primary-500)) 6%, white) !important;
+  }
+
+  .kanban-card {
+    will-change: transform, box-shadow;
+  }
+
+  .kanban-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+  }
+
+  .kanban-card:active {
+    transform: translateY(-1px);
   }
 
   .skeleton {
@@ -319,6 +395,21 @@
       background-position: -200% 0;
     }
   }
+
+  @keyframes automation-check-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes automation-pill-shimmer {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -334,5 +425,15 @@
   .kpi-hover,
   .glass-card {
     transition: none !important;
+  }
+
+  .automation-pill::after,
+  .automation-toggle[data-state='active'] .automation-check {
+    animation: none !important;
+  }
+
+  .kanban-card:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
   }
 }

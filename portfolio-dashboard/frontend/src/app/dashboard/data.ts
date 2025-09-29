@@ -102,9 +102,11 @@ export type CorporateSection = {
     id: string;
     stage: string;
     count: number;
-    conversion: string;
+    conversionRate: number;
     delta: number;
   }>;
+  velocityTrend: ChartPoint[];
+  cacSnapshot: MetricCard[];
   leadSources: PieSegment[];
   automation: AutomationWorkflow[];
   insights: Array<{
@@ -115,6 +117,7 @@ export type CorporateSection = {
 };
 
 export type CustomAppSection = {
+  metrics: MetricCard[];
   kanban: Array<{
     id: string;
     title: string;
@@ -129,8 +132,15 @@ export type CustomAppSection = {
     }>;
   }>;
   workloadDistribution: ChartPoint[];
+  throughputTrend: ChartPoint[];
   automation: AutomationWorkflow[];
-  backlogIdeas: string[];
+  backlog: Array<{
+    id: string;
+    idea: string;
+    owner: string;
+    priority: 'Low' | 'Medium' | 'High';
+    status: string;
+  }>;
 };
 
 export type ContentSection = {
@@ -610,18 +620,54 @@ const portfolioDashboard: PortfolioDashboardResponse = {
       },
     ],
     funnel: [
-      { id: 'stage1', stage: 'Website visitors', count: 642000, conversion: '100%', delta: 6.8 },
-      { id: 'stage2', stage: 'Marketing qualified', count: 88400, conversion: '13.7%', delta: 2.1 },
-      { id: 'stage3', stage: 'Sales qualified', count: 32870, conversion: '37.2%', delta: 1.6 },
-      { id: 'stage4', stage: 'Opportunities', count: 9870, conversion: '30.0%', delta: 0.9 },
-      { id: 'stage5', stage: 'Closed won', count: 3620, conversion: '36.6%', delta: 0.7 },
+      { id: 'stage1', stage: 'Website visitors', count: 642000, conversionRate: 100, delta: 6.8 },
+      { id: 'stage2', stage: 'Marketing qualified', count: 88400, conversionRate: 13.7, delta: 2.1 },
+      { id: 'stage3', stage: 'Sales qualified', count: 32870, conversionRate: 37.2, delta: 1.6 },
+      { id: 'stage4', stage: 'Opportunities', count: 9870, conversionRate: 30, delta: 0.9 },
+      { id: 'stage5', stage: 'Closed won', count: 3620, conversionRate: 36.6, delta: 0.7 },
+    ],
+    velocityTrend: [
+      { label: 'Week 1', value: 24, secondary: 18 },
+      { label: 'Week 2', value: 28, secondary: 20 },
+      { label: 'Week 3', value: 31, secondary: 22 },
+      { label: 'Week 4', value: 35, secondary: 25 },
+      { label: 'Week 5', value: 33, secondary: 24 },
+      { label: 'Week 6', value: 37, secondary: 26 },
+      { label: 'Week 7', value: 39, secondary: 28 },
+      { label: 'Week 8', value: 42, secondary: 29 },
+    ],
+    cacSnapshot: [
+      {
+        id: 'blended-cac',
+        label: 'Blended CAC',
+        value: '$4.3K',
+        change: -2.4,
+        trend: 'down',
+        description: 'vs prior quarter',
+      },
+      {
+        id: 'payback',
+        label: 'Payback period',
+        value: '6.4 mo',
+        change: -0.3,
+        trend: 'down',
+        description: 'Faster vs Q3',
+      },
+      {
+        id: 'velocity',
+        label: 'Velocity uplift',
+        value: '+18%',
+        change: 4.1,
+        trend: 'up',
+        description: 'vs baseline cohort',
+      },
     ],
     leadSources: [
-      { id: 'organic', label: 'Organic search', value: 32, color: '#2563eb' },
-      { id: 'paid', label: 'Paid media', value: 27, color: '#7c3aed' },
-      { id: 'events', label: 'Events & webinars', value: 18, color: '#06b6d4' },
-      { id: 'partners', label: 'Partner referrals', value: 14, color: '#f97316' },
-      { id: 'direct', label: 'Direct & outbound', value: 9, color: '#10b981' },
+      { id: 'organic', label: 'Organic search', value: 32, color: '#1d4ed8' },
+      { id: 'paid', label: 'Paid media', value: 27, color: '#1e3a8a' },
+      { id: 'events', label: 'Events & webinars', value: 18, color: '#312e81' },
+      { id: 'partners', label: 'Partner referrals', value: 14, color: '#4338ca' },
+      { id: 'direct', label: 'Direct & outbound', value: 9, color: '#60a5fa' },
     ],
     automation: [
       {
@@ -654,6 +700,16 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         cadence: 'Weekly',
         active: true,
       },
+      {
+        id: 'crm-sync',
+        title: 'CRM sync rules',
+        trigger: 'Opportunity stage change',
+        action: 'Re-score, update forecast class, notify RevOps',
+        owner: 'Revenue Ops',
+        channel: 'Salesforce + Email',
+        cadence: 'Real-time',
+        active: true,
+      },
     ],
     insights: [
       {
@@ -674,6 +730,40 @@ const portfolioDashboard: PortfolioDashboardResponse = {
     ],
   },
   customApp: {
+    metrics: [
+      {
+        id: 'throughput',
+        label: 'Sprint throughput',
+        value: '94%',
+        change: 2.1,
+        trend: 'up',
+        description: 'Tickets cleared last sprint',
+      },
+      {
+        id: 'ideas',
+        label: 'Ideas triaged',
+        value: '128',
+        change: 5.4,
+        trend: 'up',
+        description: 'Last 30 days',
+      },
+      {
+        id: 'automation-coverage',
+        label: 'Automation coverage',
+        value: '76%',
+        change: 3.2,
+        trend: 'up',
+        description: 'Tasks automated',
+      },
+      {
+        id: 'focus-time',
+        label: 'Focus time saved',
+        value: '312 hrs',
+        change: 7.8,
+        trend: 'up',
+        description: 'Quarter to date',
+      },
+    ],
     kanban: [
       {
         id: 'backlog',
@@ -765,6 +855,16 @@ const portfolioDashboard: PortfolioDashboardResponse = {
       { label: 'Alex', value: 7, secondary: 7 },
       { label: 'Tina', value: 3, secondary: 6 },
     ],
+    throughputTrend: [
+      { label: 'Week 1', value: 68, secondary: 60 },
+      { label: 'Week 2', value: 72, secondary: 62 },
+      { label: 'Week 3', value: 75, secondary: 63 },
+      { label: 'Week 4', value: 78, secondary: 64 },
+      { label: 'Week 5', value: 80, secondary: 65 },
+      { label: 'Week 6', value: 83, secondary: 66 },
+      { label: 'Week 7', value: 85, secondary: 67 },
+      { label: 'Week 8', value: 88, secondary: 68 },
+    ],
     automation: [
       {
         id: 'recurring-tasks',
@@ -797,11 +897,35 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         active: true,
       },
     ],
-    backlogIdeas: [
-      'Security policy automation for SOC2 evidence',
-      'AI co-pilot for white-glove onboarding tasks',
-      'Revenue workspace with finance system sync',
-      'Customer health scoring scenario planner',
+    backlog: [
+      {
+        id: 'idea-501',
+        idea: 'Security policy automation for SOC2 evidence',
+        owner: 'Priya Patel',
+        priority: 'High',
+        status: 'Awaiting review',
+      },
+      {
+        id: 'idea-502',
+        idea: 'AI co-pilot for white-glove onboarding tasks',
+        owner: 'Diego Suarez',
+        priority: 'Medium',
+        status: 'Scoping',
+      },
+      {
+        id: 'idea-503',
+        idea: 'Revenue workspace with finance system sync',
+        owner: 'Leah Armstrong',
+        priority: 'High',
+        status: 'Prioritized',
+      },
+      {
+        id: 'idea-504',
+        idea: 'Customer health scoring scenario planner',
+        owner: 'Mei Chen',
+        priority: 'Low',
+        status: 'Icebox',
+      },
     ],
   },
   content: {

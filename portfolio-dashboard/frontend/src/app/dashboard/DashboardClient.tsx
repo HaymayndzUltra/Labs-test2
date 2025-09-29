@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, useId } from 'react';
+import type { CSSProperties } from 'react';
 import {
   Area,
   AreaChart,
@@ -20,15 +21,22 @@ import {
   YAxis,
 } from 'recharts';
 import {
-  ArrowUpRight,
-  Check,
-  Moon,
-  Sun,
-  Earth,
-  Workflow,
   Activity,
+  ArrowDownRight,
+  ArrowUpRight,
+  BarChart3,
+  CalendarRange,
+  Check,
   ClipboardList,
+  Earth,
+  Minus,
+  Moon,
+  SlidersHorizontal,
   Sparkles,
+  Sun,
+  Timer,
+  TrendingUp,
+  Workflow,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
@@ -597,11 +605,152 @@ function FilterSummary({ label, value }: { label: string; value: string }) {
 function AutomationPill({ label }: { label: string }) {
   return (
     <span
-      className="dashboard-pill inline-flex items-center rounded-full border border-[var(--surface-border)] bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--neutral-600,#5e6673)]"
+      className="automation-pill dashboard-pill inline-flex items-center rounded-full border border-[var(--surface-border)] bg-white/80 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--neutral-600,#5e6673)]"
       title={label}
     >
       {label}
     </span>
+  );
+}
+
+function AnimatedCounter({
+  id,
+  value,
+  formatter,
+  duration = 320,
+  delay = 0,
+}: {
+  id: string;
+  value: number;
+  formatter: (value: number) => string;
+  duration?: number;
+  delay?: number;
+}) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const previousValue = useRef<number>(value);
+  const [display, setDisplay] = useState(() => formatter(value));
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      setDisplay(formatter(value));
+      previousValue.current = value;
+      return;
+    }
+
+    const start = previousValue.current;
+    const target = value;
+    previousValue.current = target;
+
+    if (start === target) {
+      setDisplay(formatter(target));
+      return;
+    }
+
+    let animationFrame: number;
+    let timeoutId: number;
+    const totalDuration = duration;
+
+    const easeOut = (t: number) => 1 - Math.pow(1 - t, 2);
+
+    const beginAnimation = () => {
+      const startTime = performance.now();
+      const step = (now: number) => {
+        const progress = Math.min(1, (now - startTime) / totalDuration);
+        const eased = easeOut(progress);
+        const current = start + (target - start) * eased;
+        setDisplay(formatter(current));
+        if (progress < 1) {
+          animationFrame = requestAnimationFrame(step);
+        }
+      };
+      animationFrame = requestAnimationFrame(step);
+    };
+
+    timeoutId = window.setTimeout(beginAnimation, delay);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      cancelAnimationFrame(animationFrame);
+    };
+  }, [delay, duration, formatter, prefersReducedMotion, value]);
+
+  return (
+    <span
+      className="tabular-nums font-semibold text-[var(--neutral-900,#0b0d12)]"
+      aria-live="polite"
+      data-counter-id={id}
+    >
+      {display}
+    </span>
+  );
+}
+
+function AutomationSummaryGrid({
+  items,
+  accentToken,
+  layout = 'two-column',
+}: {
+  items: PortfolioDashboardResponse['saas']['automation'];
+  accentToken: string;
+  layout?: 'two-column' | 'three-column';
+}) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const gridClass = layout === 'three-column' ? 'lg:grid-cols-3' : 'md:grid-cols-2';
+  const sliceCount = layout === 'three-column' ? 3 : 4;
+
+  return (
+    <div className={cn('grid grid-cols-1 gap-6', gridClass)}>
+      {items.slice(0, sliceCount).map((automation, index) => (
+        <Card
+          key={automation.id}
+          padding="md"
+          className="automation-card flex h-full flex-col justify-between gap-4 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm"
+          style={{
+            '--automation-accent': `var(${accentToken})`,
+            animationDelay: prefersReducedMotion ? undefined : `${index * 80}ms`,
+          } as CSSProperties}
+          data-active={automation.active}
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-2">
+              <p className="text-[14px] font-semibold text-[var(--neutral-900,#0b0d12)]">
+                {automation.title}
+              </p>
+              <p className="text-[12px] leading-snug text-[var(--neutral-600,#5e6673)]">
+                {automation.action}
+              </p>
+            </div>
+            <span
+              className="automation-toggle relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--surface-border)] bg-white/80"
+              data-state={automation.active ? 'active' : 'inactive'}
+              aria-label={automation.active ? 'Automation active' : 'Automation paused'}
+            >
+              <svg
+                className="automation-check h-5 w-5 text-[var(--neutral-600,#5e6673)]"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <polyline points="5 12 10 17 19 8" />
+              </svg>
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-[12px] text-[var(--neutral-500,#5e6673)]">
+            <span className="font-medium">Owner: {automation.owner}</span>
+            <StatusChip label={automation.active ? 'Live' : 'Paused'} tone={automation.active ? 'success' : 'warning'} />
+          </div>
+          <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+            <AutomationPill label={`Trigger | ${automation.trigger}`} />
+            <AutomationPill label={`Channel | ${automation.channel}`} />
+            <AutomationPill label={`Cadence | ${automation.cadence}`} />
+          </div>
+        </Card>
+      ))}
+    </div>
   );
 }
 
@@ -847,96 +996,348 @@ function CorporateModule({
   data: PortfolioDashboardResponse['corporate'];
   accent: string;
 }) {
-  const funnelRows = data.funnel.map((stage) => ({
-    stage: stage.stage,
-    count: stage.count.toLocaleString(),
-    conversion: stage.conversion,
-    delta: `${stage.delta.toFixed(1)}%`,
-  }));
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const sourceFilters = ['All sources', 'Owned', 'Paid', 'Partner'];
+  const segmentFilters = ['All segments', 'Enterprise', 'Growth', 'Expansion'];
+  const [activeSourceIndex, setActiveSourceIndex] = useState(0);
+  const [activeSegmentIndex, setActiveSegmentIndex] = useState(0);
 
-  const sourceRows = data.leadSources.map((source) => ({ source: source.label, share: `${source.value}%` }));
+  const velocityGradientId = useId();
+
+  const maxFunnelVolume = data.funnel[0]?.count ?? 1;
+  const numberFormatter = useMemo(() => new Intl.NumberFormat(), []);
+  const countFormatter = useCallback((value: number) => numberFormatter.format(Math.round(value)), [numberFormatter]);
+  const conversionFormatter = useCallback((value: number) => `${value.toFixed(1)}%`, []);
+  const funnelShades = useMemo(
+    () => data.funnel.map((_, index) => `color-mix(in srgb, var(${accent}) ${78 - index * 10}%, white)`),
+    [accent, data.funnel]
+  );
+  const leadTotal = data.leadSources.reduce((sum, segment) => sum + segment.value, 0) || 1;
+
+  const renderDelta = (delta: number) => {
+    const isPositive = delta > 0;
+    const isNegative = delta < 0;
+    const tone = isPositive
+      ? 'text-[var(--success-600)]'
+      : isNegative
+      ? 'text-[var(--danger-600)]'
+      : 'text-[var(--neutral-600,#5e6673)]';
+    const Icon = isPositive ? ArrowUpRight : isNegative ? ArrowDownRight : Minus;
+    const label = `${delta > 0 ? '+' : ''}${delta.toFixed(1)}%`;
+    return (
+      <span className={cn('inline-flex items-center gap-1 text-[12px] font-semibold', tone)}>
+        <Icon className="h-3.5 w-3.5" aria-hidden />
+        {label}
+      </span>
+    );
+  };
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="corporate-panel" role="tabpanel" aria-labelledby="corporate">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Growth marketing & pipeline analytics"
-          subtitle="Corporate analytics"
-          accent={accent}
+    <section className="space-y-8" id="corporate-panel" role="tabpanel" aria-labelledby="corporate">
+      <div className="rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-s1)] p-6 shadow-sm">
+        <div className="grid grid-cols-12 items-center gap-6">
+          <div className="col-span-12 lg:col-span-4 space-y-1">
+            <h2 className="text-[24px] font-semibold text-[var(--neutral-900,#0b0d12)]">Corporate Analytics</h2>
+            <p className="text-[13px] text-[var(--neutral-600,#5e6673)]">Growth marketing & pipeline analytics</p>
+          </div>
+          <div className="col-span-12 lg:col-span-4 flex flex-wrap items-center justify-center gap-2">
+            <FilterChip
+              label={`Source • ${sourceFilters[activeSourceIndex]}`}
+              active
+              icon={<SlidersHorizontal className="h-4 w-4" aria-hidden />}
+              onClick={() =>
+                setActiveSourceIndex((index) => (index + 1) % sourceFilters.length)
+              }
+            />
+            <FilterChip
+              label={`Segment • ${segmentFilters[activeSegmentIndex]}`}
+              active
+              onClick={() =>
+                setActiveSegmentIndex((index) => (index + 1) % segmentFilters.length)
+              }
+            />
+          </div>
+          <div className="col-span-12 lg:col-span-4 flex flex-wrap items-center justify-end gap-3">
+            <button
+              type="button"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
+            >
+              <CalendarRange className="h-4 w-4" aria-hidden />
+              Last 8 weeks
+            </button>
+          </div>
+        </div>
+        <div
+          className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-[var(--surface-border)] to-transparent"
+          aria-hidden
         />
       </div>
 
-      <div className="col-span-12 lg:col-span-7 space-y-6">
-        <ChartCard
-          id="corporate-funnel"
-          title="Conversion funnel"
-          description="Visitors → MQL → SQL → Opportunities → Closed"
-          rows={funnelRows}
-          columns={[
-            { key: 'stage', label: 'Stage' },
-            { key: 'count', label: 'Volume', align: 'right' },
-            { key: 'conversion', label: 'Conversion', align: 'right' },
-            { key: 'delta', label: 'Δ', align: 'right' },
-          ]}
-          tone="accent"
-        >
-          <ResponsiveContainer height={320}>
-            <BarChart data={data.funnel} layout="vertical" margin={{ left: 80 }}>
-              <CartesianGrid horizontal={false} stroke="rgba(148, 163, 184, 0.25)" />
-              <XAxis type="number" hide />
-              <YAxis dataKey="stage" type="category" tickLine={false} axisLine={false} width={200} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Bar dataKey="count" fill="var(--vertical-corporate)" radius={[12, 12, 12, 12]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
+      <KPIBand metrics={data.metrics} accentToken={accent} />
 
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Executive insights">
-          <div className="flex items-center justify-between">
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          className="col-span-12 xl:col-span-7 flex flex-col gap-6 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm"
+          padding="lg"
+          role="region"
+          aria-label="Conversion funnel"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h3 className="text-title-sm text-slate-900">Executive insights</h3>
-              <p className="text-xs text-slate-600">Board-ready bullets with context tags.</p>
+              <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">
+                Visitors → MQL → SQL → Opportunities → Closed
+              </p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Conversion funnel</h3>
             </div>
             <Check className="h-5 w-5 text-[var(--success-600)]" aria-hidden />
           </div>
-          <ul className="mt-4 space-y-3">
-            {data.insights.map((insight) => (
-              <li key={insight.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <p className="text-sm font-semibold text-slate-900">{insight.headline}</p>
-                <p className="mt-1 text-xs text-slate-600">{insight.detail}</p>
-              </li>
+          <div className="space-y-4">
+            {data.funnel.map((stage, index) => (
+              <div
+                key={stage.id}
+                className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-4 rounded-[18px] border border-[var(--surface-border)] bg-white/75 p-4"
+                style={{ animationDelay: `${index * 120}ms` }}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-24 text-[13px] font-medium text-[var(--neutral-700,#384150)]">
+                    {stage.stage}
+                  </div>
+                  <div className="relative h-3 w-full overflow-hidden rounded-full bg-[rgba(148,163,184,0.16)]">
+                    <span
+                      className="absolute inset-y-0 left-0 rounded-full"
+                      style={{
+                        width: `${(stage.count / maxFunnelVolume) * 100}%`,
+                        background: funnelShades[index] ?? `var(${accent})`,
+                        transition: prefersReducedMotion ? undefined : 'width 0.32s cubic-bezier(0.2,0.8,0.2,1)',
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="text-right text-[16px] font-semibold text-[var(--neutral-900,#0b0d12)]">
+                  <AnimatedCounter
+                    id={`${stage.id}-volume`}
+                    value={stage.count}
+                    formatter={countFormatter}
+                    delay={index * 240}
+                  />
+                </div>
+                <div className="flex flex-col items-end gap-1 text-right">
+                  <AnimatedCounter
+                    id={`${stage.id}-conversion`}
+                    value={stage.conversionRate}
+                    formatter={conversionFormatter}
+                    delay={index * 240}
+                  />
+                  {renderDelta(stage.delta)}
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
+        </Card>
+
+        <Card
+          className="col-span-12 xl:col-span-5 flex flex-col gap-6 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm"
+          padding="lg"
+          role="region"
+          aria-label="Lead source mix"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">
+                Channel performance snapshot
+              </p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Lead source mix</h3>
+            </div>
+          </div>
+          <div className="flex flex-col gap-6 lg:flex-row">
+            <div className="mx-auto h-[220px] w-[220px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={data.leadSources}
+                    dataKey="value"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={70}
+                    outerRadius={100}
+                    paddingAngle={3}
+                    isAnimationActive={!prefersReducedMotion}
+                    animationDuration={320}
+                  >
+                    {data.leadSources.map((source) => (
+                      <Cell key={source.id} fill={source.color} stroke="var(--surface-s0)" strokeWidth={2} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: number, name: string) => [
+                      `${Math.round(((value as number) / leadTotal) * 100)}%`,
+                      name,
+                    ]}
+                    contentStyle={{ borderRadius: 14, border: '1px solid var(--surface-border)' }}
+                    animationDuration={prefersReducedMotion ? 0 : 120}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex flex-1 flex-col justify-center gap-3">
+              {data.leadSources.map((source) => (
+                <div
+                  key={source.id}
+                  className="flex items-center justify-between gap-4 whitespace-nowrap text-[13px] text-[var(--neutral-700,#384150)]"
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="h-2.5 w-8 rounded-full"
+                      style={{ background: source.color }}
+                      aria-hidden
+                    />
+                    <span>{source.label}</span>
+                  </div>
+                  <span className="font-semibold text-[var(--neutral-900,#0b0d12)]">
+                    {Math.round((source.value / leadTotal) * 100)}%
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
-        <ChartCard
-          id="corporate-leads"
-          title="Lead source mix"
-          description="Colorblind-safe mix with accessible legend"
-          rows={sourceRows}
-          columns={[
-            { key: 'source', label: 'Source' },
-            { key: 'share', label: 'Share', align: 'right' },
-          ]}
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          className="col-span-12 xl:col-span-7 flex flex-col gap-6 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm"
+          padding="lg"
+          role="region"
+          aria-label="Pipeline velocity"
         >
-          <ResponsiveContainer height={260}>
-            <PieChart>
-              <Pie dataKey="value" data={data.leadSources} innerRadius={70} outerRadius={110} paddingAngle={2}>
-                {data.leadSources.map((source) => (
-                  <Cell key={source.id} fill={source.color} stroke="#1f2937" strokeWidth={1.4} />
-                ))}
-              </Pie>
-              <Legend verticalAlign="bottom" height={60} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartCard>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">
+                Weekly conversion pace
+              </p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Pipeline velocity</h3>
+            </div>
+            <TrendingUp className="h-5 w-5 text-[var(--neutral-500,#5e6673)]" aria-hidden />
+          </div>
+          <div className="h-[260px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={data.velocityTrend} margin={{ left: 0, right: 20 }}>
+                <defs>
+                  <linearGradient id={`${velocityGradientId}-fill`} x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stopColor={`var(${accent})`} stopOpacity={0.35} />
+                    <stop offset="100%" stopColor={`var(${accent})`} stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid stroke="rgba(94,102,115,0.18)" vertical={false} />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={12} />
+                <YAxis tickLine={false} axisLine={false} fontSize={12} width={36} />
+                <Tooltip
+                  contentStyle={{ borderRadius: 14, border: '1px solid var(--surface-border)' }}
+                  formatter={(value: number, name: string) => [
+                    `${Math.round(value as number)} deals`,
+                    name === 'value' ? 'Velocity' : 'Target',
+                  ]}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke={`var(${accent})`}
+                  strokeWidth={2}
+                  fill={`url(#${velocityGradientId}-fill)`}
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={360}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="secondary"
+                  stroke="rgba(94,102,115,0.6)"
+                  strokeDasharray="6 6"
+                  strokeWidth={2}
+                  dot={false}
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={360}
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
 
-        <AutomationList items={data.automation} />
+        <Card
+          className="col-span-12 xl:col-span-5 flex flex-col gap-6 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm"
+          padding="lg"
+          role="region"
+          aria-label="CAC and payback snapshot"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">
+                Efficiency highlights
+              </p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">
+                CAC & payback snapshot
+              </h3>
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {data.cacSnapshot.map((metric) => {
+              const Icon = metric.trend === 'down' ? ArrowDownRight : metric.trend === 'up' ? ArrowUpRight : Minus;
+              const tone =
+                metric.trend === 'down'
+                  ? 'text-[var(--success-600)]'
+                  : metric.trend === 'up'
+                  ? 'text-[var(--danger-600)]'
+                  : 'text-[var(--neutral-600,#5e6673)]';
+              return (
+                <div
+                  key={metric.id}
+                  className="rounded-2xl border border-[var(--surface-border)] bg-white/80 p-4"
+                >
+                  <p className="text-[12px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">
+                    {metric.label}
+                  </p>
+                  <p className="mt-2 text-[20px] font-semibold text-[var(--neutral-900,#0b0d12)]">
+                    {metric.value}
+                  </p>
+                  <div className={cn('mt-2 inline-flex items-center gap-1 text-[12px] font-semibold', tone)}>
+                    <Icon className="h-3.5 w-3.5" aria-hidden />
+                    {metric.change != null
+                      ? `${metric.change > 0 ? '+' : ''}${metric.change.toFixed(1)}%`
+                      : 'Stable'}
+                  </div>
+                  {metric.description ? (
+                    <p className="mt-1 text-[12px] text-[var(--neutral-600,#5e6673)]">{metric.description}</p>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
       </div>
-    </div>
+
+      <div
+        className="rounded-2xl border border-[color-mix(in srgb,var(--surface-border) 70%,transparent)] bg-[color-mix(in srgb,var(--surface-s1) 70%,var(--surface-s0))] p-6"
+        role="region"
+        aria-label="Executive insights"
+      >
+        <div className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-600,#5e6673)]">
+          <Check className="h-4 w-4 text-[var(--success-600)]" aria-hidden /> Executive insights
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-3">
+          {data.insights.map((insight, index) => (
+            <article
+              key={insight.id}
+              className="rounded-2xl border border-[var(--surface-border)] p-4 shadow-sm"
+              style={{ background: `color-mix(in srgb, var(${accent}) ${10 + index * 4}%, white)` }}
+            >
+              <p className="text-[14px] font-semibold text-[var(--neutral-900,#0b0d12)]">{insight.headline}</p>
+              <p className="mt-1 text-[12px] text-[var(--neutral-700,#384150)]">{insight.detail}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <AutomationSummaryGrid items={data.automation} accentToken={accent} layout="two-column" />
+    </section>
   );
 }
 
@@ -947,107 +1348,285 @@ function CustomAppModule({
   data: PortfolioDashboardResponse['customApp'];
   accent: string;
 }) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const teamFilters = ['All teams', 'Platform', 'Growth', 'Enablement'];
+  const projectFilters = ['All projects', 'Automation hub', 'AI workspace'];
+  const [activeTeamIndex, setActiveTeamIndex] = useState(0);
+  const [activeProjectIndex, setActiveProjectIndex] = useState(0);
+  const throughputGradientId = useId();
+
   return (
-    <div className="grid grid-cols-12 gap-6" id="customApp-panel" role="tabpanel" aria-labelledby="customApp">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Productivity suite & automation"
-          subtitle="Custom web app"
-          accent={accent}
+    <section className="space-y-8" id="customApp-panel" role="tabpanel" aria-labelledby="customApp">
+      <div className="rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-s1)] p-6 shadow-sm">
+        <div className="grid grid-cols-12 items-center gap-6">
+          <div className="col-span-12 lg:col-span-4 space-y-1">
+            <h2 className="text-[24px] font-semibold text-[var(--neutral-900,#0b0d12)]">Custom Web App</h2>
+            <p className="text-[13px] text-[var(--neutral-600,#5e6673)]">Productivity suite & automation</p>
+          </div>
+          <div className="col-span-12 lg:col-span-4 flex flex-wrap items-center justify-center gap-2">
+            <FilterChip
+              label={`Team • ${teamFilters[activeTeamIndex]}`}
+              active
+              icon={<SlidersHorizontal className="h-4 w-4" aria-hidden />}
+              onClick={() =>
+                setActiveTeamIndex((index) => (index + 1) % teamFilters.length)
+              }
+            />
+            <FilterChip
+              label={`Project • ${projectFilters[activeProjectIndex]}`}
+              active
+              onClick={() =>
+                setActiveProjectIndex((index) => (index + 1) % projectFilters.length)
+              }
+            />
+          </div>
+          <div className="col-span-12 lg:col-span-4 flex flex-wrap items-center justify-end gap-3">
+            <button
+              type="button"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
+            >
+              <CalendarRange className="h-4 w-4" aria-hidden />
+              Current sprint
+            </button>
+          </div>
+        </div>
+        <div
+          className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-[var(--surface-border)] to-transparent"
+          aria-hidden
         />
       </div>
 
-      <div className="col-span-12 xl:col-span-7">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Kanban delivery board">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Kanban delivery board</h3>
-              <p className="text-xs text-slate-600">
-                Keyboard accessible DnD — Space to lift, arrows to move, Enter to drop.
-              </p>
-            </div>
-          </div>
-          <div className="mt-4 grid gap-4 overflow-x-auto pb-2 sm:grid-cols-2 xl:grid-cols-4">
-            {data.kanban.map((lane) => (
-              <div key={lane.id} className="rounded-[18px] border border-[var(--surface-border)] bg-[var(--surface-s1)] p-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-slate-900">{lane.title}</h4>
-                  <StatusChip label={lane.badge} tone="info" />
-                </div>
-                <ul className="mt-3 space-y-3">
-                  {lane.tasks.map((task) => (
-                    <li key={task.id} className="rounded-[16px] border border-[var(--surface-border)] bg-white/80 p-3 shadow-sm">
-                      <p className="text-sm font-semibold text-slate-900">{task.title}</p>
-                      <p className="mt-1 text-xs text-slate-500">Owner: {task.owner}</p>
-                      <p className="text-xs text-slate-500">Due {task.due}</p>
-                      {task.automation ? (
-                        <p className="mt-1 text-[11px] uppercase tracking-[0.08em] text-[var(--primary-600)]">
-                          {task.automation}
-                        </p>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </Card>
-      </div>
+      <KPIBand metrics={data.metrics} accentToken={accent} />
 
-      <div className="col-span-12 xl:col-span-5 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Idea backlog">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Idea backlog intake</h3>
-              <p className="text-xs text-slate-600">Routing rules auto-tag and assign backlog ideas.</p>
-            </div>
-          </div>
-          <ul className="mt-4 space-y-3">
-            {data.backlogIdeas.map((idea) => (
-              <li key={idea} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3 text-sm text-slate-700">
-                {idea}
-              </li>
-            ))}
-          </ul>
-        </Card>
-
-        <ChartCard
-          id="custom-workload"
-          title="Workload distribution"
-          description="Task load vs capacity"
-          rows={data.workloadDistribution.map((point) => ({ owner: point.label, tasks: point.value, capacity: point.secondary }))}
-          columns={[
-            { key: 'owner', label: 'Owner' },
-            { key: 'tasks', label: 'Tasks', align: 'right' },
-            { key: 'capacity', label: 'Capacity', align: 'right' },
-          ]}
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          className="col-span-12 xl:col-span-7 flex flex-col gap-6 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm"
+          padding="lg"
+          role="region"
+          aria-label="Kanban delivery board"
         >
-          <ResponsiveContainer height={220}>
-            <BarChart data={data.workloadDistribution}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Bar dataKey="secondary" stackId="a" fill="rgba(148, 163, 184, 0.2)" radius={[12, 12, 12, 12]} />
-              <Bar dataKey="value" stackId="a" fill="var(--vertical-custom)" radius={[12, 12, 12, 12]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">
+                Backlog → In progress → Review → Shipped
+              </p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Kanban delivery board</h3>
+            </div>
+          </div>
+          <div className="-mx-1 overflow-x-auto pb-2">
+            <div className="flex min-w-[720px] gap-4 px-1">
+              {data.kanban.map((lane, laneIndex) => (
+                <div
+                  key={lane.id}
+                  className="kanban-column flex w-full max-w-[260px] flex-col rounded-2xl border border-[var(--surface-border)] bg-white/80"
+                  style={{ background: `color-mix(in srgb, var(${accent}) ${6 + laneIndex * 4}%, white)` }}
+                >
+                  <div className="flex items-center justify-between gap-3 rounded-t-2xl bg-white/70 px-4 py-3">
+                    <h4 className="text-[14px] font-semibold text-[var(--neutral-900,#0b0d12)]">{lane.title}</h4>
+                    <StatusChip label={lane.badge} tone="info" />
+                  </div>
+                  <ul className="flex flex-1 flex-col gap-3 px-4 py-4">
+                    {lane.tasks.map((task) => (
+                      <li
+                        key={task.id}
+                        className="kanban-card rounded-2xl border border-[var(--surface-border)] bg-white/95 p-4 shadow-sm transition"
+                      >
+                        <p className="text-[14px] font-semibold text-[var(--neutral-900,#0b0d12)]">{task.title}</p>
+                        <div className="mt-2 flex items-center justify-between text-[12px] text-[var(--neutral-600,#5e6673)]">
+                          <span>Owner: {task.owner}</span>
+                          <span>{task.due}</span>
+                        </div>
+                        <div className="mt-2 flex items-center justify-between text-[11px] uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+                          <span>Priority: {task.priority}</span>
+                          {task.automation ? (
+                            <span className="text-[var(--primary-600)]">{task.automation}</span>
+                          ) : null}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
+
+        <Card
+          className="col-span-12 xl:col-span-5 flex flex-col gap-6 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm"
+          padding="lg"
+          role="region"
+          aria-label="Workload distribution"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">
+                Owners vs capacity
+              </p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Workload distribution</h3>
+            </div>
+            <BarChart3 className="h-5 w-5 text-[var(--neutral-500,#5e6673)]" aria-hidden />
+          </div>
+          <div className="h-[240px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={data.workloadDistribution}>
+                <CartesianGrid stroke="rgba(94,102,115,0.18)" vertical={false} />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={12} />
+                <YAxis tickLine={false} axisLine={false} fontSize={12} width={32} />
+                <Tooltip
+                  contentStyle={{ borderRadius: 14, border: '1px solid var(--surface-border)' }}
+                  formatter={(value: number, name: string) => [
+                    `${Math.round(value as number)} tasks`,
+                    name === 'value' ? 'Load' : 'Capacity',
+                  ]}
+                />
+                <Bar
+                  dataKey="secondary"
+                  barSize={20}
+                  radius={[10, 10, 10, 10]}
+                  fill="rgba(148,163,184,0.35)"
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={320}
+                />
+                <Bar
+                  dataKey="value"
+                  barSize={20}
+                  radius={[10, 10, 10, 10]}
+                  fill={`var(${accent})`}
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={360}
+                  animationEasing="cubic-bezier(0.2,0.8,0.2,1)"
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6">
-        <AutomationBuilder
-          verticalAccent={accent}
-          onCreate={async () => {
-            await new Promise((resolve) => setTimeout(resolve, 700));
-          }}
-        />
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          className="col-span-12 xl:col-span-7 flex flex-col gap-6 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm"
+          padding="lg"
+          role="region"
+          aria-label="Idea backlog intake"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">
+                Intake triage queue
+              </p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Idea backlog intake</h3>
+            </div>
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-[var(--surface-border)]">
+            <div className="max-h-[320px] overflow-auto">
+              <table className="min-w-full" aria-label="Idea backlog table">
+                <thead className="sticky top-0 z-10 bg-[var(--surface-s1)] text-[12px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Idea</th>
+                    <th className="px-4 py-3 text-left">Owner</th>
+                    <th className="px-4 py-3 text-left">Status</th>
+                    <th className="px-4 py-3 text-right">Priority</th>
+                  </tr>
+                </thead>
+                <tbody className="text-[13px] text-[var(--neutral-700,#384150)]">
+                  {data.backlog.map((entry, index) => (
+                    <tr
+                      key={entry.id}
+                      className="data-row transition"
+                      style={{ '--row-accent': `var(${accent})` } as CSSProperties}
+                    >
+                      <td className={cn('px-4 py-[11px]', index % 2 === 0 ? 'bg-white/90' : 'bg-[var(--surface-s1)]/90')}>
+                        {entry.idea}
+                      </td>
+                      <td className={cn('px-4 py-[11px]', index % 2 === 0 ? 'bg-white/90' : 'bg-[var(--surface-s1)]/90')}>
+                        {entry.owner}
+                      </td>
+                      <td className={cn('px-4 py-[11px]', index % 2 === 0 ? 'bg-white/90' : 'bg-[var(--surface-s1)]/90')}>
+                        {entry.status}
+                      </td>
+                      <td
+                        className={cn(
+                          'px-4 py-[11px] text-right font-semibold',
+                          index % 2 === 0 ? 'bg-white/90' : 'bg-[var(--surface-s1)]/90'
+                        )}
+                      >
+                        {entry.priority}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="border-t border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-2 text-right text-[11px] uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+              Scroll for more
+            </div>
+          </div>
+        </Card>
+
+        <Card
+          className="col-span-12 xl:col-span-5 flex flex-col gap-6 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm"
+          padding="lg"
+          role="region"
+          aria-label="Throughput trend"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">
+                Weekly completion trend
+              </p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Throughput trend</h3>
+            </div>
+            <Timer className="h-5 w-5 text-[var(--neutral-500,#5e6673)]" aria-hidden />
+          </div>
+          <div className="h-[240px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={data.throughputTrend}>
+                <defs>
+                  <linearGradient id={`${throughputGradientId}-area`} x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stopColor={`var(${accent})`} stopOpacity={0.32} />
+                    <stop offset="100%" stopColor={`var(${accent})`} stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid stroke="rgba(94,102,115,0.18)" vertical={false} />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={12} />
+                <YAxis tickLine={false} axisLine={false} fontSize={12} width={32} />
+                <Tooltip
+                  contentStyle={{ borderRadius: 14, border: '1px solid var(--surface-border)' }}
+                  formatter={(value: number) => [`${Math.round(value as number)} story points`, 'Throughput']}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke={`var(${accent})`}
+                  strokeWidth={2}
+                  fill={`url(#${throughputGradientId}-area)`}
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={360}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="secondary"
+                  stroke="rgba(94,102,115,0.6)"
+                  strokeDasharray="4 4"
+                  dot={false}
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={360}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6">
-        <AutomationList items={data.automation} />
-      </div>
-    </div>
+      <AutomationSummaryGrid items={data.automation} accentToken={accent} layout="three-column" />
+
+      <AutomationBuilder
+        verticalAccent={accent}
+        onCreate={async () => {
+          await new Promise((resolve) => setTimeout(resolve, 700));
+        }}
+      />
+    </section>
   );
 }
 
@@ -1475,40 +2054,7 @@ function getModuleMetrics(
         data.specialized.healthcare.metrics[1],
       ];
     case 'customApp':
-      return [
-        {
-          id: 'throughput',
-          label: 'Sprint throughput',
-          value: '94%',
-          change: 2.1,
-          trend: 'up',
-          description: 'Tickets cleared last sprint',
-        },
-        {
-          id: 'ideas',
-          label: 'Ideas triaged',
-          value: '128',
-          change: 5.4,
-          trend: 'up',
-          description: 'Last 30 days',
-        },
-        {
-          id: 'automation-coverage',
-          label: 'Automation coverage',
-          value: '76%',
-          change: 3.2,
-          trend: 'up',
-          description: 'Tasks automated',
-        },
-        {
-          id: 'focus-time',
-          label: 'Focus time saved',
-          value: '312 hrs',
-          change: 7.8,
-          trend: 'up',
-          description: 'Quarter to date',
-        },
-      ];
+      return data.customApp.metrics;
     default:
       return data.saas.metrics;
   }
@@ -1568,6 +2114,8 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
   const accent = accentTokens[selectedModule];
   const moduleMetrics = data ? getModuleMetrics(selectedModule, data) : [];
   const isPrimaryDashboard = selectedModule === 'saas' || selectedModule === 'commerce';
+  const showGlobalModuleKpis =
+    !isPrimaryDashboard && selectedModule !== 'corporate' && selectedModule !== 'customApp';
 
   const moduleContent = useMemo(() => {
     if (!data) return null;
@@ -1680,7 +2228,7 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
       </header>
 
       <main className="mx-auto max-w-7xl space-y-8 px-6 py-10">
-        {!isPrimaryDashboard ? <KPIBand metrics={moduleMetrics} accentToken={accent} /> : null}
+        {showGlobalModuleKpis ? <KPIBand metrics={moduleMetrics} accentToken={accent} /> : null}
         <div className="rounded-2xl border border-dashed border-[var(--surface-border)] bg-[var(--surface-s1)] px-6 py-4 text-[12px] text-[var(--neutral-600,#5e6673)]">
           Global filters persist via query params. React Query hydrates instantly, while Zustand keeps inter-module state fast.
         </div>
