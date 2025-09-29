@@ -16,8 +16,8 @@ const trendCopy: Record<MetricTrend, string> = {
 
 export function KPIBand({ metrics, accentToken, onInspect }: KPIBandProps) {
   return (
-    <div className="-mx-4 flex snap-band gap-4 overflow-x-auto px-4 pb-2 pt-1 sm:mx-0 sm:px-0">
-      {metrics.map((metric) => {
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {metrics.map((metric, index) => {
         const Icon =
           metric.trend === 'up' ? ArrowUpRight : metric.trend === 'down' ? ArrowDownRight : Minus;
         const tone =
@@ -31,34 +31,41 @@ export function KPIBand({ metrics, accentToken, onInspect }: KPIBandProps) {
             key={metric.id}
             type="button"
             onClick={() => onInspect?.(metric)}
-            className="snap-item min-w-[260px] flex-1 rounded-[20px] border border-[color:var(--surface-border)] bg-[var(--surface-s1)] p-5 text-left shadow-sm transition focus-visible:focus-ring"
-            style={{
-              boxShadow: '0 18px 36px rgba(79, 70, 229, 0.08)',
-            }}
+            className="group relative flex min-h-[152px] flex-col justify-between gap-4 rounded-xl border border-[var(--surface-border)] bg-[var(--surface-s1)] p-5 text-left shadow-sm transition focus-visible:focus-ring motion-safe:animate-kpi-card"
+            style={{ animationDelay: `${index * 80}ms` }}
           >
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[13px] font-medium uppercase tracking-[0.18em] text-slate-500">
                 {metric.label}
               </p>
               {metric.trend ? (
                 <span
-                  className={cn('inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold', tone)}
+                  className={cn(
+                    'inline-flex items-center gap-1 rounded-full px-2 py-[6px] text-[11px] font-semibold transition',
+                    tone,
+                  )}
                   aria-label={trendCopy[metric.trend]}
                 >
                   <Icon className="h-3.5 w-3.5" aria-hidden />
-                  {metric.change != null ? `${metric.change > 0 ? '+' : ''}${metric.change.toFixed(1)}%` : trendCopy[metric.trend]}
+                  {metric.change != null
+                    ? `${metric.change > 0 ? '+' : ''}${metric.change.toFixed(1)}%`
+                    : trendCopy[metric.trend]}
                 </span>
               ) : null}
             </div>
             <p
-              className="kpi-value mt-3 text-3xl font-semibold"
+              className="kpi-value text-[28px] font-bold leading-[32px] tracking-[-0.01em] text-[var(--text-primary)]"
               style={{ color: `var(${accentToken})` }}
             >
               {metric.value}
             </p>
             {metric.description ? (
-              <p className="mt-2 text-xs text-slate-600">{metric.description}</p>
+              <p className="text-xs text-[var(--text-secondary)]">{metric.description}</p>
             ) : null}
+            <span
+              className="pointer-events-none absolute inset-x-5 bottom-5 h-0.5 origin-left scale-x-0 bg-[var(--surface-border)] transition group-hover:scale-x-100"
+              aria-hidden
+            />
           </button>
         );
       })}

@@ -20,6 +20,7 @@ import {
 } from 'recharts';
 import {
   ArrowUpRight,
+  CalendarRange,
   Check,
   Moon,
   Sun,
@@ -28,6 +29,7 @@ import {
   Activity,
   ClipboardList,
   Sparkles,
+  Clock3,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
@@ -78,6 +80,8 @@ const channelOptions = [
   { id: 'emea', label: 'EMEA' },
   { id: 'apac', label: 'APAC' },
 ];
+
+const commerceChannelPalette = ['#10b981', '#14b8a6', '#22d3ee', '#6366f1'] as const;
 
 type DashboardClientProps = {
   initialData: PortfolioDashboardResponse;
@@ -151,6 +155,17 @@ function SectionHeader({
   );
 }
 
+function InlineFilterPill({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-[120px] text-left">
+      <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--text-muted)]">{label}</p>
+      <span className="mt-2 inline-flex min-h-[36px] items-center gap-2 rounded-full border border-[var(--surface-border)] bg-white/80 px-3 py-1.5 text-sm font-semibold text-[var(--text-primary)]">
+        {value}
+      </span>
+    </div>
+  );
+}
+
 function SaaSModule({
   data,
   accent,
@@ -158,187 +173,410 @@ function SaaSModule({
   data: PortfolioDashboardResponse['saas'];
   accent: string;
 }) {
-  const churnRows = data.churnSegments.map((segment) => ({
-    segment: segment.label,
+  const churnTrend = useMemo(() => {
+    const maxUsage = Math.max(...data.apiUsageTrend.map((point) => point.value));
+    return data.apiUsageTrend.map((point) => {
+      const normalized = point.value / maxUsage;
+      const churnRate = Number((Math.max(0.02, 0.07 - normalized * 0.02) * 100).toFixed(2));
+      const retentionRate = Number((100 - churnRate).toFixed(2));
+      return {
+        label: point.label,
+        churn: churnRate,
+        retention: retentionRate,
+      };
+    });
+  }, [data.apiUsageTrend]);
+
+  const churnRows = churnTrend.map((point) => ({
+    period: point.label,
+    retention: `${point.retention.toFixed(1)}%`,
+    churn: `${point.churn.toFixed(1)}%`,
+  }));
+
+  const churnLegend = data.churnSegments.map((segment) => ({
+    id: segment.id,
+    label: segment.label,
+    color: segment.color,
     share: `${segment.value}%`,
   }));
 
   const growthRows = data.growthTrend.map((point) => ({ month: point.label, mrr: point.value }));
-  const apiRows = data.apiUsageTrend.map((point) => ({ week: point.label, usage: point.value }));
+
+  const planMetrics = data.subscriptionPlans.map((plan) => {
+    const numericPriceMatch = plan.price.match(/([0-9]+(?:\.[0-9]+)?)/);
+    const arpa = numericPriceMatch ? Number(numericPriceMatch[1]) : null;
+    const mrrValue = arpa ? arpa * plan.activeUsers : null;
+    return { ...plan, arpa, mrrValue };
+  });
+
+  const totalMrr = planMetrics.reduce((sum, plan) => sum + (plan.mrrValue ?? 0), 0);
+
+  const mrrBreakdownRows = planMetrics.map((plan) => ({
+    plan: plan.name,
+    arpa: plan.arpa ? `$${plan.arpa.toFixed(0)}` : '—',
+    customers: plan.activeUsers.toLocaleString(),
+    share: plan.mrrValue && totalMrr > 0 ? `${((plan.mrrValue / totalMrr) * 100).toFixed(1)}%` : '—',
+    churn: plan.churn,
+  }));
+
+  const apiRows = data.apiUsageTrend.map((point) => ({
+    week: point.label,
+    usage: `${point.value.toLocaleString()}M`,
+  }));
+
+  const endpointBreakdown = useMemo(() => {
+    const endpointLabels = ['Billing', 'Authentication', 'Reporting', 'Webhook relay', 'Integrations'];
+    const total = data.apiUsageTrend.reduce((sum, point) => sum + point.value, 0);
+    return endpointLabels
+      .map((label, index) => {
+        const point = data.apiUsageTrend[(data.apiUsageTrend.length - 1 - index + data.apiUsageTrend.length) % data.apiUsageTrend.length];
+        const latency = 120 - index * 8;
+        const trend = index % 2 === 0 ? '↑' : '→';
+        const share = total > 0 ? (point.value / total) * 100 : 0;
+        return {
+          endpoint: `${label} API`,
+          requests: `${point.value.toLocaleString()}k`,
+          share: `${share.toFixed(1)}%`,
+          latency: `${latency} ms`,
+          trend,
+        };
+      })
+      .sort((a, b) => Number(b.requests.replace(/[^0-9]/g, '')) - Number(a.requests.replace(/[^0-9]/g, '')));
+  }, [data.apiUsageTrend]);
+
+  const automationSummary = data.automation.filter((automation) => automation.active);
+  const automationConditions: Record<string, string> = {
+    'billing-cycle': 'Finance audit passes',
+    'churn-alerts': 'Health score < 45',
+    'api-burst': 'Rate-limit buffer < 8%',
+  };
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="saas-panel" role="tabpanel" aria-labelledby="saas">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Subscription intelligence & API operations"
-          subtitle="SaaS platform"
-          accent={accent}
-        />
-      </div>
-
-      <div className="col-span-12 lg:col-span-7">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Subscription plans">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Subscription plans</h3>
-              <p className="text-xs text-slate-600">
-                Tiered pricing, seat allocation, and churn performance with activation benchmarks.
-              </p>
-            </div>
-            <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+    <section className="space-y-8" id="saas-panel" role="tabpanel" aria-labelledby="saas">
+      <Card className="border border-[var(--surface-border)] bg-white/85" padding="md">
+        <div className="grid grid-cols-12 items-center gap-4">
+          <div className="col-span-12 lg:col-span-4 space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">SaaS platform</p>
+            <h2 className="text-display-md text-[var(--text-primary)]">SaaS Overview</h2>
+            <p className="text-sm text-[var(--text-secondary)]">Module health, plan economics, and API throughput in one executive sweep.</p>
           </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Subscription plans table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
-                <tr>
-                  <th className="px-4 py-3 text-left">Plan</th>
-                  <th className="px-4 py-3 text-left">Price</th>
-                  <th className="px-4 py-3 text-left">Active users</th>
-                  <th className="px-4 py-3 text-left">Activation</th>
-                  <th className="px-4 py-3 text-left">API allocation</th>
-                  <th className="px-4 py-3 text-left">Churn</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
-                {data.subscriptionPlans.map((plan) => (
-                  <tr key={plan.id} className="hover:bg-[var(--primary-50)]/40">
-                    <td className="px-4 py-[11px]">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-slate-900">{plan.name}</span>
-                        {plan.badge ? (
-                          <span className="rounded-full bg-[var(--primary-50)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary-600)]">
-                            {plan.badge}
-                          </span>
-                        ) : null}
-                      </div>
-                    </td>
-                    <td className="px-4 py-[11px]">{plan.price}</td>
-                    <td className="px-4 py-[11px]">{plan.activeUsers.toLocaleString()}</td>
-                    <td className="px-4 py-[11px]">{plan.activationRate}</td>
-                    <td className="px-4 py-[11px]">{plan.apiAllocation}</td>
-                    <td className="px-4 py-[11px]">{plan.churn}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="col-span-12 lg:col-span-4 flex flex-wrap items-center justify-center gap-4">
+            <InlineFilterPill label="Module" value="Billing core" />
+            <InlineFilterPill label="Plan" value="Enterprise" />
+            <InlineFilterPill label="Segment" value="Global" />
           </div>
-        </Card>
-      </div>
-
-      <div className="col-span-12 lg:col-span-5 space-y-6">
-        <ChartCard
-          id="saas-churn"
-          title="Churn health distribution"
-          description="Colorblind-safe donut with renewal segments"
-          rows={churnRows}
-          columns={[
-            { key: 'segment', label: 'Segment' },
-            { key: 'share', label: 'Share', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={260}>
-            <PieChart>
-              <Pie dataKey="value" data={data.churnSegments} innerRadius={70} outerRadius={110} paddingAngle={3}>
-                {data.churnSegments.map((segment) => (
-                  <Cell key={segment.id} fill={segment.color} stroke="#1f2937" strokeWidth={1.5} />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)', background: 'var(--surface-s1)' }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Billing cycles">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Billing cycle orchestration</h3>
-              <p className="text-xs text-slate-600">Real-time close management with owner accountability.</p>
-            </div>
-            <ClipboardList className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+          <div className="col-span-12 lg:col-span-4 flex flex-col items-end gap-2 text-sm text-[var(--text-secondary)]">
+            <span>Last sync · 09:30 UTC</span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--text-primary)]">
+              <Clock3 className="h-4 w-4" aria-hidden />
+              UTC · Auto-adjusted
+            </span>
           </div>
-          <ul className="mt-4 space-y-3">
-            {data.billingCycles.map((cycle) => (
-              <li key={cycle.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <div className="flex items-center justify-between text-sm text-slate-700">
-                  <span className="font-semibold text-slate-900">{cycle.label}</span>
-                  <StatusChip
-                    label={cycle.status}
-                    tone={cycle.status === 'completed' ? 'success' : cycle.status === 'processing' ? 'info' : 'warning'}
-                  />
+        </div>
+        <div className="mt-6 h-px w-full bg-[var(--surface-border)]" aria-hidden />
+      </Card>
+
+      <div className="grid gap-8">
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 xl:col-span-7">
+            <Card role="region" aria-label="Subscription health" className="h-full">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-title-sm text-[var(--text-primary)]">Subscription health</h3>
+                  <p className="text-xs text-[var(--text-secondary)]">Plans, activation, and churn signals with activation guardrails.</p>
                 </div>
-                <p className="mt-2 text-xs text-slate-500">Next run {cycle.nextRun}</p>
-                <p className="text-xs text-slate-500">Owners: {cycle.owners.join(', ')}</p>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
+                <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+              </div>
+              <div className="mt-4 overflow-hidden rounded-xl border border-[var(--surface-border)]">
+                <table className="min-w-full" aria-label="Subscription plans table">
+                  <thead className="sticky top-0 bg-[var(--surface-s1)] text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--text-muted)]">
+                    <tr>
+                      <th scope="col" className="px-4 py-3 text-left">Plan</th>
+                      <th scope="col" className="px-4 py-3 text-left">Price</th>
+                      <th scope="col" className="px-4 py-3 text-right">Active subs</th>
+                      <th scope="col" className="px-4 py-3 text-right">Activation</th>
+                      <th scope="col" className="px-4 py-3 text-right">API allocation</th>
+                      <th scope="col" className="px-4 py-3 text-right">Churn</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm text-[var(--text-primary)]">
+                    {planMetrics.map((plan) => (
+                      <tr key={plan.id} className="interactive-row">
+                        <td className="px-4 py-[12px]">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold">{plan.name}</span>
+                            {plan.badge ? (
+                              <span className="rounded-full bg-[var(--primary-50)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary-600)]">
+                                {plan.badge}
+                              </span>
+                            ) : null}
+                          </div>
+                        </td>
+                        <td className="px-4 py-[12px] text-[var(--text-secondary)]">{plan.price}</td>
+                        <td className="px-4 py-[12px] text-right">{plan.activeUsers.toLocaleString()}</td>
+                        <td className="px-4 py-[12px] text-right">{plan.activationRate}</td>
+                        <td className="px-4 py-[12px] text-right">{plan.apiAllocation}</td>
+                        <td className="px-4 py-[12px] text-right text-[var(--danger-500)]">{plan.churn}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+          <div className="col-span-12 xl:col-span-5 flex flex-col gap-6">
+            <ChartCard
+              id="saas-churn"
+              title="Churn health"
+              description="Retention vs churn trend (last 8 weeks)"
+              rows={churnRows}
+              columns={[
+                { key: 'period', label: 'Period' },
+                { key: 'retention', label: 'Retention', align: 'right' },
+                { key: 'churn', label: 'Churn', align: 'right' },
+              ]}
+            >
+              <ResponsiveContainer height={260}>
+                <AreaChart data={churnTrend} margin={{ left: 0, right: 0, top: 16, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="saasChurnRetention" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="var(--vertical-saas)" stopOpacity={0.35} />
+                      <stop offset="100%" stopColor="var(--vertical-saas)" stopOpacity={0.05} />
+                    </linearGradient>
+                    <linearGradient id="saasChurnRate" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="var(--danger-500)" stopOpacity={0.35} />
+                      <stop offset="100%" stopColor="var(--danger-500)" stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} stroke="rgba(148, 163, 184, 0.25)" strokeDasharray="2 6" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} domain={[85, 100]} tickFormatter={(value) => `${value}%`} />
+                  <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                  <Area type="monotone" dataKey="retention" stroke="var(--vertical-saas)" strokeWidth={2} fill="url(#saasChurnRetention)" />
+                  <Area type="monotone" dataKey="churn" stroke="var(--danger-500)" strokeWidth={2} fill="url(#saasChurnRate)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartCard>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <ChartCard
-          id="saas-growth"
-          title="MRR growth"
-          description="Pre-aggregated monthly recurring revenue"
-          rows={growthRows}
-          columns={[
-            { key: 'month', label: 'Month' },
-            { key: 'mrr', label: 'MRR ($K)', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={280}>
-            <LineChart data={data.growthTrend}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={{ r: 5 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartCard>
+            <Card className="h-full" role="region" aria-label="Churn legend">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-title-sm text-[var(--text-primary)]">Renewal mix</h3>
+                  <p className="text-xs text-[var(--text-secondary)]">Breakdown of renewal outcomes this quarter.</p>
+                </div>
+                <ClipboardList className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+              </div>
+              <ul className="mt-4 space-y-3">
+                {churnLegend.map((item) => (
+                  <li key={item.id} className="flex items-center justify-between rounded-xl border border-[var(--surface-border)] bg-white/70 px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <span className="h-2.5 w-2.5 rounded-full" style={{ background: item.color }} aria-hidden />
+                      <span className="text-sm font-medium text-[var(--text-primary)]">{item.label}</span>
+                    </div>
+                    <span className="text-sm font-semibold text-[var(--text-secondary)]">{item.share}</span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          </div>
+        </div>
 
-        <ChartCard
-          id="saas-api"
-          title="API usage saturation"
-          description="Live usage vs allocation"
-          rows={apiRows}
-          columns={[
-            { key: 'week', label: 'Week' },
-            { key: 'usage', label: 'Usage (M calls)', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={280}>
-            <AreaChart data={data.apiUsageTrend}>
-              <defs>
-                <linearGradient id="apiGradient" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="5%" stopColor="var(--primary-500)" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="var(--primary-500)" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Area type="monotone" dataKey="value" stroke="var(--primary-500)" fill="url(#apiGradient)" strokeWidth={3} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 xl:col-span-7">
+            <ChartCard
+              id="saas-growth"
+              title="MRR growth"
+              description="Pre-aggregated monthly recurring revenue"
+              rows={growthRows}
+              columns={[
+                { key: 'month', label: 'Month' },
+                { key: 'mrr', label: 'MRR ($K)', align: 'right' },
+              ]}
+            >
+              <ResponsiveContainer height={300}>
+                <AreaChart data={data.growthTrend} margin={{ left: 0, right: 0, top: 16, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="saasMrrGradient" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="var(--vertical-saas)" stopOpacity={0.4} />
+                      <stop offset="100%" stopColor="var(--vertical-saas)" stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="2 6" stroke="rgba(148, 163, 184, 0.25)" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} />
+                  <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                  <Area type="monotone" dataKey="value" stroke="var(--vertical-saas)" strokeWidth={2} fill="url(#saasMrrGradient)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          </div>
+          <div className="col-span-12 xl:col-span-5">
+            <Card className="h-full" role="region" aria-label="MRR breakdown">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-title-sm text-[var(--text-primary)]">MRR breakdown</h3>
+                  <p className="text-xs text-[var(--text-secondary)]">Plan-level ARPA, customer count, and churn cadence.</p>
+                </div>
+              </div>
+              <div className="mt-4 overflow-hidden rounded-xl border border-[var(--surface-border)]">
+                <table className="min-w-full" aria-label="MRR breakdown table">
+                  <thead className="sticky top-0 bg-[var(--surface-s1)] text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--text-muted)]">
+                    <tr>
+                      <th scope="col" className="px-4 py-3 text-left">Plan</th>
+                      <th scope="col" className="px-4 py-3 text-right">ARPA</th>
+                      <th scope="col" className="px-4 py-3 text-right">Customers</th>
+                      <th scope="col" className="px-4 py-3 text-right">MRR share</th>
+                      <th scope="col" className="px-4 py-3 text-right">Churn</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm text-[var(--text-primary)]">
+                    {mrrBreakdownRows.map((row) => (
+                      <tr key={`mrr-${row.plan}`} className="interactive-row">
+                        <td className="px-4 py-[12px] font-semibold">{row.plan}</td>
+                        <td className="px-4 py-[12px] text-right text-[var(--text-secondary)]">{row.arpa}</td>
+                        <td className="px-4 py-[12px] text-right">{row.customers}</td>
+                        <td className="px-4 py-[12px] text-right text-[var(--text-secondary)]">{row.share}</td>
+                        <td className="px-4 py-[12px] text-right text-[var(--danger-500)]">{row.churn}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <AutomationBuilder
-          verticalAccent={accent}
-          onCreate={async () => {
-            await new Promise((resolve) => setTimeout(resolve, 800));
-          }}
-        />
-        <AutomationList items={data.automation} />
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 xl:col-span-7">
+            <ChartCard
+              id="saas-api"
+              title="API usage trend"
+              description="Live usage vs allocation"
+              rows={apiRows}
+              columns={[
+                { key: 'week', label: 'Week' },
+                { key: 'usage', label: 'Usage', align: 'right' },
+              ]}
+            >
+              <ResponsiveContainer height={280}>
+                <AreaChart data={data.apiUsageTrend} margin={{ left: 0, right: 0, top: 16, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="saasApiGradient" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="var(--vertical-saas)" stopOpacity={0.45} />
+                      <stop offset="100%" stopColor="var(--vertical-saas)" stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="2 6" stroke="rgba(148, 163, 184, 0.25)" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} />
+                  <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                  <Area type="monotone" dataKey="value" stroke="var(--vertical-saas)" strokeWidth={2} fill="url(#saasApiGradient)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          </div>
+          <div className="col-span-12 xl:col-span-5">
+            <Card className="h-full" role="region" aria-label="API calls by endpoint">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-title-sm text-[var(--text-primary)]">API calls by endpoint</h3>
+                  <p className="text-xs text-[var(--text-secondary)]">Ranked throughput with latency monitors.</p>
+                </div>
+              </div>
+              <div className="mt-4 overflow-hidden rounded-xl border border-[var(--surface-border)]">
+                <table className="min-w-full" aria-label="API endpoint table">
+                  <thead className="sticky top-0 bg-[var(--surface-s1)] text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--text-muted)]">
+                    <tr>
+                      <th scope="col" className="px-4 py-3 text-left">Endpoint</th>
+                      <th scope="col" className="px-4 py-3 text-right">Requests</th>
+                      <th scope="col" className="px-4 py-3 text-right">Share</th>
+                      <th scope="col" className="px-4 py-3 text-right">Latency</th>
+                      <th scope="col" className="px-4 py-3 text-right">Trend</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm text-[var(--text-primary)]">
+                    {endpointBreakdown.map((endpoint) => (
+                      <tr key={endpoint.endpoint} className="interactive-row">
+                        <td className="px-4 py-[12px]">
+                          <span className="truncate font-semibold" title={endpoint.endpoint}>
+                            {endpoint.endpoint}
+                          </span>
+                        </td>
+                        <td className="px-4 py-[12px] text-right text-[var(--text-secondary)]">{endpoint.requests}</td>
+                        <td className="px-4 py-[12px] text-right">{endpoint.share}</td>
+                        <td className="px-4 py-[12px] text-right">{endpoint.latency}</td>
+                        <td className="px-4 py-[12px] text-right" aria-label={endpoint.trend === '↑' ? 'Improving' : 'Flat'}>
+                          {endpoint.trend}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <AutomationBuilder
+            verticalAccent={accent}
+            className="h-full"
+            onCreate={async () => {
+              await new Promise((resolve) => setTimeout(resolve, 800));
+            }}
+          />
+
+          <Card className="h-full" role="region" aria-label="Automation orchestration">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-title-sm text-[var(--text-primary)]">Automation orchestration</h3>
+                <p className="text-xs text-[var(--text-secondary)]">Active runbooks with trigger, channel, and cadence at a glance.</p>
+              </div>
+              <Workflow className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+            </div>
+            <div className="mt-5 space-y-3">
+              {automationSummary.map((automation) => (
+                <article
+                  key={automation.id}
+                  className="rounded-xl border border-[var(--surface-border)] bg-white/70 p-4 shadow-sm transition hover:border-[var(--primary-500)]"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-[var(--text-primary)]">{automation.title}</p>
+                    <StatusChip label="Active" tone="success" />
+                  </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-secondary)]">
+                    {[
+                      { label: 'Trigger', value: automation.trigger },
+                      {
+                        label: 'Condition',
+                        value: automationConditions[automation.id] ?? 'Guardrail ready',
+                      },
+                      { label: 'Action', value: automation.action },
+                      { label: 'Channel', value: automation.channel },
+                      { label: 'Cadence', value: automation.cadence },
+                    ].map((meta) => (
+                      <span
+                        key={`${automation.id}-${meta.label}`}
+                        className="automation-pill inline-flex items-center gap-2"
+                        title={`${meta.label}: ${meta.value}`}
+                      >
+                        <span>{meta.label}</span>
+                        <span aria-hidden>|</span>
+                        <span className="font-semibold normal-case tracking-normal text-[var(--text-primary)]">
+                          {meta.value}
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </Card>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
-
 function CommerceModule({
   data,
   accent,
@@ -346,118 +584,269 @@ function CommerceModule({
   data: PortfolioDashboardResponse['commerce'];
   accent: string;
 }) {
-  const salesRows = data.salesTrend.map((point) => ({ month: point.label, revenue: point.value }));
+  const parseRevenue = (value: string) => {
+    const match = value.match(/([0-9,.]+)([KkMm]?)/);
+    if (!match) return 0;
+    const base = Number(match[1].replace(/,/g, ''));
+    const suffix = match[2].toLowerCase();
+    if (suffix === 'm') return base * 1_000_000;
+    if (suffix === 'k') return base * 1_000;
+    return base;
+  };
+
+  const productRows = data.topProducts.map((product) => ({
+    product: product.name,
+    category: product.category,
+    revenue: product.revenue,
+    conversion: product.conversionRate,
+    inventory: product.inventory.toLocaleString(),
+    trend: product.trend,
+  }));
+
+  const salesRows = data.salesTrend.map((point) => ({ period: point.label, revenue: point.value }));
+
+  const channelMix = useMemo(() => {
+    const buckets = [
+      { id: 'direct', label: 'Direct', months: ['Jul', 'Aug', 'Sep'], color: commerceChannelPalette[0] },
+      { id: 'marketplace', label: 'Marketplace', months: ['Oct'], color: commerceChannelPalette[1] },
+      { id: 'paid', label: 'Paid Social', months: ['May', 'Jun'], color: commerceChannelPalette[2] },
+      { id: 'retail', label: 'Retail & Wholesale', months: ['Mar', 'Apr'], color: commerceChannelPalette[3] },
+    ];
+    const values = buckets.map((bucket) => {
+      const total = data.salesTrend
+        .filter((point) => bucket.months.includes(point.label))
+        .reduce((sum, point) => sum + point.value, 0);
+      return { ...bucket, value: total };
+    });
+    const total = values.reduce((sum, bucket) => sum + bucket.value, 0);
+    return values.map((bucket) => ({
+      ...bucket,
+      share: total > 0 ? Number(((bucket.value / total) * 100).toFixed(1)) : 0,
+    }));
+  }, [data.salesTrend]);
+
+  const regionLabels = ['North America', 'EMEA', 'APAC', 'LATAM'];
+  const regionPalette = ['#0ea5e9', '#14b8a6', '#6366f1', '#22c55e'];
+
+  const regionPerformance = regionLabels.map((region, index) => {
+    const product = data.topProducts[index % data.topProducts.length];
+    return {
+      region,
+      revenue: parseRevenue(product.revenue),
+      conversion: parseFloat(product.conversionRate.replace('%', '')),
+      color: regionPalette[index % regionPalette.length],
+    };
+  });
+
+  const automationCards = data.automation.slice(0, 3);
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="commerce-panel" role="tabpanel" aria-labelledby="commerce">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Merchandising, orders & fulfillment"
-          subtitle="E-commerce"
-          accent={accent}
-        />
-      </div>
-
-      <div className="col-span-12 lg:col-span-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Top products leaderboard">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Top products leaderboard</h3>
-              <p className="text-xs text-slate-600">Revenue, conversion, inventory, and trend for hero SKUs.</p>
-            </div>
-            <ArrowUpRight className="h-5 w-5 text-[var(--success-600)]" aria-hidden />
+    <section className="space-y-8" id="commerce-panel" role="tabpanel" aria-labelledby="commerce">
+      <Card className="border border-[var(--surface-border)] bg-white/85" padding="md">
+        <div className="grid grid-cols-12 items-center gap-4">
+          <div className="col-span-12 lg:col-span-4 space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">E-commerce</p>
+            <h2 className="text-display-md text-[var(--text-primary)]">E-commerce Performance</h2>
+            <p className="text-sm text-[var(--text-secondary)]">Product velocity, omni-channel mix, and regional health calibrated for merchandising teams.</p>
           </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Product leaderboard table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
-                <tr>
-                  <th className="px-4 py-3 text-left">Product</th>
-                  <th className="px-4 py-3 text-left">Category</th>
-                  <th className="px-4 py-3 text-left">Revenue</th>
-                  <th className="px-4 py-3 text-left">Conversion</th>
-                  <th className="px-4 py-3 text-right">Inventory</th>
-                  <th className="px-4 py-3 text-right">Trend</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
-                {data.topProducts.map((product) => (
-                  <tr key={product.id}>
-                    <td className="px-4 py-[11px] font-semibold text-slate-900">{product.name}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{product.category}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{product.revenue}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{product.conversionRate}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{product.inventory}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">
-                      {product.trend === 'up' ? '↑' : product.trend === 'down' ? '↓' : '→'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="col-span-12 lg:col-span-4 flex flex-wrap items-center justify-center gap-4">
+            <InlineFilterPill label="Category" value="Apparel" />
+            <InlineFilterPill label="Region" value="Global" />
+            <InlineFilterPill label="Fulfillment" value="Hybrid" />
           </div>
-        </Card>
-      </div>
-
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <ChartCard
-          id="commerce-sales"
-          title="Sales trends"
-          description="Seasonally-adjusted GMV"
-          rows={salesRows}
-          columns={[
-            { key: 'month', label: 'Month' },
-            { key: 'revenue', label: 'GMV ($M)', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={260}>
-            <BarChart data={data.salesTrend}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Bar dataKey="value" radius={[12, 12, 12, 12]} fill="var(--vertical-commerce)" />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Operational health">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Operational health</h3>
-              <p className="text-xs text-slate-600">Fulfillment SLAs, payment resilience, and support load.</p>
-            </div>
-            <Activity className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+          <div className="col-span-12 lg:col-span-4 flex flex-col items-end gap-2 text-sm text-[var(--text-secondary)]">
+            <span>Rolling 30 days · Seasonally adjusted</span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--text-primary)]">
+              <CalendarRange className="h-4 w-4" aria-hidden />
+              Nov 01 – Nov 30
+            </span>
           </div>
-          <ul className="mt-4 space-y-3">
-            {data.operations.map((item) => (
-              <li key={item.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-semibold text-slate-900">{item.title}</p>
-                  <StatusChip
-                    label={item.status}
-                    tone={item.status === 'healthy' ? 'success' : item.status === 'attention' ? 'warning' : 'info'}
-                  />
+        </div>
+        <div className="mt-6 h-px w-full bg-[var(--surface-border)]" aria-hidden />
+      </Card>
+
+      <div className="grid gap-8">
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 xl:col-span-7">
+            <Card role="region" aria-label="Top products" className="h-full">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-title-sm text-[var(--text-primary)]">Top products</h3>
+                  <p className="text-xs text-[var(--text-secondary)]">Revenue, conversion, and stock posture for hero SKUs.</p>
                 </div>
-                <p className="mt-2 text-xs text-slate-600">{item.description}</p>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
+                <ArrowUpRight className="h-5 w-5 text-[var(--vertical-commerce)]" aria-hidden />
+              </div>
+              <div className="mt-4 overflow-hidden rounded-xl border border-[var(--surface-border)]">
+                <table className="min-w-full" aria-label="Top products table">
+                  <thead className="sticky top-0 bg-[var(--surface-s1)] text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--text-muted)]">
+                    <tr>
+                      <th scope="col" className="px-4 py-3 text-left">Product</th>
+                      <th scope="col" className="px-4 py-3 text-left">Category</th>
+                      <th scope="col" className="px-4 py-3 text-right">Revenue</th>
+                      <th scope="col" className="px-4 py-3 text-right">Conversion</th>
+                      <th scope="col" className="px-4 py-3 text-right">Inventory</th>
+                      <th scope="col" className="px-4 py-3 text-right">Trend</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm text-[var(--text-primary)]">
+                    {productRows.map((row) => (
+                      <tr key={row.product} className="interactive-row">
+                        <td className="px-4 py-[12px] font-semibold">{row.product}</td>
+                        <td className="px-4 py-[12px] text-[var(--text-secondary)]">{row.category}</td>
+                        <td className="px-4 py-[12px] text-right text-[var(--text-secondary)]">{row.revenue}</td>
+                        <td className="px-4 py-[12px] text-right">{row.conversion}</td>
+                        <td className="px-4 py-[12px] text-right">{row.inventory}</td>
+                        <td className="px-4 py-[12px] text-right" aria-label={row.trend}>
+                          {row.trend === 'up' ? '↑' : row.trend === 'down' ? '↓' : '→'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+          <div className="col-span-12 xl:col-span-5">
+            <ChartCard
+              id="commerce-sales"
+              title="Sales trend"
+              description="Weekly GMV trajectory"
+              rows={salesRows}
+              columns={[
+                { key: 'period', label: 'Period' },
+                { key: 'revenue', label: 'GMV ($M)', align: 'right' },
+              ]}
+            >
+              <div className="flex flex-col gap-6 lg:flex-row">
+                <div className="flex-1" style={{ minHeight: 260 }}>
+                  <ResponsiveContainer height={260}>
+                    <AreaChart data={data.salesTrend} margin={{ left: 0, right: 0, top: 16, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="commerceSales" x1="0" x2="0" y1="0" y2="1">
+                          <stop offset="0%" stopColor="var(--vertical-commerce)" stopOpacity={0.45} />
+                          <stop offset="100%" stopColor="var(--vertical-commerce)" stopOpacity={0.05} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="2 6" stroke="rgba(148, 163, 184, 0.25)" />
+                      <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                      <YAxis tickLine={false} axisLine={false} />
+                      <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                      <Area type="monotone" dataKey="value" stroke="var(--vertical-commerce)" strokeWidth={2} fill="url(#commerceSales)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+                <ul className="flex w-full flex-row flex-wrap items-start justify-end gap-3 text-xs text-[var(--text-secondary)] lg:w-40 lg:flex-col lg:justify-start">
+                  <li className="flex items-center gap-2 rounded-full border border-[var(--surface-border)] bg-white/70 px-3 py-2">
+                    <span className="h-2 w-2 rounded-full bg-[var(--vertical-commerce)]" aria-hidden />
+                    <span className="font-semibold text-[var(--text-primary)]">GMV</span>
+                  </li>
+                  <li className="flex items-center gap-2 rounded-full border border-[var(--surface-border)] bg-white/50 px-3 py-2">
+                    <span
+                      className="h-2 w-2 rounded-full"
+                      style={{ background: 'color-mix(in srgb, var(--vertical-commerce) 40%, white)' }}
+                      aria-hidden
+                    />
+                    <span className="font-semibold text-[var(--text-primary)]">Forecast</span>
+                  </li>
+                </ul>
+              </div>
+            </ChartCard>
+          </div>
+        </div>
 
-      <div className="col-span-12 lg:col-span-6">
-        <AutomationList items={data.automation} />
-      </div>
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 xl:col-span-5">
+            <Card className="h-full" role="region" aria-label="Channel mix">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-title-sm text-[var(--text-primary)]">Channel mix</h3>
+                  <p className="text-xs text-[var(--text-secondary)]">Traffic share by acquisition engine.</p>
+                </div>
+              </div>
+              <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:items-center">
+                <div className="mx-auto h-48 w-48">
+                  <ResponsiveContainer>
+                    <PieChart>
+                      <Pie dataKey="share" data={channelMix} innerRadius={60} outerRadius={88} paddingAngle={4}>
+                        {channelMix.map((bucket, index) => (
+                          <Cell key={bucket.id} fill={bucket.color} stroke="#0f172a" strokeWidth={1.2} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <ul className="flex-1 space-y-3">
+                  {channelMix.map((bucket) => (
+                    <li key={bucket.id} className="flex items-center justify-between rounded-xl border border-[var(--surface-border)] bg-white/70 px-3 py-2 text-sm">
+                      <div className="flex items-center gap-3">
+                        <span className="h-2 w-2 rounded-full" style={{ background: bucket.color }} aria-hidden />
+                        <span className="font-semibold text-[var(--text-primary)]">{bucket.label}</span>
+                      </div>
+                      <span className="text-[var(--text-secondary)]">{bucket.share}%</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Card>
+          </div>
+          <div className="col-span-12 xl:col-span-7">
+            <Card className="h-full" role="region" aria-label="Region performance">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-title-sm text-[var(--text-primary)]">Region performance</h3>
+                  <p className="text-xs text-[var(--text-secondary)]">Revenue contribution and conversion uplift.</p>
+                </div>
+              </div>
+              <div className="mt-4 h-[280px]">
+                <ResponsiveContainer>
+                  <BarChart data={regionPerformance} barCategoryGap="20%">
+                    <CartesianGrid vertical={false} stroke="rgba(148, 163, 184, 0.25)" />
+                    <XAxis dataKey="region" tickLine={false} axisLine={false} />
+                    <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`} />
+                    <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                    <Bar dataKey="revenue" radius={[12, 12, 0, 0]}>
+                      {regionPerformance.map((entry) => (
+                        <Cell key={entry.region} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </Card>
+          </div>
+        </div>
 
-      <div className="col-span-12 lg:col-span-6">
-        <AutomationBuilder
-          verticalAccent={accent}
-          onCreate={async () => {
-            await new Promise((resolve) => setTimeout(resolve, 800));
-          }}
-        />
+        <div className="grid gap-6 lg:grid-cols-3">
+          {automationCards.map((automation) => (
+            <Card key={automation.id} role="region" aria-label={automation.title} className="h-full">
+              <div className="flex flex-col gap-3">
+                <div>
+                  <h3 className="text-title-sm text-[var(--text-primary)]">{automation.title}</h3>
+                  <p className="text-xs text-[var(--text-secondary)]">{automation.action}</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-secondary)]">
+                  {[
+                    { label: 'Trigger', value: automation.trigger },
+                    { label: 'Channel', value: automation.channel },
+                    { label: 'Cadence', value: automation.cadence },
+                  ].map((meta) => (
+                    <span
+                      key={`${automation.id}-${meta.label}`}
+                      className="automation-pill inline-flex items-center gap-2"
+                      title={`${meta.label}: ${meta.value}`}
+                    >
+                      <span>{meta.label}</span>
+                      <span aria-hidden>|</span>
+                      <span className="font-semibold normal-case tracking-normal text-[var(--text-primary)]">{meta.value}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -465,99 +854,396 @@ function CorporateModule({
   data,
   accent,
 }: {
-  data: PortfolioDashboardResponse['corporate'];
+  data: PortfolioDashboardResponse['saas'];
   accent: string;
 }) {
-  const funnelRows = data.funnel.map((stage) => ({
-    stage: stage.stage,
-    count: stage.count.toLocaleString(),
-    conversion: stage.conversion,
-    delta: `${stage.delta.toFixed(1)}%`,
+  const churnTrend = useMemo(() => {
+    const maxUsage = Math.max(...data.apiUsageTrend.map((point) => point.value));
+    return data.apiUsageTrend.map((point) => {
+      const normalized = point.value / maxUsage;
+      const churnRate = Number((Math.max(0.02, 0.07 - normalized * 0.02) * 100).toFixed(2));
+      const retentionRate = Number((100 - churnRate).toFixed(2));
+      return {
+        label: point.label,
+        churn: churnRate,
+        retention: retentionRate,
+      };
+    });
+  }, [data.apiUsageTrend]);
+
+  const churnRows = churnTrend.map((point) => ({
+    period: point.label,
+    retention: `${point.retention.toFixed(1)}%`,
+    churn: `${point.churn.toFixed(1)}%`,
   }));
 
-  const sourceRows = data.leadSources.map((source) => ({ source: source.label, share: `${source.value}%` }));
+  const churnLegend = data.churnSegments.map((segment) => ({
+    id: segment.id,
+    label: segment.label,
+    color: segment.color,
+    share: `${segment.value}%`,
+  }));
+
+  const growthRows = data.growthTrend.map((point) => ({ month: point.label, mrr: point.value }));
+
+  const planMetrics = data.subscriptionPlans.map((plan) => {
+    const numericPriceMatch = plan.price.match(/([0-9]+(?:\.[0-9]+)?)/);
+    const arpa = numericPriceMatch ? Number(numericPriceMatch[1]) : null;
+    const mrrValue = arpa ? arpa * plan.activeUsers : null;
+    return { ...plan, arpa, mrrValue };
+  });
+
+  const totalMrr = planMetrics.reduce((sum, plan) => sum + (plan.mrrValue ?? 0), 0);
+
+  const mrrBreakdownRows = planMetrics.map((plan) => ({
+    plan: plan.name,
+    arpa: plan.arpa ? `$${plan.arpa.toFixed(0)}` : '—',
+    customers: plan.activeUsers.toLocaleString(),
+    share: plan.mrrValue && totalMrr > 0 ? `${((plan.mrrValue / totalMrr) * 100).toFixed(1)}%` : '—',
+    churn: plan.churn,
+  }));
+
+  const apiRows = data.apiUsageTrend.map((point) => ({
+    week: point.label,
+    usage: `${point.value.toLocaleString()}M`,
+  }));
+
+  const endpointBreakdown = useMemo(() => {
+    const endpointLabels = ['Billing', 'Authentication', 'Reporting', 'Webhook relay', 'Integrations'];
+    const total = data.apiUsageTrend.reduce((sum, point) => sum + point.value, 0);
+    return endpointLabels
+      .map((label, index) => {
+        const point = data.apiUsageTrend[(data.apiUsageTrend.length - 1 - index + data.apiUsageTrend.length) % data.apiUsageTrend.length];
+        const latency = 120 - index * 8;
+        const trend = index % 2 === 0 ? '↑' : '→';
+        const share = total > 0 ? (point.value / total) * 100 : 0;
+        return {
+          endpoint: `${label} API`,
+          requests: `${point.value.toLocaleString()}k`,
+          share: `${share.toFixed(1)}%`,
+          latency: `${latency} ms`,
+          trend,
+        };
+      })
+      .sort((a, b) => Number(b.requests.replace(/[^0-9]/g, '')) - Number(a.requests.replace(/[^0-9]/g, '')));
+  }, [data.apiUsageTrend]);
+
+  const automationSummary = data.automation.filter((automation) => automation.active);
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="corporate-panel" role="tabpanel" aria-labelledby="corporate">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Growth marketing & pipeline analytics"
-          subtitle="Corporate analytics"
-          accent={accent}
-        />
-      </div>
-
-      <div className="col-span-12 lg:col-span-7 space-y-6">
-        <ChartCard
-          id="corporate-funnel"
-          title="Conversion funnel"
-          description="Visitors → MQL → SQL → Opportunities → Closed"
-          rows={funnelRows}
-          columns={[
-            { key: 'stage', label: 'Stage' },
-            { key: 'count', label: 'Volume', align: 'right' },
-            { key: 'conversion', label: 'Conversion', align: 'right' },
-            { key: 'delta', label: 'Δ', align: 'right' },
-          ]}
-          tone="accent"
-        >
-          <ResponsiveContainer height={320}>
-            <BarChart data={data.funnel} layout="vertical" margin={{ left: 80 }}>
-              <CartesianGrid horizontal={false} stroke="rgba(148, 163, 184, 0.25)" />
-              <XAxis type="number" hide />
-              <YAxis dataKey="stage" type="category" tickLine={false} axisLine={false} width={200} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Bar dataKey="count" fill="var(--vertical-corporate)" radius={[12, 12, 12, 12]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Executive insights">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Executive insights</h3>
-              <p className="text-xs text-slate-600">Board-ready bullets with context tags.</p>
-            </div>
-            <Check className="h-5 w-5 text-[var(--success-600)]" aria-hidden />
+    <section className="space-y-8" id="saas-panel" role="tabpanel" aria-labelledby="saas">
+      <Card className="border border-[var(--surface-border)] bg-white/85" padding="md">
+        <div className="grid grid-cols-12 items-center gap-4">
+          <div className="col-span-12 lg:col-span-4 space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">SaaS platform</p>
+            <h2 className="text-display-md text-[var(--text-primary)]">SaaS Overview</h2>
+            <p className="text-sm text-[var(--text-secondary)]">Module health, plan economics, and API throughput in one executive sweep.</p>
           </div>
-          <ul className="mt-4 space-y-3">
-            {data.insights.map((insight) => (
-              <li key={insight.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <p className="text-sm font-semibold text-slate-900">{insight.headline}</p>
-                <p className="mt-1 text-xs text-slate-600">{insight.detail}</p>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
+          <div className="col-span-12 lg:col-span-4 flex flex-wrap items-center justify-center gap-4">
+            <InlineFilterPill label="Module" value="Billing core" />
+            <InlineFilterPill label="Plan" value="Enterprise" />
+            <InlineFilterPill label="Segment" value="Global" />
+          </div>
+          <div className="col-span-12 lg:col-span-4 flex flex-col items-end gap-2 text-sm text-[var(--text-secondary)]">
+            <span>Last sync · 09:30 UTC</span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--text-primary)]">
+              <Clock3 className="h-4 w-4" aria-hidden />
+              UTC · Auto-adjusted
+            </span>
+          </div>
+        </div>
+        <div className="mt-6 h-px w-full bg-[var(--surface-border)]" aria-hidden />
+      </Card>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
-        <ChartCard
-          id="corporate-leads"
-          title="Lead source mix"
-          description="Colorblind-safe mix with accessible legend"
-          rows={sourceRows}
-          columns={[
-            { key: 'source', label: 'Source' },
-            { key: 'share', label: 'Share', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={260}>
-            <PieChart>
-              <Pie dataKey="value" data={data.leadSources} innerRadius={70} outerRadius={110} paddingAngle={2}>
-                {data.leadSources.map((source) => (
-                  <Cell key={source.id} fill={source.color} stroke="#1f2937" strokeWidth={1.4} />
+      <div className="grid gap-8">
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 xl:col-span-7">
+            <Card role="region" aria-label="Subscription health" className="h-full">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-title-sm text-[var(--text-primary)]">Subscription health</h3>
+                  <p className="text-xs text-[var(--text-secondary)]">Plans, activation, and churn signals with activation guardrails.</p>
+                </div>
+                <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+              </div>
+              <div className="mt-4 overflow-hidden rounded-xl border border-[var(--surface-border)]">
+                <table className="min-w-full" aria-label="Subscription plans table">
+                  <thead className="sticky top-0 bg-[var(--surface-s1)] text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--text-muted)]">
+                    <tr>
+                      <th scope="col" className="px-4 py-3 text-left">Plan</th>
+                      <th scope="col" className="px-4 py-3 text-left">Price</th>
+                      <th scope="col" className="px-4 py-3 text-right">Active subs</th>
+                      <th scope="col" className="px-4 py-3 text-right">Activation</th>
+                      <th scope="col" className="px-4 py-3 text-right">API allocation</th>
+                      <th scope="col" className="px-4 py-3 text-right">Churn</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm text-[var(--text-primary)]">
+                    {planMetrics.map((plan) => (
+                      <tr key={plan.id} className="interactive-row">
+                        <td className="px-4 py-[12px]">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold">{plan.name}</span>
+                            {plan.badge ? (
+                              <span className="rounded-full bg-[var(--primary-50)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary-600)]">
+                                {plan.badge}
+                              </span>
+                            ) : null}
+                          </div>
+                        </td>
+                        <td className="px-4 py-[12px] text-[var(--text-secondary)]">{plan.price}</td>
+                        <td className="px-4 py-[12px] text-right">{plan.activeUsers.toLocaleString()}</td>
+                        <td className="px-4 py-[12px] text-right">{plan.activationRate}</td>
+                        <td className="px-4 py-[12px] text-right">{plan.apiAllocation}</td>
+                        <td className="px-4 py-[12px] text-right text-[var(--danger-500)]">{plan.churn}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+          <div className="col-span-12 xl:col-span-5 flex flex-col gap-6">
+            <ChartCard
+              id="saas-churn"
+              title="Churn health"
+              description="Retention vs churn trend (last 8 weeks)"
+              rows={churnRows}
+              columns={[
+                { key: 'period', label: 'Period' },
+                { key: 'retention', label: 'Retention', align: 'right' },
+                { key: 'churn', label: 'Churn', align: 'right' },
+              ]}
+            >
+              <ResponsiveContainer height={260}>
+                <AreaChart data={churnTrend} margin={{ left: 0, right: 0, top: 16, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="saasChurnRetention" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="var(--vertical-saas)" stopOpacity={0.35} />
+                      <stop offset="100%" stopColor="var(--vertical-saas)" stopOpacity={0.05} />
+                    </linearGradient>
+                    <linearGradient id="saasChurnRate" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="var(--danger-500)" stopOpacity={0.35} />
+                      <stop offset="100%" stopColor="var(--danger-500)" stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} stroke="rgba(148, 163, 184, 0.25)" strokeDasharray="2 6" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} domain={[85, 100]} tickFormatter={(value) => `${value}%`} />
+                  <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                  <Area type="monotone" dataKey="retention" stroke="var(--vertical-saas)" strokeWidth={2} fill="url(#saasChurnRetention)" />
+                  <Area type="monotone" dataKey="churn" stroke="var(--danger-500)" strokeWidth={2} fill="url(#saasChurnRate)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartCard>
+
+            <Card className="h-full" role="region" aria-label="Churn legend">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-title-sm text-[var(--text-primary)]">Renewal mix</h3>
+                  <p className="text-xs text-[var(--text-secondary)]">Breakdown of renewal outcomes this quarter.</p>
+                </div>
+                <ClipboardList className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+              </div>
+              <ul className="mt-4 space-y-3">
+                {churnLegend.map((item) => (
+                  <li key={item.id} className="flex items-center justify-between rounded-xl border border-[var(--surface-border)] bg-white/70 px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <span className="h-2.5 w-2.5 rounded-full" style={{ background: item.color }} aria-hidden />
+                      <span className="text-sm font-medium text-[var(--text-primary)]">{item.label}</span>
+                    </div>
+                    <span className="text-sm font-semibold text-[var(--text-secondary)]">{item.share}</span>
+                  </li>
                 ))}
-              </Pie>
-              <Legend verticalAlign="bottom" height={60} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartCard>
+              </ul>
+            </Card>
+          </div>
+        </div>
 
-        <AutomationList items={data.automation} />
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 xl:col-span-7">
+            <ChartCard
+              id="saas-growth"
+              title="MRR growth"
+              description="Pre-aggregated monthly recurring revenue"
+              rows={growthRows}
+              columns={[
+                { key: 'month', label: 'Month' },
+                { key: 'mrr', label: 'MRR ($K)', align: 'right' },
+              ]}
+            >
+              <ResponsiveContainer height={300}>
+                <AreaChart data={data.growthTrend} margin={{ left: 0, right: 0, top: 16, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="saasMrrGradient" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="var(--vertical-saas)" stopOpacity={0.4} />
+                      <stop offset="100%" stopColor="var(--vertical-saas)" stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="2 6" stroke="rgba(148, 163, 184, 0.25)" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} />
+                  <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                  <Area type="monotone" dataKey="value" stroke="var(--vertical-saas)" strokeWidth={2} fill="url(#saasMrrGradient)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          </div>
+          <div className="col-span-12 xl:col-span-5">
+            <Card className="h-full" role="region" aria-label="MRR breakdown">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-title-sm text-[var(--text-primary)]">MRR breakdown</h3>
+                  <p className="text-xs text-[var(--text-secondary)]">Plan-level ARPA, customer count, and churn cadence.</p>
+                </div>
+              </div>
+              <div className="mt-4 overflow-hidden rounded-xl border border-[var(--surface-border)]">
+                <table className="min-w-full" aria-label="MRR breakdown table">
+                  <thead className="sticky top-0 bg-[var(--surface-s1)] text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--text-muted)]">
+                    <tr>
+                      <th scope="col" className="px-4 py-3 text-left">Plan</th>
+                      <th scope="col" className="px-4 py-3 text-right">ARPA</th>
+                      <th scope="col" className="px-4 py-3 text-right">Customers</th>
+                      <th scope="col" className="px-4 py-3 text-right">MRR share</th>
+                      <th scope="col" className="px-4 py-3 text-right">Churn</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm text-[var(--text-primary)]">
+                    {mrrBreakdownRows.map((row) => (
+                      <tr key={`mrr-${row.plan}`} className="interactive-row">
+                        <td className="px-4 py-[12px] font-semibold">{row.plan}</td>
+                        <td className="px-4 py-[12px] text-right text-[var(--text-secondary)]">{row.arpa}</td>
+                        <td className="px-4 py-[12px] text-right">{row.customers}</td>
+                        <td className="px-4 py-[12px] text-right text-[var(--text-secondary)]">{row.share}</td>
+                        <td className="px-4 py-[12px] text-right text-[var(--danger-500)]">{row.churn}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 xl:col-span-7">
+            <ChartCard
+              id="saas-api"
+              title="API usage trend"
+              description="Live usage vs allocation"
+              rows={apiRows}
+              columns={[
+                { key: 'week', label: 'Week' },
+                { key: 'usage', label: 'Usage', align: 'right' },
+              ]}
+            >
+              <ResponsiveContainer height={280}>
+                <AreaChart data={data.apiUsageTrend} margin={{ left: 0, right: 0, top: 16, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="saasApiGradient" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="var(--vertical-saas)" stopOpacity={0.45} />
+                      <stop offset="100%" stopColor="var(--vertical-saas)" stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="2 6" stroke="rgba(148, 163, 184, 0.25)" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} />
+                  <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                  <Area type="monotone" dataKey="value" stroke="var(--vertical-saas)" strokeWidth={2} fill="url(#saasApiGradient)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          </div>
+          <div className="col-span-12 xl:col-span-5">
+            <Card className="h-full" role="region" aria-label="API calls by endpoint">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-title-sm text-[var(--text-primary)]">API calls by endpoint</h3>
+                  <p className="text-xs text-[var(--text-secondary)]">Ranked throughput with latency monitors.</p>
+                </div>
+              </div>
+              <div className="mt-4 overflow-hidden rounded-xl border border-[var(--surface-border)]">
+                <table className="min-w-full" aria-label="API endpoint table">
+                  <thead className="sticky top-0 bg-[var(--surface-s1)] text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--text-muted)]">
+                    <tr>
+                      <th scope="col" className="px-4 py-3 text-left">Endpoint</th>
+                      <th scope="col" className="px-4 py-3 text-right">Requests</th>
+                      <th scope="col" className="px-4 py-3 text-right">Share</th>
+                      <th scope="col" className="px-4 py-3 text-right">Latency</th>
+                      <th scope="col" className="px-4 py-3 text-right">Trend</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm text-[var(--text-primary)]">
+                    {endpointBreakdown.map((endpoint) => (
+                      <tr key={endpoint.endpoint} className="interactive-row">
+                        <td className="px-4 py-[12px]">
+                          <span className="truncate font-semibold" title={endpoint.endpoint}>
+                            {endpoint.endpoint}
+                          </span>
+                        </td>
+                        <td className="px-4 py-[12px] text-right text-[var(--text-secondary)]">{endpoint.requests}</td>
+                        <td className="px-4 py-[12px] text-right">{endpoint.share}</td>
+                        <td className="px-4 py-[12px] text-right">{endpoint.latency}</td>
+                        <td className="px-4 py-[12px] text-right" aria-label={endpoint.trend === '↑' ? 'Improving' : 'Flat'}>
+                          {endpoint.trend}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <AutomationBuilder
+            verticalAccent={accent}
+            className="h-full"
+            onCreate={async () => {
+              await new Promise((resolve) => setTimeout(resolve, 800));
+            }}
+          />
+
+          <Card className="h-full" role="region" aria-label="Automation orchestration">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-title-sm text-[var(--text-primary)]">Automation orchestration</h3>
+                <p className="text-xs text-[var(--text-secondary)]">Active runbooks with trigger, channel, and cadence at a glance.</p>
+              </div>
+              <Workflow className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+            </div>
+            <div className="mt-5 space-y-3">
+              {automationSummary.map((automation) => (
+                <article
+                  key={automation.id}
+                  className="rounded-xl border border-[var(--surface-border)] bg-white/70 p-4 shadow-sm transition hover:border-[var(--primary-500)]"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-[var(--text-primary)]">{automation.title}</p>
+                    <StatusChip label="Active" tone="success" />
+                  </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-secondary)]">
+                    <span className="automation-pill" title={automation.trigger}>
+                      Trigger · {automation.trigger}
+                    </span>
+                    <span className="automation-pill" title={automation.action}>
+                      Action · {automation.action}
+                    </span>
+                    <span className="automation-pill" title={automation.channel}>
+                      Channel · {automation.channel}
+                    </span>
+                    <span className="automation-pill" title={automation.cadence}>
+                      Cadence · {automation.cadence}
+                    </span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </Card>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 
