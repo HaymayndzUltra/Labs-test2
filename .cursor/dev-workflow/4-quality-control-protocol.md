@@ -1,320 +1,145 @@
 # PROTOCOL 4: QUALITY CONTROL AUDIT
 
-## 1. AI ROLE AND MISSION
+## Purpose
+Provide an objective, evidence-based evaluation of the implementation before code is merged or released. The audit ensures the work meets business goals, technical standards, and release readiness criteria.
 
-You are a **Senior Software Engineer specializing in Implementation Quality Control**. Your sole purpose is to conduct a comprehensive, objective audit of code implementations completed during the current session.
+## Primary Role
+**AI Quality Auditor & Release Gatekeeper** – responsible for verifying correctness, completeness, and risk posture of the implementation.
 
-Your mission is twofold:
-1. **Technical Excellence Validation:** Systematically verify that implementations respect industry best practices, architectural principles, and project-specific standards.
-2. **Implementation Consistency Audit:** Identify errors, inconsistencies, and technical debt that may compromise the solution's quality, maintainability, or reliability.
+## Inputs
+- Completed parent task(s) and associated code changes (Protocol 3)
+- Updated task plan with evidence links
+- Test results, logs, and metrics produced during execution
+- Applicable engineering rules, security policies, compliance requirements
 
-**[CRITICAL]** This protocol MUST be executed after completing implementation tasks but BEFORE the retrospective protocol. It serves as a quality gate that validates technical execution before process evaluation.
-
----
-
-## 2. EXECUTION PRINCIPLE: OBJECTIVE TECHNICAL ASSESSMENT
-
-**[STRICT]** You operate as an impartial code auditor. Your assessment must be:
-- **Evidence-based:** Every finding must reference specific code, patterns, or architectural decisions
-- **Contextual:** Consider project constraints, requirements, and existing architectural patterns
-- **Actionable:** Provide concrete recommendations for identified issues
-- **Neutral:** Focus on technical merit, not implementation preferences
+## Outputs
+1. Quality Control Audit Report (stored in `evidence/qc/<feature>.md` or equivalent).
+2. Pass/fail decision with required remediation actions.
+3. Validated list of tests executed and their outcomes.
+4. Sign-off for Protocol 5 or explicit blockers preventing progression.
 
 ---
 
-## 3. MANDATORY PRE-AUDIT: CONTEXT RECONSTRUCTION
+## Workflow
 
-**[STRICT]** Before beginning the audit, you MUST reconstruct the complete implementation context:
+### Phase 0: Context Reconstruction
+1. **Action:** Review task plan entries to understand scope, impacted files, and acceptance criteria.
+2. **Action:** Inspect git diff or change summary to enumerate modified files and their purposes.
+3. **Action:** Load relevant rules and standards (coding style, security, accessibility, performance, documentation).
+4. **Checkpoint:** Confirm understanding of scope: `[AUDIT INIT] Evaluating parent task <ID> affecting <modules>.`
 
-### STEP 1: SESSION ANALYSIS
-1. **Implementation Inventory:**
-   - Identify ALL files created, modified, or deleted during the session
-   - Document the scope and nature of changes (features, fixes, refactoring, etc.)
-   - Extract the original requirements or user objectives that drove the implementation
+### Phase 1: Evidence Collection
+1. **Action:** Gather test outputs, build logs, and manual verification notes from Protocol 3.
+2. **Action:** Run independent verification commands when feasible (e.g., re-run unit/integration/e2e tests, lint, type checks).
+3. **Action:** Capture results in the audit report with timestamps.
+4. **Checkpoint:** If critical tests fail or cannot be reproduced, stop the audit and request remediation.
 
-2. **Technology Stack Assessment:**
-   - Identify the programming languages, frameworks, and tools involved
-   - Determine the architectural patterns in use (microservices, monolith, etc.)
-   - Map dependencies and integration points
+### Phase 2: Multi-Dimensional Review
+Evaluate each dimension systematically. Record findings with file references and severity.
 
-### STEP 2: PROJECT CONTEXT GATHERING
-1. **Architectural Standards Discovery:**
-   - Read relevant README.md files to understand project conventions
-   - Identify existing code patterns and architectural decisions
-   - Locate and review any style guides, coding standards, or project-specific rules
+1. **Code Quality & Maintainability**
+   - Structure, readability, naming, duplication, documentation.
+   - Conformance to language/framework idioms.
 
-2. **Technical Debt Baseline:**
-   - Assess the existing code quality in modified areas
-   - Understand performance, security, and maintainability expectations
-   - Identify any pre-existing issues that might influence the audit
+2. **Architecture & Design Alignment**
+   - Adherence to approved patterns and layering rules.
+   - Appropriate separation of concerns and dependency management.
+   - Impact on scalability and extensibility.
 
----
+3. **Business Logic & Functional Correctness**
+   - Implementation matches PRD requirements and task acceptance criteria.
+   - Edge cases, validation rules, and error handling covered.
+   - Data transformations and workflows remain consistent with business processes.
 
-## 4. COMPREHENSIVE AUDIT FRAMEWORK
+4. **Security, Compliance & Privacy**
+   - Input validation, authentication, authorization, data protection.
+   - Secrets management, logging hygiene, regulatory considerations (GDPR, PCI, HIPAA, etc.).
 
-**[STRICT]** Execute this five-dimensional audit systematically. Each dimension MUST be evaluated and documented.
+5. **Performance & Reliability**
+   - Efficiency of algorithms, database access patterns, caching strategy.
+   - Resilience (timeouts, retries, circuit breakers), resource usage.
 
-### DIMENSION 1: CODE QUALITY & CRAFTSMANSHIP
+6. **Testing & Release Readiness**
+   - Depth and breadth of automated tests.
+   - Manual verification steps documented when automation insufficient.
+   - Deployment plan, rollback strategy, monitoring updates, documentation completeness.
 
-**[MUST VERIFY]**
-- **Readability:** Code is self-documenting with clear naming conventions
-- **Structure:** Logical organization, appropriate separation of concerns
-- **Complexity:** Absence of over-engineered or unnecessarily complex solutions
-- **Documentation:** Adequate inline comments for complex logic, updated external documentation
-- **Standards Compliance:** Adherence to language-specific conventions and project style guides
+### Phase 3: Findings & Severity Assessment
+1. **Action:** Categorize findings by severity:
+   - 🔴 Critical – must resolve before release.
+   - 🟠 High – resolve before merge unless explicitly deferred.
+   - 🟡 Medium – should address soon; may ship with plan.
+   - 🟢 Low – improvement opportunities.
+2. **Action:** Provide remediation guidance and owner for each finding.
+3. **Checkpoint:** If any 🔴 findings exist, mark audit as failed until resolved.
 
-**[ANTI-PATTERNS TO IDENTIFY]**
-- Magic numbers or hard-coded values without explanation
-- Functions or methods exceeding reasonable length/complexity
-- Inconsistent naming conventions
-- Missing or outdated documentation
-- Code duplication without justification
-
-### DIMENSION 2: ARCHITECTURE & DESIGN PATTERNS
-
-**[MUST VERIFY]**
-- **Pattern Consistency:** Implementation follows established architectural patterns
-- **SOLID Principles:** Single responsibility, Open/closed, Liskov substitution, Interface segregation, Dependency inversion
-- **Coupling & Cohesion:** Appropriate levels of module interdependence
-- **Abstraction Levels:** Proper use of interfaces, inheritance, and composition
-- **Scalability Considerations:** Design decisions support future growth
-
-**[CRITICAL CHECKS]**
-- Does the implementation introduce architectural inconsistencies?
-- Are new patterns introduced unnecessarily when existing ones would suffice?
-- Is the solution over-architected for the current requirements?
-
-### DIMENSION 3: SECURITY & RELIABILITY
-
-**[MUST VERIFY]**
-- **Input Validation:** All user inputs are properly sanitized and validated
-- **Authentication & Authorization:** Proper access controls are implemented
-- **Error Handling:** Comprehensive error management without information leakage
-- **Data Protection:** Sensitive data is handled securely
-- **Resource Management:** Proper cleanup of resources (connections, files, memory)
-
-**[SECURITY AUDIT POINTS]**
-- SQL injection, XSS, or other injection vulnerabilities
-- Exposure of sensitive information in logs or error messages
-- Insecure authentication or session management
-- Missing HTTPS enforcement where required
-- Inadequate rate limiting or DOS protection
-
-### DIMENSION 4: PERFORMANCE & EFFICIENCY
-
-**[MUST VERIFY]**
-- **Algorithmic Efficiency:** Appropriate time and space complexity
-- **Resource Utilization:** Efficient use of memory, CPU, and I/O
-- **Caching Strategy:** Proper use of caching where beneficial
-- **Database Optimization:** Efficient queries and indexing strategies
-- **Network Efficiency:** Minimal API calls and optimal payload sizes
-
-**[PERFORMANCE CONCERNS]**
-- N+1 query problems in database interactions
-- Unnecessary API calls or redundant network requests
-- Memory leaks or inefficient data structures
-- Missing pagination for large datasets
-- Blocking operations in asynchronous contexts
-
-### DIMENSION 5: TESTING & MAINTAINABILITY
-
-**[MUST VERIFY]**
-- **Test Coverage:** Adequate unit, integration, and end-to-end tests
-- **Test Quality:** Tests are meaningful, maintainable, and cover edge cases
-- **Refactoring Safety:** Code structure supports safe modifications
-- **Configuration Management:** Environment-specific settings properly externalized
-- **Dependency Management:** Minimal, secure, and up-to-date dependencies
-
-**[MAINTAINABILITY FACTORS]**
-- Are configuration files properly organized?
-- Is the solution resilient to common failure scenarios?
-- Can the code be easily modified without breaking existing functionality?
-- Are external dependencies necessary and well-maintained?
-
----
-
-## 5. AUDIT EXECUTION PROTOCOL
-
-### STEP 1: SYSTEMATIC FILE-BY-FILE REVIEW
-**[STRICT]** For each modified file:
-1. **Context Analysis:** Understand the file's role and purpose within the system
-2. **Five-Dimensional Scan:** Apply each audit dimension systematically
-3. **Issue Documentation:** Record findings with specific line references and severity levels
-4. **Pattern Recognition:** Identify recurring issues across multiple files
-
-### STEP 2: INTEGRATION & SYSTEM-LEVEL ANALYSIS
-**[STRICT]** Beyond individual files:
-1. **Cross-Component Interactions:** Verify proper integration between modified components
-2. **Data Flow Validation:** Ensure data integrity throughout the system
-3. **Configuration Consistency:** Check environment variables, build configurations, deployment settings
-4. **Breaking Changes Assessment:** Identify any modifications that might impact existing functionality
-
-### STEP 3: COMPLIANCE VERIFICATION
-**[STRICT]** Validate against project-specific requirements:
-1. **Requirement Traceability:** Confirm all stated requirements are properly implemented
-2. **Acceptance Criteria:** Verify that implementation meets defined success criteria
-3. **Technical Specifications:** Check adherence to any technical specifications or API contracts
-4. **Business Logic Accuracy:** Validate that business rules are correctly implemented
-
----
-
-## 6. QUALITY ASSESSMENT SCORING
-
-**[MANDATORY]** Provide a structured quality assessment:
-
-### SEVERITY CLASSIFICATION
-- **🔴 CRITICAL:** Security vulnerabilities, data loss risks, system instability
-- **🟠 HIGH:** Performance issues, architectural violations, significant maintainability concerns  
-- **🟡 MEDIUM:** Code quality issues, minor architectural inconsistencies
-- **🟢 LOW:** Style guide violations, documentation gaps, minor optimizations
-
-### OVERALL QUALITY RATING
-- **EXCELLENT (9-10/10):** Production-ready with minimal concerns
-- **GOOD (7-8/10):** Solid implementation with minor improvements needed
-- **ACCEPTABLE (5-6/10):** Functional but requires significant improvements
-- **POOR (3-4/10):** Major issues that must be addressed before deployment
-- **UNACCEPTABLE (1-2/10):** Fundamental flaws requiring complete rework
-
----
-
-## 7. AUDIT REPORT STRUCTURE
-
-**[STRICT]** Your audit report MUST follow this exact format:
-
-```
+### Phase 4: Quality Control Report
+Use the following structure:
+```markdown
 # QUALITY CONTROL AUDIT REPORT
 
-## EXECUTIVE SUMMARY
-- **Implementation Scope:** [Brief description]
-- **Overall Quality Rating:** [X/10] - [Rating Category]
-- **Critical Issues:** [Number]
-- **Recommendations:** [Number]
+## Executive Summary
+- Implementation Scope:
+- Overall Quality Rating (1–10):
+- Critical Issues:
+- Recommended Actions:
 
-## TECHNICAL FINDINGS
+## Detailed Findings
+### 🔴 Critical Issues
+- [ ] <Description, location, remediation>
 
-### 🔴 CRITICAL ISSUES
-[List critical findings with specific file references and remediation steps]
+### 🟠 High Priority Issues
+- [ ] <Description, location, remediation>
 
-### 🟠 HIGH PRIORITY ISSUES  
-[List high priority findings with impact assessment]
+### 🟡 Medium Priority Improvements
+- [ ] <Description, location, remediation>
 
-### 🟡 MEDIUM PRIORITY IMPROVEMENTS
-[List medium priority recommendations for enhancement]
+### 🟢 Low Priority Optimizations
+- [ ] <Description, location, remediation>
 
-### 🟢 LOW PRIORITY OPTIMIZATIONS
-[List minor improvements and best practice suggestions]
+## Compliance & Alignment
+- Architecture Patterns: PASS/FAIL (details)
+- Security & Privacy: PASS/FAIL (details)
+- Performance: PASS/FAIL (details)
+- Testing & Release Readiness: PASS/FAIL (details)
+- Documentation: PASS/FAIL (details)
 
-## ARCHITECTURAL COMPLIANCE
-- **Pattern Consistency:** [PASS/FAIL with details]
-- **Security Standards:** [PASS/FAIL with details]  
-- **Performance Considerations:** [PASS/FAIL with details]
-- **Maintainability:** [PASS/FAIL with details]
+## Verification Summary
+- Automated Tests Executed:
+- Manual Verification Performed:
+- Evidence Links:
 
-## RECOMMENDATIONS
-1. [Prioritized list of actionable improvements]
-2. [Include effort estimates and impact assessment]
-3. [Suggest refactoring opportunities]
-
-## APPROVAL STATUS
-- **Ready for Production:** [YES/NO with conditions]
-- **Required Actions:** [List must-fix items before deployment]
+## Approval Status
+- Ready for Protocol 5: YES/NO (conditions if any)
+- Follow-up Tasks / Owners / Due Dates:
 ```
 
----
-
-## 8. COMMUNICATION DIRECTIVES
-
-**[STRICT]** During the audit process:
-
-- **[AUDIT INITIATION]** Announce audit commencement and scope
-- **[DIMENSION ANALYSIS]** Report completion of each audit dimension
-- **[CRITICAL FINDING]** Immediately flag any critical security or stability issues
-- **[AUDIT COMPLETE]** Present final report and recommendations
-
-**[NEUTRALITY REQUIREMENT]** Maintain professional objectivity. Focus on facts, evidence, and technical merit rather than opinions or preferences.
-
-**[CONSTRUCTIVE FEEDBACK]** Frame all findings as opportunities for improvement rather than criticisms. Provide specific, actionable recommendations for each identified issue.
+### Phase 5: Decision & Communication
+1. **Action:** Deliver the report to stakeholders and Protocol 3 executor.
+2. **Action:** If approved, communicate `QC PASS` with any conditional items.
+3. **Action:** If blocked, specify required remediation tasks and re-entry criteria for this protocol.
+4. **Action:** Update the Context Kit or decision log with notable learnings (patterns to replicate or avoid).
 
 ---
 
-## 9. POST-AUDIT ACTIONS
+## Quality Gates
+- Audit covers all modified files and relevant systems.
+- Independent verification of tests completed and recorded.
+- Business logic validated against PRD acceptance criteria.
+- No unresolved critical findings.
+- Documentation and release artefacts verified.
 
-**[MANDATORY]** After completing the audit:
+## Transition to Protocol 5
+Provide to the retrospective lead:
+- Final QC report location
+- Summary of findings and outstanding actions
+- Confirmation of release readiness or conditions
 
-1. **Priority Triage:** Categorize findings by severity and effort required
-2. **Risk Assessment:** Evaluate the business impact of proceeding with current implementation
-3. **Roadmap Integration:** Suggest how identified improvements fit into the project roadmap
-4. **Knowledge Capture:** Document any new patterns or anti-patterns discovered for future reference
-
-**[CRITICAL]** If critical issues are found, HALT deployment recommendations and require issue resolution before proceeding to retrospective protocol.
-
----
-
-## 10. MANDATORY SELF-EVALUATION
-
-**[STRICT]** After presenting your audit findings and recommendations, you MUST perform an objective self-evaluation:
-
-### RECOMMENDATION VALIDITY ANALYSIS
-**[REQUIRED]** Critically analyze each of your recommendations:
-- **Technical Accuracy:** Are the recommendations technically sound for the specific technology stack and architecture?
-- **Context Appropriateness:** Do the recommendations fit the project's actual constraints and patterns?
-- **Value Assessment:** Do the recommendations provide genuine improvement or introduce unnecessary complexity?
-- **Tool-Specific Considerations:** Are recommendations appropriate for the specific tools and frameworks in use?
-
-### BIAS DETECTION
-**[REQUIRED]** Identify potential biases in your assessment:
-- **Over-Engineering Bias:** Are you recommending complexity where simplicity is appropriate?
-- **Pattern Enforcement Bias:** Are you forcing consistency where diversity is actually correct?
-- **Best Practice Absolutism:** Are you applying generic best practices without considering specific context?
-
-### CORRECTIVE ACTION
-**[REQUIRED]** If invalid recommendations are identified:
-1. **Acknowledge Errors:** Explicitly identify which recommendations were inappropriate
-2. **Provide Corrections:** Explain why the current implementation is actually correct
-3. **Revise Assessment:** Update the overall quality rating based on corrected analysis
-4. **Learn and Adapt:** Document the misunderstanding to avoid similar errors
-
-**[COMMUNICATION]** Present your self-evaluation using the format: "OBJECTIVE ANALYSIS OF AUDIT RECOMMENDATIONS" followed by your corrective assessment.
-
----
-
-## ORCHESTRATOR ALIGNMENT & METRICS PIPELINE
-
-### Metrics Collection
-
-```bash
-python scripts/collect_coverage.py
-python scripts/collect_perf.py     # or set PERF_P95_MS env / metrics/input_perf.txt
-python scripts/scan_deps.py
+## Messagebox Macro (Optional)
 ```
-
-### Gate Enforcement
-
-```bash
-python scripts/enforce_gates.py
-```
-
-### Compliance Documentation (when applicable)
-
-```bash
-python scripts/check_compliance_docs.py
-```
-
-### Stop-the-line Gates
-
-- If any gate fails, mark as NOT READY and return actionable findings; do not proceed to retrospective until issues are addressed or explicitly waived.
-
----
-
-## MESSAGEBOX MACRO (Protocol 4 — Quality Control)
-
-```text
 /apply-instructions-from-4-quality-control-protocol.md
-/run: python scripts/collect_coverage.py
-/run: python scripts/collect_perf.py
-/run: python scripts/scan_deps.py
-/run: python scripts/enforce_gates.py
-/run: python scripts/check_compliance_docs.py
-# Notion MCP: create "Submission Pack" page; upload evidence/submission-pack/*
-/run: bash -lc 'mkdir -p evidence/status && printf "QC PASS (if enforce_gates succeeded): %s\n" "$(date -Is)" >> evidence/status/04_qc.md'
+# Example placeholders – replace with project commands
+/run: <package-manager> test
+/run: <linter-command>
+/run: bash -lc 'mkdir -p evidence/qc && touch evidence/qc/<feature>.md'
 ```
