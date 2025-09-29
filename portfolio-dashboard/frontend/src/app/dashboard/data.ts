@@ -34,6 +34,9 @@ export type AutomationWorkflow = {
   channel: string;
   cadence: string;
   active: boolean;
+  lastRun: string;
+  nextRun?: string;
+  status: 'success' | 'warning' | 'error' | 'scheduled' | 'running';
 };
 
 export type TabDefinition = {
@@ -390,6 +393,9 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Webhook + Slack digest',
         cadence: 'Monthly',
         active: true,
+        lastRun: '2024-11-01T02:05:00Z',
+        nextRun: '2024-12-01T02:00:00Z',
+        status: 'success',
       },
       {
         id: 'churn-alerts',
@@ -400,6 +406,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Email + CRM task',
         cadence: 'Real-time',
         active: true,
+        lastRun: '2024-11-18T11:20:00Z',
+        status: 'running',
       },
       {
         id: 'api-burst',
@@ -410,6 +418,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'PagerDuty + Slack',
         cadence: 'Real-time',
         active: true,
+        lastRun: '2024-11-18T06:35:00Z',
+        status: 'warning',
       },
     ],
     billingCycles: [
@@ -531,6 +541,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Klaviyo + WhatsApp',
         cadence: 'Rolling',
         active: true,
+        lastRun: '2024-11-18T09:42:00Z',
+        status: 'success',
       },
       {
         id: 'inventory-sync',
@@ -541,6 +553,9 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'ERP webhook + Slack',
         cadence: 'Hourly',
         active: true,
+        lastRun: '2024-11-18T11:00:00Z',
+        nextRun: '2024-11-18T12:00:00Z',
+        status: 'running',
       },
       {
         id: 'vip-segment',
@@ -551,6 +566,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Email + Fulfillment',
         cadence: 'Weekly',
         active: true,
+        lastRun: '2024-11-17T20:15:00Z',
+        status: 'success',
       },
     ],
     operations: [
@@ -633,6 +650,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Salesforce + Slack',
         cadence: 'Continuous',
         active: true,
+        lastRun: '2024-11-18T10:05:00Z',
+        status: 'success',
       },
       {
         id: 'intent-sync',
@@ -643,6 +662,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Slack + LinkedIn ads',
         cadence: 'Daily',
         active: true,
+        lastRun: '2024-11-18T07:30:00Z',
+        status: 'warning',
       },
       {
         id: 'nurture',
@@ -653,6 +674,9 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'HubSpot + Outreach',
         cadence: 'Weekly',
         active: true,
+        lastRun: '2024-11-17T15:10:00Z',
+        nextRun: '2024-11-24T09:00:00Z',
+        status: 'success',
       },
     ],
     insights: [
@@ -775,6 +799,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Slack + Calendar',
         cadence: 'Bi-weekly',
         active: true,
+        lastRun: '2024-11-18T09:00:00Z',
+        status: 'success',
       },
       {
         id: 'task-reminders',
@@ -785,6 +811,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Email + In-app',
         cadence: 'Daily',
         active: true,
+        lastRun: '2024-11-18T07:45:00Z',
+        status: 'running',
       },
       {
         id: 'intake',
@@ -795,6 +823,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Notion + Jira',
         cadence: 'Real-time',
         active: true,
+        lastRun: '2024-11-18T08:58:00Z',
+        status: 'success',
       },
     ],
     backlogIdeas: [
@@ -893,6 +923,9 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'CMS webhook + Slack',
         cadence: 'Hourly',
         active: true,
+        lastRun: '2024-11-18T11:15:00Z',
+        nextRun: '2024-11-18T12:00:00Z',
+        status: 'running',
       },
       {
         id: 'auto-tagging',
@@ -903,6 +936,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'CMS + Notion wiki',
         cadence: 'Real-time',
         active: true,
+        lastRun: '2024-11-18T10:52:00Z',
+        status: 'success',
       },
       {
         id: 'highlight-reel',
@@ -913,6 +948,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Premiere Pro API + Dropbox',
         cadence: 'Daily',
         active: true,
+        lastRun: '2024-11-17T22:00:00Z',
+        status: 'success',
       },
     ],
     publishingQueue: [
@@ -1062,6 +1099,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Email + LMS inbox',
         cadence: 'Real-time',
         active: true,
+        lastRun: '2024-11-18T10:40:00Z',
+        status: 'success',
       },
       {
         id: 'inactivity-alerts',
@@ -1072,6 +1111,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'SMS + Push',
         cadence: 'Daily',
         active: true,
+        lastRun: '2024-11-18T09:05:00Z',
+        status: 'warning',
       },
       {
         id: 'mentor-rotation',
@@ -1082,6 +1123,9 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Calendly + Slack',
         cadence: 'Weekly',
         active: true,
+        lastRun: '2024-11-17T18:30:00Z',
+        nextRun: '2024-11-24T18:00:00Z',
+        status: 'success',
       },
     ],
     alerts: [
@@ -1163,6 +1207,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
           channel: 'SMS + CRM task',
           cadence: 'Instant',
           active: true,
+          lastRun: '2024-11-18T09:20:00Z',
+          status: 'success',
         },
         {
           id: 'listing-drip',
@@ -1173,6 +1219,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
           channel: 'Email',
           cadence: 'Rolling',
           active: true,
+          lastRun: '2024-11-17T16:00:00Z',
+          status: 'success',
         },
       ],
       trend: [
@@ -1236,6 +1284,9 @@ const portfolioDashboard: PortfolioDashboardResponse = {
           channel: 'Email + Slack',
           cadence: 'Monthly',
           active: true,
+          lastRun: '2024-11-01T05:00:00Z',
+          nextRun: '2024-12-01T05:00:00Z',
+          status: 'success',
         },
         {
           id: 'expense-routing',
@@ -1246,6 +1297,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
           channel: 'Procurement suite',
           cadence: 'Continuous',
           active: true,
+          lastRun: '2024-11-18T11:10:00Z',
+          status: 'warning',
         },
       ],
     },
@@ -1312,6 +1365,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
           channel: 'Twilio + EHR',
           cadence: 'Timed',
           active: true,
+          lastRun: '2024-11-18T10:15:00Z',
+          status: 'success',
         },
         {
           id: 'intake-automation',
@@ -1322,6 +1377,8 @@ const portfolioDashboard: PortfolioDashboardResponse = {
           channel: 'Portal + Email',
           cadence: 'Real-time',
           active: true,
+          lastRun: '2024-11-18T10:40:00Z',
+          status: 'running',
         },
       ],
     },

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import {
   Area,
   AreaChart,
@@ -24,10 +24,12 @@ import {
   Moon,
   Sun,
   Earth,
-  Workflow,
   Activity,
   ClipboardList,
   Sparkles,
+  Filter,
+  Download,
+  ArrowDownToLine,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
@@ -35,6 +37,7 @@ import {
   fetchPortfolioDashboard,
   type PortfolioDashboardResponse,
   type TabDefinition,
+  type AutomationWorkflow,
 } from './data';
 import { useDashboardStore, type DateRange } from '@/state/dashboardStore';
 import { useThemeContext } from '@/components/theme/ThemeProvider';
@@ -44,10 +47,11 @@ import { SegmentedTabs } from '@/components/ui/SegmentedTabs';
 import { FilterChip } from '@/components/ui/FilterChip';
 import { Card } from '@/components/ui/Card';
 import { ChartCard } from '@/components/ui/ChartCard';
-import { AutomationBuilder } from '@/components/ui/AutomationBuilder';
 import { StatusChip } from '@/components/ui/StatusChip';
+import { AutomationOrchestrator } from '@/components/ui/AutomationOrchestrator';
+import { ActionHub } from '@/components/ui/ActionHub';
 import { useToast } from '@/components/ui/ToastProvider';
-import { cn } from '@/lib/utils';
+import { cn, downloadAs } from '@/lib/utils';
 
 const accentTokens: Record<TabDefinition['id'], string> = {
   saas: '--vertical-saas',
@@ -85,57 +89,6 @@ const moduleGridClass = 'grid grid-cols-12 gap-x-6 gap-y-8 auto-rows-[minmax(0,1
 type DashboardClientProps = {
   initialData: PortfolioDashboardResponse;
 };
-
-function AutomationList({
-  items,
-  className,
-}: {
-  items: PortfolioDashboardResponse['saas']['automation'];
-  className?: string;
-}) {
-  return (
-    <Card className={cn('border border-[var(--surface-border)]', className)} padding="md">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h3 className="text-title-sm text-slate-900">Automation orchestration</h3>
-          <p className="text-xs text-slate-600">
-            Trigger → Action → Channel → Cadence. Workflows expose retries, audit logs, and SLA health.
-          </p>
-        </div>
-        <Workflow className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
-      </div>
-      <div className="mt-5 space-y-3">
-        {items.map((automation) => (
-          <article
-            key={automation.id}
-            className="rounded-[18px] border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3"
-          >
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold text-slate-900">{automation.title}</p>
-                <p className="text-xs text-slate-500">Trigger: {automation.trigger}</p>
-              </div>
-              <StatusChip
-                label={automation.active ? 'Active' : 'Paused'}
-                tone={automation.active ? 'success' : 'warning'}
-              />
-            </div>
-            <p className="mt-2 text-xs text-slate-600">Action: {automation.action}</p>
-            <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.08em] text-slate-500">
-              <span className="rounded-full bg-slate-100 px-2 py-1">Owner: {automation.owner}</span>
-              <span className="rounded-full bg-slate-100 px-2 py-1">Channel: {automation.channel}</span>
-              <span className="rounded-full bg-slate-100 px-2 py-1">Cadence: {automation.cadence}</span>
-            </div>
-          </article>
-        ))}
-      </div>
-      <p className="mt-4 text-xs text-slate-500">
-        Enterprise packs unlock predictive triggers, anomaly detection, and compliance exports.
-      </p>
-    </Card>
-  );
-}
-
 function SectionHeader({
   title,
   subtitle,
@@ -346,16 +299,6 @@ function SaaSModule({
         </div>
       </div>
 
-      <div className="col-span-12 xl:col-span-5 grid gap-6 auto-rows-[minmax(0,1fr)]">
-        <AutomationBuilder
-          className="h-full"
-          verticalAccent={accent}
-          onCreate={async () => {
-            await new Promise((resolve) => setTimeout(resolve, 800));
-          }}
-        />
-        <AutomationList className="h-full" items={data.automation} />
-      </div>
     </section>
   );
 }
@@ -479,19 +422,6 @@ function CommerceModule({
         </Card>
       </div>
 
-      <div className="col-span-12 xl:col-span-7">
-        <AutomationList className="h-full" items={data.automation} />
-      </div>
-
-      <div className="col-span-12 xl:col-span-5">
-        <AutomationBuilder
-          className="h-full"
-          verticalAccent={accent}
-          onCreate={async () => {
-            await new Promise((resolve) => setTimeout(resolve, 800));
-          }}
-        />
-      </div>
     </section>
   );
 }
@@ -599,7 +529,6 @@ function CorporateModule({
           </ResponsiveContainer>
         </ChartCard>
 
-        <AutomationList className="h-full" items={data.automation} />
       </div>
     </section>
   );
@@ -713,17 +642,6 @@ function CustomAppModule({
         </ChartCard>
       </div>
 
-      <div className="col-span-12 grid gap-6 lg:grid-cols-2 auto-rows-[minmax(0,1fr)]">
-        <AutomationBuilder
-          className="h-full"
-          verticalAccent={accent}
-          onCreate={async () => {
-            await new Promise((resolve) => setTimeout(resolve, 700));
-          }}
-        />
-
-        <AutomationList className="h-full" items={data.automation} />
-      </div>
     </section>
   );
 }
@@ -848,7 +766,6 @@ function ContentModule({
           </div>
         </Card>
 
-        <AutomationList className="h-full" items={data.automation} />
       </div>
     </section>
   );
@@ -914,7 +831,6 @@ function EdTechModule({
           </div>
         </Card>
 
-        <AutomationList className="h-full" items={data.automation} />
       </div>
 
       <div className="col-span-12 xl:col-span-6 grid gap-6 auto-rows-[minmax(0,1fr)]">
@@ -1163,11 +1079,6 @@ function SpecializedModule({
         </Card>
       </div>
 
-      <div className="col-span-12 xl:col-span-6 grid gap-6 md:grid-cols-3 auto-rows-[minmax(0,1fr)]">
-        <AutomationList className="h-full" items={data.realEstate.automation} />
-        <AutomationList className="h-full" items={data.finance.automation} />
-        <AutomationList className="h-full" items={data.healthcare.automation} />
-      </div>
     </section>
   );
 }
@@ -1246,6 +1157,8 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
     initialData,
   });
 
+  const resolvedData = data ?? initialData;
+
   useLiveMetrics();
 
   useEffect(() => {
@@ -1280,31 +1193,352 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
   }, [filters, selectedModule, router]);
 
   const accent = accentTokens[selectedModule];
-  const moduleMetrics = data ? getModuleMetrics(selectedModule, data) : [];
+  const moduleMetrics = resolvedData ? getModuleMetrics(selectedModule, resolvedData) : [];
 
   const moduleContent = useMemo(() => {
-    if (!data) return null;
+    if (!resolvedData) return null;
     switch (selectedModule) {
       case 'saas':
-        return <SaaSModule data={data.saas} accent={accent} />;
+        return <SaaSModule data={resolvedData.saas} accent={accent} />;
       case 'commerce':
-        return <CommerceModule data={data.commerce} accent={accent} />;
+        return <CommerceModule data={resolvedData.commerce} accent={accent} />;
       case 'corporate':
-        return <CorporateModule data={data.corporate} accent={accent} />;
+        return <CorporateModule data={resolvedData.corporate} accent={accent} />;
       case 'customApp':
-        return <CustomAppModule data={data.customApp} accent={accent} />;
+        return <CustomAppModule data={resolvedData.customApp} accent={accent} />;
       case 'content':
-        return <ContentModule data={data.content} accent={accent} />;
+        return <ContentModule data={resolvedData.content} accent={accent} />;
       case 'edtech':
-        return <EdTechModule data={data.edtech} accent={accent} />;
+        return <EdTechModule data={resolvedData.edtech} accent={accent} />;
       case 'specialized':
-        return <SpecializedModule data={data.specialized} accent={accent} />;
+        return <SpecializedModule data={resolvedData.specialized} accent={accent} />;
       default:
         return null;
     }
-  }, [accent, data, selectedModule]);
+  }, [accent, resolvedData, selectedModule]);
 
-  if (!data) {
+  const trackEvent = useCallback((event: string, payload: Record<string, unknown>) => {
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.info(`[analytics] ${event}`, payload);
+    }
+  }, []);
+
+  const scrollToActions = useCallback(() => {
+    const anchor = document.getElementById('actions');
+    anchor?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
+
+  const handleAutomationRun = useCallback(
+    async (moduleId: TabDefinition['id'], workflow: AutomationWorkflow) => {
+      trackEvent('automation_run', { module: moduleId, workflow: workflow.id });
+      push({
+        title: 'Automation started',
+        description: `${workflow.title} is running now.`,
+        tone: 'info',
+      });
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      push({
+        title: 'Automation complete',
+        description: `${workflow.title} finished with status ${workflow.status}.`,
+        tone: workflow.status === 'error' ? 'warning' : 'success',
+      });
+    },
+    [push, trackEvent]
+  );
+
+  const handleAutomationSimulate = useCallback(
+    async (moduleId: TabDefinition['id'], workflow: AutomationWorkflow) => {
+      trackEvent('automation_simulate', { module: moduleId, workflow: workflow.id });
+      push({
+        title: 'Simulation queued',
+        description: `${workflow.title} simulation is generating preview logs.`,
+        tone: 'info',
+      });
+      await new Promise((resolve) => setTimeout(resolve, 450));
+      push({
+        title: 'Simulation ready',
+        description: `${workflow.title} simulation is ready in the orchestrator log.`,
+        tone: 'success',
+      });
+    },
+    [push, trackEvent]
+  );
+
+  const handleAutomationCreate = useCallback(
+    async (moduleId: TabDefinition['id'], draft: { name: string; trigger: string }) => {
+      trackEvent('automation_create', { module: moduleId, name: draft.name });
+      push({
+        title: 'Automation saved',
+        description: `${draft.name} will publish in the orchestrator within seconds.`,
+        tone: 'success',
+      });
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    },
+    [push, trackEvent]
+  );
+
+  const handleExport = useCallback(
+    (moduleId: TabDefinition['id'], optionId: string, format: 'csv' | 'json', rows: Record<string, unknown>[]) => {
+      trackEvent('export_triggered', { module: moduleId, export: optionId, format, rowCount: rows.length });
+      downloadAs(format, `${moduleId}-${optionId}.${format}`, rows);
+      push({
+        title: 'Export ready',
+        description: `${optionId} exported as ${format.toUpperCase()}.`,
+        tone: 'info',
+      });
+    },
+    [push, trackEvent]
+  );
+
+  const moduleAutomations = useMemo(() => {
+    if (!resolvedData) return [] as AutomationWorkflow[];
+    switch (selectedModule) {
+      case 'saas':
+        return resolvedData.saas.automation;
+      case 'commerce':
+        return resolvedData.commerce.automation;
+      case 'corporate':
+        return resolvedData.corporate.automation;
+      case 'customApp':
+        return resolvedData.customApp.automation;
+      case 'content':
+        return resolvedData.content.automation;
+      case 'edtech':
+        return resolvedData.edtech.automation;
+      case 'specialized':
+        return [
+          ...resolvedData.specialized.realEstate.automation,
+          ...resolvedData.specialized.finance.automation,
+          ...resolvedData.specialized.healthcare.automation,
+        ];
+      default:
+        return [] as AutomationWorkflow[];
+    }
+  }, [resolvedData, selectedModule]);
+
+  const moduleAlerts = useMemo(() => {
+    if (!resolvedData) return [] as { id: string; message: string; severity: 'info' | 'warning' | 'critical' }[];
+    switch (selectedModule) {
+      case 'saas':
+        return resolvedData.saas.billingCycles.map((cycle) => ({
+          id: `billing-${cycle.id}`,
+          message: `${cycle.label} • Next ${cycle.nextRun}`,
+          severity: cycle.status === 'processing' ? 'warning' : 'info',
+        }));
+      case 'commerce':
+        return resolvedData.commerce.operations.map((op) => ({
+          id: op.id,
+          message: `${op.title}: ${op.description}`,
+          severity:
+            op.status === 'attention' ? 'warning' : op.status === 'delayed' ? 'critical' : 'info',
+        }));
+      case 'corporate':
+        return resolvedData.corporate.insights.map((insight) => ({
+          id: insight.id,
+          message: insight.headline,
+          severity: 'info',
+        }));
+      case 'customApp':
+        return resolvedData.customApp.backlogIdeas.slice(0, 3).map((idea, index) => ({
+          id: `idea-${index}`,
+          message: idea,
+          severity: 'info',
+        }));
+      case 'content':
+        return resolvedData.content.publishingQueue.slice(0, 3).map((slot) => ({
+          id: slot.id,
+          message: `${slot.topic} • ${slot.status.toUpperCase()}`,
+          severity: slot.status === 'blocked' ? 'warning' : 'info',
+        }));
+      case 'edtech':
+        return resolvedData.edtech.alerts.map((alert) => ({
+          id: alert.id,
+          message: alert.message,
+          severity: alert.severity,
+        }));
+      case 'specialized':
+        return [
+          ...resolvedData.specialized.realEstate.pipeline.slice(0, 2).map((item) => ({
+            id: `realestate-${item.id}`,
+            message: `${item.address} • ${item.stage}`,
+            severity: 'info' as const,
+          })),
+          ...resolvedData.specialized.finance.expenses.slice(0, 1).map((expense, index) => ({
+            id: `finance-${index}`,
+            message: `Weekly spend ${expense.value}k vs budget ${expense.secondary ?? 0}k`,
+            severity: 'info' as const,
+          })),
+        ];
+      default:
+        return [];
+    }
+  }, [resolvedData, selectedModule]);
+
+  const moduleExportConfigs = useMemo(() => {
+    if (!resolvedData) return [] as Array<{ id: string; label: string; format: 'csv' | 'json'; description: string; rows: Record<string, unknown>[] }>;
+    switch (selectedModule) {
+      case 'saas':
+        return [
+          {
+            id: 'kpi-saas',
+            label: 'Export SaaS KPIs',
+            format: 'csv' as const,
+            description: 'MRR, active workspaces, API usage, retention',
+            rows: resolvedData.saas.metrics.map((metric) => ({ metric: metric.label, value: metric.value, delta: metric.change })),
+          },
+          {
+            id: 'automation-saas',
+            label: 'Automation roster',
+            format: 'json' as const,
+            description: 'Triggers, actions, channels, and status',
+            rows: resolvedData.saas.automation.map((automation) => ({
+              id: automation.id,
+              title: automation.title,
+              trigger: automation.trigger,
+              status: automation.status,
+            })),
+          },
+        ];
+      case 'commerce':
+        return [
+          {
+            id: 'commerce-products',
+            label: 'Top product performance',
+            format: 'csv' as const,
+            description: 'Leaderboard with revenue and conversion',
+            rows: resolvedData.commerce.topProducts.map((product) => ({
+              sku: product.name,
+              category: product.category,
+              revenue: product.revenue,
+              conversion: product.conversionRate,
+            })),
+          },
+        ];
+      case 'corporate':
+        return [
+          {
+            id: 'corporate-funnel',
+            label: 'Pipeline conversion funnel',
+            format: 'csv' as const,
+            description: 'Stage volumes and conversion deltas',
+            rows: resolvedData.corporate.funnel.map((stage) => ({
+              stage: stage.stage,
+              volume: stage.count,
+              conversion: stage.conversion,
+              delta: stage.delta,
+            })),
+          },
+        ];
+      case 'customApp':
+        return [
+          {
+            id: 'customapp-kanban',
+            label: 'Kanban work items',
+            format: 'json' as const,
+            description: 'Current tasks with owner and due date',
+            rows: resolvedData.customApp.kanban.flatMap((lane) =>
+              lane.tasks.map((task) => ({
+                lane: lane.title,
+                task: task.title,
+                owner: task.owner,
+                due: task.due,
+                priority: task.priority,
+              }))
+            ),
+          },
+        ];
+      case 'content':
+        return [
+          {
+            id: 'content-stories',
+            label: 'Top stories digest',
+            format: 'csv' as const,
+            description: 'Story performance and status overview',
+            rows: resolvedData.content.topStories.map((story) => ({
+              title: story.title,
+              format: story.format,
+              window: story.publishedAt,
+              engagement: story.engagement,
+              status: story.status,
+            })),
+          },
+        ];
+      case 'edtech':
+        return [
+          {
+            id: 'edtech-courses',
+            label: 'Course performance snapshot',
+            format: 'csv' as const,
+            description: 'Enrollment, completion, score per course',
+            rows: resolvedData.edtech.courses.map((course) => ({
+              course: course.title,
+              enrollment: course.enrollment,
+              completion: course.completion,
+              score: course.avgScore,
+            })),
+          },
+        ];
+      case 'specialized':
+        return [
+          {
+            id: 'specialized-real-estate',
+            label: 'Real estate pipeline',
+            format: 'csv' as const,
+            description: 'Listings, stages, and inquiries',
+            rows: resolvedData.specialized.realEstate.pipeline.map((listing) => ({
+              address: listing.address,
+              stage: listing.stage,
+              inquiries: listing.inquiries,
+              agent: listing.agent,
+            })),
+          },
+          {
+            id: 'specialized-finance-roi',
+            label: 'Finance ROI breakdown',
+            format: 'json' as const,
+            description: 'Marketing ROI allocation by channel',
+            rows: resolvedData.specialized.finance.roiBreakdown.map((slice) => ({
+              channel: slice.label,
+              share: slice.value,
+            })),
+          },
+        ];
+      default:
+        return [];
+    }
+  }, [resolvedData, selectedModule]);
+
+  const actionHubExports = moduleExportConfigs.map((config) => ({
+    id: config.id,
+    label: config.label,
+    format: config.format,
+    description: config.description,
+    onExport: () => handleExport(selectedModule, config.id, config.format, config.rows),
+  }));
+
+  const orchestratorWorkflows = useMemo(
+    () =>
+      moduleAutomations.map((workflow) => ({
+        ...workflow,
+        lastRun: workflow.lastRun ?? new Date().toISOString(),
+        status: workflow.status ?? 'scheduled',
+      })),
+    [moduleAutomations]
+  );
+
+  const actionHubAutomations = moduleAutomations.map((automation) => ({
+    id: automation.id,
+    title: automation.title,
+    status: automation.status,
+    lastRun: automation.lastRun ?? new Date().toISOString(),
+    onRun: () => handleAutomationRun(selectedModule, automation),
+    onSimulate: () => handleAutomationSimulate(selectedModule, automation),
+  }));
+
+  const primaryExport = moduleExportConfigs[0] ?? null;
+
+  if (!resolvedData) {
     return null;
   }
 
@@ -1315,15 +1549,15 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="space-y-3">
               <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Portfolio-grade product operations</p>
-              <h1 className="text-display-lg text-slate-900">{data.hero.title}</h1>
-              <p className="max-w-3xl text-sm text-slate-600">{data.hero.description}</p>
+              <h1 className="text-display-lg text-slate-900">{resolvedData.hero.title}</h1>
+              <p className="max-w-3xl text-sm text-slate-600">{resolvedData.hero.description}</p>
               <button
                 type="button"
                 className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[var(--primary-600)] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--primary-500)] focus-visible:focus-ring"
                 onClick={() => push({ title: 'Capability deck requested', description: 'We will send the full portfolio within 5 minutes.', tone: 'info' })}
               >
                 <Sparkles className="h-4 w-4" aria-hidden />
-                {data.hero.cta}
+                {resolvedData.hero.cta}
               </button>
             </div>
             <div className="flex flex-col items-end gap-3">
@@ -1346,49 +1580,157 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                 </button>
               </div>
               <div className="rounded-[18px] border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-xs text-slate-500">
-                Generated at {new Date(data.generatedAt).toLocaleString()}
+                Generated at {new Date(resolvedData.generatedAt).toLocaleString()}
               </div>
             </div>
           </div>
 
-          <SegmentedTabs tabs={data.tabs} activeId={selectedModule} onChange={setModule} />
+          <SegmentedTabs tabs={resolvedData.tabs} activeId={selectedModule} onChange={setModule} />
 
-          <div className="flex flex-wrap items-center gap-3">
-            {dateRangeOptions.map((option) => (
-              <FilterChip
-                key={option.id}
-                label={option.label}
-                active={filters.dateRange === option.id}
-                onClick={() => setFilters({ dateRange: option.id as typeof filters.dateRange })}
-                icon={filters.dateRange === option.id ? <Check className="h-4 w-4" aria-hidden /> : undefined}
-              />
-            ))}
-            {segmentOptions.map((option) => (
-              <FilterChip
-                key={option.id}
-                label={option.label}
-                active={(filters.segment ?? 'all') === option.id}
-                onClick={() => setFilters({ segment: option.id === 'all' ? null : option.id })}
-              />
-            ))}
-            {channelOptions.map((option) => (
-              <FilterChip
-                key={option.id}
-                label={option.label}
-                active={(filters.channel ?? 'global') === option.id}
-                onClick={() => setFilters({ channel: option.id === 'global' ? null : option.id })}
-              />
-            ))}
+          <div className="flex flex-col gap-4 rounded-[18px] border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                <span className="inline-flex items-center gap-2 rounded-full bg-[var(--primary-50)] px-3 py-1 font-semibold text-[var(--primary-600)]">
+                  <Filter className="h-3.5 w-3.5" aria-hidden />
+                  Global filters
+                </span>
+                <span>Scope propagates to all modules and exports.</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {primaryExport ? (
+                  <button
+                    type="button"
+                    className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+                    onClick={() => handleExport(selectedModule, primaryExport.id, primaryExport.format, primaryExport.rows)}
+                  >
+                    <Download className="h-4 w-4" aria-hidden />
+                    Export {primaryExport.format.toUpperCase()}
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  className="inline-flex min-h-[40px] items-center gap-2 rounded-full bg-[var(--primary-600)] px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-[var(--primary-500)] focus-visible:focus-ring"
+                  onClick={scrollToActions}
+                >
+                  <ArrowDownToLine className="h-4 w-4" aria-hidden />
+                  Action hub
+                </button>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {dateRangeOptions.map((option) => (
+                <FilterChip
+                  key={option.id}
+                  label={option.label}
+                  active={filters.dateRange === option.id}
+                  onClick={() => {
+                    setFilters({ dateRange: option.id as typeof filters.dateRange });
+                    trackEvent('filter_change', { type: 'dateRange', value: option.id });
+                  }}
+                  icon={filters.dateRange === option.id ? <Check className="h-4 w-4" aria-hidden /> : undefined}
+                />
+              ))}
+              {segmentOptions.map((option) => (
+                <FilterChip
+                  key={option.id}
+                  label={option.label}
+                  active={(filters.segment ?? 'all') === option.id}
+                  onClick={() => {
+                    setFilters({ segment: option.id === 'all' ? null : option.id });
+                    trackEvent('filter_change', { type: 'segment', value: option.id });
+                  }}
+                />
+              ))}
+              {channelOptions.map((option) => (
+                <FilterChip
+                  key={option.id}
+                  label={option.label}
+                  active={(filters.channel ?? 'global') === option.id}
+                  onClick={() => {
+                    setFilters({ channel: option.id === 'global' ? null : option.id });
+                    trackEvent('filter_change', { type: 'channel', value: option.id });
+                  }}
+                />
+              ))}
+            </div>
+            <nav className="flex flex-wrap items-center gap-2 pt-1 text-xs text-slate-500" aria-label="In-page navigation">
+              {[
+                { id: 'insights', label: 'Insights' },
+                { id: 'details', label: 'Details' },
+                { id: 'actions', label: 'Actions' },
+              ].map((anchor) => (
+                <a
+                  key={anchor.id}
+                  className="inline-flex min-h-[32px] items-center gap-1 rounded-full border border-[var(--surface-border)] px-3 py-1 font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+                  href={`#${anchor.id}`}
+                >
+                  <span className="h-2 w-2 rounded-full bg-[var(--primary-500)]" aria-hidden />
+                  {anchor.label}
+                </a>
+              ))}
+            </nav>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl space-y-8 px-6 py-10">
-        <KPIBand metrics={moduleMetrics} accentToken={accent} />
-        <div className="rounded-[24px] border border-dashed border-[var(--surface-border)] bg-[var(--surface-s1)] px-6 py-4 text-xs text-slate-500">
-          Global filters persist via query params. React Query hydrates instantly, while Zustand keeps inter-module state fast.
-        </div>
-        {moduleContent}
+      <main className="mx-auto max-w-7xl space-y-12 px-6 py-10">
+        <section
+          id="insights"
+          className="space-y-6 scroll-mt-32"
+          aria-labelledby="insights-anchor"
+        >
+          <h2 id="insights-anchor" className="sr-only">
+            Insights overview
+          </h2>
+          <div className="flex flex-col gap-4">
+            <KPIBand metrics={moduleMetrics} accentToken={accent} />
+            <div className="rounded-[24px] border border-dashed border-[var(--surface-border)] bg-[var(--surface-s1)] px-6 py-4 text-xs text-slate-500">
+              Global filters persist via query params. React Query hydrates instantly, while Zustand keeps inter-module state fast.
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="details"
+          className="scroll-mt-32 space-y-10"
+          aria-labelledby="details-anchor"
+        >
+          <h2 id="details-anchor" className="sr-only">
+            Module details
+          </h2>
+          {moduleContent}
+        </section>
+
+        <section
+          id="actions"
+          className="scroll-mt-32"
+          aria-labelledby="actions-anchor"
+        >
+          <h2 id="actions-anchor" className="sr-only">
+            Automation and operational actions
+          </h2>
+          <div className="grid grid-cols-12 gap-6 lg:gap-8">
+            <div className="col-span-12 lg:col-span-8">
+              <AutomationOrchestrator
+                workflows={orchestratorWorkflows}
+                verticalAccent={accent}
+                onRun={(workflow) => handleAutomationRun(selectedModule, workflow)}
+                onSimulate={(workflow) => handleAutomationSimulate(selectedModule, workflow)}
+                onCreate={async (values) =>
+                  handleAutomationCreate(selectedModule, { name: values.name, trigger: values.trigger })
+                }
+              />
+            </div>
+            <div className="col-span-12 lg:col-span-4">
+              <ActionHub
+                exports={actionHubExports}
+                automations={actionHubAutomations}
+                alerts={moduleAlerts}
+                onLaunchOrchestrator={scrollToActions}
+              />
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
