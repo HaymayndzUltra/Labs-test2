@@ -324,6 +324,111 @@
     background: color-mix(in srgb, var(--row-accent, var(--primary-500)) 6%, white) !important;
   }
 
+  .story-row td {
+    transition: background 0.16s ease;
+  }
+
+  .story-row:nth-child(odd) td {
+    background: rgba(255, 255, 255, 0.92);
+  }
+
+  .story-row:nth-child(even) td {
+    background: rgba(254, 243, 199, 0.45);
+  }
+
+  .legend-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.4rem 0.85rem;
+    border: 1px solid var(--surface-border);
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.03);
+    opacity: 0;
+    transform: translateX(12px);
+    animation: legend-chip-fade 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  .legend-chip:hover {
+    box-shadow: inset 0 0 0 1px rgba(15, 118, 110, 0.3);
+  }
+
+  .queue-row {
+    position: relative;
+    border-radius: 14px;
+    border: 1px solid var(--surface-border);
+    background: var(--surface-s1);
+    padding: 1rem 1.25rem;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+    opacity: 0;
+    animation: queue-row-enter 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  .queue-row::before {
+    content: '';
+    position: absolute;
+    inset-block: 0.75rem;
+    inset-inline-start: 0.6rem;
+    width: 6px;
+    border-radius: 9999px;
+    background: linear-gradient(180deg, rgba(251, 146, 60, 0.6), rgba(234, 88, 12, 0.9));
+    transform: scaleY(0.6);
+    opacity: 0;
+    transition: opacity 0.16s ease, transform 0.16s ease;
+  }
+
+  .queue-row:hover,
+  .queue-row:focus-within {
+    transform: translateX(4px);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+    border-color: color-mix(in srgb, rgba(251, 146, 60, 0.4) 60%, var(--surface-border));
+  }
+
+  .queue-row:hover::before,
+  .queue-row:focus-within::before {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+
+  .heatmap-cell {
+    border-radius: 10px;
+    background: var(--heatmap-color, rgba(79, 70, 229, 0.4));
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    opacity: 0;
+    animation: heatmap-wave 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  .heatmap-cell-peak::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    border: 2px solid rgba(250, 204, 21, 0.6);
+    opacity: 0;
+    animation: heatmap-peak 1.6s ease-out 0.6s forwards;
+  }
+
+  .dense-row:nth-child(even) td {
+    background: rgba(229, 231, 235, 0.55);
+  }
+
+  .lifecycle-card {
+    border-radius: 16px;
+    border: 1px solid var(--surface-border);
+    background: var(--surface-s1);
+    padding: 1rem 1.1rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    opacity: 0;
+    animation: lifecycle-card-enter 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  .lifecycle-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
   .kanban-card {
     will-change: transform, box-shadow;
   }
@@ -387,6 +492,65 @@
     }
   }
 
+  @keyframes legend-chip-fade {
+    from {
+      opacity: 0;
+      transform: translateX(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes queue-row-enter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes heatmap-wave {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes heatmap-peak {
+    0% {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+    35% {
+      opacity: 0.45;
+      transform: scale(1.05);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.25);
+    }
+  }
+
+  @keyframes lifecycle-card-enter {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   @keyframes skeleton-wave {
     0% {
       background-position: 200% 0;
@@ -429,6 +593,19 @@
 
   .automation-pill::after,
   .automation-toggle[data-state='active'] .automation-check {
+    animation: none !important;
+  }
+
+  .legend-chip,
+  .queue-row,
+  .heatmap-cell,
+  .lifecycle-card {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .heatmap-cell-peak::after {
     animation: none !important;
   }
 

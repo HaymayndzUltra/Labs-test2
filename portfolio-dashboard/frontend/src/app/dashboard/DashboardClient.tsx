@@ -36,12 +36,15 @@ import {
   Sun,
   Timer,
   TrendingUp,
+  Users,
   Workflow,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import {
   fetchPortfolioDashboard,
+  type AutomationWorkflow,
+  type MetricCard,
   type PortfolioDashboardResponse,
   type TabDefinition,
 } from './data';
@@ -1630,6 +1633,7 @@ function CustomAppModule({
   );
 }
 
+
 function ContentModule({
   data,
   accent,
@@ -1637,109 +1641,375 @@ function ContentModule({
   data: PortfolioDashboardResponse['content'];
   accent: string;
 }) {
-  const engagementRows = data.engagementTrend.map((point) => ({ period: point.label, score: point.value }));
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const headerFilters = ['All channels', 'Owned', 'Earned', 'Paid'];
+  const typeFilters = ['All types', 'Video', 'Article', 'Livestream'];
+  const [activeChannel, setActiveChannel] = useState(headerFilters[0]);
+  const [activeType, setActiveType] = useState(typeFilters[0]);
+  const [activeRange, setActiveRange] = useState('Last 30 days');
+
+  const engagementRows = useMemo(
+    () => data.engagementTrend.map((point) => ({ period: point.label, score: point.value })),
+    [data.engagementTrend],
+  );
+
+  const channelMix = useMemo(() => {
+    const counts = data.topStories.reduce<Record<string, number>>((accumulator, story) => {
+      accumulator[story.format] = (accumulator[story.format] ?? 0) + 1;
+      return accumulator;
+    }, {});
+    const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+    const palette = ['#fb923c', '#f97316', '#ea580c', '#c2410c'];
+    return Object.entries(counts).map(([format, value], index) => ({
+      id: format,
+      label: format,
+      value,
+      percent: total > 0 ? Math.round((value / total) * 100) : 0,
+      color: palette[index % palette.length],
+    }));
+  }, [data.topStories]);
+
+  const cadencePerformance = useMemo(
+    () =>
+      data.engagementTrend.map((point, index) => ({
+        label: point.label,
+        posts: Math.max(4, Math.round(point.value / 80) + (index % 3)),
+        engagement: point.value,
+      })),
+    [data.engagementTrend],
+  );
+
+  const publishingStatusTone = useCallback((status: string) => {
+    if (status === 'ready') {
+      return 'success';
+    }
+    if (status === 'blocked') {
+      return 'danger';
+    }
+    return 'info';
+  }, []);
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="content-panel" role="tabpanel" aria-labelledby="content">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Publishing workflow & engagement"
-          subtitle="Content & media"
-          accent={accent}
-        />
-      </div>
-
-      <div className="col-span-12 lg:col-span-7 space-y-6">
-        <ChartCard
-          id="content-engagement"
-          title="Engagement trend"
-          description="Plays, reads, and watch time"
-          rows={engagementRows}
-          columns={[
-            { key: 'period', label: 'Period' },
-            { key: 'score', label: 'Engagement', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={280}>
-            <LineChart data={data.engagementTrend}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(251, 146, 60, 0.25)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Line type="monotone" dataKey="value" stroke="var(--vertical-content)" strokeWidth={3} dot={{ r: 5 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Publishing queue">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Publishing queue</h3>
-              <p className="text-xs text-slate-600">Ready, review, and blocked statuses with guardrails.</p>
-            </div>
-          </div>
-          <ul className="mt-4 space-y-3">
-            {data.publishingQueue.map((item) => (
-              <li key={item.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">{item.topic}</p>
-                    <p className="text-xs text-slate-500">Slot {item.slot} • Editor {item.editor}</p>
-                  </div>
-                  <StatusChip
-                    label={item.status}
-                    tone={
-                      item.status === 'ready'
-                        ? 'success'
-                        : item.status === 'blocked'
-                        ? 'danger'
-                        : 'info'
-                    }
-                  />
-                </div>
-              </li>
+    <section
+      id="content-panel"
+      role="tabpanel"
+      aria-labelledby="content"
+      className="space-y-8"
+    >
+      <header className="grid grid-cols-12 gap-4 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-s1)] p-6 shadow-sm animate-dashboard-header">
+        <div className="col-span-12 lg:col-span-5">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.18em] text-slate-500">Content & Media</p>
+          <h2 className="mt-2 text-[28px] font-semibold text-slate-900">Publishing workflow & engagement</h2>
+        </div>
+        <div className="col-span-12 lg:col-span-7 flex flex-wrap items-center justify-end gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            {headerFilters.map((filter) => (
+              <FilterChip
+                key={filter}
+                label={filter}
+                active={filter === activeChannel}
+                onClick={() => setActiveChannel(filter)}
+                icon={filter === activeChannel ? <BarChart3 className="h-4 w-4" aria-hidden /> : undefined}
+              />
             ))}
-          </ul>
-        </Card>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {typeFilters.map((filter) => (
+              <FilterChip
+                key={filter}
+                label={filter}
+                active={filter === activeType}
+                onClick={() => setActiveType(filter)}
+                icon={filter === 'Video' ? <Sparkles className="h-4 w-4" aria-hidden /> : undefined}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white focus-visible:focus-ring"
+            onClick={() =>
+              setActiveRange((current) => (current === 'Last 30 days' ? 'Quarter to date' : 'Last 30 days'))
+            }
+          >
+            <CalendarRange className="h-4 w-4" aria-hidden />
+            {activeRange}
+          </button>
+        </div>
+        <div className="col-span-12 border-t border-dashed border-[var(--surface-border)] pt-4 text-sm text-slate-600">
+          Filters sync across analytics, queue, and automations. Channel and type drive comparative baselines.
+        </div>
+      </header>
+
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12">
+          <KPIBand metrics={data.metrics} accentToken={accent} />
+        </div>
       </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Top performing stories">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Top performing stories</h3>
-              <p className="text-xs text-slate-600">Format, window, engagement, status.</p>
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 xl:col-span-7">
+          <ChartCard
+            id="content-engagement"
+            title="Engagement trend"
+            description="Plays, reads, and watch time"
+            rows={engagementRows}
+            columns={[
+              { key: 'period', label: 'Period' },
+              { key: 'score', label: 'Engagement index', align: 'right' },
+            ]}
+            className="h-full"
+          >
+            <ResponsiveContainer height={320}>
+              <AreaChart data={data.engagementTrend}>
+                <defs>
+                  <linearGradient id="contentEngagement" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="rgba(251, 146, 60, 0.65)" />
+                    <stop offset="95%" stopColor="rgba(251, 191, 36, 0.05)" />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="4 6" stroke="rgba(251, 191, 36, 0.35)" />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="var(--vertical-content)"
+                  strokeWidth={2}
+                  fill="url(#contentEngagement)"
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={400}
+                  animationBegin={120}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </div>
+        <div className="col-span-12 xl:col-span-5">
+          <Card className="border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm" role="region" aria-label="Top performing stories">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-[18px] font-semibold text-slate-900">Top performing stories</h3>
+                <p className="text-xs text-slate-600">Thumbnailed leaderboard with engagement window.</p>
+              </div>
             </div>
-          </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Stories table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
-                <tr>
-                  <th className="px-4 py-3 text-left">Title</th>
-                  <th className="px-4 py-3 text-left">Format</th>
-                  <th className="px-4 py-3 text-left">Window</th>
-                  <th className="px-4 py-3 text-right">Engagement</th>
-                  <th className="px-4 py-3 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
-                {data.topStories.map((story) => (
-                  <tr key={story.id}>
-                    <td className="px-4 py-[11px] font-semibold text-slate-900">{story.title}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{story.format}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{story.publishedAt}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{story.engagement}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{story.status}</td>
+            <div className="mt-4 max-h-[360px] overflow-auto rounded-xl border border-[var(--surface-border)]">
+              <table className="min-w-full" aria-label="Top performing stories table">
+                <thead className="sticky top-0 z-10 bg-white text-[12px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+                  <tr>
+                    <th className="px-5 py-3 text-left">Story</th>
+                    <th className="px-5 py-3 text-left">Type</th>
+                    <th className="px-5 py-3 text-left">Window</th>
+                    <th className="px-5 py-3 text-right">Engagement</th>
+                    <th className="px-5 py-3 text-right">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-
-        <AutomationList items={data.automation} />
+                </thead>
+                <tbody className="text-[13px] text-slate-700">
+                  {data.topStories.map((story, index) => (
+                    <tr
+                      key={story.id}
+                      className="story-row data-row group transition"
+                      style={
+                        {
+                          '--row-accent': 'rgba(251, 146, 60, 1)',
+                          animationDelay: prefersReducedMotion ? undefined : `${index * 40}ms`,
+                        } as CSSProperties
+                      }
+                    >
+                      <td className="px-5 py-3">
+                        <div className="flex items-center gap-3">
+                          <span
+                            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[rgba(251,146,60,0.12)] text-sm font-semibold text-[var(--vertical-content)]"
+                            aria-hidden
+                          >
+                            {story.format.slice(0, 1)}
+                          </span>
+                          <span className="truncate text-sm font-semibold text-slate-900" title={story.title}>
+                            {story.title}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-3 text-sm">{story.format}</td>
+                      <td className="px-5 py-3 text-sm">{story.publishedAt}</td>
+                      <td className="px-5 py-3 text-right font-semibold text-slate-900">{story.engagement}</td>
+                      <td className="px-5 py-3 text-right">
+                        <StatusChip label={story.status} tone={story.status === 'Live' ? 'success' : 'info'} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </div>
       </div>
-    </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 xl:col-span-5">
+          <Card className="flex h-full flex-col gap-5 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm" role="region" aria-label="Channel mix">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-[18px] font-semibold text-slate-900">Channel mix</h3>
+                <p className="text-xs text-slate-600">Share of reach by distribution channel.</p>
+              </div>
+            </div>
+            <div className="flex flex-1 flex-col gap-4 md:flex-row">
+              <div className="flex-1">
+                <ResponsiveContainer height={240}>
+                  <PieChart>
+                    <Pie
+                      data={channelMix}
+                      dataKey="value"
+                      nameKey="label"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      startAngle={90}
+                      endAngle={450}
+                      strokeWidth={2}
+                      isAnimationActive={!prefersReducedMotion}
+                      animationDuration={240}
+                    >
+                      {channelMix.map((segment) => (
+                        <Cell key={segment.id} fill={segment.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <ul className="flex flex-col justify-center gap-3 pr-4" aria-label="Channel mix legend">
+                {channelMix.map((segment, index) => (
+                  <li
+                    key={segment.id}
+                    className="legend-chip"
+                    style={
+                      {
+                        '--legend-color': segment.color,
+                        animationDelay: prefersReducedMotion ? undefined : `${index * 60}ms`,
+                      } as CSSProperties
+                    }
+                  >
+                    <span className="inline-flex h-3 w-3 rounded-full" style={{ background: segment.color }} aria-hidden />
+                    <span className="text-sm font-medium text-slate-700">{segment.label}</span>
+                    <span className="ml-auto text-sm font-semibold text-slate-900">{segment.percent}%</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Card>
+        </div>
+        <div className="col-span-12 xl:col-span-7">
+          <Card className="flex h-full flex-col gap-5 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm" role="region" aria-label="Content cadence vs performance">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-[18px] font-semibold text-slate-900">Content cadence vs performance</h3>
+                <p className="text-xs text-slate-600">Publishing volume vs. engagement uplift.</p>
+              </div>
+            </div>
+            <ResponsiveContainer height={320}>
+              <ComposedChart data={cadencePerformance}>
+                <CartesianGrid strokeDasharray="4 6" stroke="rgba(251, 191, 36, 0.25)" />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                <YAxis yAxisId="left" tickLine={false} axisLine={false} />
+                <YAxis yAxisId="right" orientation="right" tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                <Legend verticalAlign="top" align="right" wrapperStyle={{ paddingBottom: 12 }} />
+                <Bar
+                  yAxisId="left"
+                  dataKey="posts"
+                  name="Posts"
+                  radius={[8, 8, 0, 0]}
+                  fill="rgba(251, 146, 60, 0.5)"
+                  isAnimationActive={!prefersReducedMotion}
+                />
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="engagement"
+                  name="Avg engagement"
+                  stroke="var(--vertical-content)"
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={300}
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </Card>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 xl:col-span-6">
+          <Card className="flex h-full flex-col gap-4 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm" role="region" aria-label="Publishing queue">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[18px] font-semibold text-slate-900">Publishing queue</h3>
+              <StatusChip label={`${data.publishingQueue.length} slots`} tone="info" />
+            </div>
+            <ul className="space-y-3">
+              {data.publishingQueue.map((item, index) => (
+                <li
+                  key={item.id}
+                  className="queue-row"
+                  style={{ animationDelay: prefersReducedMotion ? undefined : `${index * 60}ms` }}
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-slate-900">{item.topic}</p>
+                      <p className="text-xs text-slate-600">
+                        {item.slot} • Editor {item.editor}
+                      </p>
+                    </div>
+                    <StatusChip label={item.status} tone={publishingStatusTone(item.status)} />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </div>
+        <div className="col-span-12 xl:col-span-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {data.automation.map((automation, index) => (
+              <Card
+                key={automation.id}
+                className="automation-card grid h-full grid-rows-[auto_1fr_auto] gap-3 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm"
+                style={{ animationDelay: prefersReducedMotion ? undefined : `${index * 80}ms` }}
+                role="article"
+                aria-label={`${automation.title} automation`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-semibold text-slate-900">{automation.title}</h3>
+                    <StatusChip label={automation.active ? 'Enabled' : 'Paused'} tone={automation.active ? 'success' : 'warning'} />
+                  </div>
+                  <button
+                    type="button"
+                    className="automation-toggle inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--surface-border)] transition"
+                    data-state={automation.active ? 'active' : 'inactive'}
+                    aria-pressed={automation.active}
+                  >
+                    <Check className="automation-check h-4 w-4" aria-hidden />
+                  </button>
+                </div>
+                <div className="space-y-2 text-xs text-slate-600">
+                  <p>
+                    <strong>Trigger:</strong> {automation.trigger}
+                  </p>
+                  <p>
+                    <strong>Action:</strong> {automation.action}
+                  </p>
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+                  <span className="automation-pill rounded-full bg-slate-100 px-3 py-1">Channel: {automation.channel}</span>
+                  <span className="automation-pill rounded-full bg-slate-100 px-3 py-1">Cadence: {automation.cadence}</span>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -1750,122 +2020,283 @@ function EdTechModule({
   data: PortfolioDashboardResponse['edtech'];
   accent: string;
 }) {
-  const heatmapMax = Math.max(...data.activityHeatmap.values.map((entry) => entry.score));
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const cohortFilters = ['All cohorts', 'Cohort D3', 'Cohort E1', 'Cohort M2'];
+  const courseFilters = ['All courses', ...data.courses.map((course) => course.title)];
+  const [activeCohort, setActiveCohort] = useState(cohortFilters[0]);
+  const [activeCourse, setActiveCourse] = useState(courseFilters[0]);
+  const [activeRange, setActiveRange] = useState('Last 30 days');
+
+  const heatmap = data.activityHeatmap;
+  const heatmapMax = useMemo(() => Math.max(...heatmap.values.map((entry) => entry.score)), [heatmap.values]);
+  const mostActiveKey = useMemo(() => {
+    const peak = heatmap.values.reduce((highest, entry) => (entry.score > highest.score ? entry : highest), heatmap.values[0]);
+    return `${peak.week}-${peak.day}`;
+  }, [heatmap.values]);
+
+  const gradeDistribution = useMemo(() => {
+    const bands = [
+      { label: 'A (90-100)', min: 90 },
+      { label: 'B (80-89)', min: 80 },
+      { label: 'C (70-79)', min: 70 },
+      { label: 'D (60-69)', min: 60 },
+      { label: '<60', min: 0 },
+    ];
+    const counts = bands.map(() => 0);
+    data.courses.forEach((course) => {
+      const score = Number.parseFloat(course.avgScore.replace('%', ''));
+      const index = bands.findIndex((band) => score >= band.min);
+      if (index >= 0) {
+        counts[index] += 1;
+      }
+    });
+    const total = counts.reduce((sum, value) => sum + value, 0) || 1;
+    return bands.map((band, index) => ({
+      band: band.label,
+      share: Number(((counts[index] / total) * 100).toFixed(1)),
+    }));
+  }, [data.courses]);
+
+  const retentionCurve = useMemo(() => {
+    return heatmap.weeks.map((week) => {
+      const weekScores = heatmap.values.filter((entry) => entry.week === week);
+      const total = weekScores.reduce((sum, entry) => sum + entry.score, 0);
+      const average = total / heatmap.days.length;
+      const percent = Math.round((average / heatmapMax) * 100);
+      return { week, percent };
+    });
+  }, [heatmap.days, heatmap.values, heatmap.weeks, heatmapMax]);
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="edtech-panel" role="tabpanel" aria-labelledby="edtech">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Learning analytics & student success"
-          subtitle="EdTech"
-          accent={accent}
-        />
-      </div>
-
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Program performance">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Program performance</h3>
-              <p className="text-xs text-slate-600">Enrollment, completion, average scores.</p>
-            </div>
-          </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Program performance table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
-                <tr>
-                  <th className="px-4 py-3 text-left">Course</th>
-                  <th className="px-4 py-3 text-right">Enrollment</th>
-                  <th className="px-4 py-3 text-right">Completion</th>
-                  <th className="px-4 py-3 text-right">Avg score</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
-                {data.courses.map((course) => (
-                  <tr key={course.id}>
-                    <td className="px-4 py-[11px] font-semibold text-slate-900">{course.title}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{course.enrollment.toLocaleString()}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{course.completion}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{course.avgScore}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-
-        <AutomationList items={data.automation} />
-      </div>
-
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Student activity heatmap">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Student activity heatmap</h3>
-              <p className="text-xs text-slate-600">Keyboard navigation supported — use arrow keys to traverse.</p>
-            </div>
-          </div>
-          <div className="mt-4 overflow-x-auto">
-            <table className="min-w-full text-center" aria-label="Student activity heatmap table">
-              <thead className="text-xs uppercase tracking-[0.08em] text-slate-500">
-                <tr>
-                  <th className="px-2 py-2 text-left">Week</th>
-                  {data.activityHeatmap.days.map((day) => (
-                    <th key={day} className="px-2 py-2 text-center">
-                      {day}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="text-sm">
-                {data.activityHeatmap.weeks.map((week) => (
-                  <tr key={week}>
-                    <td className="px-2 py-2 text-left font-semibold text-slate-900">{week}</td>
-                    {data.activityHeatmap.days.map((day) => {
-                      const cell = data.activityHeatmap.values.find((value) => value.week === week && value.day === day);
-                      const score = cell?.score ?? 0;
-                      const intensity = score / heatmapMax;
-                      return (
-                        <td
-                          key={`${week}-${day}`}
-                          className="px-2 py-2 text-xs font-semibold text-slate-700"
-                          style={{
-                            background: `rgba(107, 70, 193, ${0.2 + intensity * 0.5})`,
-                            borderRadius: 12,
-                          }}
-                        >
-                          {score}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Alerts">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Alerts</h3>
-              <p className="text-xs text-slate-600">FERPA-ready alerts with remediation guidance.</p>
-            </div>
-          </div>
-          <ul className="mt-4 space-y-3">
-            {data.alerts.map((alert) => (
-              <li key={alert.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <StatusChip
-                  label={alert.severity}
-                  tone={alert.severity === 'critical' ? 'danger' : alert.severity === 'warning' ? 'warning' : 'info'}
-                />
-                <p className="mt-2 text-sm text-slate-700">{alert.message}</p>
-              </li>
+    <section id="edtech-panel" role="tabpanel" aria-labelledby="edtech" className="space-y-8">
+      <header className="grid grid-cols-12 gap-4 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-s1)] p-6 shadow-sm animate-dashboard-header">
+        <div className="col-span-12 lg:col-span-5">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.18em] text-slate-500">EdTech</p>
+          <h2 className="mt-2 text-[28px] font-semibold text-slate-900">Learning analytics & student success</h2>
+        </div>
+        <div className="col-span-12 lg:col-span-7 flex flex-wrap items-center justify-end gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            {cohortFilters.map((filter) => (
+              <FilterChip
+                key={filter}
+                label={filter}
+                active={filter === activeCohort}
+                onClick={() => setActiveCohort(filter)}
+                icon={filter === 'Cohort D3' ? <Users className="h-4 w-4" aria-hidden /> : undefined}
+              />
             ))}
-          </ul>
-        </Card>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {courseFilters.map((filter) => (
+              <FilterChip
+                key={filter}
+                label={filter}
+                active={filter === activeCourse}
+                onClick={() => setActiveCourse(filter)}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white focus-visible:focus-ring"
+            onClick={() =>
+              setActiveRange((current) => (current === 'Last 30 days' ? 'Quarter to date' : 'Last 30 days'))
+            }
+          >
+            <CalendarRange className="h-4 w-4" aria-hidden />
+            {activeRange}
+          </button>
+        </div>
+        <div className="col-span-12 border-t border-dashed border-[var(--surface-border)] pt-4 text-sm text-slate-600">
+          Filters bubble down into program tables, heatmaps, and intervention routing.
+        </div>
+      </header>
+
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12">
+          <KPIBand metrics={data.metrics} accentToken={accent} />
+        </div>
       </div>
-    </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 xl:col-span-6">
+          <Card className="flex h-full flex-col gap-4 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm" role="region" aria-label="Program performance">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-[18px] font-semibold text-slate-900">Program performance</h3>
+                <p className="text-xs text-slate-600">Enrollment, completion, mastery.</p>
+              </div>
+            </div>
+            <div className="overflow-hidden rounded-xl border border-[var(--surface-border)]">
+              <table className="min-w-full" aria-label="Program performance table">
+                <thead className="sticky top-0 z-10 bg-white text-[12px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+                  <tr>
+                    <th className="px-5 py-3 text-left">Course</th>
+                    <th className="px-5 py-3 text-right">Enrollment</th>
+                    <th className="px-5 py-3 text-right">Completion %</th>
+                    <th className="px-5 py-3 text-right">Avg score</th>
+                  </tr>
+                </thead>
+                <tbody className="text-[13px] text-slate-700">
+                  {data.courses.map((course, index) => (
+                    <tr key={course.id} className="dense-row" style={{ animationDelay: prefersReducedMotion ? undefined : `${index * 50}ms` }}>
+                      <td className="px-5 py-3 font-semibold text-slate-900">{course.title}</td>
+                      <td className="px-5 py-3 text-right">{course.enrollment.toLocaleString()}</td>
+                      <td className="px-5 py-3 text-right">{course.completion}</td>
+                      <td className="px-5 py-3 text-right">{course.avgScore}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </div>
+        <div className="col-span-12 xl:col-span-6">
+          <Card className="flex h-full flex-col gap-4 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm" role="region" aria-label="Student activity heatmap">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-[18px] font-semibold text-slate-900">Student activity heatmap</h3>
+                <p className="text-xs text-slate-600">Keyboard navigation supported — use arrow keys.</p>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-center" aria-label="Student activity heatmap table">
+                <thead className="text-[12px] uppercase tracking-[0.08em] text-slate-500">
+                  <tr>
+                    <th className="px-3 py-2 text-left">Week</th>
+                    {heatmap.days.map((day) => (
+                      <th key={day} className="px-3 py-2 text-center">
+                        {day}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="text-[12px]">
+                  {heatmap.weeks.map((week, rowIndex) => (
+                    <tr key={week}>
+                      <td className="px-3 py-2 text-left font-semibold text-slate-900">{week}</td>
+                      {heatmap.days.map((day, columnIndex) => {
+                        const cell = heatmap.values.find((entry) => entry.week === week && entry.day === day);
+                        const score = cell?.score ?? 0;
+                        const intensity = score / heatmapMax;
+                        const isPeak = `${week}-${day}` === mostActiveKey;
+                        const waveIndex = rowIndex * heatmap.days.length + columnIndex;
+                        return (
+                          <td
+                            key={`${week}-${day}`}
+                            className={cn(
+                              'heatmap-cell px-2 py-2 font-semibold text-slate-50',
+                              isPeak && 'heatmap-cell-peak',
+                            )}
+                            style={
+                              {
+                                '--heatmap-color': `rgba(79, 70, 229, ${0.15 + intensity * 0.65})`,
+                                animationDelay: prefersReducedMotion ? undefined : `${waveIndex * 40}ms`,
+                              } as CSSProperties
+                            }
+                          >
+                            {score}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 xl:col-span-6">
+          <Card className="flex h-full flex-col gap-4 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm" role="region" aria-label="Assessment outcomes">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-[18px] font-semibold text-slate-900">Assessment outcomes</h3>
+                <p className="text-xs text-slate-600">Grade distribution across adaptive quizzes.</p>
+              </div>
+            </div>
+            <ResponsiveContainer height={280}>
+              <BarChart data={gradeDistribution}>
+                <CartesianGrid strokeDasharray="4 6" stroke="rgba(129, 140, 248, 0.3)" />
+                <XAxis dataKey="band" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} interval={0} angle={-10} textAnchor="end" height={60} />
+                <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `${value}%`} />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} formatter={(value: number) => [`${value}%`, 'Learners']} />
+                <Bar dataKey="share" fill="rgba(99, 102, 241, 0.7)" radius={[8, 8, 0, 0]} isAnimationActive={!prefersReducedMotion} />
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+        </div>
+        <div className="col-span-12 xl:col-span-6">
+          <Card className="flex h-full flex-col gap-4 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm" role="region" aria-label="Cohort retention curve">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-[18px] font-semibold text-slate-900">Cohort retention curve</h3>
+                <p className="text-xs text-slate-600">Week-over-week active participation.</p>
+              </div>
+            </div>
+            <ResponsiveContainer height={280}>
+              <LineChart data={retentionCurve}>
+                <CartesianGrid strokeDasharray="4 6" stroke="rgba(129, 140, 248, 0.3)" />
+                <XAxis dataKey="week" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `${value}%`} />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} formatter={(value: number) => [`${value}%`, 'Retention']} />
+                <Line
+                  type="monotone"
+                  dataKey="percent"
+                  stroke="var(--vertical-edtech)"
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={360}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </Card>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {data.automation.map((automation, index) => (
+              <Card
+                key={automation.id}
+                className="automation-card grid h-full grid-rows-[auto_1fr] gap-4 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm"
+                style={{ animationDelay: prefersReducedMotion ? undefined : `${index * 80}ms` }}
+                role="article"
+                aria-label={`${automation.title} intervention`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-semibold text-slate-900">{automation.title}</h3>
+                    <p className="text-xs text-slate-600">Trigger-led automation</p>
+                  </div>
+                  <button
+                    type="button"
+                    className="automation-toggle inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--surface-border)] transition"
+                    data-state={automation.active ? 'active' : 'inactive'}
+                    aria-pressed={automation.active}
+                  >
+                    <Check className="automation-check h-4 w-4" aria-hidden />
+                  </button>
+                </div>
+                <div className="space-y-2 text-xs text-slate-600">
+                  <p>
+                    <strong>Trigger:</strong> {automation.trigger}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+                    <span className="automation-pill rounded-full bg-slate-100 px-3 py-1">Channel: {automation.channel}</span>
+                    <span className="automation-pill rounded-full bg-slate-100 px-3 py-1">Cadence: {automation.cadence}</span>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -1876,161 +2307,291 @@ function SpecializedModule({
   data: PortfolioDashboardResponse['specialized'];
   accent: string;
 }) {
-  const momentumRows = data.realEstate.trend.map((point) => ({ month: point.label, momentum: point.value }));
-  const expenseRows = data.finance.expenses.map((point) => ({ week: point.label, actual: point.value, budget: point.secondary }));
-  const roiRows = data.finance.roiBreakdown.map((item) => ({ channel: item.label, share: `${item.value}%` }));
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const verticalFilters = ['All verticals', 'Real estate', 'Finance', 'Healthcare'];
+  const [activeVertical, setActiveVertical] = useState(verticalFilters[0]);
+  const [activeRange, setActiveRange] = useState('Last 30 days');
+
+  const specializedMetrics = useMemo(() => {
+    const metrics: MetricCard[] = [];
+    const inventory = data.realEstate.metrics.find((metric) => metric.id === 'inventory');
+    const burn = data.finance.metrics.find((metric) => metric.id === 'burn');
+    const appointments = data.healthcare.metrics.find((metric) => metric.id === 'appointments');
+    const showRate = data.healthcare.metrics.find((metric) => metric.id === 'show-rate');
+    if (inventory) {
+      metrics.push({ ...inventory, label: 'Active listings' });
+    }
+    if (burn) {
+      metrics.push({ ...burn, label: 'Monthly burn' });
+    }
+    if (appointments) {
+      metrics.push({ ...appointments, label: 'Appointments this week' });
+    }
+    if (showRate) {
+      metrics.push({ ...showRate, label: 'Show rate' });
+    }
+    return metrics;
+  }, [data.finance.metrics, data.healthcare.metrics, data.realEstate.metrics]);
+
+  const momentumRows = useMemo(
+    () => data.realEstate.trend.map((point) => ({ month: point.label, momentum: point.value })),
+    [data.realEstate.trend],
+  );
+
+  const lifecycleAutomations = useMemo(() => {
+    const combined = [...data.finance.automation, ...data.realEstate.automation];
+    return combined.slice(0, 3);
+  }, [data.finance.automation, data.realEstate.automation]);
+
+  const automationHighlights = useMemo<AutomationWorkflow[]>(() => {
+    const highlights: AutomationWorkflow[] = [];
+    const agentLoop = data.realEstate.automation.find((item) => item.id === 'agent-alerts');
+    const listingDrip = data.realEstate.automation.find((item) => item.id === 'listing-drip');
+    const intake = data.healthcare.automation.find((item) => item.id === 'intake-automation');
+    if (agentLoop) {
+      highlights.push(agentLoop);
+    }
+    if (listingDrip) {
+      highlights.push(listingDrip);
+    }
+    if (intake) {
+      highlights.push(intake);
+    }
+    return highlights;
+  }, [data.healthcare.automation, data.realEstate.automation]);
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="specialized-panel" role="tabpanel" aria-labelledby="specialized">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Specialized niches"
-          subtitle="Real estate, finance, healthcare"
-          accent={accent}
-        />
-      </div>
-
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <ChartCard
-          id="specialized-momentum"
-          title="Market momentum"
-          description="Real estate listings velocity"
-          rows={momentumRows}
-          columns={[
-            { key: 'month', label: 'Month' },
-            { key: 'momentum', label: 'Momentum', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={220}>
-            <AreaChart data={data.realEstate.trend}>
-              <defs>
-                <linearGradient id="momentumGradient" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="5%" stopColor="var(--vertical-specialized)" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="var(--vertical-specialized)" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Area type="monotone" dataKey="value" stroke="var(--vertical-specialized)" fill="url(#momentumGradient)" strokeWidth={3} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Listings & inquiries">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Listings & inquiries</h3>
-              <p className="text-xs text-slate-600">Key real estate pipeline with agent accountability.</p>
-            </div>
-          </div>
-          <ul className="mt-4 space-y-3">
-            {data.realEstate.pipeline.map((item) => (
-              <li key={item.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <p className="text-sm font-semibold text-slate-900">{item.address}</p>
-                <p className="text-xs text-slate-500">Stage: {item.stage}</p>
-                <p className="text-xs text-slate-500">Inquiries: {item.inquiries}</p>
-                <p className="text-xs text-slate-500">Agent: {item.agent}</p>
-              </li>
+    <section id="specialized-panel" role="tabpanel" aria-labelledby="specialized" className="space-y-8">
+      <header className="grid grid-cols-12 gap-4 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-s1)] p-6 shadow-sm animate-dashboard-header">
+        <div className="col-span-12 lg:col-span-5">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.18em] text-slate-500">Specialized Niches</p>
+          <h2 className="mt-2 text-[28px] font-semibold text-slate-900">Real estate, finance, and healthcare ops</h2>
+        </div>
+        <div className="col-span-12 lg:col-span-7 flex flex-wrap items-center justify-end gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            {verticalFilters.map((filter) => (
+              <FilterChip
+                key={filter}
+                label={filter}
+                active={filter === activeVertical}
+                onClick={() => setActiveVertical(filter)}
+              />
             ))}
-          </ul>
-        </Card>
+          </div>
+          <button
+            type="button"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white focus-visible:focus-ring"
+            onClick={() =>
+              setActiveRange((current) => (current === 'Last 30 days' ? 'Quarter to date' : 'Last 30 days'))
+            }
+          >
+            <CalendarRange className="h-4 w-4" aria-hidden />
+            {activeRange}
+          </button>
+        </div>
+        <div className="col-span-12 border-t border-dashed border-[var(--surface-border)] pt-4 text-sm text-slate-600">
+          Vertical filter syncs inventory, burn, appointments, and automation visibility.
+        </div>
+      </header>
+
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12">
+          <KPIBand metrics={specializedMetrics} accentToken={accent} />
+        </div>
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <ChartCard
-          id="specialized-expenses"
-          title="Expense vs budget"
-          description="Finance automation keeps spend in check"
-          rows={expenseRows}
-          columns={[
-            { key: 'week', label: 'Week' },
-            { key: 'actual', label: 'Actual ($K)', align: 'right' },
-            { key: 'budget', label: 'Budget ($K)', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={220}>
-            <LineChart data={data.finance.expenses}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={false} name="Actual" />
-              <Line type="monotone" dataKey="secondary" stroke="#10b981" strokeWidth={3} dot={false} name="Budget" />
-              <Legend verticalAlign="bottom" height={36} />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard
-          id="specialized-roi"
-          title="ROI breakdown"
-          description="Attribution-safe ROI mix"
-          rows={roiRows}
-          columns={[
-            { key: 'channel', label: 'Channel' },
-            { key: 'share', label: 'Share', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={220}>
-            <PieChart>
-              <Pie dataKey="value" data={data.finance.roiBreakdown} innerRadius={70} outerRadius={110} paddingAngle={2}>
-                {data.finance.roiBreakdown.map((segment) => (
-                  <Cell key={segment.id} fill={segment.color} stroke="#1f2937" strokeWidth={1.4} />
-                ))}
-              </Pie>
-              <Legend verticalAlign="bottom" height={50} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
-
-      <div className="col-span-12 lg:col-span-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Healthcare appointments">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Healthcare appointments</h3>
-              <p className="text-xs text-slate-600">Omni-channel reminders, smart rescheduling, PHI-safe.</p>
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 xl:col-span-6">
+          <ChartCard
+            id="specialized-momentum"
+            title="Market momentum"
+            description="Listing velocity by month"
+            rows={momentumRows}
+            columns={[
+              { key: 'month', label: 'Month' },
+              { key: 'momentum', label: 'Momentum', align: 'right' },
+            ]}
+            className="h-full"
+          >
+            <ResponsiveContainer height={300}>
+              <AreaChart data={data.realEstate.trend}>
+                <defs>
+                  <linearGradient id="specializedMomentum" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="rgba(45, 212, 191, 0.55)" />
+                    <stop offset="95%" stopColor="rgba(45, 212, 191, 0.05)" />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="4 6" stroke="rgba(15, 118, 110, 0.25)" />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="var(--vertical-specialized)"
+                  strokeWidth={2}
+                  fill="url(#specializedMomentum)"
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={320}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </div>
+        <div className="col-span-12 xl:col-span-6">
+          <Card className="flex h-full flex-col gap-4 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm" role="region" aria-label="Expense vs budget">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-[18px] font-semibold text-slate-900">Expense vs budget</h3>
+                <p className="text-xs text-slate-600">Actuals vs planned spend trajectory.</p>
+              </div>
             </div>
-          </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Appointments table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
-                <tr>
-                  <th className="px-4 py-3 text-left">Patient</th>
-                  <th className="px-4 py-3 text-left">Clinician</th>
-                  <th className="px-4 py-3 text-left">Start</th>
-                  <th className="px-4 py-3 text-left">Channel</th>
-                  <th className="px-4 py-3 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
-                {data.healthcare.appointments.map((appt) => (
-                  <tr key={appt.id}>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.patient}</td>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.clinician}</td>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.start}</td>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.channel}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-700">{appt.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+            <ResponsiveContainer height={300}>
+              <LineChart data={data.finance.expenses}>
+                <CartesianGrid strokeDasharray="4 6" stroke="rgba(45, 64, 89, 0.25)" />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                <Legend verticalAlign="middle" align="right" layout="vertical" wrapperStyle={{ paddingLeft: 16 }} />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  name="Actual"
+                  stroke="#0f766e"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  isAnimationActive={!prefersReducedMotion}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="secondary"
+                  name="Budget"
+                  stroke="#2dd4bf"
+                  strokeWidth={2}
+                  strokeDasharray="6 4"
+                  dot={{ r: 3 }}
+                  isAnimationActive={!prefersReducedMotion}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+            <div className="rounded-xl border border-dashed border-[var(--surface-border)] p-4 text-[12px] text-slate-600">
+              <p>Rolling six-week comparison. Hover lines to inspect variances and anomalies.</p>
+            </div>
+          </Card>
+        </div>
       </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <AutomationList items={data.realEstate.automation} />
-        <AutomationList items={data.finance.automation} />
-        <AutomationList items={data.healthcare.automation} />
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 xl:col-span-6">
+          <Card className="flex h-full flex-col gap-4 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm" role="region" aria-label="Appointments">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-[18px] font-semibold text-slate-900">Appointments</h3>
+                <p className="text-xs text-slate-600">Patient, clinician, channel, and status.</p>
+              </div>
+            </div>
+            <div className="overflow-hidden rounded-xl border border-[var(--surface-border)]">
+              <table className="min-w-full" aria-label="Appointments table">
+                <thead className="sticky top-0 z-10 bg-white text-[12px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+                  <tr>
+                    <th className="px-5 py-3 text-left">Patient</th>
+                    <th className="px-5 py-3 text-left">Clinician</th>
+                    <th className="px-5 py-3 text-left">Start</th>
+                    <th className="px-5 py-3 text-left">Channel</th>
+                    <th className="px-5 py-3 text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="text-[13px] text-slate-700">
+                  {data.healthcare.appointments.map((appointment, index) => (
+                    <tr key={appointment.id} className="data-row" style={{ '--row-accent': '#0f766e', animationDelay: prefersReducedMotion ? undefined : `${index * 60}ms` } as CSSProperties}>
+                      <td className="px-5 py-3 font-semibold text-slate-900">{appointment.patient}</td>
+                      <td className="px-5 py-3 text-slate-700">{appointment.clinician}</td>
+                      <td className="px-5 py-3 text-slate-700">{appointment.start}</td>
+                      <td className="px-5 py-3 text-slate-700">{appointment.channel}</td>
+                      <td className="px-5 py-3 text-right">
+                        <StatusChip label={appointment.status} tone={appointment.status === 'Confirmed' ? 'success' : 'info'} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </div>
+        <div className="col-span-12 xl:col-span-6">
+          <Card className="flex h-full flex-col gap-4 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm" role="region" aria-label="Lifecycle & CRM automations">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[18px] font-semibold text-slate-900">Lifecycle & CRM automations</h3>
+                <p className="text-xs text-slate-600">Top orchestrations by impact.</p>
+              </div>
+              <button type="button" className="text-sm font-semibold text-[var(--vertical-specialized)] hover:underline focus-visible:focus-ring">
+                View all
+              </button>
+            </div>
+            <div className="space-y-3">
+              {lifecycleAutomations.map((automation, index) => (
+                <div
+                  key={automation.id}
+                  className="lifecycle-card"
+                  style={{ animationDelay: prefersReducedMotion ? undefined : `${index * 80}ms` }}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">{automation.title}</p>
+                      <p className="text-xs text-slate-600">{automation.trigger}</p>
+                    </div>
+                    <StatusChip label={automation.active ? 'Active' : 'Paused'} tone={automation.active ? 'success' : 'warning'} />
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+                    <span className="automation-pill rounded-full bg-slate-100 px-3 py-1">Channel: {automation.channel}</span>
+                    <span className="automation-pill rounded-full bg-slate-100 px-3 py-1">Cadence: {automation.cadence}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
       </div>
-    </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        {automationHighlights.map((automation, index) => (
+          <Card
+            key={automation.id}
+            className="automation-card col-span-12 grid h-full grid-rows-[auto_1fr_auto] gap-3 border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm md:col-span-4"
+            style={{ animationDelay: prefersReducedMotion ? undefined : `${index * 80}ms` }}
+            role="article"
+            aria-label={`${automation.title} automation`}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <h3 className="text-sm font-semibold text-slate-900">{automation.title}</h3>
+                <p className="text-xs text-slate-600">{automation.action}</p>
+              </div>
+              <button
+                type="button"
+                className="automation-toggle inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--surface-border)] transition"
+                data-state={automation.active ? 'active' : 'inactive'}
+                aria-pressed={automation.active}
+              >
+                <Check className="automation-check h-4 w-4" aria-hidden />
+              </button>
+            </div>
+            <div className="space-y-2 text-xs text-slate-600">
+              <p>
+                <strong>Trigger:</strong> {automation.trigger}
+              </p>
+              <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+                <span className="automation-pill rounded-full bg-slate-100 px-3 py-1">Channel: {automation.channel}</span>
+                <span className="automation-pill rounded-full bg-slate-100 px-3 py-1">Cadence: {automation.cadence}</span>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </section>
   );
 }
-
 function getModuleMetrics(
   moduleId: TabDefinition['id'],
   data: PortfolioDashboardResponse
