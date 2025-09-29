@@ -117,6 +117,25 @@
     color: rgba(233, 236, 242, 0.94);
   }
 
+  [data-theme='dark'] .motion-table-row td {
+    background-color: rgba(15, 23, 42, 0.65);
+  }
+
+  [data-theme='dark'] .motion-table-row:nth-child(even) td {
+    background-color: rgba(30, 41, 59, 0.6);
+  }
+
+  [data-theme='dark'] .motion-table-row:hover td,
+  [data-theme='dark'] .motion-table-row:focus-within td {
+    background-color: rgba(59, 130, 246, 0.18);
+  }
+
+  [data-theme='dark'] .filter-token {
+    background: rgba(148, 163, 184, 0.2);
+    color: rgba(226, 232, 240, 0.86);
+    border-color: rgba(148, 163, 184, 0.35);
+  }
+
   html {
     min-height: 100%;
     scroll-behavior: smooth;
@@ -227,25 +246,147 @@
   .animate-dashboard-header {
     opacity: 0;
     transform: translateY(-8px);
-    animation: dashboard-header-enter 0.18s var(--motion-ease) forwards;
+    animation: dashboard-header-enter 0.12s cubic-bezier(0.33, 1, 0.68, 1) forwards;
   }
 
   .animate-dashboard-kpi {
     opacity: 0;
-    transform: translateY(12px);
-    animation: dashboard-kpi-enter 0.16s var(--motion-ease) forwards;
+    transform: translateY(14px);
+    animation: dashboard-kpi-enter 0.16s cubic-bezier(0.22, 0.84, 0.36, 1) forwards;
   }
 
   .animate-dashboard-panel {
     opacity: 0;
-    transform: scale(0.98);
-    animation: dashboard-panel-enter 0.24s var(--motion-ease) forwards;
+    transform: translateY(16px) scale(0.98);
     transform-origin: center top;
+    animation: dashboard-panel-enter 0.24s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   }
 
   .animate-dashboard-chart {
     opacity: 0;
-    animation: dashboard-chart-fade 0.24s var(--motion-ease) forwards;
+    transform: translateY(12px);
+    animation: dashboard-chart-fade 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  .motion-section {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+    transform-origin: top center;
+    animation: module-section-enter 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  .motion-kpi-card {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: kpi-card-enter 0.16s cubic-bezier(0.22, 0.84, 0.36, 1) forwards;
+  }
+
+  .motion-table-row {
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.16s var(--motion-ease), color 0.16s var(--motion-ease);
+  }
+
+  .motion-table-row td {
+    background-color: rgba(248, 250, 252, 0.7);
+    transition: background-color 0.16s var(--motion-ease);
+  }
+
+  .motion-table-row:nth-child(even) td {
+    background-color: rgba(148, 163, 184, 0.08);
+  }
+
+  .motion-table-row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    background: color-mix(in srgb, var(--primary-500) 70%, transparent);
+    transition: width 0.16s var(--motion-ease);
+  }
+
+  .motion-table-row:hover::before,
+  .motion-table-row:focus-within::before {
+    width: 4px;
+  }
+
+  .motion-table-row:hover td,
+  .motion-table-row:focus-within td {
+    background-color: rgba(148, 163, 184, 0.12);
+  }
+
+  .filter-token {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.875rem;
+    border-radius: 999px;
+    border: 1px solid var(--surface-border);
+    background: rgba(148, 163, 184, 0.12);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--neutral-600, #5e6673);
+  }
+
+  .automation-card {
+    position: relative;
+    transition: transform 0.18s var(--motion-ease), box-shadow 0.18s var(--motion-ease);
+  }
+
+  .automation-card:hover,
+  .automation-card:focus-within {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .automation-pill {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.05);
+    color: rgba(71, 85, 105, 0.9);
+    overflow: hidden;
+  }
+
+  .automation-pill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.35) 45%, transparent 90%);
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  .automation-card:hover .automation-pill::after {
+    opacity: 1;
+    animation: automation-pill-shimmer 0.6s linear;
+  }
+
+  .kanban-card {
+    transition: transform 0.16s var(--motion-ease), box-shadow 0.16s var(--motion-ease);
+    transform: translateY(0);
+  }
+
+  .kanban-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .kanban-card:active {
+    transform: translateY(-1px);
+  }
+
+  .insight-card {
+    opacity: 0;
+    transform-origin: left center;
+    transform: rotateY(4deg);
+    animation: insight-card-flip 0.16s cubic-bezier(0.22, 0.84, 0.36, 1) forwards;
   }
 
   .kpi-hover:hover {
@@ -272,7 +413,7 @@
   @keyframes dashboard-header-enter {
     from {
       opacity: 0;
-      transform: translateY(-12px);
+      transform: translateY(-8px);
     }
     to {
       opacity: 1;
@@ -294,7 +435,7 @@
   @keyframes dashboard-panel-enter {
     from {
       opacity: 0;
-      transform: scale(0.98);
+      transform: translateY(20px) scale(0.97);
     }
     to {
       opacity: 1;
@@ -305,9 +446,53 @@
   @keyframes dashboard-chart-fade {
     from {
       opacity: 0;
+      transform: translateY(12px);
     }
     to {
       opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes module-section-enter {
+    from {
+      opacity: 0;
+      transform: translateY(24px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes kpi-card-enter {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes automation-pill-shimmer {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes insight-card-flip {
+    from {
+      opacity: 0;
+      transform: rotateY(4deg);
+    }
+    to {
+      opacity: 1;
+      transform: rotateY(0deg);
     }
   }
 
@@ -325,7 +510,10 @@
   .animate-dashboard-header,
   .animate-dashboard-kpi,
   .animate-dashboard-panel,
-  .animate-dashboard-chart {
+  .animate-dashboard-chart,
+  .motion-section,
+  .motion-kpi-card,
+  .insight-card {
     animation: none !important;
     transform: none !important;
     opacity: 1 !important;
@@ -333,6 +521,13 @@
 
   .kpi-hover,
   .glass-card {
+    transition: none !important;
+  }
+
+  .automation-card,
+  .kanban-card,
+  .automation-pill::after {
+    animation: none !important;
     transition: none !important;
   }
 }

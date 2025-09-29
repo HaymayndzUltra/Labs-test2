@@ -111,15 +111,12 @@ export function ChartCard({
               </thead>
               <tbody className="text-[13px] text-[var(--neutral-700,#384150)]">
                 {rows.map((row, rowIndex) => (
-                  <tr key={`${id}-row-${rowIndex}`} className="transition hover:bg-[rgba(59,130,246,0.05)]">
+                  <tr key={`${id}-row-${rowIndex}`} className="motion-table-row">
                     {columns.map((column) => (
                       <td
                         key={`${id}-row-${rowIndex}-${column.key}`}
                         className={cn(
                           'px-4 py-[11px]',
-                          rowIndex % 2 === 0
-                            ? 'bg-white/80 dark:bg-[rgba(15,23,42,0.35)]'
-                            : 'bg-[var(--surface-s1)]/90 dark:bg-[rgba(15,23,42,0.55)]',
                           column.align === 'right' && 'text-right',
                           column.align === 'center' && 'text-center',
                         )}
