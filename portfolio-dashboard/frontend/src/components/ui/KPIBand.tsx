@@ -41,8 +41,8 @@ export function KPIBand({ metrics, accentToken, onInspect }: KPIBandProps) {
             style={{ animationDelay: `${index * 80}ms` }}
             aria-label={`${metric.label}: ${metric.value}`}
           >
-            <div className="flex items-center justify-between gap-4">
-              <div>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
                 <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">
                   {metric.label}
                 </p>
@@ -56,7 +56,7 @@ export function KPIBand({ metrics, accentToken, onInspect }: KPIBandProps) {
               {metric.trend ? (
                 <span
                   className={cn(
-                    'inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold transition',
+                    'inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold transition flex-shrink-0',
                     tone,
                   )}
                   aria-label={trendCopy[metric.trend]}
