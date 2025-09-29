@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
-import { Download } from 'lucide-react';
 import { Card } from './Card';
-import { cn, downloadAs } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
 type Column = {
   key: string;
@@ -20,6 +19,11 @@ type ChartCardProps = {
   ariaDescription?: string;
   toolbar?: ReactNode;
   tone?: 'default' | 'accent';
+  metadata?: {
+    freshness: string;
+    source: string;
+  };
+  chartHeight?: number;
 };
 
 export function ChartCard({
@@ -33,6 +37,8 @@ export function ChartCard({
   ariaDescription,
   toolbar,
   tone = 'default',
+  metadata,
+  chartHeight = 320,
 }: ChartCardProps) {
   const borderClass = tone === 'accent' ? 'border-[var(--primary-300)]/50' : 'border-[var(--surface-border)]';
 
@@ -44,8 +50,8 @@ export function ChartCard({
       role="region"
       className={cn('flex h-full flex-col gap-5 border bg-[var(--surface-s1)]', borderClass)}
     >
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h3 id={`${id}-title`} className="text-title-sm text-slate-900">
               {title}
@@ -58,32 +64,26 @@ export function ChartCard({
           </div>
           <div className="flex items-center gap-2">
             {toolbar}
-            <button
-              type="button"
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
-              onClick={() => downloadAs('csv', `${id}.csv`, rows)}
-            >
-              <Download className="h-4 w-4" aria-hidden />
-              Export CSV
-            </button>
-            <button
-              type="button"
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
-              onClick={() => downloadAs('json', `${id}.json`, rows)}
-            >
-              <Download className="h-4 w-4" aria-hidden />
-              Export JSON
-            </button>
+            {metadata ? (
+              <span className="rounded-full border border-dashed border-[var(--surface-border)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+                Updated {metadata.freshness}
+              </span>
+            ) : null}
           </div>
         </div>
         {caption ? <p className="text-xs text-slate-500">{caption}</p> : null}
       </div>
 
       <div className="flex flex-col gap-4">
-        <div role="figure" aria-labelledby={`${id}-title`} aria-describedby={ariaDescription ? `${id}-desc` : undefined}>
+        <div
+          role="figure"
+          aria-labelledby={`${id}-title`}
+          aria-describedby={ariaDescription ? `${id}-desc` : undefined}
+          style={{ minHeight: chartHeight }}
+        >
           {children}
         </div>
-        <div className="overflow-auto rounded-[18px] border border-dashed border-[var(--surface-border)]">
+        <div className="max-h-[360px] overflow-auto rounded-[18px] border border-dashed border-[var(--surface-border)]">
           <table className="min-w-full divide-y divide-[var(--surface-border)]" aria-label={`${title} data table`}>
             <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
               <tr>
@@ -110,6 +110,12 @@ export function ChartCard({
             </tbody>
           </table>
         </div>
+        {metadata ? (
+          <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] uppercase tracking-[0.08em] text-slate-500">
+            <span>Scope: {metadata.source}</span>
+            <span>Rows: {rows.length}</span>
+          </div>
+        ) : null}
       </div>
     </Card>
   );

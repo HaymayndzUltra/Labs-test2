@@ -6,33 +6,46 @@
   :root {
     color-scheme: light;
     /* Surface hierarchy */
-    --surface-s0: #f3f4f7;
+    --surface-s0: #f5f6fb;
     --surface-s1: #ffffff;
-    --surface-s2: rgba(255, 255, 255, 0.84);
+    --surface-s2: rgba(255, 255, 255, 0.86);
     --surface-s3: rgba(15, 23, 42, 0.08);
-    --surface-border: rgba(15, 23, 42, 0.12);
-    --surface-border-strong: rgba(15, 23, 42, 0.24);
+    --surface-border: rgba(33, 41, 70, 0.14);
+    --surface-border-strong: rgba(33, 41, 70, 0.28);
     --shadow-sm: 0 4px 18px rgba(15, 23, 42, 0.08);
     --shadow-md: 0 12px 32px rgba(15, 23, 42, 0.12);
     --shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.16);
 
-    /* Semantic palette */
-    --primary-50: #eef2ff;
-    --primary-100: #e0e7ff;
-    --primary-200: #c7d2fe;
-    --primary-300: #a5b4fc;
-    --primary-400: #818cf8;
-    --primary-500: #6366f1;
-    --primary-600: #4f46e5;
-    --primary-700: #4338ca;
-    --primary-800: #3730a3;
-    --primary-900: #312e81;
+    /* Brand palette */
+    --brand-primary: #4b5dff;
+    --brand-secondary: #6f7bff;
+
+    --primary-50: #eef0ff;
+    --primary-100: #dfe2ff;
+    --primary-200: #c2c7ff;
+    --primary-300: #a4acff;
+    --primary-400: #8791ff;
+    --primary-500: var(--brand-primary);
+    --primary-600: #3b4ae0;
+    --primary-700: #2c38b8;
+    --primary-800: #1f288f;
+    --primary-900: #131a66;
+
+    --neutral-100: #f5f6fb;
+    --neutral-200: #e6e8f2;
+    --neutral-300: #d2d6e5;
+    --neutral-400: #b4bad3;
+    --neutral-500: #8e96b8;
+    --neutral-600: #6b7494;
+    --neutral-700: #4c5370;
+    --neutral-800: #353b55;
+    --neutral-900: #25293f;
 
     --success-50: #ecfdf5;
     --success-500: #10b981;
     --success-600: #059669;
 
-    --warning-50: #fffbeb;
+    --warning-50: #fff9e6;
     --warning-500: #f59e0b;
     --warning-600: #d97706;
 
@@ -45,7 +58,7 @@
     --info-600: #2563eb;
 
     /* Vertical accents */
-    --vertical-saas: #4f46e5;
+    --vertical-saas: #4b5dff;
     --vertical-commerce: #0f9d58;
     --vertical-corporate: #1d4ed8;
     --vertical-custom: #9333ea;
