@@ -10,6 +10,7 @@ export type Filters = {
   dateRange: DateRange;
   segment: string | null;
   channel: string | null;
+  scope: 'global' | TabDefinition['id'];
 };
 
 type DashboardState = {
@@ -40,6 +41,7 @@ export const useDashboardStore = create<DashboardState>()(
         dateRange: 'last_30',
         segment: null,
         channel: null,
+        scope: 'global',
       },
       featureFlags: {},
       setModule: (id) => set({ selectedModule: id }),
