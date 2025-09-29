@@ -436,11 +436,11 @@ function SaaSModule({
               <ComposedChart data={churnTrend}>
                 <defs>
                   <linearGradient id="saasRetention" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="5%" stopColor="var(--vertical-saas)" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="var(--vertical-saas)" stopOpacity={0.05} />
+                    <stop offset="0%" stopColor="var(--vertical-saas)" stopOpacity={0.32} />
+                    <stop offset="100%" stopColor="var(--vertical-saas)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 8" stroke="rgba(94, 102, 115, 0.18)" />
+                <CartesianGrid strokeDasharray="3 8" stroke="rgba(94, 102, 115, 0.16)" />
                 <XAxis dataKey="label" tickLine={false} axisLine={false} />
                 <YAxis tickFormatter={(value) => `${value}%`} tickLine={false} axisLine={false} />
                 <Tooltip
@@ -491,7 +491,7 @@ function SaaSModule({
         >
           <ResponsiveContainer height={320}>
             <LineChart data={data.growthTrend}>
-              <CartesianGrid strokeDasharray="3 8" stroke="rgba(94, 102, 115, 0.18)" />
+              <CartesianGrid strokeDasharray="3 8" stroke="rgba(94, 102, 115, 0.16)" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} />
               <YAxis tickLine={false} axisLine={false} />
               <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid var(--surface-border)' }} />
@@ -564,11 +564,11 @@ function SaaSModule({
             <AreaChart data={data.apiUsageTrend}>
               <defs>
                 <linearGradient id="saasApi" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="5%" stopColor="var(--vertical-saas)" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="var(--vertical-saas)" stopOpacity={0.05} />
+                  <stop offset="0%" stopColor="var(--vertical-saas)" stopOpacity={0.32} />
+                  <stop offset="100%" stopColor="var(--vertical-saas)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 8" stroke="rgba(94, 102, 115, 0.18)" />
+              <CartesianGrid strokeDasharray="3 8" stroke="rgba(94, 102, 115, 0.16)" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} />
               <YAxis tickLine={false} axisLine={false} />
               <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid var(--surface-border)' }} />
@@ -1143,7 +1143,7 @@ function GeneratedAtIndicator({
 
   return (
     <div
-      className="generated-at-surface w-full rounded-xl border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-[12px] text-[var(--neutral-600,#5e6673)] shadow-sm"
+      className="generated-at-surface w-full rounded-xl border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-left text-[12px] text-[var(--neutral-600,#5e6673)] shadow-sm"
       data-prefers-reduced-motion={prefersReducedMotion}
     >
       <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--neutral-500,#5e6673)]">
@@ -1198,6 +1198,7 @@ function GeneratedAtIndicator({
                 !prefersReducedMotion && 'generated-at-value--swap',
                 freshness.phase === 'offline' && 'opacity-80'
               )}
+              dir="ltr"
             >
               {formattedTime}
             </span>
@@ -1235,12 +1236,12 @@ function GeneratedAtIndicator({
           )}
         >
           {freshness.phase === 'offline' ? (
-            <span className="flex items-center gap-1 font-medium">
+            <span className="flex items-center gap-1 font-medium" dir="ltr">
               <WifiOff className="h-3.5 w-3.5" aria-hidden />
               Cached from {formattedTime}
             </span>
           ) : relativeDescriptor && relativeSymbol ? (
-            <span className="flex items-center gap-1 font-medium">
+            <span className="flex items-center gap-1 font-medium" dir="ltr">
               <span>Updated</span>
               <AnimatedCounter
                 id="freshness-pill"
@@ -1401,7 +1402,7 @@ function CommerceModule({
           <div className="mt-4 h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data.salesTrend} margin={{ right: 40 }}>
-                <CartesianGrid strokeDasharray="3 8" stroke="rgba(94, 102, 115, 0.18)" />
+                <CartesianGrid strokeDasharray="3 8" stroke="rgba(94, 102, 115, 0.16)" />
                 <XAxis dataKey="label" tickLine={false} axisLine={false} />
                 <YAxis tickLine={false} axisLine={false} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid var(--surface-border)' }} />
@@ -1450,16 +1451,19 @@ function CommerceModule({
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="flex flex-1 flex-col justify-center gap-3">
+            <div className="flex flex-1 flex-col justify-center gap-3 text-right" dir="ltr">
               {channelMix.map((segment) => (
-                <div key={segment.id} className="flex items-center justify-between text-[13px] text-[var(--neutral-700,#384150)]">
-                  <div className="flex items-center gap-3">
+                <div
+                  key={segment.id}
+                  className="flex items-center justify-between text-[13px] text-[var(--neutral-700,#384150)]"
+                >
+                  <div className="flex flex-1 items-center justify-end gap-3">
                     <span
                       className="h-2.5 w-6 rounded-full"
                       style={{ background: segment.color }}
                       aria-hidden
                     />
-                    <span>{segment.label}</span>
+                    <span className="text-right">{segment.label}</span>
                   </div>
                   <span className="font-semibold text-[var(--neutral-900,#0b0d12)]">
                     {Math.round((segment.value / channelTotal) * 100)}%
@@ -1481,7 +1485,7 @@ function CommerceModule({
           <div className="mt-4 h-[260px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={regionPerformance}>
-                <CartesianGrid strokeDasharray="3 8" stroke="rgba(94, 102, 115, 0.18)" />
+                <CartesianGrid strokeDasharray="3 8" stroke="rgba(94, 102, 115, 0.16)" />
                 <XAxis dataKey="region" tickLine={false} axisLine={false} />
                 <YAxis tickLine={false} axisLine={false} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid var(--surface-border)' }} />
@@ -1756,11 +1760,11 @@ function CorporateModule({
               <ComposedChart data={data.velocityTrend} margin={{ left: 0, right: 20 }}>
                 <defs>
                   <linearGradient id={`${velocityGradientId}-fill`} x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor={`var(${accent})`} stopOpacity={0.35} />
-                    <stop offset="100%" stopColor={`var(${accent})`} stopOpacity={0.05} />
+                    <stop offset="0%" stopColor={`var(${accent})`} stopOpacity={0.32} />
+                    <stop offset="100%" stopColor={`var(${accent})`} stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="rgba(94,102,115,0.18)" vertical={false} />
+                <CartesianGrid stroke="rgba(94,102,115,0.16)" vertical={false} />
                 <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={12} />
                 <YAxis tickLine={false} axisLine={false} fontSize={12} width={36} />
                 <Tooltip
@@ -2001,7 +2005,7 @@ function CustomAppModule({
           <div className="h-[240px]">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={data.workloadDistribution}>
-                <CartesianGrid stroke="rgba(94,102,115,0.18)" vertical={false} />
+                <CartesianGrid stroke="rgba(94,102,115,0.16)" vertical={false} />
                 <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={12} />
                 <YAxis tickLine={false} axisLine={false} fontSize={12} width={32} />
                 <Tooltip
@@ -2116,10 +2120,10 @@ function CustomAppModule({
                 <defs>
                   <linearGradient id={`${throughputGradientId}-area`} x1="0" x2="0" y1="0" y2="1">
                     <stop offset="0%" stopColor={`var(${accent})`} stopOpacity={0.32} />
-                    <stop offset="100%" stopColor={`var(${accent})`} stopOpacity={0.05} />
+                    <stop offset="100%" stopColor={`var(${accent})`} stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="rgba(94,102,115,0.18)" vertical={false} />
+                <CartesianGrid stroke="rgba(94,102,115,0.16)" vertical={false} />
                 <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={12} />
                 <YAxis tickLine={false} axisLine={false} fontSize={12} width={32} />
                 <Tooltip
@@ -2385,11 +2389,11 @@ function ContentModule({
                 <AreaChart data={data.engagementTrend}>
                   <defs>
                     <linearGradient id={`${gradientId}-engagement`} x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="0%" stopColor={`var(${accent})`} stopOpacity={0.35} />
-                      <stop offset="100%" stopColor={`var(${accent})`} stopOpacity={0.05} />
+                      <stop offset="0%" stopColor={`var(${accent})`} stopOpacity={0.32} />
+                      <stop offset="100%" stopColor={`var(${accent})`} stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid stroke="rgba(249,115,22,0.18)" strokeDasharray="4 8" />
+                  <CartesianGrid stroke="rgba(249,115,22,0.16)" strokeDasharray="4 8" />
                   <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
                   <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12 }} width={36} />
                   <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
@@ -3071,7 +3075,7 @@ function EdTechModule({
           <div className="h-[260px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={assessmentBands}>
-                <CartesianGrid vertical={false} stroke="rgba(99,102,241,0.2)" strokeDasharray="4 6" />
+                <CartesianGrid vertical={false} stroke="rgba(99,102,241,0.16)" strokeDasharray="4 6" />
                 <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
                 <YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={{ fontSize: 12 }} width={36} />
                 <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
@@ -3323,7 +3327,7 @@ function SpecializedModule({
             <div className="h-[240px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data.realEstate.trend}>
-                  <CartesianGrid stroke="rgba(45,212,191,0.18)" strokeDasharray="4 6" />
+                  <CartesianGrid stroke="rgba(45,212,191,0.16)" strokeDasharray="4 6" />
                   <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
                   <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12 }} width={36} />
                   <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
@@ -3386,7 +3390,7 @@ function SpecializedModule({
             <div className="h-[260px] flex-1">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={expenseSeries}>
-                  <CartesianGrid stroke="rgba(45,212,191,0.18)" strokeDasharray="4 6" />
+                  <CartesianGrid stroke="rgba(45,212,191,0.16)" strokeDasharray="4 6" />
                   <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
                   <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12 }} width={36} />
                   <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
@@ -3688,8 +3692,18 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                 <div className="h-px flex-1 self-center border-t border-dashed border-[var(--surface-border)]" aria-hidden />
               </div>
             </div>
-            <div className="col-span-12 lg:col-span-4 flex flex-col items-start gap-4 lg:items-end">
-              <div className="flex flex-wrap items-center justify-end gap-2">
+            <div
+              className={cn(
+                'col-span-12 lg:col-span-4 flex flex-col gap-4',
+                direction === 'rtl' ? 'items-end lg:items-stretch' : 'items-start lg:items-stretch'
+              )}
+            >
+              <div
+                className={cn(
+                  'flex w-full flex-wrap items-center gap-2',
+                  direction === 'rtl' ? 'justify-start lg:justify-start' : 'justify-end'
+                )}
+              >
                 <button
                   type="button"
                   className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
@@ -3706,21 +3720,29 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                   <Earth className="h-4 w-4" aria-hidden />
                   {direction === 'ltr' ? 'Switch to RTL' : 'Switch to LTR'}
                 </button>
+                <button
+                  type="button"
+                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[var(--primary-600)] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--primary-500)] focus-visible:focus-ring"
+                  onClick={() =>
+                    push({
+                      title: 'Capability deck requested',
+                      description: 'We will send the full portfolio within 5 minutes.',
+                      tone: 'info',
+                    })
+                  }
+                >
+                  <Sparkles className="h-4 w-4" aria-hidden />
+                  {data.hero.cta}
+                </button>
               </div>
-              <button
-                type="button"
-                className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[var(--primary-600)] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--primary-500)] focus-visible:focus-ring"
-                onClick={() => push({ title: 'Capability deck requested', description: 'We will send the full portfolio within 5 minutes.', tone: 'info' })}
-              >
-                <Sparkles className="h-4 w-4" aria-hidden />
-                {data.hero.cta}
-              </button>
-              <GeneratedAtIndicator
-                moduleId={selectedModule}
-                moduleLabel={currentModuleLabel}
-                filters={filters}
-                initialGeneratedAt={data.generatedAt}
-              />
+              <div className={cn('w-full text-left', direction === 'rtl' ? 'lg:self-start' : 'lg:self-end')}>
+                <GeneratedAtIndicator
+                  moduleId={selectedModule}
+                  moduleLabel={currentModuleLabel}
+                  filters={filters}
+                  initialGeneratedAt={data.generatedAt}
+                />
+              </div>
             </div>
           </div>
           <div className="mt-8 flex flex-wrap items-center gap-3">
