@@ -60,6 +60,7 @@ import { Card } from '@/components/ui/Card';
 import { ChartCard } from '@/components/ui/ChartCard';
 import { AutomationBuilder } from '@/components/ui/AutomationBuilder';
 import { StatusChip } from '@/components/ui/StatusChip';
+import { GeneratedAtStamp, type GeneratedStatus } from '@/components/ui/GeneratedAtStamp';
 import { useToast } from '@/components/ui/ToastProvider';
 import { cn } from '@/lib/utils';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
@@ -3103,13 +3104,154 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
 
-  const { data } = useQuery({
+  const { data, refetch, isFetching, isError } = useQuery({
     queryKey: ['portfolio-dashboard'],
     queryFn: fetchPortfolioDashboard,
     initialData,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
   });
 
+  const timezone = useMemo(() => {
+    if (typeof Intl === 'undefined') return 'UTC';
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch (error) {
+      return 'UTC';
+    }
+  }, []);
+
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(true);
+  const [generatedStatus, setGeneratedStatus] = useState<GeneratedStatus>('ready');
+  const [displayTimestamp, setDisplayTimestamp] = useState<string | null>(initialData.generatedAt ?? null);
+  const [lastGoodTimestamp, setLastGoodTimestamp] = useState<string | null>(initialData.generatedAt ?? null);
+  const lastGoodTimestampRef = useRef<string | null>(initialData.generatedAt ?? null);
+  const filterChangeRef = useRef(false);
+
   useLiveMetrics();
+
+  const handleRefresh = useCallback(async () => {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      setGeneratedStatus('offline');
+      return;
+    }
+
+    setGeneratedStatus('loading');
+
+    try {
+      const result = await refetch({ throwOnError: true });
+      const nextTimestamp =
+        result.data?.generatedAt ?? lastGoodTimestampRef.current ?? new Date().toISOString();
+      lastGoodTimestampRef.current = nextTimestamp;
+      setLastGoodTimestamp(nextTimestamp);
+      setDisplayTimestamp(nextTimestamp);
+      setGeneratedStatus('ready');
+    } catch (error) {
+      setGeneratedStatus('stale');
+      setDisplayTimestamp(lastGoodTimestampRef.current);
+    }
+  }, [refetch]);
+
+  useEffect(() => {
+    if (!data?.generatedAt) return;
+    lastGoodTimestampRef.current = data.generatedAt;
+    setLastGoodTimestamp(data.generatedAt);
+    setDisplayTimestamp(data.generatedAt);
+    setGeneratedStatus((previous) => {
+      if (previous === 'offline') {
+        return previous;
+      }
+      return 'ready';
+    });
+  }, [data?.generatedAt]);
+
+  useEffect(() => {
+    if (isError) {
+      setGeneratedStatus('stale');
+    }
+  }, [isError]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleOffline = () => setGeneratedStatus('offline');
+    const handleOnline = () =>
+      setGeneratedStatus((previous) => (previous === 'stale' ? 'stale' : 'ready'));
+
+    if (!window.navigator.onLine) {
+      setGeneratedStatus('offline');
+    }
+
+    window.addEventListener('offline', handleOffline);
+    window.addEventListener('online', handleOnline);
+
+    return () => {
+      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('online', handleOnline);
+    };
+  }, []);
+
+  const filterSignature = useMemo(
+    () =>
+      `${selectedModule}|${filters.dateRange}|${filters.segment ?? 'all'}|${filters.channel ?? 'global'}`,
+    [filters.channel, filters.dateRange, filters.segment, selectedModule]
+  );
+
+  useEffect(() => {
+    if (!filterChangeRef.current) {
+      filterChangeRef.current = true;
+      return;
+    }
+    void handleRefresh();
+  }, [filterSignature, handleRefresh]);
+
+  useEffect(() => {
+    if (!autoRefreshEnabled) return;
+    const interval = window.setInterval(() => {
+      void handleRefresh();
+    }, 5 * 60 * 1000);
+    return () => window.clearInterval(interval);
+  }, [autoRefreshEnabled, handleRefresh]);
+
+  const handleToggleAutoRefresh = useCallback(() => {
+    setAutoRefreshEnabled((previous) => !previous);
+  }, []);
+
+  const handleManualRefresh = useCallback(() => {
+    if (generatedStatus === 'loading' || isFetching) return;
+    void handleRefresh();
+  }, [generatedStatus, handleRefresh, isFetching]);
+
+  const moduleLabel = useMemo(
+    () => data?.tabs.find((tab) => tab.id === selectedModule)?.label ?? 'SaaS Platform',
+    [data?.tabs, selectedModule]
+  );
+
+  const dateRangeLabel = useMemo(() => {
+    const option = dateRangeOptions.find((item) => item.id === filters.dateRange);
+    return option?.label ?? 'Last 30 days';
+  }, [filters.dateRange]);
+
+  const segmentLabel = useMemo(() => {
+    const option = segmentOptions.find((item) => item.id === (filters.segment ?? 'all'));
+    return option?.label ?? 'All segments';
+  }, [filters.segment]);
+
+  const channelLabel = useMemo(() => {
+    const option = channelOptions.find((item) => item.id === (filters.channel ?? 'global'));
+    return option?.label ?? 'Global';
+  }, [filters.channel]);
+
+  const contextSummary = useMemo(
+    () => `Module: ${moduleLabel} • ${dateRangeLabel} • ${segmentLabel} • ${channelLabel}`,
+    [channelLabel, dateRangeLabel, moduleLabel, segmentLabel]
+  );
+
+  const statusForStamp: GeneratedStatus = useMemo(() => {
+    if (generatedStatus === 'offline') return 'offline';
+    if (generatedStatus === 'stale') return 'stale';
+    if (generatedStatus === 'loading' || isFetching) return 'loading';
+    return 'ready';
+  }, [generatedStatus, isFetching]);
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => setIsReady(true));
@@ -3202,6 +3344,17 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
               </div>
             </div>
             <div className="col-span-12 lg:col-span-4 flex flex-col items-start gap-4 lg:items-end">
+              <GeneratedAtStamp
+                timestamp={displayTimestamp}
+                lastGoodTimestamp={lastGoodTimestamp}
+                status={statusForStamp}
+                timezone={timezone}
+                contextSummary={contextSummary}
+                autoRefreshEnabled={autoRefreshEnabled}
+                onToggleAutoRefresh={handleToggleAutoRefresh}
+                onRefresh={handleManualRefresh}
+                isRefreshing={statusForStamp === 'loading'}
+              />
               <div className="flex flex-wrap items-center justify-end gap-2">
                 <button
                   type="button"
@@ -3228,9 +3381,6 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                 <Sparkles className="h-4 w-4" aria-hidden />
                 {data.hero.cta}
               </button>
-              <div className="rounded-xl border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-[12px] text-[var(--neutral-600,#5e6673)]">
-                Generated at {new Date(data.generatedAt).toLocaleString()}
-              </div>
             </div>
           </div>
           <div className="mt-8 flex flex-wrap items-center gap-3">
