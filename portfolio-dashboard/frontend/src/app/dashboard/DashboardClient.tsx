@@ -920,11 +920,15 @@ function GeneratedAtIndicator({
   moduleLabel,
   filters,
   initialGeneratedAt,
+  direction,
+  className,
 }: {
   moduleId: TabDefinition['id'];
   moduleLabel: string;
   filters: Filters;
   initialGeneratedAt: string;
+  direction: 'ltr' | 'rtl';
+  className?: string;
 }) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const tooltipId = useId();
@@ -1143,10 +1147,19 @@ function GeneratedAtIndicator({
 
   return (
     <div
-      className="generated-at-surface w-full rounded-xl border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-[12px] text-[var(--neutral-600,#5e6673)] shadow-sm"
+      className={cn(
+        'generated-at-surface w-full rounded-xl border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-[12px] text-[var(--neutral-600,#5e6673)] shadow-sm',
+        className
+      )}
       data-prefers-reduced-motion={prefersReducedMotion}
+      data-direction={direction}
     >
-      <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--neutral-500,#5e6673)]">
+      <div
+        className={cn(
+          'flex flex-wrap items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--neutral-500,#5e6673)]',
+          direction === 'rtl' && 'flex-row-reverse text-right'
+        )}
+      >
         <span className="flex items-center gap-2">
           <span
             className={cn(
@@ -1198,6 +1211,7 @@ function GeneratedAtIndicator({
                 !prefersReducedMotion && 'generated-at-value--swap',
                 freshness.phase === 'offline' && 'opacity-80'
               )}
+              dir="ltr"
             >
               {formattedTime}
             </span>
@@ -1258,7 +1272,12 @@ function GeneratedAtIndicator({
           )}
         </div>
       </div>
-      <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
+      <div
+        className={cn(
+          'mt-3 flex flex-wrap items-center gap-2',
+          direction === 'rtl' ? 'justify-start' : 'justify-end'
+        )}
+      >
         <button
           type="button"
           onClick={handleManualRefresh}
@@ -3688,8 +3707,18 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                 <div className="h-px flex-1 self-center border-t border-dashed border-[var(--surface-border)]" aria-hidden />
               </div>
             </div>
-            <div className="col-span-12 lg:col-span-4 flex flex-col items-start gap-4 lg:items-end">
-              <div className="flex flex-wrap items-center justify-end gap-2">
+            <div
+              className={cn(
+                'col-span-12 lg:col-span-4 flex flex-col gap-4',
+                direction === 'rtl' ? 'lg:items-start text-right' : 'lg:items-end'
+              )}
+            >
+              <div
+                className={cn(
+                  'flex w-full flex-wrap items-center gap-2',
+                  direction === 'rtl' ? 'justify-start lg:flex-row-reverse' : 'justify-end'
+                )}
+              >
                 <button
                   type="button"
                   className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
@@ -3707,20 +3736,32 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                   {direction === 'ltr' ? 'Switch to RTL' : 'Switch to LTR'}
                 </button>
               </div>
-              <button
-                type="button"
-                className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[var(--primary-600)] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--primary-500)] focus-visible:focus-ring"
-                onClick={() => push({ title: 'Capability deck requested', description: 'We will send the full portfolio within 5 minutes.', tone: 'info' })}
+              <div
+                className={cn(
+                  'flex w-full flex-col gap-3 sm:flex-row sm:items-stretch',
+                  direction === 'rtl' ? 'sm:flex-row-reverse' : undefined
+                )}
               >
-                <Sparkles className="h-4 w-4" aria-hidden />
-                {data.hero.cta}
-              </button>
-              <GeneratedAtIndicator
-                moduleId={selectedModule}
-                moduleLabel={currentModuleLabel}
-                filters={filters}
-                initialGeneratedAt={data.generatedAt}
-              />
+                <GeneratedAtIndicator
+                  moduleId={selectedModule}
+                  moduleLabel={currentModuleLabel}
+                  filters={filters}
+                  initialGeneratedAt={data.generatedAt}
+                  direction={direction}
+                  className={cn('sm:flex-1', direction === 'rtl' ? 'text-right' : undefined)}
+                />
+                <button
+                  type="button"
+                  className={cn(
+                    'inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-[var(--primary-600)] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--primary-500)] focus-visible:focus-ring',
+                    'sm:min-w-[220px]'
+                  )}
+                  onClick={() => push({ title: 'Capability deck requested', description: 'We will send the full portfolio within 5 minutes.', tone: 'info' })}
+                >
+                  <Sparkles className="h-4 w-4" aria-hidden />
+                  {data.hero.cta}
+                </button>
+              </div>
             </div>
           </div>
           <div className="mt-8 flex flex-wrap items-center gap-3">

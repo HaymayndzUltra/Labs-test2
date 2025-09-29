@@ -51,8 +51,8 @@ export function ChartCard({
       )}
     >
       <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-1">
+        <div className="chart-card__header flex flex-wrap items-start justify-between gap-4">
+          <div className="chart-card__title-block space-y-1">
             {description ? (
               <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">
                 {description}
@@ -61,9 +61,9 @@ export function ChartCard({
             <h3 id={`${id}-title`} className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">
               {title}
             </h3>
-            {caption ? <p className="text-xs text-[var(--neutral-600,#5e6673)]">{caption}</p> : null}
+            {caption ? <p className="chart-card__caption text-xs text-[var(--neutral-600,#5e6673)]">{caption}</p> : null}
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="chart-card__toolbar flex flex-wrap items-center gap-2">
             {toolbar}
             <button
               type="button"
