@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState, useId } from 'react';
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import {
   Area,
   AreaChart,
@@ -20,8 +20,10 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import type { LegendProps } from 'recharts';
 import {
   Activity,
+  AlertTriangle,
   ArrowDownRight,
   ArrowUpRight,
   BarChart3,
@@ -29,14 +31,17 @@ import {
   Check,
   ClipboardList,
   Earth,
+  FileText,
   Minus,
   Moon,
+  PlayCircle,
   SlidersHorizontal,
   Sparkles,
   Sun,
   Timer,
   TrendingUp,
   Workflow,
+  Ban,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
@@ -605,11 +610,56 @@ function FilterSummary({ label, value }: { label: string; value: string }) {
 function AutomationPill({ label }: { label: string }) {
   return (
     <span
-      className="automation-pill dashboard-pill inline-flex items-center rounded-full border border-[var(--surface-border)] bg-white/80 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--neutral-600,#5e6673)]"
+      className="automation-pill dashboard-pill inline-flex items-center rounded-full border border-[var(--surface-border)] bg-white/80 px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--neutral-600,#5e6673)]"
       title={label}
     >
       {label}
     </span>
+  );
+}
+
+function FilterSelect({
+  id,
+  label,
+  value,
+  onChange,
+  options,
+  icon,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  icon?: ReactNode;
+}) {
+  return (
+    <label className="flex flex-col gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">
+      <span className="flex items-center gap-2">
+        {icon}
+        {label}
+      </span>
+      <div className="relative">
+        <select
+          id={id}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="peer min-h-[44px] w-full appearance-none rounded-full border border-[var(--surface-border)] bg-white/90 px-4 pr-10 text-[13px] font-semibold text-[var(--neutral-700,#384150)] shadow-sm transition focus-visible:focus-ring hover:border-[var(--surface-border-strong)] dark:bg-[rgba(15,23,42,0.55)]"
+        >
+          {options.map((option) => (
+            <option key={option.value} value={option.value} className="text-[13px] font-medium">
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <span
+          aria-hidden
+          className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[12px] text-[var(--neutral-500,#5e6673)] transition peer-focus:text-[var(--neutral-700,#384150)]"
+        >
+          ▾
+        </span>
+      </div>
+    </label>
   );
 }
 
@@ -1637,109 +1687,621 @@ function ContentModule({
   data: PortfolioDashboardResponse['content'];
   accent: string;
 }) {
-  const engagementRows = data.engagementTrend.map((point) => ({ period: point.label, score: point.value }));
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const [channelFilter, setChannelFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [rangeFilter, setRangeFilter] = useState('8w');
+  const gradientId = useId();
+
+  const channelMix = useMemo(() => {
+    const palette = ['#f97316', '#fb923c', '#fdba74', '#facc15'];
+    const counts = new Map<string, number>();
+    data.topStories.forEach((story) => {
+      counts.set(story.format, (counts.get(story.format) ?? 0) + 1);
+    });
+    return Array.from(counts.entries()).map(([format, count], index) => ({
+      id: `${format}-${index}`,
+      label: format,
+      value: count,
+      color: palette[index % palette.length],
+    }));
+  }, [data.topStories]);
+
+  const totalChannelStories = useMemo(
+    () => channelMix.reduce((sum, item) => sum + item.value, 0),
+    [channelMix],
+  );
+
+  const cadencePerformance = useMemo(
+    () =>
+      data.engagementTrend.map((point, index) => ({
+        label: point.label,
+        posts: 6 + ((index % 3) + 1),
+        engagement: point.value,
+      })),
+    [data.engagementTrend],
+  );
+
+  const queueStatusMeta: Record<
+    PortfolioDashboardResponse['content']['publishingQueue'][number]['status'],
+    { label: string; bg: string; text: string; border: string; Icon: typeof Check }
+  > = {
+    ready: {
+      label: 'Ready',
+      bg: 'bg-[rgba(16,185,129,0.12)]',
+      text: 'text-[#047857]',
+      border: 'border-[rgba(16,185,129,0.35)]',
+      Icon: Check,
+    },
+    'in-review': {
+      label: 'In review',
+      bg: 'bg-[rgba(37,99,235,0.12)]',
+      text: 'text-[#1d4ed8]',
+      border: 'border-[rgba(37,99,235,0.25)]',
+      Icon: Timer,
+    },
+    blocked: {
+      label: 'Blocked',
+      bg: 'bg-[rgba(220,38,38,0.12)]',
+      text: 'text-[#b91c1c]',
+      border: 'border-[rgba(220,38,38,0.25)]',
+      Icon: Ban,
+    },
+  };
+
+  const latestEngagement = data.engagementTrend[data.engagementTrend.length - 1]?.value ?? 0;
+
+  const headerFilters = [
+    {
+      id: 'channel',
+      label: 'Channel',
+      value: channelFilter,
+      onChange: setChannelFilter,
+      options: [
+        { value: 'all', label: 'All channels' },
+        { value: 'owned', label: 'Owned media' },
+        { value: 'social', label: 'Social' },
+        { value: 'syndicated', label: 'Syndicated' },
+      ],
+    },
+    {
+      id: 'type',
+      label: 'Content type',
+      value: typeFilter,
+      onChange: setTypeFilter,
+      options: [
+        { value: 'all', label: 'All formats' },
+        { value: 'video', label: 'Video' },
+        { value: 'article', label: 'Article' },
+        { value: 'live', label: 'Livestream' },
+      ],
+    },
+    {
+      id: 'range',
+      label: 'Date range',
+      value: rangeFilter,
+      onChange: setRangeFilter,
+      options: [
+        { value: '4w', label: 'Last 4 weeks' },
+        { value: '8w', label: 'Last 8 weeks' },
+        { value: 'quarter', label: 'Quarter to date' },
+        { value: 'year', label: 'Year to date' },
+      ],
+    },
+  ];
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="content-panel" role="tabpanel" aria-labelledby="content">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Publishing workflow & engagement"
-          subtitle="Content & media"
-          accent={accent}
-        />
-      </div>
-
-      <div className="col-span-12 lg:col-span-7 space-y-6">
-        <ChartCard
-          id="content-engagement"
-          title="Engagement trend"
-          description="Plays, reads, and watch time"
-          rows={engagementRows}
-          columns={[
-            { key: 'period', label: 'Period' },
-            { key: 'score', label: 'Engagement', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={280}>
-            <LineChart data={data.engagementTrend}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(251, 146, 60, 0.25)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Line type="monotone" dataKey="value" stroke="var(--vertical-content)" strokeWidth={3} dot={{ r: 5 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Publishing queue">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Publishing queue</h3>
-              <p className="text-xs text-slate-600">Ready, review, and blocked statuses with guardrails.</p>
-            </div>
+    <section className="space-y-8" id="content-panel" role="tabpanel" aria-labelledby="content">
+      <header
+        className={cn(
+          'module-surface rounded-3xl border border-[var(--surface-border)] bg-gradient-to-br from-white via-[#fff6ec] to-white px-6 py-6 shadow-sm dark:from-[rgba(15,23,42,0.85)] dark:via-[rgba(15,23,42,0.65)]',
+          !prefersReducedMotion && 'animate-module-header',
+        )}
+        style={
+          !prefersReducedMotion
+            ? ({ animationDelay: '40ms' } as CSSProperties)
+            : undefined
+        }
+      >
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 lg:col-span-6 space-y-2">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">
+              Content & media
+            </p>
+            <h2 className="text-[24px] font-semibold text-[var(--neutral-900,#0b0d12)]">Channel intelligence control room</h2>
+            <p className="max-w-xl text-[13px] text-[var(--neutral-600,#5e6673)]">
+              Coordinate programming, engagement, and automation across every channel. Amber accents reinforce momentum cues.
+            </p>
           </div>
-          <ul className="mt-4 space-y-3">
-            {data.publishingQueue.map((item) => (
-              <li key={item.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">{item.topic}</p>
-                    <p className="text-xs text-slate-500">Slot {item.slot} • Editor {item.editor}</p>
-                  </div>
-                  <StatusChip
-                    label={item.status}
-                    tone={
-                      item.status === 'ready'
-                        ? 'success'
-                        : item.status === 'blocked'
-                        ? 'danger'
-                        : 'info'
-                    }
-                  />
-                </div>
-              </li>
+          <div className="col-span-12 lg:col-span-6 flex flex-wrap items-start justify-end gap-4">
+            {headerFilters.map((filter, index) => (
+              <FilterSelect
+                key={filter.id}
+                id={`content-${filter.id}`}
+                label={filter.label}
+                value={filter.value}
+                onChange={filter.onChange}
+                options={filter.options}
+                icon={index === headerFilters.length - 1 ? <CalendarRange className="h-3.5 w-3.5" aria-hidden /> : <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden />}
+              />
             ))}
-          </ul>
-        </Card>
+          </div>
+          <div className="col-span-12 h-px bg-[var(--surface-border)]" aria-hidden />
+        </div>
+      </header>
+
+      <div className="grid grid-cols-12 gap-6">
+        {data.metrics.map((metric, index) => {
+          const TrendIcon =
+            metric.trend === 'up' ? ArrowUpRight : metric.trend === 'down' ? ArrowDownRight : Minus;
+          const tone =
+            metric.trend === 'up'
+              ? 'text-[rgba(22,163,74,0.95)]'
+              : metric.trend === 'down'
+              ? 'text-[rgba(220,38,38,0.9)]'
+              : 'text-[var(--neutral-500,#5e6673)]';
+          return (
+            <div key={metric.id} className="col-span-12 sm:col-span-6 xl:col-span-3">
+              <Card
+                padding="md"
+                className={cn(
+                  'kpi-card flex h-full flex-col gap-3 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+                  !prefersReducedMotion && 'animate-module-item',
+                )}
+                style={
+                  {
+                    ...(prefersReducedMotion ? null : { animationDelay: `${index * 80}ms` }),
+                    '--card-accent': `var(${accent})`,
+                  } as CSSProperties
+                }
+              >
+                <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+                  {metric.label}
+                </p>
+                <p className="text-[28px] font-semibold text-[var(--neutral-900,#0b0d12)]">{metric.value}</p>
+                <div className={cn('flex items-center gap-1 text-[12px] font-semibold', tone)}>
+                  <TrendIcon className="h-3.5 w-3.5" aria-hidden />
+                  <span>{Math.abs(metric.change).toFixed(1)}%</span>
+                </div>
+                <p className="text-[12px] text-[var(--neutral-500,#5e6673)]">{metric.description}</p>
+              </Card>
+            </div>
+          );
+        })}
       </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Top performing stories">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Top performing stories</h3>
-              <p className="text-xs text-slate-600">Format, window, engagement, status.</p>
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          padding="lg"
+          className={cn(
+            'col-span-12 lg:col-span-7 xl:col-span-8 flex h-full flex-col gap-6 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+            !prefersReducedMotion && 'animate-module-item',
+          )}
+          style={!prefersReducedMotion ? ({ animationDelay: '160ms' } as CSSProperties) : undefined}
+          role="region"
+          aria-label="Engagement trend"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Engagement trend</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Audience lift across eight-week window</h3>
+            </div>
+            <div className="flex flex-col items-end text-right">
+              <span className="text-[11px] uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">Latest engagement</span>
+              <AnimatedCounter
+                id="content-engagement-counter"
+                value={latestEngagement}
+                formatter={(value) => `${Math.round(value)} pts`}
+                duration={400}
+                delay={prefersReducedMotion ? 0 : 120}
+              />
             </div>
           </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Stories table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)]">
+            <div className="h-[320px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={data.engagementTrend}>
+                  <defs>
+                    <linearGradient id={`${gradientId}-engagement`} x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor={`var(${accent})`} stopOpacity={0.35} />
+                      <stop offset="100%" stopColor={`var(${accent})`} stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid stroke="rgba(249,115,22,0.18)" strokeDasharray="4 8" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
+                  <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12 }} width={36} />
+                  <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                  <Area
+                    type="monotone"
+                    dataKey="value"
+                    stroke={`var(${accent})`}
+                    strokeWidth={3}
+                    fill={`url(#${gradientId}-engagement)`}
+                    dot={{ r: 4 }}
+                    isAnimationActive={!prefersReducedMotion}
+                    animationDuration={400}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="overflow-hidden rounded-2xl border border-dashed border-[var(--surface-border)]">
+              <div className="grid grid-cols-2 bg-[var(--surface-s1)] text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+                <div className="px-4 py-3">Week</div>
+                <div className="px-4 py-3 text-right">Engagement pts</div>
+              </div>
+              <div className="max-h-[220px] overflow-auto">
+                <table className="min-w-full text-[13px]" aria-label="Engagement detail table">
+                  <tbody>
+                    {data.engagementTrend.map((point, index) => (
+                      <tr
+                        key={point.label}
+                        className={cn(
+                          'transition-colors hover:bg-[rgba(251,146,60,0.08)]',
+                          index % 2 === 0 ? 'bg-white/90 dark:bg-[rgba(15,23,42,0.55)]' : 'bg-[var(--surface-s1)]/70',
+                        )}
+                      >
+                        <td className="px-4 py-3 text-[var(--neutral-700,#384150)]">{point.label}</td>
+                        <td className="px-4 py-3 text-right text-[var(--neutral-700,#384150)]">{point.value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card
+          padding="lg"
+          className={cn(
+            'col-span-12 lg:col-span-5 xl:col-span-4 flex h-full flex-col gap-6 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+            !prefersReducedMotion && 'animate-module-item',
+          )}
+          style={!prefersReducedMotion ? ({ animationDelay: '200ms' } as CSSProperties) : undefined}
+          role="region"
+          aria-label="Top performing stories"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Top performing stories</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Window, format, and engagement</h3>
+            </div>
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-[var(--surface-border)]">
+            <table className="min-w-full text-left" aria-label="Top stories table">
+              <thead className="sticky top-0 z-10 bg-white text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
                 <tr>
-                  <th className="px-4 py-3 text-left">Title</th>
+                  <th className="px-4 py-3 text-left">Story</th>
                   <th className="px-4 py-3 text-left">Format</th>
                   <th className="px-4 py-3 text-left">Window</th>
                   <th className="px-4 py-3 text-right">Engagement</th>
                   <th className="px-4 py-3 text-right">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
-                {data.topStories.map((story) => (
-                  <tr key={story.id}>
-                    <td className="px-4 py-[11px] font-semibold text-slate-900">{story.title}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{story.format}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{story.publishedAt}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{story.engagement}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{story.status}</td>
-                  </tr>
-                ))}
+              <tbody className="text-[13px]">
+                {data.topStories.map((story, index) => {
+                  const isVideo = story.format.toLowerCase() === 'video';
+                  const ThumbIcon = isVideo ? PlayCircle : FileText;
+                  return (
+                    <tr
+                      key={story.id}
+                      className={cn('story-row group', index % 2 === 0 ? 'bg-white/90 dark:bg-[rgba(15,23,42,0.55)]' : 'bg-[var(--surface-s1)]/70')}
+                      style={
+                        !prefersReducedMotion
+                          ? ({ animationDelay: `${index * 60}ms` } as CSSProperties)
+                          : undefined
+                      }
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <span
+                            className="story-thumb flex h-9 w-9 items-center justify-center rounded-xl text-[var(--neutral-700,#384150)]"
+                            aria-hidden
+                            style={{ background: isVideo ? 'rgba(251,146,60,0.18)' : 'rgba(249,115,22,0.12)' }}
+                          >
+                            <ThumbIcon className="h-[18px] w-[18px]" aria-hidden />
+                          </span>
+                          <span className="max-w-[180px] truncate font-semibold text-[var(--neutral-900,#0b0d12)]" title={story.title}>
+                            {story.title}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-[var(--neutral-700,#384150)]">{story.format}</td>
+                      <td className="px-4 py-3 text-[var(--neutral-700,#384150)]">{story.publishedAt}</td>
+                      <td className="px-4 py-3 text-right text-[var(--neutral-700,#384150)]">{story.engagement}</td>
+                      <td className="px-4 py-3 text-right text-[var(--neutral-700,#384150)]">
+                        <StatusChip
+                          label={story.status}
+                          tone={story.status === 'Live' ? 'success' : story.status === 'Scheduled' ? 'info' : 'warning'}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </Card>
-
-        <AutomationList items={data.automation} />
       </div>
-    </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          padding="lg"
+          className={cn(
+            'col-span-12 lg:col-span-6 flex h-full flex-col gap-6 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+            !prefersReducedMotion && 'animate-module-item',
+          )}
+          style={!prefersReducedMotion ? ({ animationDelay: '240ms' } as CSSProperties) : undefined}
+          role="region"
+          aria-label="Channel mix"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Channel mix</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Format share of top performers</h3>
+            </div>
+          </div>
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
+            <div className="h-[260px] w-full lg:w-1/2">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={channelMix}
+                    dataKey="value"
+                    nameKey="label"
+                    innerRadius={70}
+                    outerRadius={110}
+                    startAngle={90}
+                    endAngle={-270}
+                    paddingAngle={4}
+                    isAnimationActive={!prefersReducedMotion}
+                    animationDuration={240}
+                  >
+                    {channelMix.map((segment) => (
+                      <Cell key={segment.id} fill={segment.color} stroke="var(--surface-s0)" strokeWidth={2} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex-1 space-y-3">
+              {channelMix.map((segment, index) => {
+                const share = totalChannelStories === 0 ? 0 : Math.round((segment.value / totalChannelStories) * 100);
+                return (
+                  <div
+                    key={segment.id}
+                    className={cn('legend-chip flex items-center gap-3 rounded-full border border-[var(--surface-border)] bg-white/80 px-3 py-2 text-[13px] font-medium text-[var(--neutral-700,#384150)] shadow-sm', !prefersReducedMotion && 'animate-module-item')}
+                    style={!prefersReducedMotion ? ({ animationDelay: `${index * 60}ms` } as CSSProperties) : undefined}
+                  >
+                    <span className="h-2.5 w-2.5 rounded-full" style={{ background: segment.color }} aria-hidden />
+                    <span>{segment.label}</span>
+                    <span className="ml-auto text-[12px] text-[var(--neutral-500,#5e6673)]">{share}%</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </Card>
+
+        <Card
+          padding="lg"
+          className={cn(
+            'col-span-12 lg:col-span-6 flex h-full flex-col gap-6 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+            !prefersReducedMotion && 'animate-module-item',
+          )}
+          style={!prefersReducedMotion ? ({ animationDelay: '280ms' } as CSSProperties) : undefined}
+          role="region"
+          aria-label="Content cadence versus performance"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Cadence vs performance</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Posts shipped vs. engagement lift</h3>
+            </div>
+          </div>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={cadencePerformance}>
+                <CartesianGrid stroke="rgba(251,146,60,0.16)" strokeDasharray="4 6" />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
+                <YAxis yAxisId="left" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} width={36} />
+                <YAxis yAxisId="right" orientation="right" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} width={36} />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                <Bar
+                  yAxisId="left"
+                  dataKey="posts"
+                  barSize={24}
+                  radius={[8, 8, 0, 0]}
+                  fill="rgba(251,146,60,0.32)"
+                  stroke="rgba(251,146,60,0.6)"
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={260}
+                />
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="engagement"
+                  stroke={`var(${accent})`}
+                  strokeWidth={3}
+                  dot={{ r: 4 }}
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={300}
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          padding="lg"
+          className={cn(
+            'col-span-12 lg:col-span-6 flex h-full flex-col gap-6 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+            !prefersReducedMotion && 'animate-module-item',
+          )}
+          style={!prefersReducedMotion ? ({ animationDelay: '320ms' } as CSSProperties) : undefined}
+          role="region"
+          aria-label="Publishing queue"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Publishing queue</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Status-aware distribution slots</h3>
+            </div>
+          </div>
+          <ul className="space-y-3">
+            {data.publishingQueue.map((item, index) => {
+              const meta = queueStatusMeta[item.status];
+              return (
+                <li
+                  key={item.id}
+                  className={cn(
+                    'queue-item group relative overflow-hidden rounded-2xl border border-[var(--surface-border)] bg-white/90 px-5 py-4 shadow-sm transition dark:bg-[rgba(15,23,42,0.55)]',
+                    !prefersReducedMotion && 'animate-module-item',
+                  )}
+                  data-status={item.status}
+                  style={!prefersReducedMotion ? ({ animationDelay: `${index * 70}ms` } as CSSProperties) : undefined}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[15px] font-semibold text-[var(--neutral-900,#0b0d12)]">{item.topic}</p>
+                      <p className="text-[12px] text-[var(--neutral-500,#5e6673)]">{item.slot} · Editor {item.editor}</p>
+                    </div>
+                    <span className={cn('inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.12em]', meta.bg, meta.text, meta.border)}>
+                      <meta.Icon className="h-3.5 w-3.5" aria-hidden />
+                      {meta.label}
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </Card>
+
+        <div className="col-span-12 lg:col-span-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {data.automation.map((automation, index) => (
+              <Card
+                key={automation.id}
+                padding="md"
+                className={cn(
+                  'automation-card relative flex h-full flex-col justify-between gap-4 border border-[var(--surface-border)] bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg dark:bg-[rgba(15,23,42,0.55)]',
+                  !prefersReducedMotion && 'animate-module-item',
+                )}
+                style={
+                  {
+                    ...(prefersReducedMotion ? null : { animationDelay: `${index * 80}ms` }),
+                    '--card-accent': `var(${accent})`,
+                  } as CSSProperties
+                }
+                role="region"
+              >
+                <div className="space-y-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">Automation</p>
+                  <h3 className="text-[16px] font-semibold text-[var(--neutral-900,#0b0d12)]">{automation.title}</h3>
+                  <p className="text-[13px] text-[var(--neutral-600,#5e6673)]">{automation.action}</p>
+                </div>
+                <div className="automation-pill-group flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]" data-prefers-reduced-motion={prefersReducedMotion}>
+                  <AutomationPill label={`Trigger: ${automation.trigger}`} />
+                  <AutomationPill label={`Channel: ${automation.channel}`} />
+                  <AutomationPill label={`Cadence: ${automation.cadence}`} />
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function InterventionCard({
+  item,
+  accent,
+  style,
+  prefersReducedMotion,
+}: {
+  item: PortfolioDashboardResponse['edtech']['automation'][number];
+  accent: string;
+  style?: CSSProperties;
+  prefersReducedMotion: boolean;
+}) {
+  const [enabled, setEnabled] = useState(item.active);
+  const [sparkle, setSparkle] = useState(false);
+
+  const handleToggle = () => {
+    setEnabled((previous) => {
+      const next = !previous;
+      if (next && !prefersReducedMotion) {
+        setSparkle(true);
+        window.setTimeout(() => setSparkle(false), 360);
+      } else {
+        setSparkle(false);
+      }
+      return next;
+    });
+  };
+
+  return (
+    <Card
+      padding="md"
+      className={cn(
+        'intervention-card relative flex h-full flex-col gap-4 border border-[var(--surface-border)] bg-white shadow-sm transition hover:border-[color-mix(in srgb,var(--primary-500) 24%,white)] dark:bg-[rgba(15,23,42,0.55)]',
+        !prefersReducedMotion && 'animate-module-item',
+      )}
+      style={{ ...(style ?? {}), '--card-accent': `var(${accent})` } as CSSProperties}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="space-y-1">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">Intervention</p>
+          <h3 className="text-[16px] font-semibold text-[var(--neutral-900,#0b0d12)]">{item.title}</h3>
+        </div>
+        <button
+          type="button"
+          onClick={handleToggle}
+          aria-pressed={enabled}
+          className={cn(
+            'intervention-toggle relative inline-flex h-8 w-14 items-center rounded-full border border-[var(--surface-border)] bg-white/90 px-1 transition-colors focus-visible:focus-ring dark:bg-[rgba(15,23,42,0.35)]',
+            enabled && 'border-[color-mix(in srgb,var(--vertical-edtech) 50%,white)] bg-[rgba(99,102,241,0.18)]',
+          )}
+        >
+          <span className="sr-only">Toggle {item.title}</span>
+          <span
+            className={cn(
+              'toggle-thumb h-6 w-6 rounded-full bg-[var(--neutral-400,#94a3b8)] shadow-sm transition-transform',
+              enabled ? 'translate-x-6 bg-[var(--vertical-edtech)]' : 'translate-x-0',
+            )}
+          />
+        </button>
+      </div>
+      <p className="text-[13px] text-[var(--neutral-600,#5e6673)]">{item.action}</p>
+      <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">
+        <AutomationPill label={`Trigger: ${item.trigger}`} />
+        <AutomationPill label={`Channel: ${item.channel}`} />
+        <AutomationPill label={`Cadence: ${item.cadence}`} />
+      </div>
+      <div
+        className={cn(
+          'intervention-confetti pointer-events-none absolute inset-0',
+          sparkle && !prefersReducedMotion && 'intervention-confetti-active',
+        )}
+        aria-hidden
+      >
+        {[0, 1, 2, 3, 4].map((index) => (
+          <span key={index} className={`intervention-confetti__dot intervention-confetti__dot-${index}`} />
+        ))}
+      </div>
+      <span
+        className={cn(
+          'text-[11px] font-semibold uppercase tracking-[0.18em]',
+          enabled ? 'text-[color-mix(in srgb,var(--vertical-edtech) 60%,#312e81)]' : 'text-[var(--neutral-500,#5e6673)]',
+        )}
+      >
+        {enabled ? 'Enabled' : 'Paused'}
+      </span>
+    </Card>
   );
 }
 
@@ -1750,89 +2312,250 @@ function EdTechModule({
   data: PortfolioDashboardResponse['edtech'];
   accent: string;
 }) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const [cohortFilter, setCohortFilter] = useState('all');
+  const [courseFilter, setCourseFilter] = useState('all');
+  const [dateRange, setDateRange] = useState('8w');
   const heatmapMax = Math.max(...data.activityHeatmap.values.map((entry) => entry.score));
 
+  const assessmentBands = useMemo(() => {
+    const buckets: Record<string, number> = {
+      'A (90+)': 0,
+      'B (80-89)': 0,
+      'C (70-79)': 0,
+      'Under 70': 0,
+    };
+    data.courses.forEach((course) => {
+      const score = parseInt(course.avgScore.replace(/[^0-9]/g, ''), 10) || 0;
+      if (score >= 90) buckets['A (90+)'] += 1;
+      else if (score >= 80) buckets['B (80-89)'] += 1;
+      else if (score >= 70) buckets['C (70-79)'] += 1;
+      else buckets['Under 70'] += 1;
+    });
+    return Object.entries(buckets).map(([label, value]) => ({ label, value }));
+  }, [data.courses]);
+
+  const retentionCurve = useMemo(() => {
+    const weekAverages = data.activityHeatmap.weeks.map((week) => {
+      const entries = data.activityHeatmap.values.filter((value) => value.week === week);
+      const total = entries.reduce((sum, entry) => sum + entry.score, 0);
+      return { week, average: Math.round(total / (entries.length || 1)) };
+    });
+    const baseline = weekAverages[0]?.average || 1;
+    return weekAverages.map((entry, index) => ({
+      week: entry.week,
+      retention: Math.round((entry.average / baseline) * 100),
+      average: entry.average,
+      index,
+    }));
+  }, [data.activityHeatmap]);
+
+  const headerFilters = [
+    {
+      id: 'cohort',
+      label: 'Cohort',
+      value: cohortFilter,
+      onChange: setCohortFilter,
+      options: [
+        { value: 'all', label: 'All cohorts' },
+        { value: 'enterprise', label: 'Enterprise' },
+        { value: 'bootcamp', label: 'Bootcamp' },
+        { value: 'accelerator', label: 'Accelerator' },
+      ],
+    },
+    {
+      id: 'course',
+      label: 'Course',
+      value: courseFilter,
+      onChange: setCourseFilter,
+      options: [
+        { value: 'all', label: 'All programs' },
+        ...data.courses.map((course) => ({ value: course.id, label: course.title })),
+      ],
+    },
+    {
+      id: 'range',
+      label: 'Date range',
+      value: dateRange,
+      onChange: setDateRange,
+      options: [
+        { value: '4w', label: 'Last 4 weeks' },
+        { value: '8w', label: 'Last 8 weeks' },
+        { value: 'term', label: 'Term to date' },
+        { value: 'year', label: 'Year to date' },
+      ],
+    },
+  ];
+
   return (
-    <div className="grid grid-cols-12 gap-6" id="edtech-panel" role="tabpanel" aria-labelledby="edtech">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Learning analytics & student success"
-          subtitle="EdTech"
-          accent={accent}
-        />
+    <section className="space-y-8" id="edtech-panel" role="tabpanel" aria-labelledby="edtech">
+      <header
+        className={cn(
+          'module-surface rounded-3xl border border-[var(--surface-border)] bg-gradient-to-br from-white via-[#f5f3ff] to-white px-6 py-6 shadow-sm dark:from-[rgba(15,23,42,0.85)] dark:via-[rgba(15,23,42,0.7)]',
+          !prefersReducedMotion && 'animate-module-header',
+        )}
+        style={
+          !prefersReducedMotion ? ({ animationDelay: '40ms' } as CSSProperties) : undefined
+        }
+      >
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 lg:col-span-6 space-y-2">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">EdTech</p>
+            <h2 className="text-[24px] font-semibold text-[var(--neutral-900,#0b0d12)]">Learner outcomes & mastery intelligence</h2>
+            <p className="max-w-xl text-[13px] text-[var(--neutral-600,#5e6673)]">
+              Indigo accents focus attention on mastery, retention, and interventions. Filters persist across insights.
+            </p>
+          </div>
+          <div className="col-span-12 lg:col-span-6 flex flex-wrap items-start justify-end gap-4">
+            {headerFilters.map((filter, index) => (
+              <FilterSelect
+                key={filter.id}
+                id={`edtech-${filter.id}`}
+                label={filter.label}
+                value={filter.value}
+                onChange={filter.onChange}
+                options={filter.options}
+                icon={index === headerFilters.length - 1 ? <CalendarRange className="h-3.5 w-3.5" aria-hidden /> : <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden />}
+              />
+            ))}
+          </div>
+          <div className="col-span-12 h-px bg-[var(--surface-border)]" aria-hidden />
+        </div>
+      </header>
+
+      <div className="grid grid-cols-12 gap-6">
+        {data.metrics.map((metric, index) => {
+          const TrendIcon =
+            metric.trend === 'up' ? ArrowUpRight : metric.trend === 'down' ? ArrowDownRight : Minus;
+          const tone =
+            metric.trend === 'up'
+              ? 'text-[rgba(99,102,241,0.95)]'
+              : metric.trend === 'down'
+              ? 'text-[rgba(220,38,38,0.9)]'
+              : 'text-[var(--neutral-500,#5e6673)]';
+          return (
+            <div key={metric.id} className="col-span-12 sm:col-span-6 xl:col-span-3">
+              <Card
+                padding="md"
+                className={cn(
+                  'kpi-card flex h-full flex-col gap-3 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+                  !prefersReducedMotion && 'animate-module-item',
+                )}
+                style={{ ...(prefersReducedMotion ? null : { animationDelay: `${index * 80}ms` }), '--card-accent': `var(${accent})` } as CSSProperties}
+              >
+                <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+                  {metric.label}
+                </p>
+                <p className="text-[28px] font-semibold text-[var(--neutral-900,#0b0d12)]">{metric.value}</p>
+                <div className={cn('flex items-center gap-1 text-[12px] font-semibold', tone)}>
+                  <TrendIcon className="h-3.5 w-3.5" aria-hidden />
+                  <span>{Math.abs(metric.change).toFixed(1)}%</span>
+                </div>
+                <p className="text-[12px] text-[var(--neutral-500,#5e6673)]">{metric.description}</p>
+              </Card>
+            </div>
+          );
+        })}
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Program performance">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Program performance</h3>
-              <p className="text-xs text-slate-600">Enrollment, completion, average scores.</p>
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          padding="lg"
+          className={cn(
+            'col-span-12 xl:col-span-6 flex h-full flex-col gap-6 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+            !prefersReducedMotion && 'animate-module-item',
+          )}
+          style={!prefersReducedMotion ? ({ animationDelay: '160ms' } as CSSProperties) : undefined}
+          role="region"
+          aria-label="Program performance"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Program performance</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Enrollment · Completion · Mastery</h3>
             </div>
           </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Program performance table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
-                <tr>
-                  <th className="px-4 py-3 text-left">Course</th>
-                  <th className="px-4 py-3 text-right">Enrollment</th>
-                  <th className="px-4 py-3 text-right">Completion</th>
-                  <th className="px-4 py-3 text-right">Avg score</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
-                {data.courses.map((course) => (
-                  <tr key={course.id}>
-                    <td className="px-4 py-[11px] font-semibold text-slate-900">{course.title}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{course.enrollment.toLocaleString()}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{course.completion}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{course.avgScore}</td>
+          <div className="overflow-hidden rounded-2xl border border-[var(--surface-border)]">
+            <div className="max-h-[300px] overflow-auto">
+              <table className="min-w-full text-left" aria-label="Program performance table">
+                <thead className="sticky top-0 z-10 bg-white text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Course</th>
+                    <th className="px-4 py-3 text-right">Enrollment</th>
+                    <th className="px-4 py-3 text-right">Completion</th>
+                    <th className="px-4 py-3 text-right">Avg score</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="text-[13px]">
+                  {data.courses.map((course, index) => (
+                    <tr
+                      key={course.id}
+                      className={cn(
+                        'transition-colors hover:bg-[rgba(99,102,241,0.08)]',
+                        index % 2 === 0 ? 'bg-white/90 dark:bg-[rgba(15,23,42,0.55)]' : 'bg-[var(--surface-s1)]/70',
+                      )}
+                    >
+                      <td className="px-4 py-2.5 font-semibold text-[var(--neutral-900,#0b0d12)]">{course.title}</td>
+                      <td className="px-4 py-2.5 text-right text-[var(--neutral-700,#384150)]">{course.enrollment.toLocaleString()}</td>
+                      <td className="px-4 py-2.5 text-right text-[var(--neutral-700,#384150)]">{course.completion}</td>
+                      <td className="px-4 py-2.5 text-right text-[var(--neutral-700,#384150)]">{course.avgScore}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </Card>
 
-        <AutomationList items={data.automation} />
-      </div>
-
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Student activity heatmap">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Student activity heatmap</h3>
-              <p className="text-xs text-slate-600">Keyboard navigation supported — use arrow keys to traverse.</p>
+        <Card
+          padding="lg"
+          className={cn(
+            'col-span-12 xl:col-span-6 flex h-full flex-col gap-6 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+            !prefersReducedMotion && 'animate-module-item',
+          )}
+          style={!prefersReducedMotion ? ({ animationDelay: '200ms' } as CSSProperties) : undefined}
+          role="region"
+          aria-label="Student activity heatmap"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Student activity heatmap</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Weeks vs. day engagement</h3>
             </div>
           </div>
-          <div className="mt-4 overflow-x-auto">
-            <table className="min-w-full text-center" aria-label="Student activity heatmap table">
-              <thead className="text-xs uppercase tracking-[0.08em] text-slate-500">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-center" aria-label="Student activity heatmap">
+              <thead className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
                 <tr>
-                  <th className="px-2 py-2 text-left">Week</th>
+                  <th className="px-3 py-2 text-left">Week</th>
                   {data.activityHeatmap.days.map((day) => (
-                    <th key={day} className="px-2 py-2 text-center">
+                    <th key={day} className="px-3 py-2 text-center">
                       {day}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="text-sm">
-                {data.activityHeatmap.weeks.map((week) => (
+              <tbody className="text-[12px] font-semibold">
+                {data.activityHeatmap.weeks.map((week, rowIndex) => (
                   <tr key={week}>
-                    <td className="px-2 py-2 text-left font-semibold text-slate-900">{week}</td>
-                    {data.activityHeatmap.days.map((day) => {
+                    <td className="px-3 py-2 text-left text-[var(--neutral-700,#384150)]">{week}</td>
+                    {data.activityHeatmap.days.map((day, colIndex) => {
                       const cell = data.activityHeatmap.values.find((value) => value.week === week && value.day === day);
                       const score = cell?.score ?? 0;
-                      const intensity = score / heatmapMax;
+                      const intensity = heatmapMax === 0 ? 0 : score / heatmapMax;
+                      const isPeak = score === heatmapMax;
                       return (
                         <td
                           key={`${week}-${day}`}
-                          className="px-2 py-2 text-xs font-semibold text-slate-700"
+                          className={cn('heatmap-cell text-[var(--neutral-900,#0b0d12)] dark:text-white', isPeak && 'heatmap-cell-peak')}
                           style={{
-                            background: `rgba(107, 70, 193, ${0.2 + intensity * 0.5})`,
-                            borderRadius: 12,
-                          }}
+                            '--heatmap-intensity': intensity.toFixed(2),
+                            ...(prefersReducedMotion
+                              ? null
+                              : {
+                                  animationDelay: `${(rowIndex * data.activityHeatmap.days.length + colIndex) * 35}ms`,
+                                }),
+                          } as CSSProperties}
                         >
                           {score}
                         </td>
@@ -1844,28 +2567,103 @@ function EdTechModule({
             </table>
           </div>
         </Card>
+      </div>
 
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Alerts">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Alerts</h3>
-              <p className="text-xs text-slate-600">FERPA-ready alerts with remediation guidance.</p>
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          padding="lg"
+          className={cn(
+            'col-span-12 lg:col-span-6 flex h-full flex-col gap-6 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+            !prefersReducedMotion && 'animate-module-item',
+          )}
+          style={!prefersReducedMotion ? ({ animationDelay: '240ms' } as CSSProperties) : undefined}
+          role="region"
+          aria-label="Assessment outcomes"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Assessment outcomes</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Grade band distribution</h3>
             </div>
           </div>
-          <ul className="mt-4 space-y-3">
-            {data.alerts.map((alert) => (
-              <li key={alert.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <StatusChip
-                  label={alert.severity}
-                  tone={alert.severity === 'critical' ? 'danger' : alert.severity === 'warning' ? 'warning' : 'info'}
+          <div className="h-[260px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={assessmentBands}>
+                <CartesianGrid vertical={false} stroke="rgba(99,102,241,0.2)" strokeDasharray="4 6" />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
+                <YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={{ fontSize: 12 }} width={36} />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                <Bar
+                  dataKey="value"
+                  radius={[10, 10, 0, 0]}
+                  fill="rgba(99,102,241,0.6)"
+                  stroke="rgba(79,70,229,0.8)"
+                  barSize={28}
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={260}
                 />
-                <p className="mt-2 text-sm text-slate-700">{alert.message}</p>
-              </li>
-            ))}
-          </ul>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        <Card
+          padding="lg"
+          className={cn(
+            'col-span-12 lg:col-span-6 flex h-full flex-col gap-6 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+            !prefersReducedMotion && 'animate-module-item',
+          )}
+          style={!prefersReducedMotion ? ({ animationDelay: '280ms' } as CSSProperties) : undefined}
+          role="region"
+          aria-label="Cohort retention curve"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Cohort retention</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Week-over-week retention curve</h3>
+            </div>
+          </div>
+          <div className="h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={retentionCurve}>
+                <CartesianGrid stroke="rgba(99,102,241,0.16)" strokeDasharray="4 6" />
+                <XAxis dataKey="week" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
+                <YAxis domain={[0, 110]} tickLine={false} axisLine={false} tick={{ fontSize: 12 }} width={36} />
+                <Tooltip
+                  formatter={(value: number, _name, payload) => [
+                    `${Math.round(value as number)}% retention`,
+                    `Week ${payload?.payload?.index + 1}`,
+                  ]}
+                  contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="retention"
+                  stroke={`var(${accent})`}
+                  strokeWidth={3}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={360}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </Card>
       </div>
-    </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        {data.automation.map((item, index) => (
+          <InterventionCard
+            key={item.id}
+            item={item}
+            accent={accent}
+            prefersReducedMotion={prefersReducedMotion}
+            style={!prefersReducedMotion ? ({ animationDelay: `${320 + index * 60}ms` } as CSSProperties) : undefined}
+          />
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -1876,158 +2674,396 @@ function SpecializedModule({
   data: PortfolioDashboardResponse['specialized'];
   accent: string;
 }) {
-  const momentumRows = data.realEstate.trend.map((point) => ({ month: point.label, momentum: point.value }));
-  const expenseRows = data.finance.expenses.map((point) => ({ week: point.label, actual: point.value, budget: point.secondary }));
-  const roiRows = data.finance.roiBreakdown.map((item) => ({ channel: item.label, share: `${item.value}%` }));
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const [verticalFilter, setVerticalFilter] = useState('portfolio');
+  const [dateRange, setDateRange] = useState('quarter');
+
+  const kpis = [
+    {
+      id: 'listings',
+      label: 'Active listings',
+      value: data.realEstate.metrics[0].value,
+      change: data.realEstate.metrics[0].change,
+      trend: data.realEstate.metrics[0].trend,
+      caption: data.realEstate.metrics[0].description,
+    },
+    {
+      id: 'burn',
+      label: 'Monthly burn %',
+      value: `${Math.abs(data.finance.metrics[0].change).toFixed(1)}%`,
+      change: data.finance.metrics[0].change,
+      trend: data.finance.metrics[0].trend,
+      caption: data.finance.metrics[0].value,
+    },
+    {
+      id: 'appointments',
+      label: 'Appointments this week',
+      value: data.healthcare.metrics[0].value,
+      change: data.healthcare.metrics[0].change,
+      trend: data.healthcare.metrics[0].trend,
+      caption: data.healthcare.metrics[0].description,
+    },
+    {
+      id: 'show-rate',
+      label: 'Show rate',
+      value: data.healthcare.metrics[1].value,
+      change: data.healthcare.metrics[1].change,
+      trend: data.healthcare.metrics[1].trend,
+      caption: data.healthcare.metrics[1].description,
+    },
+  ];
+
+  const expenseSeries = data.finance.expenses.map((entry) => ({
+    label: entry.label,
+    actual: entry.value,
+    budget: entry.secondary,
+  }));
+
+  const lifecycleAutomations = [...data.finance.automation, ...data.healthcare.automation, ...data.realEstate.automation].slice(0, 3);
+
+  const automationHighlights = ['agent-alerts', 'listing-drip', 'intake-automation'];
+  const highlightCards = automationHighlights
+    .map((id) =>
+      [...data.realEstate.automation, ...data.healthcare.automation, ...data.finance.automation].find((item) => item.id === id),
+    )
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
+
+  const headerFilters = [
+    {
+      id: 'vertical',
+      label: 'Industry vertical',
+      value: verticalFilter,
+      onChange: setVerticalFilter,
+      options: [
+        { value: 'portfolio', label: 'All verticals' },
+        { value: 'real-estate', label: 'Real estate' },
+        { value: 'finance', label: 'Finance' },
+        { value: 'healthcare', label: 'Healthcare' },
+      ],
+    },
+    {
+      id: 'range',
+      label: 'Date range',
+      value: dateRange,
+      onChange: setDateRange,
+      options: [
+        { value: 'month', label: 'Last 30 days' },
+        { value: 'quarter', label: 'Quarter to date' },
+        { value: 'year', label: 'Year to date' },
+      ],
+    },
+  ];
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="specialized-panel" role="tabpanel" aria-labelledby="specialized">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Specialized niches"
-          subtitle="Real estate, finance, healthcare"
-          accent={accent}
-        />
+    <section className="space-y-8" id="specialized-panel" role="tabpanel" aria-labelledby="specialized">
+      <header
+        className={cn(
+          'module-surface rounded-3xl border border-[var(--surface-border)] bg-gradient-to-br from-white via-[#ecfeff] to-white px-6 py-6 shadow-sm dark:from-[rgba(15,23,42,0.85)] dark:via-[rgba(15,23,42,0.65)]',
+          !prefersReducedMotion && 'animate-module-header',
+        )}
+        style={!prefersReducedMotion ? ({ animationDelay: '40ms' } as CSSProperties) : undefined}
+      >
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 lg:col-span-6 space-y-2">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">Specialized niches</p>
+            <h2 className="text-[24px] font-semibold text-[var(--neutral-900,#0b0d12)]">Operational intelligence across niche verticals</h2>
+            <p className="max-w-xl text-[13px] text-[var(--neutral-600,#5e6673)]">
+              Teal and slate accents balance financial controls with patient experience. Filters tailor the control room per vertical.
+            </p>
+          </div>
+          <div className="col-span-12 lg:col-span-6 flex flex-wrap items-start justify-end gap-4">
+            {headerFilters.map((filter) => (
+              <FilterSelect
+                key={filter.id}
+                id={`specialized-${filter.id}`}
+                label={filter.label}
+                value={filter.value}
+                onChange={filter.onChange}
+                options={filter.options}
+                icon={filter.id === 'range' ? <CalendarRange className="h-3.5 w-3.5" aria-hidden /> : <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden />}
+              />
+            ))}
+          </div>
+          <div className="col-span-12 h-px bg-[var(--surface-border)]" aria-hidden />
+        </div>
+      </header>
+
+      <div className="grid grid-cols-12 gap-6">
+        {kpis.map((metric, index) => {
+          const TrendIcon = metric.trend === 'up' ? ArrowUpRight : metric.trend === 'down' ? ArrowDownRight : Minus;
+          const tone =
+            metric.trend === 'up'
+              ? 'text-[rgba(15,118,110,0.95)]'
+              : metric.trend === 'down'
+              ? 'text-[rgba(220,38,38,0.9)]'
+              : 'text-[var(--neutral-500,#5e6673)]';
+          return (
+            <div key={metric.id} className="col-span-12 sm:col-span-6 xl:col-span-3">
+              <Card
+                padding="md"
+                className={cn(
+                  'kpi-card flex h-full flex-col gap-3 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+                  !prefersReducedMotion && 'animate-module-item',
+                )}
+                style={{ ...(prefersReducedMotion ? null : { animationDelay: `${index * 80}ms` }), '--card-accent': `var(${accent})` } as CSSProperties}
+              >
+                <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">{metric.label}</p>
+                <p className="text-[28px] font-semibold text-[var(--neutral-900,#0b0d12)]">{metric.value}</p>
+                <div className={cn('flex items-center gap-1 text-[12px] font-semibold', tone)}>
+                  <TrendIcon className="h-3.5 w-3.5" aria-hidden />
+                  <span>{Math.abs(metric.change).toFixed(1)}%</span>
+                </div>
+                <p className="text-[12px] text-[var(--neutral-500,#5e6673)]">{metric.caption}</p>
+              </Card>
+            </div>
+          );
+        })}
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <ChartCard
-          id="specialized-momentum"
-          title="Market momentum"
-          description="Real estate listings velocity"
-          rows={momentumRows}
-          columns={[
-            { key: 'month', label: 'Month' },
-            { key: 'momentum', label: 'Momentum', align: 'right' },
-          ]}
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          padding="lg"
+          className={cn(
+            'col-span-12 xl:col-span-6 flex h-full flex-col gap-6 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+            !prefersReducedMotion && 'animate-module-item',
+          )}
+          style={!prefersReducedMotion ? ({ animationDelay: '160ms' } as CSSProperties) : undefined}
+          role="region"
+          aria-label="Market momentum"
         >
-          <ResponsiveContainer height={220}>
-            <AreaChart data={data.realEstate.trend}>
-              <defs>
-                <linearGradient id="momentumGradient" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="5%" stopColor="var(--vertical-specialized)" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="var(--vertical-specialized)" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Area type="monotone" dataKey="value" stroke="var(--vertical-specialized)" fill="url(#momentumGradient)" strokeWidth={3} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Listings & inquiries">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Listings & inquiries</h3>
-              <p className="text-xs text-slate-600">Key real estate pipeline with agent accountability.</p>
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Market momentum</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Listings velocity by month</h3>
             </div>
           </div>
-          <ul className="mt-4 space-y-3">
-            {data.realEstate.pipeline.map((item) => (
-              <li key={item.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <p className="text-sm font-semibold text-slate-900">{item.address}</p>
-                <p className="text-xs text-slate-500">Stage: {item.stage}</p>
-                <p className="text-xs text-slate-500">Inquiries: {item.inquiries}</p>
-                <p className="text-xs text-slate-500">Agent: {item.agent}</p>
-              </li>
-            ))}
-          </ul>
+          <div className="grid gap-6">
+            <div className="h-[240px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={data.realEstate.trend}>
+                  <CartesianGrid stroke="rgba(45,212,191,0.18)" strokeDasharray="4 6" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
+                  <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12 }} width={36} />
+                  <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke={`var(${accent})`}
+                    strokeWidth={3}
+                    dot={{ r: 4 }}
+                    isAnimationActive={!prefersReducedMotion}
+                    animationDuration={320}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="overflow-hidden rounded-2xl border border-dashed border-[var(--surface-border)]">
+              <div className="grid grid-cols-2 bg-[var(--surface-s1)] text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+                <div className="px-4 py-3">Month</div>
+                <div className="px-4 py-3 text-right">Momentum index</div>
+              </div>
+              <div className="max-h-[200px] overflow-auto">
+                <table className="min-w-full text-[13px]" aria-label="Momentum table">
+                  <tbody>
+                    {data.realEstate.trend.map((point, index) => (
+                      <tr
+                        key={point.label}
+                        className={cn(
+                          'transition-colors hover:bg-[rgba(45,212,191,0.12)]',
+                          index % 2 === 0 ? 'bg-white/90 dark:bg-[rgba(15,23,42,0.55)]' : 'bg-[var(--surface-s1)]/70',
+                        )}
+                      >
+                        <td className="px-4 py-3 text-[var(--neutral-700,#384150)]">{point.label}</td>
+                        <td className="px-4 py-3 text-right text-[var(--neutral-700,#384150)]">{point.value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card
+          padding="lg"
+          className={cn(
+            'col-span-12 xl:col-span-6 flex h-full flex-col gap-6 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+            !prefersReducedMotion && 'animate-module-item',
+          )}
+          style={!prefersReducedMotion ? ({ animationDelay: '200ms' } as CSSProperties) : undefined}
+          role="region"
+          aria-label="Expense versus budget"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Expense vs budget</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Actual vs forecast burn</h3>
+            </div>
+          </div>
+          <div className="flex flex-col gap-6 lg:flex-row">
+            <div className="h-[260px] flex-1">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={expenseSeries}>
+                  <CartesianGrid stroke="rgba(45,212,191,0.18)" strokeDasharray="4 6" />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
+                  <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12 }} width={36} />
+                  <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                  <Line
+                    type="monotone"
+                    dataKey="actual"
+                    stroke={`color-mix(in srgb,var(${accent}) 70%,#0f172a)`}
+                    strokeWidth={3}
+                    dot={{ r: 4 }}
+                    isAnimationActive={!prefersReducedMotion}
+                    animationDuration={320}
+                    name="Actual burn"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="budget"
+                    stroke="rgba(15,118,110,0.6)"
+                    strokeDasharray="6 4"
+                    strokeWidth={3}
+                    dot={{ r: 3 }}
+                    isAnimationActive={!prefersReducedMotion}
+                    animationDuration={320}
+                    name="Budget"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex w-full max-w-[220px] flex-col gap-3">
+              <div className="legend-chip flex items-center gap-2 rounded-full border border-[var(--surface-border)] bg-white/80 px-3 py-2 text-[13px] font-medium text-[var(--neutral-700,#384150)] shadow-sm">
+                <span className="h-2.5 w-2.5 rounded-full" style={{ background: `color-mix(in srgb,var(${accent}) 70%,#0f172a)` }} aria-hidden />
+                <span>Actual burn</span>
+              </div>
+              <div className="legend-chip flex items-center gap-2 rounded-full border border-[var(--surface-border)] bg-white/80 px-3 py-2 text-[13px] font-medium text-[var(--neutral-700,#384150)] shadow-sm">
+                <span className="h-2.5 w-2.5 rounded-full" style={{ background: 'rgba(15,118,110,0.6)' }} aria-hidden />
+                <span>Budget</span>
+              </div>
+            </div>
+          </div>
         </Card>
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
-        <ChartCard
-          id="specialized-expenses"
-          title="Expense vs budget"
-          description="Finance automation keeps spend in check"
-          rows={expenseRows}
-          columns={[
-            { key: 'week', label: 'Week' },
-            { key: 'actual', label: 'Actual ($K)', align: 'right' },
-            { key: 'budget', label: 'Budget ($K)', align: 'right' },
-          ]}
+      <div className="grid grid-cols-12 gap-6">
+        <Card
+          padding="lg"
+          className={cn(
+            'col-span-12 lg:col-span-6 flex h-full flex-col gap-6 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+            !prefersReducedMotion && 'animate-module-item',
+          )}
+          style={!prefersReducedMotion ? ({ animationDelay: '240ms' } as CSSProperties) : undefined}
+          role="region"
+          aria-label="Appointments"
         >
-          <ResponsiveContainer height={220}>
-            <LineChart data={data.finance.expenses}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={false} name="Actual" />
-              <Line type="monotone" dataKey="secondary" stroke="#10b981" strokeWidth={3} dot={false} name="Budget" />
-              <Legend verticalAlign="bottom" height={36} />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard
-          id="specialized-roi"
-          title="ROI breakdown"
-          description="Attribution-safe ROI mix"
-          rows={roiRows}
-          columns={[
-            { key: 'channel', label: 'Channel' },
-            { key: 'share', label: 'Share', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={220}>
-            <PieChart>
-              <Pie dataKey="value" data={data.finance.roiBreakdown} innerRadius={70} outerRadius={110} paddingAngle={2}>
-                {data.finance.roiBreakdown.map((segment) => (
-                  <Cell key={segment.id} fill={segment.color} stroke="#1f2937" strokeWidth={1.4} />
-                ))}
-              </Pie>
-              <Legend verticalAlign="bottom" height={50} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      </div>
-
-      <div className="col-span-12 lg:col-span-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Healthcare appointments">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Healthcare appointments</h3>
-              <p className="text-xs text-slate-600">Omni-channel reminders, smart rescheduling, PHI-safe.</p>
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Appointments</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Patient scheduling detail</h3>
             </div>
           </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Appointments table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
+          <div className="rounded-2xl border border-[var(--surface-border)] overflow-x-auto">
+            <table className="min-w-full text-left table-fixed" aria-label="Appointments table">
+              <thead className="sticky top-0 z-10 bg-white text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
                 <tr>
-                  <th className="px-4 py-3 text-left">Patient</th>
-                  <th className="px-4 py-3 text-left">Clinician</th>
-                  <th className="px-4 py-3 text-left">Start</th>
-                  <th className="px-4 py-3 text-left">Channel</th>
-                  <th className="px-4 py-3 text-right">Status</th>
+                  <th className="px-4 py-3 text-left w-[20%]">Patient</th>
+                  <th className="px-4 py-3 text-left w-[25%]">Clinician</th>
+                  <th className="px-4 py-3 text-left w-[20%]">Start</th>
+                  <th className="px-4 py-3 text-left w-[15%]">Channel</th>
+                  <th className="px-4 py-3 text-right w-[20%]">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
-                {data.healthcare.appointments.map((appt) => (
-                  <tr key={appt.id}>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.patient}</td>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.clinician}</td>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.start}</td>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.channel}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-700">{appt.status}</td>
+              <tbody className="text-[13px]">
+                {data.healthcare.appointments.map((appt, index) => (
+                  <tr
+                    key={appt.id}
+                    className={cn('appointment-row', index % 2 === 0 ? 'bg-white/90 dark:bg-[rgba(15,23,42,0.55)]' : 'bg-[var(--surface-s1)]/70')}
+                    style={!prefersReducedMotion ? ({ animationDelay: `${index * 60}ms` } as CSSProperties) : undefined}
+                  >
+                    <td className="px-4 py-3 text-[var(--neutral-700,#384150)]">{appt.patient}</td>
+                    <td className="px-4 py-3 text-[var(--neutral-700,#384150)]">{appt.clinician}</td>
+                    <td className="px-4 py-3 text-[var(--neutral-700,#384150)]">{appt.start}</td>
+                    <td className="px-4 py-3 text-[var(--neutral-700,#384150)]">{appt.channel}</td>
+                    <td className="px-4 py-3 text-right text-[var(--neutral-700,#384150)]">{appt.status}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </Card>
+
+        <Card
+          padding="lg"
+          className={cn(
+            'col-span-12 lg:col-span-6 flex h-full flex-col gap-4 border border-[var(--surface-border)] bg-white shadow-sm dark:bg-[rgba(15,23,42,0.55)]',
+            !prefersReducedMotion && 'animate-module-item',
+          )}
+          style={!prefersReducedMotion ? ({ animationDelay: '280ms' } as CSSProperties) : undefined}
+          role="region"
+          aria-label="Lifecycle and CRM automations"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Lifecycle & CRM automations</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Top orchestration routines</h3>
+            </div>
+            <button
+              type="button"
+              className="inline-flex min-h-[36px] items-center rounded-full border border-[var(--surface-border)] px-3 py-1.5 text-[12px] font-semibold text-[var(--neutral-600,#5e6673)] transition hover:bg-white focus-visible:focus-ring"
+            >
+              View all
+            </button>
+          </div>
+          <div className="flex flex-col gap-3">
+            {lifecycleAutomations.map((automation, index) => (
+              <div
+                key={automation.id}
+                className={cn(
+                  'lifecycle-card relative flex flex-col gap-2 rounded-2xl border border-[var(--surface-border)] bg-white/90 px-4 py-4 shadow-sm transition dark:bg-[rgba(15,23,42,0.55)]',
+                  !prefersReducedMotion && 'animate-module-item',
+                )}
+                style={!prefersReducedMotion ? ({ animationDelay: `${300 + index * 60}ms` } as CSSProperties) : undefined}
+              >
+                <p className="text-[14px] font-semibold text-[var(--neutral-900,#0b0d12)]">{automation.title}</p>
+                <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">{automation.action}</p>
+                <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">
+                  <AutomationPill label={`Trigger: ${automation.trigger}`} />
+                  <AutomationPill label={`Cadence: ${automation.cadence}`} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <AutomationList items={data.realEstate.automation} />
-        <AutomationList items={data.finance.automation} />
-        <AutomationList items={data.healthcare.automation} />
-      </div>
-    </div>
+      {highlightCards.length > 0 ? (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {highlightCards.map((automation, index) => (
+            <Card
+              key={automation.id}
+              padding="md"
+              className={cn(
+                'automation-card relative flex h-full flex-col justify-between gap-4 border border-[var(--surface-border)] bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg dark:bg-[rgba(15,23,42,0.55)]',
+                !prefersReducedMotion && 'animate-module-item',
+              )}
+              style={{ ...(prefersReducedMotion ? null : { animationDelay: `${340 + index * 60}ms` }), '--card-accent': `var(${accent})` } as CSSProperties}
+            >
+              <div className="space-y-2">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">Automation highlight</p>
+                <h3 className="text-[16px] font-semibold text-[var(--neutral-900,#0b0d12)]">{automation.title}</h3>
+                <p className="text-[13px] text-[var(--neutral-600,#5e6673)]">{automation.action}</p>
+              </div>
+              <div className="automation-pill-group flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]" data-prefers-reduced-motion={prefersReducedMotion}>
+                <AutomationPill label={`Trigger: ${automation.trigger}`} />
+                <AutomationPill label={`Channel: ${automation.channel}`} />
+                <AutomationPill label={`Cadence: ${automation.cadence}`} />
+              </div>
+            </Card>
+          ))}
+        </div>
+      ) : null}
+    </section>
   );
 }
 
