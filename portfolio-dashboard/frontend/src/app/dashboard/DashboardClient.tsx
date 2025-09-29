@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Area,
   AreaChart,
   Bar,
   BarChart,
+  ComposedChart,
   CartesianGrid,
   Cell,
   Legend,
@@ -36,7 +37,7 @@ import {
   type PortfolioDashboardResponse,
   type TabDefinition,
 } from './data';
-import { useDashboardStore, type DateRange } from '@/state/dashboardStore';
+import { useDashboardStore, type DateRange, type Filters } from '@/state/dashboardStore';
 import { useThemeContext } from '@/components/theme/ThemeProvider';
 import { useLiveMetrics } from '@/hooks/useLiveMetrics';
 import { KPIBand } from '@/components/ui/KPIBand';
@@ -47,6 +48,8 @@ import { ChartCard } from '@/components/ui/ChartCard';
 import { AutomationBuilder } from '@/components/ui/AutomationBuilder';
 import { StatusChip } from '@/components/ui/StatusChip';
 import { useToast } from '@/components/ui/ToastProvider';
+import { cn } from '@/lib/utils';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
 const accentTokens: Record<TabDefinition['id'], string> = {
   saas: '--vertical-saas',
@@ -151,72 +154,269 @@ function SectionHeader({
   );
 }
 
+type ModuleFilters = {
+  filters: Filters;
+};
+
 function SaaSModule({
   data,
   accent,
+  metrics,
+  filters,
 }: {
   data: PortfolioDashboardResponse['saas'];
   accent: string;
-}) {
-  const churnRows = data.churnSegments.map((segment) => ({
-    segment: segment.label,
-    share: `${segment.value}%`,
+  metrics: PortfolioDashboardResponse['saas']['metrics'];
+} & ModuleFilters) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const moduleFilters = ['All modules', 'Billing', 'Engagement', 'Operations'];
+  const planFilters = ['All plans', ...data.subscriptionPlans.map((plan) => plan.name)];
+  const segmentFilters = ['All segments', 'Enterprise', 'Mid-market', 'SMB'];
+  const [activeModuleFilter, setActiveModuleFilter] = useState(moduleFilters[0]);
+  const [activePlanFilter, setActivePlanFilter] = useState(planFilters[0]);
+  const [activeSegmentFilter, setActiveSegmentFilter] = useState(segmentFilters[0]);
+
+  const churnTrend = useMemo(() => {
+    const baseline = data.growthTrend[0]?.value ?? 0;
+    return data.growthTrend.map((point, index) => {
+      const retention = Number((100 + (point.value - baseline) * 0.08).toFixed(1));
+      const churnRate = Number(Math.max(1.2, 3.8 - index * 0.2).toFixed(1));
+      return { label: point.label, retention, churnRate };
+    });
+  }, [data.growthTrend]);
+
+  const growthRows = data.growthTrend.map((point) => ({ month: point.label, mrr: `$${point.value}K` }));
+  const mrrBreakdownRows = data.subscriptionPlans.map((plan) => ({
+    plan: plan.name,
+    seatPrice: plan.price,
+    users: plan.activeUsers.toLocaleString(),
+    activation: plan.activationRate,
+    share: `${Math.round((plan.activeUsers / data.subscriptionPlans.reduce((sum, item) => sum + item.activeUsers, 0)) * 100)}%`,
   }));
 
-  const growthRows = data.growthTrend.map((point) => ({ month: point.label, mrr: point.value }));
-  const apiRows = data.apiUsageTrend.map((point) => ({ week: point.label, usage: point.value }));
+  const totalApiVolume = data.apiUsageTrend.reduce((sum, point) => sum + point.value, 0);
+  const endpointLabels = ['Auth', 'Billing', 'Reports', 'Events', 'Webhooks', 'Exports', 'Usage', 'Integrations'];
+  const endpointRows = data.apiUsageTrend.map((point, index) => {
+    const share = totalApiVolume === 0 ? 0 : (point.value / totalApiVolume) * 100;
+    return {
+      endpoint: `/v1/${endpointLabels[index] ?? `endpoint-${index + 1}`}`,
+      volume: `${point.value}M`,
+      share: `${share.toFixed(1)}%`,
+      trend: index % 2 === 0 ? '↑' : '→',
+    };
+  });
+
+  const automationCondition = (active: boolean) => (active ? 'Signal detected' : 'Awaiting approval');
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="saas-panel" role="tabpanel" aria-labelledby="saas">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Subscription intelligence & API operations"
-          subtitle="SaaS platform"
-          accent={accent}
-        />
+    <section className="space-y-8" id="saas-panel" role="tabpanel" aria-labelledby="saas">
+      <div className="rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-s1)] p-6 animate-dashboard-panel">
+        <div className="grid grid-cols-12 items-start gap-6">
+          <div className="col-span-12 lg:col-span-4 space-y-1">
+            <p className="text-[13px] font-medium uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">SaaS Overview</p>
+            <h2 className="text-[24px] font-semibold text-[var(--neutral-900,#0b0d12)]">
+              Subscription health & platform engagement
+            </h2>
+            <p className="text-[13px] text-[var(--neutral-600,#5e6673)]">
+              Cohort-aligned retention, plan mix, and API utilisation. Filters cascade to every insight module.
+            </p>
+          </div>
+          <div className="col-span-12 lg:col-span-4">
+            <FilterStack
+              label="Module"
+              options={moduleFilters}
+              activeOption={activeModuleFilter}
+              onSelect={setActiveModuleFilter}
+            />
+          </div>
+          <div className="col-span-12 lg:col-span-4 flex flex-col items-start gap-2 text-[12px] text-[var(--neutral-600,#5e6673)] lg:items-end">
+            <FilterSummary label="Module" value={activeModuleFilter} />
+            <FilterSummary label="Plan" value={activePlanFilter} />
+            <FilterSummary label="Segment" value={activeSegmentFilter} />
+            <p>
+              Date range: {dateRangeOptions.find((option) => option.id === filters.dateRange)?.label ?? 'Last 30 days'} · Timezone:
+              UTC
+            </p>
+          </div>
+        </div>
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          <FilterStack label="Plan" options={planFilters} activeOption={activePlanFilter} onSelect={setActivePlanFilter} />
+          <FilterStack
+            label="Segment"
+            options={segmentFilters}
+            activeOption={activeSegmentFilter}
+            onSelect={setActiveSegmentFilter}
+          />
+          <div className="rounded-xl border border-dashed border-[var(--surface-border)] bg-white/70 px-4 py-3 text-[12px] text-[var(--neutral-600,#5e6673)]">
+            Persisted filters sync to the automation orchestrator and reporting exports.
+          </div>
+        </div>
       </div>
 
-      <div className="col-span-12 lg:col-span-7">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Subscription plans">
+      <div className="animate-dashboard-kpi">
+        <KPIBand metrics={metrics} accentToken={accent} />
+      </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        <Card className="col-span-12 lg:col-span-7 border border-[var(--surface-border)]" role="region" aria-label="Subscription plans">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h3 className="text-title-sm text-slate-900">Subscription plans</h3>
-              <p className="text-xs text-slate-600">
-                Tiered pricing, seat allocation, and churn performance with activation benchmarks.
-              </p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Subscription health</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Plan mix, activation, and churn coverage</p>
             </div>
             <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
           </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
+          <div className="mt-4 overflow-hidden rounded-xl border border-[var(--surface-border)]">
             <table className="min-w-full" aria-label="Subscription plans table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
+              <thead className="sticky top-0 bg-[var(--surface-s1)] text-[12px] font-medium uppercase tracking-[0.08em] text-[var(--neutral-500,#5e6673)]">
                 <tr>
                   <th className="px-4 py-3 text-left">Plan</th>
-                  <th className="px-4 py-3 text-left">Price</th>
-                  <th className="px-4 py-3 text-left">Active users</th>
-                  <th className="px-4 py-3 text-left">Activation</th>
-                  <th className="px-4 py-3 text-left">API allocation</th>
-                  <th className="px-4 py-3 text-left">Churn</th>
+                  <th className="px-4 py-3 text-left">Seat price</th>
+                  <th className="px-4 py-3 text-right">Active users</th>
+                  <th className="px-4 py-3 text-right">Activation</th>
+                  <th className="px-4 py-3 text-right">Churn</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
+              <tbody className="text-[13px] text-[var(--neutral-700,#384150)]">
                 {data.subscriptionPlans.map((plan) => (
-                  <tr key={plan.id} className="hover:bg-[var(--primary-50)]/40">
+                  <tr key={plan.id} className="transition hover:bg-[rgba(59,130,246,0.05)]">
                     <td className="px-4 py-[11px]">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-slate-900">{plan.name}</span>
+                        <span className="font-semibold text-[var(--neutral-900,#0b0d12)]">{plan.name}</span>
                         {plan.badge ? (
-                          <span className="rounded-full bg-[var(--primary-50)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary-600)]">
+                          <span className="rounded-full bg-[rgba(59,130,246,0.1)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary-600)]">
                             {plan.badge}
                           </span>
                         ) : null}
                       </div>
                     </td>
                     <td className="px-4 py-[11px]">{plan.price}</td>
-                    <td className="px-4 py-[11px]">{plan.activeUsers.toLocaleString()}</td>
-                    <td className="px-4 py-[11px]">{plan.activationRate}</td>
-                    <td className="px-4 py-[11px]">{plan.apiAllocation}</td>
-                    <td className="px-4 py-[11px]">{plan.churn}</td>
+                    <td className="px-4 py-[11px] text-right">{plan.activeUsers.toLocaleString()}</td>
+                    <td className="px-4 py-[11px] text-right">{plan.activationRate}</td>
+                    <td className="px-4 py-[11px] text-right">{plan.churn}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+
+        <Card className="col-span-12 lg:col-span-5 border border-[var(--surface-border)]" role="region" aria-label="Churn health trend">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Churn health</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">30-day retention vs. churn baseline</p>
+            </div>
+            <ClipboardList className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+          </div>
+          <div className="mt-4 h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={churnTrend}>
+                <defs>
+                  <linearGradient id="saasRetention" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="5%" stopColor="var(--vertical-saas)" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="var(--vertical-saas)" stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 8" stroke="rgba(94, 102, 115, 0.18)" />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                <YAxis tickFormatter={(value) => `${value}%`} tickLine={false} axisLine={false} />
+                <Tooltip
+                  formatter={(value: number, key) => [`${value}%`, key === 'retention' ? 'Retention' : 'Churn']}
+                  contentStyle={{ borderRadius: 12, border: '1px solid var(--surface-border)' }}
+                />
+                <Legend verticalAlign="top" align="right" height={36} iconType="circle" />
+                <Area
+                  type="monotone"
+                  dataKey="retention"
+                  name="Retention"
+                  stroke="var(--vertical-saas)"
+                  fill="url(#saasRetention)"
+                  strokeWidth={2}
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={400}
+                  animationEasing="ease-in-out"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="churnRate"
+                  name="Churn"
+                  stroke="var(--danger-500)"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={400}
+                  animationEasing="ease-in-out"
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        <ChartCard
+          id="saas-growth"
+          className="col-span-12 lg:col-span-8"
+          title="MRR growth"
+          description="Revenue intelligence"
+          caption="Year-to-date MRR with cohort smoothing"
+          rows={growthRows}
+          columns={[
+            { key: 'month', label: 'Month' },
+            { key: 'mrr', label: 'MRR', align: 'right' },
+          ]}
+        >
+          <ResponsiveContainer height={320}>
+            <LineChart data={data.growthTrend}>
+              <CartesianGrid strokeDasharray="3 8" stroke="rgba(94, 102, 115, 0.18)" />
+              <XAxis dataKey="label" tickLine={false} axisLine={false} />
+              <YAxis tickLine={false} axisLine={false} />
+              <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid var(--surface-border)' }} />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="var(--vertical-saas)"
+                strokeWidth={2}
+                dot={{ r: 3 }}
+                isAnimationActive={!prefersReducedMotion}
+                animationDuration={420}
+                animationEasing="ease-in-out"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <Card className="col-span-12 lg:col-span-4 border border-[var(--surface-border)]" role="region" aria-label="MRR breakdown">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">MRR breakdown</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Plan contribution and activation</p>
+            </div>
+            <ArrowUpRight className="h-5 w-5 text-[var(--success-600)]" aria-hidden />
+          </div>
+          <div className="mt-4 overflow-hidden rounded-xl border border-[var(--surface-border)]">
+            <table className="min-w-full" aria-label="MRR breakdown table">
+              <thead className="bg-[var(--surface-s1)] text-[12px] font-medium uppercase tracking-[0.08em] text-[var(--neutral-500,#5e6673)]">
+                <tr>
+                  <th className="px-4 py-3 text-left">Plan</th>
+                  <th className="px-4 py-3 text-right">Users</th>
+                  <th className="px-4 py-3 text-right">Activation</th>
+                  <th className="px-4 py-3 text-right">Share</th>
+                </tr>
+              </thead>
+              <tbody className="text-[13px] text-[var(--neutral-700,#384150)]">
+                {mrrBreakdownRows.map((row) => (
+                  <tr key={row.plan} className="transition hover:bg-[rgba(16,185,129,0.06)]">
+                    <td className="px-4 py-[11px]">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-[var(--neutral-900,#0b0d12)]">{row.plan}</span>
+                        <span className="text-[11px] text-[var(--neutral-500,#5e6673)]">{row.seatPrice}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-[11px] text-right">{row.users}</td>
+                    <td className="px-4 py-[11px] text-right">{row.activation}</td>
+                    <td className="px-4 py-[11px] text-right">{row.share}</td>
                   </tr>
                 ))}
               </tbody>
@@ -225,169 +425,281 @@ function SaaSModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
-        <ChartCard
-          id="saas-churn"
-          title="Churn health distribution"
-          description="Colorblind-safe donut with renewal segments"
-          rows={churnRows}
-          columns={[
-            { key: 'segment', label: 'Segment' },
-            { key: 'share', label: 'Share', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={260}>
-            <PieChart>
-              <Pie dataKey="value" data={data.churnSegments} innerRadius={70} outerRadius={110} paddingAngle={3}>
-                {data.churnSegments.map((segment) => (
-                  <Cell key={segment.id} fill={segment.color} stroke="#1f2937" strokeWidth={1.5} />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)', background: 'var(--surface-s1)' }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Billing cycles">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Billing cycle orchestration</h3>
-              <p className="text-xs text-slate-600">Real-time close management with owner accountability.</p>
-            </div>
-            <ClipboardList className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
-          </div>
-          <ul className="mt-4 space-y-3">
-            {data.billingCycles.map((cycle) => (
-              <li key={cycle.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <div className="flex items-center justify-between text-sm text-slate-700">
-                  <span className="font-semibold text-slate-900">{cycle.label}</span>
-                  <StatusChip
-                    label={cycle.status}
-                    tone={cycle.status === 'completed' ? 'success' : cycle.status === 'processing' ? 'info' : 'warning'}
-                  />
-                </div>
-                <p className="mt-2 text-xs text-slate-500">Next run {cycle.nextRun}</p>
-                <p className="text-xs text-slate-500">Owners: {cycle.owners.join(', ')}</p>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
-
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <ChartCard
-          id="saas-growth"
-          title="MRR growth"
-          description="Pre-aggregated monthly recurring revenue"
-          rows={growthRows}
-          columns={[
-            { key: 'month', label: 'Month' },
-            { key: 'mrr', label: 'MRR ($K)', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={280}>
-            <LineChart data={data.growthTrend}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Line type="monotone" dataKey="value" stroke="var(--primary-500)" strokeWidth={3} dot={{ r: 5 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
+      <div className="grid grid-cols-12 gap-6">
         <ChartCard
           id="saas-api"
-          title="API usage saturation"
-          description="Live usage vs allocation"
-          rows={apiRows}
+          className="col-span-12 lg:col-span-7"
+          title="API usage trend"
+          description="Platform operations"
+          caption="Eight week rolling window with allocation bands"
+          rows={data.apiUsageTrend.map((point) => ({ week: point.label, usage: `${point.value}M` }))}
           columns={[
             { key: 'week', label: 'Week' },
-            { key: 'usage', label: 'Usage (M calls)', align: 'right' },
+            { key: 'usage', label: 'Usage', align: 'right' },
           ]}
         >
           <ResponsiveContainer height={280}>
             <AreaChart data={data.apiUsageTrend}>
               <defs>
-                <linearGradient id="apiGradient" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="5%" stopColor="var(--primary-500)" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="var(--primary-500)" stopOpacity={0.05} />
+                <linearGradient id="saasApi" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="5%" stopColor="var(--vertical-saas)" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="var(--vertical-saas)" stopOpacity={0.05} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
+              <CartesianGrid strokeDasharray="3 8" stroke="rgba(94, 102, 115, 0.18)" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} />
               <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Area type="monotone" dataKey="value" stroke="var(--primary-500)" fill="url(#apiGradient)" strokeWidth={3} />
+              <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid var(--surface-border)' }} />
+              <Area
+                type="monotone"
+                dataKey="value"
+                stroke="var(--vertical-saas)"
+                fill="url(#saasApi)"
+                strokeWidth={2}
+                isAnimationActive={!prefersReducedMotion}
+                animationDuration={420}
+                animationEasing="ease-in-out"
+              />
             </AreaChart>
           </ResponsiveContainer>
         </ChartCard>
+
+        <Card className="col-span-12 lg:col-span-5 border border-[var(--surface-border)]" role="region" aria-label="API calls by endpoint">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">API calls by endpoint</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Ranked volume and share</p>
+            </div>
+            <Workflow className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+          </div>
+          <div className="mt-4 overflow-hidden rounded-xl border border-[var(--surface-border)]">
+            <table className="min-w-full" aria-label="API endpoints table">
+              <thead className="bg-[var(--surface-s1)] text-[12px] font-medium uppercase tracking-[0.08em] text-[var(--neutral-500,#5e6673)]">
+                <tr>
+                  <th className="px-4 py-3 text-left">Endpoint</th>
+                  <th className="px-4 py-3 text-right">Volume</th>
+                  <th className="px-4 py-3 text-right">Share</th>
+                  <th className="px-4 py-3 text-right">Trend</th>
+                </tr>
+              </thead>
+              <tbody className="text-[13px] text-[var(--neutral-700,#384150)]">
+                {endpointRows.map((row) => (
+                  <tr key={row.endpoint} className="transition hover:bg-[rgba(59,130,246,0.05)]">
+                    <td className="px-4 py-[11px]">
+                      <span className="block truncate" title={row.endpoint}>
+                        {row.endpoint}
+                      </span>
+                    </td>
+                    <td className="px-4 py-[11px] text-right">{row.volume}</td>
+                    <td className="px-4 py-[11px] text-right">{row.share}</td>
+                    <td className="px-4 py-[11px] text-right" aria-label={row.trend === '↑' ? 'Increasing' : 'Stable'}>
+                      {row.trend}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
+      <div className="grid grid-cols-12 gap-6">
         <AutomationBuilder
+          className="col-span-12 lg:col-span-6 h-full"
           verticalAccent={accent}
           onCreate={async () => {
             await new Promise((resolve) => setTimeout(resolve, 800));
           }}
         />
-        <AutomationList items={data.automation} />
+        <Card className="col-span-12 lg:col-span-6 flex h-full flex-col gap-4 border border-[var(--surface-border)]" role="region" aria-label="Automation orchestration">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Automation orchestration</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Trigger → Condition → Action → Channel → Cadence</p>
+            </div>
+            <Workflow className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+          </div>
+          <ul className="grid gap-3">
+            {data.automation.map((automation) => (
+              <li key={automation.id} className="rounded-2xl border border-[var(--surface-border)] bg-white/70 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-[14px] font-semibold text-[var(--neutral-900,#0b0d12)]">{automation.title}</p>
+                  <StatusChip
+                    label={automation.active ? 'Active' : 'Paused'}
+                    tone={automation.active ? 'success' : 'warning'}
+                  />
+                </div>
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">
+                  <AutomationPill label={`Trigger | ${automation.trigger}`} />
+                  <AutomationPill label={`Condition | ${automationCondition(automation.active)}`} />
+                  <AutomationPill label={`Action | ${automation.action}`} />
+                  <AutomationPill label={`Channel | ${automation.channel}`} />
+                  <AutomationPill label={`Cadence | ${automation.cadence}`} />
+                </div>
+              </li>
+            ))}
+          </ul>
+          <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">
+            Owners: {data.billingCycles.map((cycle) => cycle.owners.join(', ')).join(' • ')}
+          </p>
+        </Card>
+      </div>
+    </section>
+  );
+}
+
+function FilterStack({
+  label,
+  options,
+  activeOption,
+  onSelect,
+}: {
+  label: string;
+  options: string[];
+  activeOption: string;
+  onSelect: (option: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+        {label}
+      </span>
+      <div className="flex flex-wrap gap-2">
+        {options.map((option) => (
+          <button
+            key={option}
+            type="button"
+            className={cn(
+              'dashboard-pill inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[12px] transition focus-visible:focus-ring',
+              activeOption === option
+                ? 'border-[var(--primary-500)] bg-[rgba(59,130,246,0.12)] text-[var(--primary-600)]'
+                : 'border-[var(--surface-border)] text-[var(--neutral-600,#5e6673)] hover:bg-white',
+            )}
+            onClick={() => onSelect(option)}
+            aria-pressed={activeOption === option}
+          >
+            {option}
+          </button>
+        ))}
       </div>
     </div>
+  );
+}
+
+function FilterSummary({ label, value }: { label: string; value: string }) {
+  return (
+    <span className="text-[12px] text-[var(--neutral-600,#5e6673)]">
+      <span className="font-semibold text-[var(--neutral-500,#5e6673)]">{label}:</span> {value}
+    </span>
+  );
+}
+
+function AutomationPill({ label }: { label: string }) {
+  return (
+    <span
+      className="dashboard-pill inline-flex items-center rounded-full border border-[var(--surface-border)] bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--neutral-600,#5e6673)]"
+      title={label}
+    >
+      {label}
+    </span>
   );
 }
 
 function CommerceModule({
   data,
   accent,
+  metrics,
+  filters,
 }: {
   data: PortfolioDashboardResponse['commerce'];
   accent: string;
-}) {
-  const salesRows = data.salesTrend.map((point) => ({ month: point.label, revenue: point.value }));
+  metrics: PortfolioDashboardResponse['commerce']['metrics'];
+} & ModuleFilters) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const categoryFilters = ['All categories', ...Array.from(new Set(data.topProducts.map((product) => product.category)))];
+  const regionFilters = ['Global', 'Americas', 'EMEA', 'APAC'];
+  const [activeCategory, setActiveCategory] = useState(categoryFilters[0]);
+  const [activeRegion, setActiveRegion] = useState(regionFilters[0]);
+  const dateRangeLabel = dateRangeOptions.find((option) => option.id === filters.dateRange)?.label ?? 'Last 30 days';
+
+  const salesRows = data.salesTrend.map((point) => ({ month: point.label, revenue: `$${point.value}M` }));
+  const channelMixSeries = data.salesTrend.slice(0, 5).map((point) => point.value);
+  const channelTotal = channelMixSeries.reduce((sum, value) => sum + value, 0) || 1;
+  const channelColors = ['#10b981', '#34d399', '#059669', '#0d9488', '#14b8a6'];
+  const channelLabels = ['Direct', 'Paid', 'Marketplace', 'Email', 'Affiliate'];
+  const channelMix = channelLabels.map((label, index) => ({
+    id: label,
+    label,
+    value: channelMixSeries[index] ?? channelMixSeries[0] ?? 0,
+    color: channelColors[index % channelColors.length],
+  }));
+  const regionLabels = ['North America', 'Europe', 'APAC', 'LatAm'];
+  const regionPerformance = regionLabels.map((label, index) => ({
+    region: label,
+    revenue: data.salesTrend[data.salesTrend.length - 4 + index]?.value ?? 0,
+  }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="commerce-panel" role="tabpanel" aria-labelledby="commerce">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Merchandising, orders & fulfillment"
-          subtitle="E-commerce"
-          accent={accent}
-        />
+    <section className="space-y-8" id="commerce-panel" role="tabpanel" aria-labelledby="commerce">
+      <div className="rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-s1)] p-6 animate-dashboard-panel">
+        <div className="grid grid-cols-12 items-start gap-6">
+          <div className="col-span-12 lg:col-span-6 space-y-2">
+            <p className="text-[13px] font-medium uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
+              E-commerce Performance
+            </p>
+            <h2 className="text-[24px] font-semibold text-[var(--neutral-900,#0b0d12)]">
+              Merchandising, orders, and fulfillment health
+            </h2>
+            <p className="text-[13px] text-[var(--neutral-600,#5e6673)]">
+              Filter by category and region to sync insights across GMV, channel mix, and automations.
+            </p>
+          </div>
+          <div className="col-span-12 lg:col-span-6 flex flex-col items-start gap-2 text-[12px] text-[var(--neutral-600,#5e6673)] lg:items-end">
+            <FilterSummary label="Category" value={activeCategory} />
+            <FilterSummary label="Region" value={activeRegion} />
+            <p>Date range: {dateRangeLabel} · Inventory synced hourly</p>
+          </div>
+        </div>
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          <FilterStack label="Category" options={categoryFilters} activeOption={activeCategory} onSelect={setActiveCategory} />
+          <FilterStack label="Region" options={regionFilters} activeOption={activeRegion} onSelect={setActiveRegion} />
+        </div>
       </div>
 
-      <div className="col-span-12 lg:col-span-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Top products leaderboard">
-          <div className="flex items-center justify-between">
+      <div className="animate-dashboard-kpi">
+        <KPIBand metrics={metrics} accentToken={accent} />
+      </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        <Card className="col-span-12 lg:col-span-7 border border-[var(--surface-border)]" role="region" aria-label="Top products">
+          <div className="flex items-center justify-between gap-4">
             <div>
-              <h3 className="text-title-sm text-slate-900">Top products leaderboard</h3>
-              <p className="text-xs text-slate-600">Revenue, conversion, inventory, and trend for hero SKUs.</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Top products</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Revenue, conversion, stock status</p>
             </div>
             <ArrowUpRight className="h-5 w-5 text-[var(--success-600)]" aria-hidden />
           </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Product leaderboard table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
+          <div className="mt-4 overflow-hidden rounded-xl border border-[var(--surface-border)]">
+            <table className="min-w-full" aria-label="Top products table">
+              <thead className="bg-[var(--surface-s1)] text-[12px] font-medium uppercase tracking-[0.08em] text-[var(--neutral-500,#5e6673)]">
                 <tr>
                   <th className="px-4 py-3 text-left">Product</th>
                   <th className="px-4 py-3 text-left">Category</th>
-                  <th className="px-4 py-3 text-left">Revenue</th>
-                  <th className="px-4 py-3 text-left">Conversion</th>
-                  <th className="px-4 py-3 text-right">Inventory</th>
+                  <th className="px-4 py-3 text-right">Revenue</th>
+                  <th className="px-4 py-3 text-right">Conversion</th>
+                  <th className="px-4 py-3 text-right">Stock</th>
                   <th className="px-4 py-3 text-right">Trend</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
+              <tbody className="text-[13px] text-[var(--neutral-700,#384150)]">
                 {data.topProducts.map((product) => (
-                  <tr key={product.id}>
-                    <td className="px-4 py-[11px] font-semibold text-slate-900">{product.name}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{product.category}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{product.revenue}</td>
-                    <td className="px-4 py-[11px] text-slate-600">{product.conversionRate}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">{product.inventory}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-600">
+                  <tr key={product.id} className="transition hover:bg-[rgba(16,185,129,0.08)]">
+                    <td className="px-4 py-[11px] font-semibold text-[var(--neutral-900,#0b0d12)]">{product.name}</td>
+                    <td className="px-4 py-[11px] text-[var(--neutral-600,#5e6673)]">{product.category}</td>
+                    <td className="px-4 py-[11px] text-right text-[var(--neutral-600,#5e6673)]">{product.revenue}</td>
+                    <td className="px-4 py-[11px] text-right text-[var(--neutral-600,#5e6673)]">{product.conversionRate}</td>
+                    <td className="px-4 py-[11px] text-right text-[var(--neutral-600,#5e6673)]">{product.inventory}</td>
+                    <td className="px-4 py-[11px] text-right text-[var(--neutral-600,#5e6673)]" aria-label={product.trend}>
                       {product.trend === 'up' ? '↑' : product.trend === 'down' ? '↓' : '→'}
                     </td>
                   </tr>
@@ -396,68 +708,135 @@ function CommerceModule({
             </table>
           </div>
         </Card>
-      </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <ChartCard
-          id="commerce-sales"
-          title="Sales trends"
-          description="Seasonally-adjusted GMV"
-          rows={salesRows}
-          columns={[
-            { key: 'month', label: 'Month' },
-            { key: 'revenue', label: 'GMV ($M)', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={260}>
-            <BarChart data={data.salesTrend}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Bar dataKey="value" radius={[12, 12, 12, 12]} fill="var(--vertical-commerce)" />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Operational health">
-          <div className="flex items-center justify-between">
+        <Card className="col-span-12 lg:col-span-5 border border-[var(--surface-border)]" role="region" aria-label="Sales trend">
+          <div className="flex items-center justify-between gap-4">
             <div>
-              <h3 className="text-title-sm text-slate-900">Operational health</h3>
-              <p className="text-xs text-slate-600">Fulfillment SLAs, payment resilience, and support load.</p>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Sales trend</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Weekly GMV with forecast band</p>
             </div>
             <Activity className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
           </div>
-          <ul className="mt-4 space-y-3">
-            {data.operations.map((item) => (
-              <li key={item.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-semibold text-slate-900">{item.title}</p>
-                  <StatusChip
-                    label={item.status}
-                    tone={item.status === 'healthy' ? 'success' : item.status === 'attention' ? 'warning' : 'info'}
-                  />
-                </div>
-                <p className="mt-2 text-xs text-slate-600">{item.description}</p>
-              </li>
-            ))}
-          </ul>
+          <div className="mt-4 h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={data.salesTrend} margin={{ right: 40 }}>
+                <CartesianGrid strokeDasharray="3 8" stroke="rgba(94, 102, 115, 0.18)" />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid var(--surface-border)' }} />
+                <Legend verticalAlign="middle" align="right" layout="vertical" iconType="circle" />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="var(--vertical-commerce)"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={420}
+                  animationEasing="ease-in-out"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6">
-        <AutomationList items={data.automation} />
+      <div className="grid grid-cols-12 gap-6">
+        <Card className="col-span-12 lg:col-span-6 border border-[var(--surface-border)]" role="region" aria-label="Channel mix">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Channel mix</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Share of GMV by acquisition channel</p>
+            </div>
+            <Sparkles className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+          </div>
+          <div className="mt-4 flex flex-col gap-4 lg:flex-row">
+            <div className="h-[260px] w-full lg:w-1/2">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={channelMix} dataKey="value" innerRadius={70} outerRadius={110} paddingAngle={2}>
+                    {channelMix.map((segment) => (
+                      <Cell key={segment.id} fill={segment.color} stroke="var(--surface-s0)" strokeWidth={2} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: number, name: string, entry) => [
+                      `${Math.round(((entry?.payload?.value ?? 0) / channelTotal) * 100)}%`,
+                      name,
+                    ]}
+                    contentStyle={{ borderRadius: 12, border: '1px solid var(--surface-border)' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex flex-1 flex-col justify-center gap-3">
+              {channelMix.map((segment) => (
+                <div key={segment.id} className="flex items-center justify-between text-[13px] text-[var(--neutral-700,#384150)]">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="h-2.5 w-6 rounded-full"
+                      style={{ background: segment.color }}
+                      aria-hidden
+                    />
+                    <span>{segment.label}</span>
+                  </div>
+                  <span className="font-semibold text-[var(--neutral-900,#0b0d12)]">
+                    {Math.round((segment.value / channelTotal) * 100)}%
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
+
+        <Card className="col-span-12 lg:col-span-6 border border-[var(--surface-border)]" role="region" aria-label="Region performance">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Region performance</h3>
+              <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Quarter-to-date GMV by region</p>
+            </div>
+            <Earth className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+          </div>
+          <div className="mt-4 h-[260px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={regionPerformance}>
+                <CartesianGrid strokeDasharray="3 8" stroke="rgba(94, 102, 115, 0.18)" />
+                <XAxis dataKey="region" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid var(--surface-border)' }} />
+                <Bar
+                  dataKey="revenue"
+                  radius={[10, 10, 0, 0]}
+                  fill="var(--vertical-commerce)"
+                  isAnimationActive={!prefersReducedMotion}
+                  animationDuration={380}
+                  animationEasing="ease-in-out"
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6">
-        <AutomationBuilder
-          verticalAccent={accent}
-          onCreate={async () => {
-            await new Promise((resolve) => setTimeout(resolve, 800));
-          }}
-        />
+      <div className="grid grid-cols-12 gap-6">
+        {data.automation.map((automation) => (
+          <Card
+            key={automation.id}
+            className="col-span-12 lg:col-span-4 flex h-full flex-col gap-3 border border-[var(--surface-border)]"
+            role="region"
+            aria-label={automation.title}
+          >
+            <h3 className="text-[16px] font-semibold text-[var(--neutral-900,#0b0d12)]">{automation.title}</h3>
+            <p className="text-[13px] text-[var(--neutral-600,#5e6673)]">{automation.action}</p>
+            <div className="mt-1 flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">
+              <AutomationPill label={`Trigger | ${automation.trigger}`} />
+              <AutomationPill label={`Channel | ${automation.channel}`} />
+              <AutomationPill label={`Cadence | ${automation.cadence}`} />
+            </div>
+          </Card>
+        ))}
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -1140,6 +1519,7 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
   const { selectedModule, setModule, filters, setFilters } = useDashboardStore();
   const { push } = useToast();
   const router = useRouter();
+  const [isReady, setIsReady] = useState(false);
 
   const { data } = useQuery({
     queryKey: ['portfolio-dashboard'],
@@ -1148,6 +1528,11 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
   });
 
   useLiveMetrics();
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setIsReady(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -1182,14 +1567,17 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
 
   const accent = accentTokens[selectedModule];
   const moduleMetrics = data ? getModuleMetrics(selectedModule, data) : [];
+  const isPrimaryDashboard = selectedModule === 'saas' || selectedModule === 'commerce';
 
   const moduleContent = useMemo(() => {
     if (!data) return null;
     switch (selectedModule) {
       case 'saas':
-        return <SaaSModule data={data.saas} accent={accent} />;
+        return <SaaSModule data={data.saas} accent={accent} metrics={data.saas.metrics} filters={filters} />;
       case 'commerce':
-        return <CommerceModule data={data.commerce} accent={accent} />;
+        return (
+          <CommerceModule data={data.commerce} accent={accent} metrics={data.commerce.metrics} filters={filters} />
+        );
       case 'corporate':
         return <CorporateModule data={data.corporate} accent={accent} />;
       case 'customApp':
@@ -1203,21 +1591,51 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
       default:
         return null;
     }
-  }, [accent, data, selectedModule]);
+  }, [accent, data, filters, selectedModule]);
 
   if (!data) {
     return null;
   }
 
   return (
-    <div className="min-h-screen bg-[var(--surface-s0)] pb-16 text-slate-900">
-      <header className="border-b border-[var(--surface-border)] bg-[var(--surface-s1)]/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-8">
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            <div className="space-y-3">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Portfolio-grade product operations</p>
-              <h1 className="text-display-lg text-slate-900">{data.hero.title}</h1>
-              <p className="max-w-3xl text-sm text-slate-600">{data.hero.description}</p>
+    <div className="min-h-screen bg-[var(--surface-s0)] pb-16 text-[var(--neutral-900,#0b0d12)]">
+      <header className="border-b border-[var(--surface-border)] bg-[var(--surface-s0)]/95 backdrop-blur">
+        <div className="mx-auto max-w-7xl px-6 py-8">
+          <div className={cn('grid grid-cols-12 gap-6', isReady && 'animate-dashboard-header')}>
+            <div className="col-span-12 lg:col-span-8 space-y-4">
+              <div>
+                <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">
+                  Portfolio-grade product operations
+                </p>
+                <h1 className="text-[32px] font-semibold text-[var(--neutral-900,#0b0d12)]">
+                  {data.hero.title}
+                </h1>
+                <p className="mt-2 max-w-3xl text-[14px] text-[var(--neutral-600,#5e6673)]">{data.hero.description}</p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <SegmentedTabs tabs={data.tabs} activeId={selectedModule} onChange={setModule} />
+                <div className="h-px flex-1 self-center border-t border-dashed border-[var(--surface-border)]" aria-hidden />
+              </div>
+            </div>
+            <div className="col-span-12 lg:col-span-4 flex flex-col items-start gap-4 lg:items-end">
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <button
+                  type="button"
+                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
+                  onClick={toggleTheme}
+                >
+                  {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden /> : <Moon className="h-4 w-4" aria-hidden />}
+                  {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
+                  onClick={() => setDirection(direction === 'ltr' ? 'rtl' : 'ltr')}
+                >
+                  <Earth className="h-4 w-4" aria-hidden />
+                  {direction === 'ltr' ? 'Switch to RTL' : 'Switch to LTR'}
+                </button>
+              </div>
               <button
                 type="button"
                 className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[var(--primary-600)] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--primary-500)] focus-visible:focus-ring"
@@ -1226,35 +1644,12 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                 <Sparkles className="h-4 w-4" aria-hidden />
                 {data.hero.cta}
               </button>
-            </div>
-            <div className="flex flex-col items-end gap-3">
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
-                  onClick={toggleTheme}
-                >
-                  {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden /> : <Moon className="h-4 w-4" aria-hidden />}
-                  {theme === 'dark' ? 'Light mode' : 'Dark mode'}
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
-                  onClick={() => setDirection(direction === 'ltr' ? 'rtl' : 'ltr')}
-                >
-                  <Earth className="h-4 w-4" aria-hidden />
-                  {direction === 'ltr' ? 'Switch to RTL' : 'Switch to LTR'}
-                </button>
-              </div>
-              <div className="rounded-[18px] border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-xs text-slate-500">
+              <div className="rounded-xl border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-[12px] text-[var(--neutral-600,#5e6673)]">
                 Generated at {new Date(data.generatedAt).toLocaleString()}
               </div>
             </div>
           </div>
-
-          <SegmentedTabs tabs={data.tabs} activeId={selectedModule} onChange={setModule} />
-
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="mt-8 flex flex-wrap items-center gap-3">
             {dateRangeOptions.map((option) => (
               <FilterChip
                 key={option.id}
@@ -1285,8 +1680,8 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
       </header>
 
       <main className="mx-auto max-w-7xl space-y-8 px-6 py-10">
-        <KPIBand metrics={moduleMetrics} accentToken={accent} />
-        <div className="rounded-[24px] border border-dashed border-[var(--surface-border)] bg-[var(--surface-s1)] px-6 py-4 text-xs text-slate-500">
+        {!isPrimaryDashboard ? <KPIBand metrics={moduleMetrics} accentToken={accent} /> : null}
+        <div className="rounded-2xl border border-dashed border-[var(--surface-border)] bg-[var(--surface-s1)] px-6 py-4 text-[12px] text-[var(--neutral-600,#5e6673)]">
           Global filters persist via query params. React Query hydrates instantly, while Zustand keeps inter-module state fast.
         </div>
         {moduleContent}
