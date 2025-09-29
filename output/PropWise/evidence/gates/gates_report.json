@@ -1,0 +1,102 @@
+{
+  "results": [
+    {
+      "details": "Intake metadata validated",
+      "evidence": [
+        "intake/metadata_snapshot.json",
+        "intake/brief_excerpt.md"
+      ],
+      "name": "intake",
+      "status": "passed"
+    },
+    {
+      "details": "Environment validation passed",
+      "evidence": [
+        "environment/tool_report.json"
+      ],
+      "name": "environment",
+      "status": "passed"
+    },
+    {
+      "details": "Planning artifacts validated",
+      "evidence": [
+        "planning/tasks_snapshot.json"
+      ],
+      "name": "planning",
+      "status": "passed"
+    },
+    {
+      "details": "Task graph validated",
+      "evidence": [
+        "planning/task_graph_validation.json"
+      ],
+      "name": "task_graph",
+      "status": "passed"
+    },
+    {
+      "details": "PRD and architecture assets validated",
+      "evidence": [
+        "prd/prd_hash.txt"
+      ],
+      "name": "prd",
+      "status": "passed"
+    },
+    {
+      "details": "Stack selection validated",
+      "evidence": [
+        "stack/stack_report.json"
+      ],
+      "name": "stack",
+      "status": "passed"
+    },
+    {
+      "details": "Dry-run snapshot validated",
+      "evidence": [
+        "dryrun/snapshot.json"
+      ],
+      "name": "dry_run",
+      "status": "passed"
+    },
+    {
+      "details": "Generation manifest validated",
+      "evidence": [
+        "generation/file_manifest.json"
+      ],
+      "name": "generation",
+      "status": "passed"
+    },
+    {
+      "details": "Automated tests validated",
+      "evidence": [
+        "testing/test_results.json"
+      ],
+      "name": "testing",
+      "status": "passed"
+    },
+    {
+      "details": "Metrics thresholds satisfied",
+      "evidence": [
+        "metrics/metrics_report.json"
+      ],
+      "name": "metrics",
+      "status": "passed"
+    },
+    {
+      "details": "Compliance requirements satisfied",
+      "evidence": [
+        "compliance/compliance_report.json"
+      ],
+      "name": "compliance",
+      "status": "passed"
+    },
+    {
+      "details": "Submission package validated",
+      "evidence": [
+        "submission/dist_manifest.json",
+        "submission/checklist.md"
+      ],
+      "name": "submission",
+      "status": "passed"
+    }
+  ]
+}

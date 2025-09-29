@@ -1,0 +1,23 @@
+{
+  "auth": {
+    "multi_tenant": true,
+    "strategy": "JWT"
+  },
+  "backend": {
+    "background_jobs": "Celery",
+    "framework": "FastAPI",
+    "language": "Python"
+  },
+  "database": {
+    "engine": "PostgreSQL",
+    "orm": "SQLAlchemy"
+  },
+  "deploy": {
+    "target": "Docker Compose"
+  },
+  "frontend": {
+    "framework": "Next.js",
+    "language": "TypeScript",
+    "state_management": "Zustand"
+  }
+}

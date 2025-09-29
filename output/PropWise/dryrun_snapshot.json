@@ -1,0 +1,6 @@
+{
+  "status": "success",
+  "modules": ["frontend", "backend", "database"],
+  "generated_at": "2025-09-29T03:00:00Z",
+  "notes": "Phase 1 dry-run captured module availability for PropWise."
+}

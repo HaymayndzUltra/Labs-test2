@@ -8,6 +8,11 @@ import logging
 from pathlib import Path
 import sys
 
+CURRENT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = CURRENT_DIR.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 from workflow_automation import WorkflowConfig, WorkflowOrchestrator
 from workflow_automation.exceptions import GateFailedError, WorkflowError
 

@@ -156,7 +156,11 @@ maybe_run_package_script() {
       ;;
     npm)
       log "Executing '$script' script with npm (if present)"
-      run_in_dir "$dir" npm run "$script" --if-present
+      if package_has_script "$dir" "$script"; then
+        run_in_dir "$dir" npm run --if-present "$script"
+      else
+        log "Skip: package.json has no '$script' script in $dir"
+      fi
       ;;
     yarn)
       if package_has_script "$dir" "$script"; then
@@ -202,7 +206,10 @@ run_node_workflow() {
       npm)
         log "Installing Node dependencies in $dir with npm"
         if [[ -f "$dir/package-lock.json" ]]; then
-          run_in_dir "$dir" npm ci
+          if ! (cd "$dir" && npm ci); then
+            log "npm ci failed in $dir; falling back to npm install"
+            run_in_dir "$dir" npm install
+          fi
         else
           run_in_dir "$dir" npm install
         fi

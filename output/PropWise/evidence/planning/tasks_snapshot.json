@@ -1,0 +1,58 @@
+{
+  "tasks": [
+    {
+      "area": "architecture",
+      "dependencies": [],
+      "id": "PLN-ARCH",
+      "tags": [
+        "architecture"
+      ],
+      "title": "Finalize PropWise multi-tenant architecture"
+    },
+    {
+      "area": "compliance",
+      "dependencies": [
+        "PLN-ARCH"
+      ],
+      "id": "PLN-COMPLIANCE",
+      "tags": [
+        "compliance"
+      ],
+      "title": "Map SOC2, security, and accessibility controls"
+    },
+    {
+      "area": "qa",
+      "dependencies": [
+        "PLN-COMPLIANCE"
+      ],
+      "id": "PLN-TESTING",
+      "tags": [
+        "testing"
+      ],
+      "title": "Plan automated testing strategy"
+    },
+    {
+      "area": "devops",
+      "dependencies": [
+        "PLN-ARCH"
+      ],
+      "id": "PLN-DEPLOY",
+      "tags": [
+        "deployment"
+      ],
+      "title": "Define Docker Compose deployment pipeline"
+    },
+    {
+      "area": "backend",
+      "dependencies": [
+        "PLN-ARCH"
+      ],
+      "id": "PLN-BACKLOG",
+      "tags": [
+        "architecture",
+        "testing"
+      ],
+      "title": "Seed backlog for tenant, payments, and tickets"
+    }
+  ]
+}

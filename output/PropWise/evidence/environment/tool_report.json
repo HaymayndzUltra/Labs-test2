@@ -1,0 +1,22 @@
+{
+  "tools": [
+    {
+      "command": "python3",
+      "name": "python",
+      "output": "Python 3.11.12",
+      "status": "available"
+    },
+    {
+      "command": "node",
+      "name": "node",
+      "output": "v22.19.0",
+      "status": "available"
+    },
+    {
+      "command": "git",
+      "name": "git",
+      "output": "git version 2.43.0",
+      "status": "available"
+    }
+  ]
+}
