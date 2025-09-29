@@ -201,6 +201,26 @@
     box-shadow: var(--shadow-md);
   }
 
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: clamp(16px, 2vw, 28px);
+    align-items: stretch;
+    grid-auto-flow: dense;
+  }
+
+  @media (max-width: 1279px) {
+    .dashboard-grid {
+      gap: clamp(14px, 2.4vw, 24px);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .dashboard-grid {
+      gap: clamp(12px, 3vw, 20px);
+    }
+  }
+
   .kpi-value {
     font-variant-numeric: tabular-nums lining-nums;
     font-feature-settings: 'tnum' 1, 'lnum' 1;

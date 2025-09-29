@@ -47,6 +47,7 @@ import { ChartCard } from '@/components/ui/ChartCard';
 import { AutomationBuilder } from '@/components/ui/AutomationBuilder';
 import { StatusChip } from '@/components/ui/StatusChip';
 import { useToast } from '@/components/ui/ToastProvider';
+import { cn } from '@/lib/utils';
 
 const accentTokens: Record<TabDefinition['id'], string> = {
   saas: '--vertical-saas',
@@ -79,17 +80,27 @@ const channelOptions = [
   { id: 'apac', label: 'APAC' },
 ];
 
+const STANDARD_CHART_HEIGHT = 240;
+const TALL_CHART_HEIGHT = 260;
+
 type DashboardClientProps = {
   initialData: PortfolioDashboardResponse;
 };
 
 function AutomationList({
   items,
+  className,
+  maxItems,
 }: {
   items: PortfolioDashboardResponse['saas']['automation'];
+  className?: string;
+  maxItems?: number;
 }) {
+  const visibleItems = typeof maxItems === 'number' ? items.slice(0, maxItems) : items;
+  const remaining = typeof maxItems === 'number' ? Math.max(items.length - maxItems, 0) : 0;
+
   return (
-    <Card className="border border-[var(--surface-border)]" padding="md">
+    <Card className={cn('border border-[var(--surface-border)] flex h-full flex-col', className)} padding="md">
       <div className="flex items-center justify-between gap-4">
         <div>
           <h3 className="text-title-sm text-slate-900">Automation orchestration</h3>
@@ -99,8 +110,8 @@ function AutomationList({
         </div>
         <Workflow className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
       </div>
-      <div className="mt-5 space-y-3">
-        {items.map((automation) => (
+      <div className="mt-5 flex-1 space-y-3">
+        {visibleItems.map((automation) => (
           <article
             key={automation.id}
             className="rounded-[18px] border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3"
@@ -126,6 +137,7 @@ function AutomationList({
       </div>
       <p className="mt-4 text-xs text-slate-500">
         Enterprise packs unlock predictive triggers, anomaly detection, and compliance exports.
+        {remaining > 0 ? ` +${remaining} more orchestration${remaining > 1 ? 's' : ''} available in the library.` : ''}
       </p>
     </Card>
   );
@@ -167,7 +179,7 @@ function SaaSModule({
   const apiRows = data.apiUsageTrend.map((point) => ({ week: point.label, usage: point.value }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="saas-panel" role="tabpanel" aria-labelledby="saas">
+    <div className="dashboard-grid" id="saas-panel" role="tabpanel" aria-labelledby="saas">
       <div className="col-span-12">
         <SectionHeader
           title="Subscription intelligence & API operations"
@@ -225,7 +237,7 @@ function SaaSModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
+      <div className="col-span-12 lg:col-span-5 flex flex-col gap-6">
         <ChartCard
           id="saas-churn"
           title="Churn health distribution"
@@ -236,7 +248,7 @@ function SaaSModule({
             { key: 'share', label: 'Share', align: 'right' },
           ]}
         >
-          <ResponsiveContainer height={260}>
+          <ResponsiveContainer height={STANDARD_CHART_HEIGHT}>
             <PieChart>
               <Pie dataKey="value" data={data.churnSegments} innerRadius={70} outerRadius={110} paddingAngle={3}>
                 {data.churnSegments.map((segment) => (
@@ -276,7 +288,7 @@ function SaaSModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
+      <div className="col-span-12 lg:col-span-6 flex flex-col gap-6">
         <ChartCard
           id="saas-growth"
           title="MRR growth"
@@ -287,7 +299,7 @@ function SaaSModule({
             { key: 'mrr', label: 'MRR ($K)', align: 'right' },
           ]}
         >
-          <ResponsiveContainer height={280}>
+          <ResponsiveContainer height={TALL_CHART_HEIGHT}>
             <LineChart data={data.growthTrend}>
               <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} />
@@ -308,7 +320,7 @@ function SaaSModule({
             { key: 'usage', label: 'Usage (M calls)', align: 'right' },
           ]}
         >
-          <ResponsiveContainer height={280}>
+          <ResponsiveContainer height={TALL_CHART_HEIGHT}>
             <AreaChart data={data.apiUsageTrend}>
               <defs>
                 <linearGradient id="apiGradient" x1="0" x2="0" y1="0" y2="1">
@@ -326,14 +338,14 @@ function SaaSModule({
         </ChartCard>
       </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
+      <div className="col-span-12 lg:col-span-6 flex flex-col gap-6">
         <AutomationBuilder
           verticalAccent={accent}
           onCreate={async () => {
             await new Promise((resolve) => setTimeout(resolve, 800));
           }}
         />
-        <AutomationList items={data.automation} />
+        <AutomationList items={data.automation} className="h-full" maxItems={3} />
       </div>
     </div>
   );
@@ -349,7 +361,7 @@ function CommerceModule({
   const salesRows = data.salesTrend.map((point) => ({ month: point.label, revenue: point.value }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="commerce-panel" role="tabpanel" aria-labelledby="commerce">
+    <div className="dashboard-grid" id="commerce-panel" role="tabpanel" aria-labelledby="commerce">
       <div className="col-span-12">
         <SectionHeader
           title="Merchandising, orders & fulfillment"
@@ -398,7 +410,7 @@ function CommerceModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
+      <div className="col-span-12 lg:col-span-6 flex flex-col gap-6">
         <ChartCard
           id="commerce-sales"
           title="Sales trends"
@@ -409,7 +421,7 @@ function CommerceModule({
             { key: 'revenue', label: 'GMV ($M)', align: 'right' },
           ]}
         >
-          <ResponsiveContainer height={260}>
+          <ResponsiveContainer height={TALL_CHART_HEIGHT}>
             <BarChart data={data.salesTrend}>
               <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} />
@@ -446,7 +458,7 @@ function CommerceModule({
       </div>
 
       <div className="col-span-12 lg:col-span-6">
-        <AutomationList items={data.automation} />
+        <AutomationList items={data.automation} className="h-full" maxItems={3} />
       </div>
 
       <div className="col-span-12 lg:col-span-6">
@@ -478,7 +490,7 @@ function CorporateModule({
   const sourceRows = data.leadSources.map((source) => ({ source: source.label, share: `${source.value}%` }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="corporate-panel" role="tabpanel" aria-labelledby="corporate">
+    <div className="dashboard-grid" id="corporate-panel" role="tabpanel" aria-labelledby="corporate">
       <div className="col-span-12">
         <SectionHeader
           title="Growth marketing & pipeline analytics"
@@ -487,7 +499,7 @@ function CorporateModule({
         />
       </div>
 
-      <div className="col-span-12 lg:col-span-7 space-y-6">
+      <div className="col-span-12 lg:col-span-7 flex flex-col gap-6">
         <ChartCard
           id="corporate-funnel"
           title="Conversion funnel"
@@ -501,7 +513,7 @@ function CorporateModule({
           ]}
           tone="accent"
         >
-          <ResponsiveContainer height={320}>
+          <ResponsiveContainer height={TALL_CHART_HEIGHT}>
             <BarChart data={data.funnel} layout="vertical" margin={{ left: 80 }}>
               <CartesianGrid horizontal={false} stroke="rgba(148, 163, 184, 0.25)" />
               <XAxis type="number" hide />
@@ -531,7 +543,7 @@ function CorporateModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
+      <div className="col-span-12 lg:col-span-5 flex flex-col gap-6">
         <ChartCard
           id="corporate-leads"
           title="Lead source mix"
@@ -542,7 +554,7 @@ function CorporateModule({
             { key: 'share', label: 'Share', align: 'right' },
           ]}
         >
-          <ResponsiveContainer height={260}>
+          <ResponsiveContainer height={STANDARD_CHART_HEIGHT}>
             <PieChart>
               <Pie dataKey="value" data={data.leadSources} innerRadius={70} outerRadius={110} paddingAngle={2}>
                 {data.leadSources.map((source) => (
@@ -555,7 +567,7 @@ function CorporateModule({
           </ResponsiveContainer>
         </ChartCard>
 
-        <AutomationList items={data.automation} />
+        <AutomationList items={data.automation} className="h-full" maxItems={3} />
       </div>
     </div>
   );
@@ -569,7 +581,7 @@ function CustomAppModule({
   accent: string;
 }) {
   return (
-    <div className="grid grid-cols-12 gap-6" id="customApp-panel" role="tabpanel" aria-labelledby="customApp">
+    <div className="dashboard-grid" id="customApp-panel" role="tabpanel" aria-labelledby="customApp">
       <div className="col-span-12">
         <SectionHeader
           title="Productivity suite & automation"
@@ -615,7 +627,7 @@ function CustomAppModule({
         </Card>
       </div>
 
-      <div className="col-span-12 xl:col-span-5 space-y-6">
+      <div className="col-span-12 xl:col-span-5 flex flex-col gap-6">
         <Card className="border border-[var(--surface-border)]" role="region" aria-label="Idea backlog">
           <div className="flex items-center justify-between">
             <div>
@@ -643,7 +655,7 @@ function CustomAppModule({
             { key: 'capacity', label: 'Capacity', align: 'right' },
           ]}
         >
-          <ResponsiveContainer height={220}>
+          <ResponsiveContainer height={STANDARD_CHART_HEIGHT}>
             <BarChart data={data.workloadDistribution}>
               <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} />
@@ -666,7 +678,7 @@ function CustomAppModule({
       </div>
 
       <div className="col-span-12 lg:col-span-6">
-        <AutomationList items={data.automation} />
+        <AutomationList items={data.automation} className="h-full" maxItems={3} />
       </div>
     </div>
   );
@@ -682,7 +694,7 @@ function ContentModule({
   const engagementRows = data.engagementTrend.map((point) => ({ period: point.label, score: point.value }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="content-panel" role="tabpanel" aria-labelledby="content">
+    <div className="dashboard-grid" id="content-panel" role="tabpanel" aria-labelledby="content">
       <div className="col-span-12">
         <SectionHeader
           title="Publishing workflow & engagement"
@@ -691,7 +703,7 @@ function ContentModule({
         />
       </div>
 
-      <div className="col-span-12 lg:col-span-7 space-y-6">
+      <div className="col-span-12 lg:col-span-7 flex flex-col gap-6">
         <ChartCard
           id="content-engagement"
           title="Engagement trend"
@@ -702,7 +714,7 @@ function ContentModule({
             { key: 'score', label: 'Engagement', align: 'right' },
           ]}
         >
-          <ResponsiveContainer height={280}>
+          <ResponsiveContainer height={TALL_CHART_HEIGHT}>
             <LineChart data={data.engagementTrend}>
               <CartesianGrid strokeDasharray="4 8" stroke="rgba(251, 146, 60, 0.25)" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} />
@@ -745,7 +757,7 @@ function ContentModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
+      <div className="col-span-12 lg:col-span-5 flex flex-col gap-6">
         <Card className="border border-[var(--surface-border)]" role="region" aria-label="Top performing stories">
           <div className="flex items-center justify-between">
             <div>
@@ -779,7 +791,7 @@ function ContentModule({
           </div>
         </Card>
 
-        <AutomationList items={data.automation} />
+        <AutomationList items={data.automation} className="h-full" maxItems={3} />
       </div>
     </div>
   );
@@ -795,7 +807,7 @@ function EdTechModule({
   const heatmapMax = Math.max(...data.activityHeatmap.values.map((entry) => entry.score));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="edtech-panel" role="tabpanel" aria-labelledby="edtech">
+    <div className="dashboard-grid" id="edtech-panel" role="tabpanel" aria-labelledby="edtech">
       <div className="col-span-12">
         <SectionHeader
           title="Learning analytics & student success"
@@ -804,7 +816,7 @@ function EdTechModule({
         />
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
+      <div className="col-span-12 xl:col-span-6 flex flex-col gap-6">
         <Card className="border border-[var(--surface-border)]" role="region" aria-label="Program performance">
           <div className="flex items-center justify-between">
             <div>
@@ -836,10 +848,10 @@ function EdTechModule({
           </div>
         </Card>
 
-        <AutomationList items={data.automation} />
+        <AutomationList items={data.automation} className="h-full" maxItems={3} />
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
+      <div className="col-span-12 xl:col-span-6 flex flex-col gap-6">
         <Card className="border border-[var(--surface-border)]" role="region" aria-label="Student activity heatmap">
           <div className="flex items-center justify-between">
             <div>
@@ -923,7 +935,7 @@ function SpecializedModule({
   const roiRows = data.finance.roiBreakdown.map((item) => ({ channel: item.label, share: `${item.value}%` }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="specialized-panel" role="tabpanel" aria-labelledby="specialized">
+    <div className="dashboard-grid" id="specialized-panel" role="tabpanel" aria-labelledby="specialized">
       <div className="col-span-12">
         <SectionHeader
           title="Specialized niches"
@@ -932,7 +944,7 @@ function SpecializedModule({
         />
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
+      <div className="col-span-12 xl:col-span-6 flex flex-col gap-6">
         <ChartCard
           id="specialized-momentum"
           title="Market momentum"
@@ -943,7 +955,7 @@ function SpecializedModule({
             { key: 'momentum', label: 'Momentum', align: 'right' },
           ]}
         >
-          <ResponsiveContainer height={220}>
+          <ResponsiveContainer height={TALL_CHART_HEIGHT}>
             <AreaChart data={data.realEstate.trend}>
               <defs>
                 <linearGradient id="momentumGradient" x1="0" x2="0" y1="0" y2="1">
@@ -980,7 +992,7 @@ function SpecializedModule({
         </Card>
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
+      <div className="col-span-12 xl:col-span-6 flex flex-col gap-6">
         <ChartCard
           id="specialized-expenses"
           title="Expense vs budget"
@@ -992,7 +1004,7 @@ function SpecializedModule({
             { key: 'budget', label: 'Budget ($K)', align: 'right' },
           ]}
         >
-          <ResponsiveContainer height={220}>
+          <ResponsiveContainer height={TALL_CHART_HEIGHT}>
             <LineChart data={data.finance.expenses}>
               <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} />
@@ -1015,7 +1027,7 @@ function SpecializedModule({
             { key: 'share', label: 'Share', align: 'right' },
           ]}
         >
-          <ResponsiveContainer height={220}>
+          <ResponsiveContainer height={STANDARD_CHART_HEIGHT}>
             <PieChart>
               <Pie dataKey="value" data={data.finance.roiBreakdown} innerRadius={70} outerRadius={110} paddingAngle={2}>
                 {data.finance.roiBreakdown.map((segment) => (
@@ -1029,7 +1041,7 @@ function SpecializedModule({
         </ChartCard>
       </div>
 
-      <div className="col-span-12 lg:col-span-6">
+      <div className="col-span-12 xl:col-span-5">
         <Card className="border border-[var(--surface-border)]" role="region" aria-label="Healthcare appointments">
           <div className="flex items-center justify-between">
             <div>
@@ -1064,10 +1076,12 @@ function SpecializedModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <AutomationList items={data.realEstate.automation} />
-        <AutomationList items={data.finance.automation} />
-        <AutomationList items={data.healthcare.automation} />
+      <div className="col-span-12 xl:col-span-7">
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          <AutomationList items={data.realEstate.automation} className="h-full" maxItems={3} />
+          <AutomationList items={data.finance.automation} className="h-full" maxItems={3} />
+          <AutomationList items={data.healthcare.automation} className="h-full" maxItems={3} />
+        </div>
       </div>
     </div>
   );
