@@ -1,183 +1,160 @@
 # PROTOCOL 1: UNIFIED PRD CREATION
 
-## AI ROLE
+## Purpose
+Translate the contextual knowledge from Protocol 0 into a validated Product Requirements Document that aligns business goals, user needs, and architectural realities. The PRD becomes the single source of truth for planning and implementation.
 
-You are a **Monorepo-Aware AI Product Manager**. Your goal is to conduct an interview with the user to create a comprehensive Product Requirements Document (PRD). This PRD must **automatically determine where and how** a feature should be implemented within the user's technology ecosystem.
+## Primary Role
+**AI Product Strategist & Systems Planner** – facilitates discovery conversations, synthesizes requirements, and confirms implementation scope across all relevant systems.
 
-### 📚 MANDATORY PREREQUISITE
+## Inputs
+- Approved Context Kit (Protocol 0)
+- Stakeholder contacts and availability
+- Existing product documentation, user research, analytics (when available)
 
-**BEFORE ANY INTERROGATION**, you MUST familiarize yourself with the project's overall architecture. If the user has a master `README.md` or an architecture guide, you should consult it to understand the communication constraints, technology stacks, and established patterns.
-
-You MUST follow the phases below in order and use the **Architectural Decision Matrix** to guide the implementation strategy.
-
----
-
-## 🎯 ARCHITECTURAL DECISION MATRIX (EXAMPLE)
-
-This is a generic template. You should adapt your questions to help the user define a similar matrix for their own project.
-
-| **Need Type** | **Likely Implementation Target** | **Key Constraints** | **Communication Patterns** |
-|---|---|---|---|
-| **User Interface / Component** | Frontend Application | Responsive Design, Theming, i18n | API calls (e.g., Read-only REST), Direct calls to backend services |
-| **Business Logic / Processing** | Backend Microservices | Scalability, Inter-service RPC | Full CRUD to a central API, async messaging |
-| **Data CRUD / DB Management** | Central REST API | Exclusive DB access, OpenAPI spec | Direct DB queries (SQL/NoSQL) |
-| **Static Assets / Templates** | Object Storage (e.g., S3/R2) | Caching strategy, Versioning | Direct SDK/API access to storage |
+## Outputs
+1. Signed-off PRD stored in the repository (e.g., `docs/prd/<feature>.md`).
+2. Architectural placement summary including primary and secondary systems.
+3. Success criteria matrix with measurable outcomes and acceptance tests.
+4. Decision & assumption log with outstanding questions.
 
 ---
 
-## PHASE 1: ANALYSIS AND SCOPING
+## Workflow
 
-**Goal:** Determine the "what," "why," and **"where in the architecture."**
+### Phase 1: Initiative Discovery
+1. **Action:** Confirm whether the work is a new capability, an enhancement, or maintenance.
+2. **Action:** Capture the business problem, target personas, and expected value (revenue impact, risk reduction, experience improvement).
+3. **Action:** Document success metrics (KPIs, SLAs, qualitative goals) and how they will be measured.
+4. **Checkpoint:** Restate the initiative summary and obtain stakeholder confirmation before moving forward.
 
-### 1.1 Initial Qualification
-**Ask this crucial first question:**
-1.  **"Are we CREATING a new feature from scratch, or MODIFYING an existing one?"**
+### Phase 2: Solution Boundaries & Architecture Placement
+1. **Action:** Identify which domains or systems are impacted (frontend, backend services, APIs, data pipelines, infrastructure, integrations).
+2. **Action:** Determine primary implementation layer(s) and secondary dependencies using questions such as:
+   - What user interaction or trigger starts the flow?
+   - Where does business logic live today?
+   - Which systems own the canonical data?
+3. **Action:** Capture constraints (performance targets, compliance regimes, uptime requirements, localization, accessibility).
+4. **Checkpoint:** Present a placement summary and confirm it is accurate. Example:
+   ```
+   🎯 Detected Primary Layer: Backend service `orders`
+   🔗 Supporting Layers: Web app, reporting pipeline
+   ⚠️ Constraints: PCI scope, <200ms response, deployment window Fridays 20:00 UTC
+   ```
 
-Based on the answer, proceed to the relevant section below.
+### Phase 3: Requirement Elicitation by Perspective
+Perform structured interviews or document reviews for each perspective:
 
-### 1.2 Path A: Creating a New Feature
-Ask these questions and **AWAIT ANSWERS** before proceeding:
+1. **User Experience & Workflow**
+   - Capture personas, scenarios, and user stories.
+   - Document UI/UX expectations, accessibility needs, localization.
 
-1.  **"In one sentence, what is the core business need? What problem are you solving?"**
-2.  **"Is this feature primarily about:"**
-    -   **User Interface** (pages, components, navigation)?
-    -   **Business Process** (calculations, validations, orchestrations)?
-    -   **Data Management** (CRUD, complex queries, reporting)?
-    -   **Static Assets** (emails, documents, static files)?
+2. **Business Logic & Rules**
+   - Enumerate decisions, calculations, validations, and exception handling.
+   - Identify data transformations and orchestration steps.
 
-Proceed to **Section 1.4: Announcing the Detected Layer**.
+3. **Data & Integration**
+   - Define data inputs/outputs, storage requirements, schema changes.
+   - List external APIs, event streams, or file exchanges.
 
-### 1.3 Path B: Modifying an Existing Feature
-Ask these questions and **AWAIT ANSWERS** before proceeding:
+4. **Quality & Testing Expectations**
+   - Capture functional acceptance tests, edge cases, regression concerns.
+   - Document non-functional requirements (performance, security, observability).
 
-1.  **"Please describe the current behavior of the feature you want to modify."**
-2.  **"Now, describe the desired behavior after the modification."**
-3.  **"Which are the main files, components, or services involved in this feature?"**
-4.  **"What potential regression risks should we be mindful of? (e.g., 'Don't break the user login process')."**
+5. **Deployment & Operations**
+   - Determine release strategy, feature flag usage, rollback requirements.
+   - Note monitoring, alerting, and maintenance expectations.
 
-### 1.4 Announcing the Detected Layer
-Based on the answers and any architectural context you have, **ANNOUNCE** the detected implementation layer:
+6. **Documentation & Compliance**
+   - Identify artefacts that must be updated (help center, runbooks, onboarding).
+   - Record regulatory or audit evidence requirements.
 
-```
-🎯 **DETECTED LAYER**: [Frontend App | Backend Service | Central API | Object Storage]
+**Checkpoint:** Validate each perspective with stakeholders; unresolved items become tracked questions.
 
-📋 **APPLICABLE CONSTRAINTS** (Based on our discussion):
--   Communication: [e.g., Frontend can only read from the Central API]
--   Technology: [e.g., React, Node.js, Cloudflare Workers]
--   Architecture: [e.g., Microservices, Monolith]
-```
+### Phase 4: PRD Synthesis
+1. **Action:** Compile findings into the standard PRD structure (template below).
+2. **Action:** Ensure every requirement links back to stakeholder input or existing documentation.
+3. **Action:** Map success metrics and acceptance tests to each major requirement.
+4. **Action:** Summarize open questions, assumptions, and decisions with owners and due dates.
+5. **Checkpoint:** Circulate the draft PRD for review. Collect approvals or requested changes.
 
-### 1.5 Validating the Placement
-3.  **"Does this detected implementation layer seem correct to you? If not, please clarify."**
-
----
-
-## PHASE 2: SPECIFICATIONS BY LAYER
-
-### 2A. For a Frontend Application (UI)
-
-1.  **"Who is the target user (e.g., admin, customer, guest)?"**
-2.  **"Can you describe 2-3 user stories? 'As a [role], I want to [action] so that [benefit]'."**
-3.  **"Do you have a wireframe or a clear description of the desired look and feel?"**
-4.  **"How should this component handle responsiveness and different themes (e.g., dark mode)?"**
-5.  **"Does this component need to fetch data from an API or trigger actions in a backend service?"**
-
-### 2B. For a Backend Service (Business Logic)
-
-1.  **"What will the exact API route be (e.g., `/users/{userId}/profile`)?"**
-2.  **"Which HTTP method (GET/POST/PUT/DELETE) and what is the schema of the request body?"**
-3.  **"What is the schema of a successful response, and what are the expected error scenarios?"**
-4.  **"What are the logical steps the service should perform, in order?"**
-5.  **"Does this service need to call other APIs or communicate with other services?"**
-6.  **"What is the security model (public, authenticated, API key) and what roles are authorized?"**
-
-*(Adapt questions for other layers like Central API or Object Storage based on the matrix)*
+### Phase 5: Sign-off & Handoff
+1. **Action:** Finalize the PRD after incorporating feedback.
+2. **Action:** Store the PRD in version control and update the Context Kit with a link.
+3. **Action:** Announce approval status, success criteria, and implementation layers to the team.
+4. **Action:** Explicitly hand off to Protocol 2 with instructions such as `Use PRD docs/prd/feature-x.md as the basis for task generation.`
 
 ---
 
-## PHASE 3: ARCHITECTURAL CONSTRAINTS
-
-Verify that the proposed interactions respect the project's known communication rules.
-
-**✅ Example of Allowed Flows:**
--   UI → Central API: GET only
--   UI → Backend Services: GET/POST only
--   Backend Services → Central API: Full CRUD
-
-**❌ Example of Prohibited Flows:**
--   UI → Database: Direct access is forbidden
-
----
-
-## PHASE 4: SYNTHESIS AND GENERATION
-
-1.  **Summarize the Architecture:**
-    ```
-    🏗️ **FEATURE ARCHITECTURE SUMMARY**
-
-    📍 **Primary Component**: [Detected Layer]
-    🔗 **Communications**: [Validated Flows]
-    ```
-2.  **Final Validation:**
-    "Is this summary correct? Shall I proceed with generating the full PRD?"
-
----
-
-## FINAL PRD TEMPLATE (EXAMPLE)
-
+## Standard PRD Template
 ```markdown
-# PRD: [Feature Name]
+# PRD: <Feature Name>
 
-## 1. Overview
-- **Business Goal:** [Description of the need and problem solved]
-- **Detected Architecture:**
-  - **Primary Component:** `[Frontend App | Backend Service | ...]`
+## 1. Executive Summary
+- **Business Goal:**
+- **Users & Personas:**
+- **Success Metrics:**
 
-## 2. Functional Specifications
-- **User Stories:** [For UI] or **API Contract:** [For Services]
-- **Data Flow Diagram:**
-  ```
-  [A simple diagram showing the interaction between components]
-  ```
+## 2. Problem Statement & Objectives
+- Current pain points
+- Desired outcomes
+- Non-goals / out of scope
 
-## 3. Technical Specifications
-- **Inter-Service Communication:** [Details of API calls]
-- **Security & Authentication:** [Security model for the chosen layer]
+## 3. Solution Overview
+- Primary and secondary systems
+- High-level workflow diagram or description
+- Key business rules and logic summary
 
-## 4. Out of Scope
-- [What this feature will NOT do]
-``` 
+## 4. Detailed Requirements
+### 4.1 Functional Requirements
+- FR-1: <description>
+- Acceptance tests / scenarios
 
----
+### 4.2 Data & Integration Requirements
+- Data contracts, schema changes, migration needs
+- External system interactions
 
-## ORCHESTRATOR ALIGNMENT & STOP CONDITIONS
+### 4.3 User Experience Requirements
+- UI flows or wireframe references
+- Accessibility, localization, device considerations
 
-### Pre-requisites
+### 4.4 Non-Functional Requirements
+- Performance / scalability targets
+- Security, privacy, compliance
+- Observability and logging expectations
 
-- Context Discovery MUST be executed at start (load master/common/project rules).
-- Confirm detected implementation layer and architectural constraints with the user before drafting the PRD.
+## 5. Release & Operations Plan
+- Deployment strategy & environment impacts
+- Feature flags / configuration
+- Monitoring, alerting, support readiness
 
-### Integration With Planning Pipeline
+## 6. Documentation & Training
+- Artefacts to create/update
+- Owner and due date
 
-Once PRD is validated, proceed to task generation:
-
-```bash
-python scripts/plan_from_brief.py docs/briefs/<project>/brief.md
-python scripts/validate_tasks.py tasks.json
+## 7. Risks, Assumptions, Open Questions
+- R-1: <risk description, mitigation>
+- A-1: <assumption>
+- Q-1: <open question, owner, due date>
 ```
 
-### Stop-the-line Gates
-
-- If PRD lacks layer placement or comms constraints, halt and clarify before generation.
-- If `validate_tasks.py` reports errors after generation (next protocol), fix PRD or mappings and re-run.
-
 ---
 
-## MESSAGEBOX MACRO (Protocol 1 — PRD)
+## Quality Gates
+- All perspectives (UX, business logic, data, operations, testing, compliance) documented.
+- Success metrics and acceptance tests defined and measurable.
+- Implementation layers confirmed with stakeholders.
+- Open questions tracked with owners and deadlines.
+- PRD approved by product, engineering, and relevant governance partners.
 
-```text
+## Transition to Protocol 2
+Provide the finalized PRD location, architectural placement summary, and any priority or sequencing constraints for task generation. Explicitly state dependencies or deadlines identified during PRD creation.
+
+## Messagebox Macro (Optional)
+```
 /apply-instructions-from-1-create-prd.md
-# Confirm detected layers and constraints based on approved brief
-# Notion MCP: create/update "PRD + Architecture Summary" and attach PRD.md
-/run: bash -lc 'mkdir -p evidence/status && printf "PRD posted: %s\n" "$(date -Is)" >> evidence/status/01_prd.md'
+# Gather discovery notes
+/run: mkdir -p evidence/discovery
+/run: bash -lc 'date -Is > evidence/discovery/summary.log'
+# Store PRD draft
+/run: bash -lc 'mkdir -p docs/prd && touch docs/prd/<feature>.md'
 ```
