@@ -9,6 +9,7 @@ import {
   ComposedChart,
   CartesianGrid,
   Cell,
+  LabelList,
   Legend,
   Line,
   LineChart,
@@ -20,6 +21,7 @@ import {
   YAxis,
 } from 'recharts';
 import {
+  ArrowDownRight,
   ArrowUpRight,
   Check,
   Moon,
@@ -34,6 +36,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import {
   fetchPortfolioDashboard,
+  type MetricCard,
   type PortfolioDashboardResponse,
   type TabDefinition,
 } from './data';
@@ -131,6 +134,55 @@ function AutomationList({
         Enterprise packs unlock predictive triggers, anomaly detection, and compliance exports.
       </p>
     </Card>
+  );
+}
+
+function AutomationSummaryGrid({
+  items,
+  accentToken,
+  columns = 2,
+}: {
+  items: PortfolioDashboardResponse['corporate']['automation'];
+  accentToken: string;
+  columns?: 2 | 3;
+}) {
+  return (
+    <div className={cn('grid grid-cols-1 gap-6', columns === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2')}>
+      {items.map((automation) => {
+        const pills = [
+          `Trigger | ${automation.trigger}`,
+          `Channel | ${automation.channel}`,
+          `Cadence | ${automation.cadence}`,
+        ];
+
+        return (
+          <article
+            key={automation.id}
+            className="flex h-full flex-col justify-between rounded-[16px] border border-[var(--surface-border)] bg-[var(--surface-s1)] p-5 shadow-sm transition-shadow hover:shadow-md"
+            style={{ borderTop: `3px solid var(${accentToken})` }}
+            aria-label={automation.title}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <h4 className="text-[16px] font-semibold text-[var(--neutral-900,#0b0d12)]">{automation.title}</h4>
+                <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">{automation.action}</p>
+              </div>
+              <StatusChip label={automation.active ? 'Active' : 'Paused'} tone={automation.active ? 'success' : 'warning'} />
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.14em] text-[var(--neutral-500,#5e6673)]">
+              {pills.map((pill) => (
+                <span
+                  key={pill}
+                  className="automation-pill inline-flex items-center gap-1 rounded-full border border-[var(--surface-border)] bg-white/75 px-3 py-1 text-[11px] font-medium text-[var(--neutral-600,#5e6673)]"
+                >
+                  {pill}
+                </span>
+              ))}
+            </div>
+          </article>
+        );
+      })}
+    </div>
   );
 }
 
@@ -840,6 +892,7 @@ function CommerceModule({
   );
 }
 
+
 function CorporateModule({
   data,
   accent,
@@ -847,96 +900,341 @@ function CorporateModule({
   data: PortfolioDashboardResponse['corporate'];
   accent: string;
 }) {
-  const funnelRows = data.funnel.map((stage) => ({
+  const [sourceFilter, setSourceFilter] = useState('All sources');
+  const [segmentFilter, setSegmentFilter] = useState('All segments');
+  const [range, setRange] = useState<string>(dateRangeOptions[1].id);
+
+  const funnelMax = useMemo(
+    () => Math.max(...data.funnel.map((stage) => stage.count), 1),
+    [data.funnel],
+  );
+
+  const funnelStages = useMemo(
+    () =>
+      data.funnel.map((stage, index) => ({
+        ...stage,
+        percentOfTop: Math.round((stage.count / funnelMax) * 100),
+        conversionValue: Number(stage.conversion.replace('%', '')),
+        tint: `rgba(29, 78, 216, ${0.28 + index * 0.12})`,
+      })),
+    [data.funnel, funnelMax],
+  );
+
+  const funnelRows = funnelStages.map((stage) => ({
     stage: stage.stage,
-    count: stage.count.toLocaleString(),
-    conversion: stage.conversion,
+    volume: stage.count.toLocaleString(),
+    conversion: `${stage.conversionValue.toFixed(1)}%`,
     delta: `${stage.delta.toFixed(1)}%`,
   }));
 
-  const sourceRows = data.leadSources.map((source) => ({ source: source.label, share: `${source.value}%` }));
+  const pipelineVelocity = useMemo(
+    () =>
+      data.funnel.map((stage, index) => ({
+        week: `W${index + 1}`,
+        velocity: Number(((stage.count / funnelMax) * 24 + 12).toFixed(1)),
+        winRate: Number((Number(stage.conversion.replace('%', '')) * 0.8).toFixed(1)),
+      })),
+    [data.funnel, funnelMax],
+  );
+
+  const velocityRows = pipelineVelocity.map((point) => ({
+    week: point.week,
+    velocity: `${point.velocity.toFixed(1)} days`,
+    winRate: `${point.winRate.toFixed(1)}%`,
+  }));
+
+  const sourceRows = data.leadSources.map((source) => ({
+    source: source.label,
+    share: `${source.value}%`,
+  }));
+
+  const pipelineMetric = data.metrics.find((metric) => metric.id === 'pipeline');
+  const salesCycleMetric = data.metrics.find((metric) => metric.id === 'cycle');
+
+  const cacSnapshot = useMemo(
+    () => [
+      {
+        id: 'cac',
+        label: 'Blended CAC',
+        value: '$2.9K',
+        delta: Number(((pipelineMetric?.change ?? 0) / 5).toFixed(1)),
+      },
+      {
+        id: 'payback',
+        label: 'Sales payback',
+        value: salesCycleMetric?.value ?? '41 days',
+        delta: Number((salesCycleMetric?.change ?? -3.2).toFixed(1)),
+      },
+    ],
+    [pipelineMetric?.change, salesCycleMetric?.change, salesCycleMetric?.value],
+  );
+
+  const sourceOptions = useMemo(
+    () => ['All sources', ...data.leadSources.map((source) => source.label)],
+    [data.leadSources],
+  );
+
+  const dateRangeLabel = useMemo(
+    () => dateRangeOptions.find((option) => option.id === range)?.label ?? 'Last 30 days',
+    [range],
+  );
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="corporate-panel" role="tabpanel" aria-labelledby="corporate">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Growth marketing & pipeline analytics"
-          subtitle="Corporate analytics"
-          accent={accent}
-        />
-      </div>
-
-      <div className="col-span-12 lg:col-span-7 space-y-6">
-        <ChartCard
-          id="corporate-funnel"
-          title="Conversion funnel"
-          description="Visitors → MQL → SQL → Opportunities → Closed"
-          rows={funnelRows}
-          columns={[
-            { key: 'stage', label: 'Stage' },
-            { key: 'count', label: 'Volume', align: 'right' },
-            { key: 'conversion', label: 'Conversion', align: 'right' },
-            { key: 'delta', label: 'Δ', align: 'right' },
-          ]}
-          tone="accent"
-        >
-          <ResponsiveContainer height={320}>
-            <BarChart data={data.funnel} layout="vertical" margin={{ left: 80 }}>
-              <CartesianGrid horizontal={false} stroke="rgba(148, 163, 184, 0.25)" />
-              <XAxis type="number" hide />
-              <YAxis dataKey="stage" type="category" tickLine={false} axisLine={false} width={200} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Bar dataKey="count" fill="var(--vertical-corporate)" radius={[12, 12, 12, 12]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Executive insights">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Executive insights</h3>
-              <p className="text-xs text-slate-600">Board-ready bullets with context tags.</p>
+    <section className="space-y-8" id="corporate-panel" role="tabpanel" aria-labelledby="corporate">
+      <header className="grid grid-cols-12 items-start gap-4 border-b border-[var(--surface-border)] pb-6 animate-dashboard-header">
+        <div className="col-span-12 lg:col-span-4 space-y-2">
+          <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">Pipeline intelligence</p>
+          <h2 className="text-[24px] font-semibold leading-tight text-[var(--neutral-900,#0b0d12)]">Corporate Analytics</h2>
+          <p className="text-[13px] text-[var(--neutral-600,#5e6673)]">Revenue marketing and sales pipeline instrumentation wired for executive briefings.</p>
+        </div>
+        <div className="col-span-12 lg:col-span-4 flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Lead source</span>
+            <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
+              {sourceOptions.map((option) => (
+                <FilterChip key={option} label={option} active={sourceFilter === option} onClick={() => setSourceFilter(option)} />
+              ))}
             </div>
-            <Check className="h-5 w-5 text-[var(--success-600)]" aria-hidden />
           </div>
-          <ul className="mt-4 space-y-3">
-            {data.insights.map((insight) => (
-              <li key={insight.id} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3">
-                <p className="text-sm font-semibold text-slate-900">{insight.headline}</p>
-                <p className="mt-1 text-xs text-slate-600">{insight.detail}</p>
-              </li>
+          <div className="flex flex-col gap-2">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Segment</span>
+            <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
+              {['All segments', 'Enterprise', 'Mid-market', 'SMB'].map((option) => (
+                <FilterChip key={option} label={option} active={segmentFilter === option} onClick={() => setSegmentFilter(option)} />
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="col-span-12 lg:col-span-4 flex flex-col items-stretch gap-2 lg:items-end">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Date range</span>
+          <div className="flex flex-wrap justify-end gap-2">
+            {dateRangeOptions.map((option) => (
+              <FilterChip
+                key={option.id}
+                label={option.label}
+                active={range === option.id}
+                onClick={() => setRange(option.id)}
+              />
             ))}
-          </ul>
-        </Card>
+          </div>
+          <p className="text-[12px] text-[var(--neutral-500,#5e6673)]">Viewing {dateRangeLabel}. Filters propagate across automations & exports.</p>
+        </div>
+      </header>
+
+      <div className="animate-dashboard-kpi" style={{ ['--enter-delay' as const]: '140ms' }}>
+        <KPIBand metrics={data.metrics} accentToken={accent} />
       </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
-        <ChartCard
-          id="corporate-leads"
-          title="Lead source mix"
-          description="Colorblind-safe mix with accessible legend"
-          rows={sourceRows}
-          columns={[
-            { key: 'source', label: 'Source' },
-            { key: 'share', label: 'Share', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={260}>
-            <PieChart>
-              <Pie dataKey="value" data={data.leadSources} innerRadius={70} outerRadius={110} paddingAngle={2}>
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 lg:col-span-6" style={{ ['--enter-delay' as const]: '220ms' }}>
+          <ChartCard
+            id="corporate-funnel"
+            title="Conversion funnel"
+            description="Visitors → MQL → SQL → Opportunities → Closed Won"
+            rows={funnelRows}
+            columns={[
+              { key: 'stage', label: 'Stage' },
+              { key: 'volume', label: 'Volume', align: 'right' },
+              { key: 'conversion', label: 'Conversion', align: 'right' },
+              { key: 'delta', label: 'Δ vs prior', align: 'right' },
+            ]}
+            tone="accent"
+            accentToken={accent}
+          >
+            <ResponsiveContainer height={320}>
+              <BarChart data={funnelStages} layout="vertical" margin={{ left: 48, right: 48 }}>
+                <CartesianGrid horizontal={false} stroke="rgba(148, 163, 184, 0.25)" />
+                <XAxis type="number" hide domain={[0, funnelMax]} />
+                <YAxis dataKey="stage" type="category" tickLine={false} axisLine={false} width={180} />
+                <Tooltip
+                  cursor={{ fill: 'rgba(148, 163, 184, 0.08)' }}
+                  contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }}
+                />
+                <Bar dataKey="count" radius={[12, 12, 12, 12]} barSize={26}>
+                  {funnelStages.map((stage) => (
+                    <Cell key={stage.id} fill={stage.tint} stroke="rgba(29, 78, 216, 0.55)" strokeWidth={1} />
+                  ))}
+                  <LabelList
+                    dataKey="count"
+                    position="insideRight"
+                    formatter={(value: number) => value.toLocaleString()}
+                    className="fill-white text-[12px] font-semibold"
+                  />
+                  <LabelList
+                    dataKey="conversion"
+                    position="right"
+                    offset={14}
+                    className="text-[12px] font-semibold fill-[#475569]"
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </div>
+
+        <div className="col-span-12 lg:col-span-6" style={{ ['--enter-delay' as const]: '240ms' }}>
+          <ChartCard
+            id="corporate-leads"
+            title="Lead source mix"
+            description="Single-accent mix with accessible legend"
+            rows={sourceRows}
+            columns={[
+              { key: 'source', label: 'Source' },
+              { key: 'share', label: 'Share', align: 'right' },
+            ]}
+            accentToken={accent}
+          >
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
+              <div className="h-[260px] flex-1">
+                <ResponsiveContainer>
+                  <PieChart>
+                    <Pie
+                      dataKey="value"
+                      data={data.leadSources}
+                      innerRadius={70}
+                      outerRadius={110}
+                      startAngle={90}
+                      endAngle={450}
+                      paddingAngle={2}
+                    >
+                      {data.leadSources.map((source) => (
+                        <Cell key={source.id} fill={source.color} stroke="rgba(15, 23, 42, 0.08)" strokeWidth={1.2} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="grid w-full gap-3 lg:w-[200px]">
                 {data.leadSources.map((source) => (
-                  <Cell key={source.id} fill={source.color} stroke="#1f2937" strokeWidth={1.4} />
+                  <div key={source.id} className="flex items-center justify-between gap-3">
+                    <span className="legend-chip">
+                      <span
+                        className="h-2.5 w-2.5 rounded-full"
+                        style={{ backgroundColor: source.color }}
+                        aria-hidden
+                      />
+                      {source.label}
+                    </span>
+                    <span className="text-[13px] font-semibold text-[var(--neutral-700,#384150)]">{source.value}%</span>
+                  </div>
                 ))}
-              </Pie>
-              <Legend verticalAlign="bottom" height={60} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <AutomationList items={data.automation} />
+              </div>
+            </div>
+          </ChartCard>
+        </div>
       </div>
-    </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 lg:col-span-6" style={{ ['--enter-delay' as const]: '260ms' }}>
+          <ChartCard
+            id="corporate-velocity"
+            title="Pipeline velocity"
+            description="Weekly deal speed vs win rate"
+            rows={velocityRows}
+            columns={[
+              { key: 'week', label: 'Week' },
+              { key: 'velocity', label: 'Velocity', align: 'right' },
+              { key: 'winRate', label: 'Win rate', align: 'right' },
+            ]}
+            accentToken={accent}
+          >
+            <ResponsiveContainer height={280}>
+              <ComposedChart data={pipelineVelocity}>
+                <CartesianGrid strokeDasharray="3 6" stroke="rgba(148, 163, 184, 0.35)" />
+                <XAxis dataKey="week" tickLine={false} axisLine={false} />
+                <YAxis yAxisId="left" tickLine={false} axisLine={false} domain={[0, 'auto']} />
+                <YAxis yAxisId="right" orientation="right" tickLine={false} axisLine={false} domain={[0, 100]} />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                <Area
+                  yAxisId="left"
+                  type="monotone"
+                  dataKey="velocity"
+                  fill="rgba(29, 78, 216, 0.18)"
+                  stroke={`var(${accent})`}
+                  strokeWidth={2}
+                  fillOpacity={0.8}
+                />
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="winRate"
+                  stroke="rgba(30, 41, 59, 0.85)"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 5 }}
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </div>
+
+        <div className="col-span-12 lg:col-span-6" style={{ ['--enter-delay' as const]: '280ms' }}>
+          <Card className="h-full border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm animate-dashboard-panel" padding="md">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">Unit economics</p>
+                <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">CAC & payback snapshot</h3>
+                <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Segmented benchmarks vs last quarter.</p>
+              </div>
+            </div>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {cacSnapshot.map((item) => {
+                const positive = item.delta >= 0;
+                const DeltaIcon = positive ? ArrowUpRight : ArrowDownRight;
+                return (
+                  <div
+                    key={item.id}
+                    className="rounded-2xl border border-[var(--surface-border)] bg-white/80 p-4 shadow-sm"
+                    style={{ borderLeft: `3px solid var(${accent})` }}
+                  >
+                    <p className="text-[12px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">{item.label}</p>
+                    <p className="mt-2 text-[26px] font-semibold leading-tight text-[var(--neutral-900,#0b0d12)]">{item.value}</p>
+                    <span
+                      className={cn(
+                        'mt-3 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[12px] font-semibold',
+                        positive
+                          ? 'bg-[var(--success-50)] text-[var(--success-600)]'
+                          : 'bg-[var(--danger-50)] text-[var(--danger-600)]',
+                      )}
+                    >
+                      <DeltaIcon className="h-3.5 w-3.5" aria-hidden />
+                      {positive ? `+${item.delta.toFixed(1)}%` : `${item.delta.toFixed(1)}%`}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      <div className="space-y-4" style={{ ['--enter-delay' as const]: '320ms' }}>
+        <div className="flex items-center justify-between">
+          <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Executive insights</h3>
+          <span className="text-[12px] text-[var(--neutral-500,#5e6673)]">Signals ready for the C-suite deck</span>
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {data.insights.map((insight) => (
+            <article
+              key={insight.id}
+              className="rounded-[16px] border border-[rgba(29,78,216,0.2)] bg-[rgba(29,78,216,0.07)] p-4 shadow-sm"
+            >
+              <p className="text-[15px] font-semibold text-[var(--neutral-900,#0b0d12)]">{insight.headline}</p>
+              <p className="mt-2 text-[12px] text-[var(--neutral-600,#5e6673)]">{insight.detail}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-4" style={{ ['--enter-delay' as const]: '360ms' }}>
+        <div className="flex items-center justify-between">
+          <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Automations</h3>
+          <span className="text-[12px] text-[var(--neutral-500,#5e6673)]">Trigger | Channel | Cadence</span>
+        </div>
+        <AutomationSummaryGrid items={data.automation} accentToken={accent} />
+      </div>
+    </section>
   );
 }
 
@@ -947,107 +1245,326 @@ function CustomAppModule({
   data: PortfolioDashboardResponse['customApp'];
   accent: string;
 }) {
+  const [teamFilter, setTeamFilter] = useState('Product ops');
+  const [projectFilter, setProjectFilter] = useState('All projects');
+  const [range, setRange] = useState<string>(dateRangeOptions[0].id);
+  const [draggingCard, setDraggingCard] = useState<string | null>(null);
+
+  const allTasks = useMemo(() => data.kanban.flatMap((column) => column.tasks), [data.kanban]);
+  const totalTasks = allTasks.length;
+  const shippedTasks = data.kanban.find((column) => column.id === 'done')?.tasks.length ?? 0;
+  const automatedTasks = allTasks.filter((task) => Boolean(task.automation)).length;
+
+  const metrics: MetricCard[] = useMemo(() => {
+    const throughput = totalTasks === 0 ? 0 : (shippedTasks / totalTasks) * 100;
+    const triaged = data.backlogIdeas.length;
+    const coverage = totalTasks === 0 ? 0 : (automatedTasks / totalTasks) * 100;
+    const focusHours = automatedTasks * 4 + 18;
+
+    return [
+      {
+        id: 'throughput',
+        label: 'Sprint throughput',
+        value: `${throughput.toFixed(1)}%`,
+        change: Number((throughput - 68).toFixed(1)),
+        trend: throughput >= 68 ? 'up' : 'down',
+        description: 'Completed vs committed',
+      },
+      {
+        id: 'triage',
+        label: 'Ideas triaged',
+        value: triaged.toString(),
+        change: Number((triaged - 6).toFixed(1)),
+        trend: triaged >= 6 ? 'up' : 'steady',
+        description: 'Awaiting PM review',
+      },
+      {
+        id: 'automation-coverage',
+        label: 'Automation coverage',
+        value: `${coverage.toFixed(1)}%`,
+        change: Number((coverage - 52).toFixed(1)),
+        trend: coverage >= 52 ? 'up' : 'down',
+        description: 'Playbooks touching active work',
+      },
+      {
+        id: 'focus-time',
+        label: 'Focus time saved',
+        value: `${focusHours} hrs`,
+        change: Number((automatedTasks * 1.2).toFixed(1)),
+        trend: automatedTasks > 0 ? 'up' : 'steady',
+        description: 'Automation reclaimed hours',
+      },
+    ];
+  }, [automatedTasks, data.backlogIdeas.length, shippedTasks, totalTasks]);
+
+  const workloadRows = data.workloadDistribution.map((point) => ({
+    owner: point.label,
+    tasks: point.value,
+    capacity: point.secondary,
+  }));
+
+  const throughputTrend = useMemo(
+    () =>
+      data.workloadDistribution.map((point, index) => ({
+        week: `W${index + 1}`,
+        throughput: point.value + 6,
+        automation: point.secondary + 3,
+      })),
+    [data.workloadDistribution],
+  );
+
+  const ideaRows = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const column of data.kanban) {
+      for (const task of column.tasks) {
+        map.set(task.id, column.title);
+      }
+    }
+    return allTasks.slice(0, 8).map((task) => ({
+      id: task.id,
+      title: task.title,
+      owner: task.owner,
+      priority: task.priority,
+      due: task.due,
+      lane: map.get(task.id) ?? 'Backlog',
+    }));
+  }, [allTasks, data.kanban]);
+
   return (
-    <div className="grid grid-cols-12 gap-6" id="customApp-panel" role="tabpanel" aria-labelledby="customApp">
-      <div className="col-span-12">
-        <SectionHeader
-          title="Productivity suite & automation"
-          subtitle="Custom web app"
-          accent={accent}
-        />
-      </div>
-
-      <div className="col-span-12 xl:col-span-7">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Kanban delivery board">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Kanban delivery board</h3>
-              <p className="text-xs text-slate-600">
-                Keyboard accessible DnD — Space to lift, arrows to move, Enter to drop.
-              </p>
+    <section className="space-y-8" id="customApp-panel" role="tabpanel" aria-labelledby="customApp">
+      <header className="grid grid-cols-12 items-start gap-4 border-b border-[var(--surface-border)] pb-6 animate-dashboard-header">
+        <div className="col-span-12 lg:col-span-4 space-y-2">
+          <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">Delivery operations</p>
+          <h2 className="text-[24px] font-semibold leading-tight text-[var(--neutral-900,#0b0d12)]">Custom Web App</h2>
+          <p className="text-[13px] text-[var(--neutral-600,#5e6673)]">Sprints, automation coverage, and focus-time insights for product pods.</p>
+        </div>
+        <div className="col-span-12 lg:col-span-4 flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Team</span>
+            <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
+              {['Product ops', 'Growth squad', 'Platform pod'].map((option) => (
+                <FilterChip key={option} label={option} active={teamFilter === option} onClick={() => setTeamFilter(option)} />
+              ))}
             </div>
           </div>
-          <div className="mt-4 grid gap-4 overflow-x-auto pb-2 sm:grid-cols-2 xl:grid-cols-4">
-            {data.kanban.map((lane) => (
-              <div key={lane.id} className="rounded-[18px] border border-[var(--surface-border)] bg-[var(--surface-s1)] p-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-slate-900">{lane.title}</h4>
-                  <StatusChip label={lane.badge} tone="info" />
-                </div>
-                <ul className="mt-3 space-y-3">
-                  {lane.tasks.map((task) => (
-                    <li key={task.id} className="rounded-[16px] border border-[var(--surface-border)] bg-white/80 p-3 shadow-sm">
-                      <p className="text-sm font-semibold text-slate-900">{task.title}</p>
-                      <p className="mt-1 text-xs text-slate-500">Owner: {task.owner}</p>
-                      <p className="text-xs text-slate-500">Due {task.due}</p>
-                      {task.automation ? (
-                        <p className="mt-1 text-[11px] uppercase tracking-[0.08em] text-[var(--primary-600)]">
-                          {task.automation}
-                        </p>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
+          <div className="flex flex-col gap-2">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Project</span>
+            <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
+              {['All projects', 'Automation hub', 'Mobile revamp'].map((option) => (
+                <FilterChip key={option} label={option} active={projectFilter === option} onClick={() => setProjectFilter(option)} />
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="col-span-12 lg:col-span-4 flex flex-col items-stretch gap-2 lg:items-end">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Date range</span>
+          <div className="flex flex-wrap justify-end gap-2">
+            {dateRangeOptions.map((option) => (
+              <FilterChip
+                key={option.id}
+                label={option.label}
+                active={range === option.id}
+                onClick={() => setRange(option.id)}
+              />
+            ))}
+          </div>
+          <p className="text-[12px] text-[var(--neutral-500,#5e6673)]">Filters sync with automations & workload dashboards.</p>
+        </div>
+      </header>
+
+      <div className="animate-dashboard-kpi" style={{ ['--enter-delay' as const]: '140ms' }}>
+        <KPIBand metrics={metrics} accentToken={accent} />
+      </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 lg:col-span-6" style={{ ['--enter-delay' as const]: '220ms' }}>
+          <Card className="h-full border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm animate-dashboard-panel" role="region" aria-label="Kanban delivery board">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">Flow stages</p>
+                <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Kanban delivery board</h3>
+                <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Status-aware cards with automation flags and due dates.</p>
               </div>
-            ))}
-          </div>
-        </Card>
-      </div>
-
-      <div className="col-span-12 xl:col-span-5 space-y-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Idea backlog">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Idea backlog intake</h3>
-              <p className="text-xs text-slate-600">Routing rules auto-tag and assign backlog ideas.</p>
             </div>
-          </div>
-          <ul className="mt-4 space-y-3">
-            {data.backlogIdeas.map((idea) => (
-              <li key={idea} className="rounded-[16px] border border-[var(--surface-border)] px-4 py-3 text-sm text-slate-700">
-                {idea}
-              </li>
-            ))}
-          </ul>
-        </Card>
+            <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {data.kanban.map((column, columnIndex) => (
+                <div
+                  key={column.id}
+                  className="rounded-[16px] border border-[var(--surface-border)] bg-white/80 p-4 shadow-sm"
+                  style={{ boxShadow: '0 12px 30px rgba(79, 70, 229, 0.08)' }}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="h-2.5 w-2.5 rounded-full"
+                        style={{ background: `rgba(147, 51, 234, ${0.25 + columnIndex * 0.1})` }}
+                        aria-hidden
+                      />
+                      <p className="text-[14px] font-semibold text-[var(--neutral-900,#0b0d12)]">{column.title}</p>
+                    </div>
+                    <span className="rounded-full bg-[rgba(147,51,234,0.1)] px-2 py-1 text-[11px] font-semibold text-[var(--vertical-custom)]">
+                      {column.badge}
+                    </span>
+                  </div>
+                  <ul className="mt-4 space-y-3">
+                    {column.tasks.map((task) => (
+                      <li key={task.id}>
+                        <article
+                          className={cn(
+                            'kanban-card flex flex-col gap-2 rounded-[14px] border border-[var(--surface-border)] bg-white px-4 py-3 shadow-sm',
+                            draggingCard === task.id && 'dragging',
+                          )}
+                          onMouseDown={() => setDraggingCard(task.id)}
+                          onMouseUp={() => setDraggingCard(null)}
+                          onMouseLeave={() => setDraggingCard(null)}
+                        >
+                          <p className="text-[14px] font-semibold text-[var(--neutral-900,#0b0d12)]">{task.title}</p>
+                          <div className="flex flex-wrap items-center justify-between gap-2 text-[12px] text-[var(--neutral-600,#5e6673)]">
+                            <span>{task.owner}</span>
+                            <span>{task.due}</span>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.14em] text-[var(--neutral-500,#5e6673)]">
+                            <span className="rounded-full bg-[rgba(147,51,234,0.12)] px-2 py-0.5">Priority: {task.priority}</span>
+                            {task.automation ? (
+                              <span className="rounded-full bg-[rgba(79,70,229,0.12)] px-2 py-0.5">Automation</span>
+                            ) : null}
+                          </div>
+                        </article>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
 
-        <ChartCard
-          id="custom-workload"
-          title="Workload distribution"
-          description="Task load vs capacity"
-          rows={data.workloadDistribution.map((point) => ({ owner: point.label, tasks: point.value, capacity: point.secondary }))}
-          columns={[
-            { key: 'owner', label: 'Owner' },
-            { key: 'tasks', label: 'Tasks', align: 'right' },
-            { key: 'capacity', label: 'Capacity', align: 'right' },
-          ]}
-        >
-          <ResponsiveContainer height={220}>
-            <BarChart data={data.workloadDistribution}>
-              <CartesianGrid strokeDasharray="4 8" stroke="rgba(148, 163, 184, 0.3)" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
-              <Bar dataKey="secondary" stackId="a" fill="rgba(148, 163, 184, 0.2)" radius={[12, 12, 12, 12]} />
-              <Bar dataKey="value" stackId="a" fill="var(--vertical-custom)" radius={[12, 12, 12, 12]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
+        <div className="col-span-12 lg:col-span-6" style={{ ['--enter-delay' as const]: '240ms' }}>
+          <ChartCard
+            id="custom-workload"
+            title="Workload distribution"
+            description="Task load vs. available capacity"
+            rows={workloadRows}
+            columns={[
+              { key: 'owner', label: 'Owner' },
+              { key: 'tasks', label: 'Tasks', align: 'right' },
+              { key: 'capacity', label: 'Capacity', align: 'right' },
+            ]}
+            accentToken={accent}
+          >
+            <ResponsiveContainer height={260}>
+              <BarChart data={data.workloadDistribution} barCategoryGap="28%">
+                <CartesianGrid strokeDasharray="3 6" stroke="rgba(148, 163, 184, 0.35)" />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                <Bar dataKey="secondary" fill="rgba(148, 163, 184, 0.18)" radius={[12, 12, 12, 12]} />
+                <Bar dataKey="value" fill={`var(${accent})`} radius={[12, 12, 12, 12]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </div>
       </div>
 
-      <div className="col-span-12 lg:col-span-6">
-        <AutomationBuilder
-          verticalAccent={accent}
-          onCreate={async () => {
-            await new Promise((resolve) => setTimeout(resolve, 700));
-          }}
-        />
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 lg:col-span-6" style={{ ['--enter-delay' as const]: '260ms' }}>
+          <Card className="h-full border border-[var(--surface-border)] bg-[var(--surface-s1)] shadow-sm animate-dashboard-panel" role="region" aria-label="Idea backlog intake">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">Backlog hygiene</p>
+                <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Idea backlog intake</h3>
+                <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">Priority, owner, and lane readiness.</p>
+              </div>
+            </div>
+            <div className="mt-4 overflow-hidden rounded-[16px] border border-[var(--surface-border)]">
+              <table className="min-w-full" aria-label="Idea backlog table">
+                <thead className="sticky top-0 bg-[var(--surface-s1)] text-[12px] font-medium uppercase tracking-[0.08em] text-[var(--neutral-500,#5e6673)]">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Idea</th>
+                    <th className="px-4 py-3 text-left">Owner</th>
+                    <th className="px-4 py-3 text-left">Lane</th>
+                    <th className="px-4 py-3 text-right">Priority</th>
+                    <th className="px-4 py-3 text-right">Due</th>
+                  </tr>
+                </thead>
+                <tbody className="text-[13px] text-[var(--neutral-700,#384150)]">
+                  {ideaRows.map((row) => (
+                    <tr key={row.id} className="data-grid-row">
+                      <td className="px-4 py-[11px] font-semibold text-[var(--neutral-900,#0b0d12)]">{row.title}</td>
+                      <td className="px-4 py-[11px] text-[var(--neutral-600,#5e6673)]">{row.owner}</td>
+                      <td className="px-4 py-[11px] text-[var(--neutral-600,#5e6673)]">{row.lane}</td>
+                      <td className="px-4 py-[11px] text-right">
+                        <span className="inline-flex items-center rounded-full bg-[rgba(147,51,234,0.1)] px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--vertical-custom)]">
+                          {row.priority}
+                        </span>
+                      </td>
+                      <td className="px-4 py-[11px] text-right text-[var(--neutral-600,#5e6673)]">{row.due}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="border-t border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-2 text-right text-[11px] uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">
+                Scroll for more
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        <div className="col-span-12 lg:col-span-6" style={{ ['--enter-delay' as const]: '280ms' }}>
+          <ChartCard
+            id="custom-throughput"
+            title="Throughput trend"
+            description="Weekly completion vs automation assists"
+            rows={throughputTrend.map((point) => ({
+              week: point.week,
+              throughput: point.throughput,
+              automation: point.automation,
+            }))}
+            columns={[
+              { key: 'week', label: 'Week' },
+              { key: 'throughput', label: 'Throughput', align: 'right' },
+              { key: 'automation', label: 'Automation assists', align: 'right' },
+            ]}
+            accentToken={accent}
+          >
+            <ResponsiveContainer height={260}>
+              <ComposedChart data={throughputTrend}>
+                <CartesianGrid strokeDasharray="3 6" stroke="rgba(148, 163, 184, 0.35)" />
+                <XAxis dataKey="week" tickLine={false} axisLine={false} />
+                <YAxis yAxisId="left" tickLine={false} axisLine={false} domain={[0, 'auto']} />
+                <YAxis yAxisId="right" orientation="right" tickLine={false} axisLine={false} domain={[0, 'auto']} />
+                <Tooltip contentStyle={{ borderRadius: 16, border: '1px solid var(--surface-border)' }} />
+                <Area
+                  yAxisId="left"
+                  type="monotone"
+                  dataKey="automation"
+                  fill="rgba(147, 51, 234, 0.16)"
+                  stroke={`var(${accent})`}
+                  strokeWidth={2}
+                />
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="throughput"
+                  stroke="rgba(79, 70, 229, 0.9)"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 5 }}
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </div>
       </div>
 
-      <div className="col-span-12 lg:col-span-6">
-        <AutomationList items={data.automation} />
+      <div className="space-y-4" style={{ ['--enter-delay' as const]: '320ms' }}>
+        <div className="flex items-center justify-between">
+          <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Automations</h3>
+          <span className="text-[12px] text-[var(--neutral-500,#5e6673)]">Trigger | Channel | Cadence</span>
+        </div>
+        <AutomationSummaryGrid items={data.automation} accentToken={accent} columns={3} />
       </div>
-    </div>
+    </section>
   );
 }
 

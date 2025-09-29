@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { Download } from 'lucide-react';
 import { Card } from './Card';
 import { cn, downloadAs } from '@/lib/utils';
@@ -21,6 +21,7 @@ type ChartCardProps = {
   toolbar?: ReactNode;
   tone?: 'default' | 'accent';
   className?: string;
+  accentToken?: string;
 };
 
 export function ChartCard({
@@ -35,8 +36,12 @@ export function ChartCard({
   toolbar,
   tone = 'default',
   className,
+  accentToken,
 }: ChartCardProps) {
   const borderClass = tone === 'accent' ? 'border-[var(--primary-300)]/50' : 'border-[var(--surface-border)]';
+  const style: CSSProperties | undefined = accentToken
+    ? { ['--table-accent' as const]: `var(${accentToken})` }
+    : undefined;
 
   return (
     <Card
@@ -49,6 +54,7 @@ export function ChartCard({
         borderClass,
         className,
       )}
+      style={style}
     >
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-start justify-between gap-4">
@@ -111,7 +117,7 @@ export function ChartCard({
               </thead>
               <tbody className="text-[13px] text-[var(--neutral-700,#384150)]">
                 {rows.map((row, rowIndex) => (
-                  <tr key={`${id}-row-${rowIndex}`} className="transition hover:bg-[rgba(59,130,246,0.05)]">
+                  <tr key={`${id}-row-${rowIndex}`} className="data-grid-row">
                     {columns.map((column) => (
                       <td
                         key={`${id}-row-${rowIndex}-${column.key}`}
