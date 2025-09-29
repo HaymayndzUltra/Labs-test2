@@ -227,25 +227,32 @@
   .animate-dashboard-header {
     opacity: 0;
     transform: translateY(-8px);
-    animation: dashboard-header-enter 0.18s var(--motion-ease) forwards;
+    will-change: transform, opacity;
+    animation: dashboard-header-enter 0.12s var(--motion-ease) forwards;
   }
 
   .animate-dashboard-kpi {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(10px);
+    will-change: transform, opacity;
     animation: dashboard-kpi-enter 0.16s var(--motion-ease) forwards;
+    animation-delay: var(--enter-delay, 140ms);
   }
 
   .animate-dashboard-panel {
     opacity: 0;
     transform: scale(0.98);
-    animation: dashboard-panel-enter 0.24s var(--motion-ease) forwards;
     transform-origin: center top;
+    will-change: transform, opacity;
+    animation: dashboard-panel-enter 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-delay: var(--enter-delay, 220ms);
   }
 
   .animate-dashboard-chart {
     opacity: 0;
-    animation: dashboard-chart-fade 0.24s var(--motion-ease) forwards;
+    will-change: transform, opacity;
+    animation: dashboard-chart-reveal 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-delay: var(--enter-delay, 280ms);
   }
 
   .kpi-hover:hover {
@@ -272,7 +279,7 @@
   @keyframes dashboard-header-enter {
     from {
       opacity: 0;
-      transform: translateY(-12px);
+      transform: translateY(-8px);
     }
     to {
       opacity: 1;
@@ -283,7 +290,7 @@
   @keyframes dashboard-kpi-enter {
     from {
       opacity: 0;
-      transform: translateY(16px);
+      transform: translateY(12px);
     }
     to {
       opacity: 1;
@@ -296,18 +303,23 @@
       opacity: 0;
       transform: scale(0.98);
     }
+    60% {
+      transform: scale(1.01);
+    }
     to {
       opacity: 1;
       transform: scale(1);
     }
   }
 
-  @keyframes dashboard-chart-fade {
+  @keyframes dashboard-chart-reveal {
     from {
       opacity: 0;
+      transform: translateY(12px);
     }
     to {
       opacity: 1;
+      transform: translateY(0);
     }
   }
 
@@ -326,13 +338,96 @@
   .animate-dashboard-kpi,
   .animate-dashboard-panel,
   .animate-dashboard-chart {
-    animation: none !important;
+    animation: fade-only 0.14s ease-in forwards !important;
     transform: none !important;
-    opacity: 1 !important;
+    opacity: 0;
   }
 
   .kpi-hover,
   .glass-card {
     transition: none !important;
+  }
+}
+
+.data-grid-row {
+  position: relative;
+  transition: background 140ms var(--motion-ease);
+}
+
+.data-grid-row::before {
+  content: '';
+  position: absolute;
+  inset-block: 6px;
+  inset-inline-start: 0;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--table-accent, var(--primary-500));
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 100ms var(--motion-ease);
+}
+
+.data-grid-row:hover,
+.data-grid-row:focus-within {
+  background: rgba(59, 130, 246, 0.06);
+}
+
+.data-grid-row:hover::before,
+.data-grid-row:focus-within::before {
+  transform: scaleY(1);
+}
+
+.kanban-card {
+  transition: transform 140ms var(--motion-ease), box-shadow 140ms var(--motion-ease);
+  will-change: transform, box-shadow;
+}
+
+.kanban-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px rgba(79, 70, 229, 0.12);
+}
+
+.kanban-card.dragging {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 24px 48px rgba(79, 70, 229, 0.16);
+}
+
+.automation-pill {
+  position: relative;
+  overflow: hidden;
+}
+
+.automation-pill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: translateX(-100%);
+  transition: transform 600ms linear;
+}
+
+.automation-pill:hover::after {
+  transform: translateX(100%);
+}
+
+.legend-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  background: var(--surface-s0);
+  border: 1px solid var(--surface-border);
+  padding: 0.35rem 0.75rem;
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+}
+
+@keyframes fade-only {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
