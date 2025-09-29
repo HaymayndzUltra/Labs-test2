@@ -30,16 +30,19 @@ import {
   CalendarRange,
   Check,
   ClipboardList,
+  Clock3,
   Earth,
   FileText,
   Minus,
   Moon,
   PlayCircle,
+  RefreshCcw,
   SlidersHorizontal,
   Sparkles,
   Sun,
   Timer,
   TrendingUp,
+  WifiOff,
   Workflow,
   Ban,
 } from 'lucide-react';
@@ -94,6 +97,112 @@ const channelOptions = [
   { id: 'emea', label: 'EMEA' },
   { id: 'apac', label: 'APAC' },
 ];
+
+function getLocale() {
+  if (typeof navigator !== 'undefined' && navigator.language) {
+    return navigator.language;
+  }
+  return 'en-US';
+}
+
+function getFilterLabel(
+  options: Array<{ id: string; label: string }>,
+  id: string | null | undefined,
+  fallback: string
+) {
+  if (!id) return fallback;
+  return options.find((option) => option.id === id)?.label ?? fallback;
+}
+
+function buildFilterContext(filters: Filters) {
+  const dateRangeLabel = getFilterLabel(dateRangeOptions, filters.dateRange, 'Custom range');
+  const segmentLabel = getFilterLabel(segmentOptions, filters.segment ?? 'all', 'All segments');
+  const channelLabel = getFilterLabel(channelOptions, filters.channel ?? 'global', 'Global');
+  return `${dateRangeLabel} • ${segmentLabel} • ${channelLabel}`;
+}
+
+type RelativeDescriptor = {
+  unit: 'second' | 'minute' | 'hour' | 'day';
+  value: number;
+  label: string;
+};
+
+function getRelativeDescriptor(timestamp: string, now: number, locale: string): RelativeDescriptor | null {
+  if (!timestamp) return null;
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+  const diffMs = now - date.getTime();
+  const diffSeconds = Math.max(0, Math.floor(diffMs / 1000));
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+
+  if (diffSeconds < 60) {
+    const value = diffSeconds;
+    return { unit: 'second', value, label: rtf.format(-value, 'second') };
+  }
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  if (diffMinutes < 60) {
+    return { unit: 'minute', value: diffMinutes, label: rtf.format(-diffMinutes, 'minute') };
+  }
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) {
+    return { unit: 'hour', value: diffHours, label: rtf.format(-diffHours, 'hour') };
+  }
+  const diffDays = Math.floor(diffHours / 24);
+  return { unit: 'day', value: diffDays, label: rtf.format(-diffDays, 'day') };
+}
+
+function formatDisplayTimestamp(iso: string, timezone: string, locale: string) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) {
+    return '—';
+  }
+  const formatter = new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+    timeZone: timezone,
+  });
+  const parts = formatter.formatToParts(date);
+  const pick = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? '';
+  const month = pick('month');
+  const day = pick('day');
+  const year = pick('year');
+  const hour = pick('hour');
+  const minute = pick('minute');
+  const second = pick('second');
+  const dayPeriod = pick('dayPeriod');
+  const paddedMinute = minute.padStart(2, '0');
+  const paddedSecond = second.padStart(2, '0');
+  return `${month} ${day}, ${year}, ${hour}:${paddedMinute}:${paddedSecond} ${dayPeriod}`;
+}
+
+type FreshnessPhase = 'loading' | 'ready' | 'stale' | 'error' | 'offline';
+type FreshnessTrigger = 'initial' | 'module' | 'filter' | 'manual' | 'auto';
+
+type FreshnessState = {
+  phase: FreshnessPhase;
+  iso: string | null;
+  lastGoodIso: string | null;
+  timezone: string;
+  context: string;
+  lastReason: FreshnessTrigger;
+  error: string | null;
+  ackLatency: number | null;
+};
+
+const relativeUnitSymbols: Record<RelativeDescriptor['unit'], string> = {
+  second: 's',
+  minute: 'm',
+  hour: 'h',
+  day: 'd',
+};
 
 type DashboardClientProps = {
   initialData: PortfolioDashboardResponse;
@@ -669,12 +778,14 @@ function AnimatedCounter({
   formatter,
   duration = 320,
   delay = 0,
+  className,
 }: {
   id: string;
   value: number;
   formatter: (value: number) => string;
   duration?: number;
   delay?: number;
+  className?: string;
 }) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const previousValue = useRef<number>(value);
@@ -726,7 +837,7 @@ function AnimatedCounter({
 
   return (
     <span
-      className="tabular-nums font-semibold text-[var(--neutral-900,#0b0d12)]"
+      className={cn('tabular-nums font-semibold text-[var(--neutral-900,#0b0d12)]', className)}
       aria-live="polite"
       data-counter-id={id}
     >
@@ -800,6 +911,377 @@ function AutomationSummaryGrid({
           </div>
         </Card>
       ))}
+    </div>
+  );
+}
+
+function GeneratedAtIndicator({
+  moduleId,
+  moduleLabel,
+  filters,
+  initialGeneratedAt,
+}: {
+  moduleId: TabDefinition['id'];
+  moduleLabel: string;
+  filters: Filters;
+  initialGeneratedAt: string;
+}) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const tooltipId = useId();
+  const locale = getLocale();
+  const timezoneFallback = useMemo(() => {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone ?? 'UTC';
+    } catch (error) {
+      return 'UTC';
+    }
+  }, []);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
+  const [swapKey, setSwapKey] = useState(initialGeneratedAt ?? 'initial');
+  const abortController = useRef<AbortController | null>(null);
+  const initialFiltersRef = useRef(filters);
+  const initialModuleRef = useRef(moduleId);
+  const initialContextRef = useRef(buildFilterContext(filters));
+  const [freshness, setFreshness] = useState<FreshnessState>(() => ({
+    phase: initialGeneratedAt ? 'loading' : 'loading',
+    iso: initialGeneratedAt ?? null,
+    lastGoodIso: initialGeneratedAt ?? null,
+    timezone: timezoneFallback,
+    context: buildFilterContext(filters),
+    lastReason: 'initial',
+    error: null,
+    ackLatency: null,
+  }));
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setNow(Date.now());
+    }, 10_000);
+    return () => {
+      window.clearInterval(id);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      abortController.current?.abort();
+    };
+  }, []);
+
+  const fetchFreshness = useCallback(
+    async (trigger: FreshnessTrigger, filterSnapshot: Filters, moduleSnapshot: TabDefinition['id'], context: string) => {
+      abortController.current?.abort();
+      const controller = new AbortController();
+      abortController.current = controller;
+      const clientTimeZone = timezoneFallback;
+      const startedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
+
+      setFreshness((prev) => ({
+        ...prev,
+        phase: prev.lastGoodIso ? 'loading' : 'loading',
+        lastReason: trigger,
+        context,
+        error: null,
+      }));
+
+      try {
+        const params = new URLSearchParams({
+          module: moduleSnapshot,
+          dateRange: filterSnapshot.dateRange,
+          segment: filterSnapshot.segment ?? 'all',
+          channel: filterSnapshot.channel ?? 'global',
+          locale,
+          clientTz: clientTimeZone,
+          context,
+          trigger,
+        });
+        const response = await fetch(`/api/freshness?${params.toString()}`, {
+          method: 'GET',
+          headers: { Accept: 'application/json' },
+          cache: 'no-store',
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to refresh timestamp (${response.status})`);
+        }
+
+        const payload = (await response.json()) as {
+          generatedAt: string;
+          timezone?: string;
+          context?: string;
+          acknowledgedAt?: string;
+        };
+
+        const iso = payload.generatedAt;
+        const timezone = payload.timezone ?? clientTimeZone;
+        const ackLatency =
+          typeof performance !== 'undefined' ? Math.max(0, performance.now() - startedAt) : Date.now() - startedAt;
+
+        setFreshness({
+          phase: 'ready',
+          iso,
+          lastGoodIso: iso,
+          timezone,
+          context: payload.context ?? context,
+          lastReason: trigger,
+          error: null,
+          ackLatency,
+        });
+        setSwapKey(iso);
+      } catch (error) {
+        const online = typeof navigator === 'undefined' ? true : navigator.onLine;
+        setFreshness((prev) => ({
+          ...prev,
+          phase: online ? (prev.lastGoodIso ? 'stale' : 'error') : 'offline',
+          error: error instanceof Error ? error.message : 'Unable to refresh freshness timestamp',
+          context,
+        }));
+      }
+    },
+    [locale, timezoneFallback]
+  );
+
+  useEffect(() => {
+    fetchFreshness('initial', initialFiltersRef.current, initialModuleRef.current, initialContextRef.current);
+  }, [fetchFreshness]);
+
+  const { dateRange, segment, channel } = filters;
+
+  const filterRef = useRef({ dateRange, segment, channel });
+  useEffect(() => {
+    const previous = filterRef.current;
+    if (
+      previous.dateRange === dateRange &&
+      previous.segment === segment &&
+      previous.channel === channel
+    ) {
+      return;
+    }
+    const snapshot: Filters = { dateRange, segment, channel };
+    filterRef.current = snapshot;
+    fetchFreshness('filter', snapshot, moduleId, buildFilterContext(snapshot));
+  }, [dateRange, segment, channel, moduleId, fetchFreshness]);
+
+  const moduleRef = useRef(moduleId);
+  useEffect(() => {
+    if (moduleRef.current === moduleId) {
+      return;
+    }
+    moduleRef.current = moduleId;
+    const snapshot: Filters = { dateRange, segment, channel };
+    fetchFreshness('module', snapshot, moduleId, buildFilterContext(snapshot));
+  }, [moduleId, dateRange, segment, channel, fetchFreshness]);
+
+  useEffect(() => {
+    if (!autoRefresh) {
+      return;
+    }
+    const snapshot: Filters = { dateRange, segment, channel };
+    const id = window.setInterval(() => {
+      fetchFreshness('auto', snapshot, moduleId, buildFilterContext(snapshot));
+    }, 300_000);
+    return () => {
+      window.clearInterval(id);
+    };
+  }, [autoRefresh, moduleId, dateRange, segment, channel, fetchFreshness]);
+
+  const displayIso = freshness.iso ?? freshness.lastGoodIso;
+  const timezone = freshness.timezone || timezoneFallback;
+  const formattedTime = displayIso ? formatDisplayTimestamp(displayIso, timezone, locale) : '—';
+  const relativeDescriptor = displayIso ? getRelativeDescriptor(displayIso, now, locale) : null;
+  const relativeSymbol = relativeDescriptor ? relativeUnitSymbols[relativeDescriptor.unit] : null;
+
+  let pillVariant: 'fresh' | 'stale' | 'error' | 'offline' = 'fresh';
+  if (freshness.phase === 'offline') {
+    pillVariant = 'offline';
+  } else if (freshness.phase === 'error') {
+    pillVariant = 'error';
+  } else if (freshness.phase === 'stale') {
+    pillVariant = 'stale';
+  } else if (relativeDescriptor) {
+    const minutesElapsed =
+      relativeDescriptor.unit === 'second'
+        ? relativeDescriptor.value / 60
+        : relativeDescriptor.unit === 'minute'
+        ? relativeDescriptor.value
+        : relativeDescriptor.unit === 'hour'
+        ? relativeDescriptor.value * 60
+        : relativeDescriptor.value * 1440;
+    if (minutesElapsed > 5) {
+      pillVariant = 'stale';
+    }
+  }
+
+  const handleManualRefresh = () => {
+    const snapshot: Filters = { dateRange, segment, channel };
+    fetchFreshness('manual', snapshot, moduleId, buildFilterContext(snapshot));
+  };
+
+  const tooltipLines = useMemo(() => {
+    const isoLine = displayIso ?? 'Awaiting data…';
+    const timezoneLine = `Timezone: ${timezone}`;
+    const contextLine = `Filters: ${freshness.context}`;
+    const ackLine = freshness.ackLatency != null ? `Server ack: ${Math.round(freshness.ackLatency)}ms` : null;
+    return [isoLine, timezoneLine, contextLine, ackLine].filter(Boolean) as string[];
+  }, [displayIso, timezone, freshness.context, freshness.ackLatency]);
+
+  const statusLabel =
+    freshness.phase === 'loading'
+      ? freshness.lastGoodIso
+        ? 'Refreshing…'
+        : 'Generating…'
+      : freshness.phase === 'offline'
+      ? 'Offline mode'
+      : freshness.phase === 'stale'
+      ? 'Using cached result'
+      : freshness.phase === 'error'
+      ? 'Failed to refresh'
+      : 'Live';
+
+  return (
+    <div
+      className="generated-at-surface w-full rounded-xl border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-[12px] text-[var(--neutral-600,#5e6673)] shadow-sm"
+      data-prefers-reduced-motion={prefersReducedMotion}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--neutral-500,#5e6673)]">
+        <span className="flex items-center gap-2">
+          <span
+            className={cn(
+              'freshness-dot',
+              `freshness-dot--${freshness.phase}`,
+              !prefersReducedMotion && 'freshness-dot--animated'
+            )}
+            aria-hidden
+          />
+          Generated at
+        </span>
+        <span
+          className={cn(
+            'inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold',
+            freshness.phase === 'error'
+              ? 'freshness-inline-status freshness-inline-status--error'
+              : freshness.phase === 'stale'
+              ? 'freshness-inline-status freshness-inline-status--warning'
+              : freshness.phase === 'offline'
+              ? 'freshness-inline-status freshness-inline-status--offline'
+              : 'freshness-inline-status freshness-inline-status--neutral'
+          )}
+        >
+          {freshness.phase === 'offline' ? (
+            <WifiOff className="h-3.5 w-3.5" aria-hidden />
+          ) : freshness.phase === 'stale' || freshness.phase === 'error' ? (
+            <AlertTriangle className="h-3.5 w-3.5" aria-hidden />
+          ) : (
+            <Clock3 className="h-3.5 w-3.5" aria-hidden />
+          )}
+          <span className="tracking-[0.08em]">{statusLabel}</span>
+        </span>
+      </div>
+      <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative">
+          <button
+            type="button"
+            className="generated-at-button"
+            onMouseEnter={() => setTooltipOpen(true)}
+            onMouseLeave={() => setTooltipOpen(false)}
+            onFocus={() => setTooltipOpen(true)}
+            onBlur={() => setTooltipOpen(false)}
+            aria-describedby={tooltipId}
+          >
+            <span
+              key={swapKey}
+              className={cn(
+                'generated-at-value',
+                !prefersReducedMotion && 'generated-at-value--swap',
+                freshness.phase === 'offline' && 'opacity-80'
+              )}
+            >
+              {formattedTime}
+            </span>
+          </button>
+          <div
+            role="tooltip"
+            id={tooltipId}
+            className={cn('freshness-tooltip', tooltipOpen && 'freshness-tooltip--visible')}
+          >
+            <p className="font-semibold text-[var(--neutral-900,#0b0d12)] dark:text-[rgba(226,232,240,0.92)]">
+              {moduleLabel}
+            </p>
+            {tooltipLines.map((line) => (
+              <p key={line} className="text-[11px] text-[var(--neutral-600,#5e6673)] dark:text-[rgba(203,213,225,0.86)]">
+                {line}
+              </p>
+            ))}
+            {freshness.phase === 'stale' && freshness.error ? (
+              <p className="mt-1 text-[10px] font-medium text-[var(--warning-600,#b45309)]">
+                {freshness.error}
+              </p>
+            ) : null}
+            {freshness.phase === 'error' && freshness.error ? (
+              <p className="mt-1 text-[10px] font-medium text-[var(--danger-600,#b91c1c)]">
+                {freshness.error}
+              </p>
+            ) : null}
+          </div>
+        </div>
+        <div
+          className={cn(
+            'freshness-pill',
+            `freshness-pill--${pillVariant}`,
+            freshness.phase === 'offline' && 'freshness-pill--offline-state'
+          )}
+        >
+          {freshness.phase === 'offline' ? (
+            <span className="flex items-center gap-1 font-medium">
+              <WifiOff className="h-3.5 w-3.5" aria-hidden />
+              Cached from {formattedTime}
+            </span>
+          ) : relativeDescriptor && relativeSymbol ? (
+            <span className="flex items-center gap-1 font-medium">
+              <span>Updated</span>
+              <AnimatedCounter
+                id="freshness-pill"
+                value={relativeDescriptor.value}
+                formatter={(value) => Math.max(0, Math.round(value)).toString()}
+                duration={180}
+                className="text-[var(--neutral-900,#0b0d12)] dark:text-[rgba(226,232,240,0.92)]"
+              />
+              <span>
+                {relativeSymbol} ago
+              </span>
+            </span>
+          ) : (
+            <span className="font-medium">Awaiting refresh…</span>
+          )}
+        </div>
+      </div>
+      <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
+        <button
+          type="button"
+          onClick={handleManualRefresh}
+          className="inline-flex min-h-[36px] items-center gap-2 rounded-full border border-[var(--surface-border)] bg-white/80 px-3 py-1.5 text-[12px] font-semibold text-[var(--neutral-700,#384150)] transition hover:border-[var(--surface-border-strong)] focus-visible:focus-ring dark:bg-[rgba(15,23,42,0.55)]"
+        >
+          <RefreshCcw className="h-3.5 w-3.5" aria-hidden />
+          Refresh now
+        </button>
+        <button
+          type="button"
+          onClick={() => setAutoRefresh((value) => !value)}
+          className={cn(
+            'inline-flex min-h-[36px] items-center gap-2 rounded-full border px-3 py-1.5 text-[12px] font-semibold transition focus-visible:focus-ring',
+            autoRefresh
+              ? 'border-[rgba(22,163,74,0.4)] bg-[rgba(22,163,74,0.08)] text-[var(--success-600,#059669)]'
+              : 'border-[var(--surface-border)] bg-white/70 text-[var(--neutral-600,#5e6673)] dark:bg-[rgba(15,23,42,0.55)]'
+          )}
+          aria-pressed={autoRefresh}
+        >
+          <Clock3 className="h-3.5 w-3.5" aria-hidden />
+          Auto 5m {autoRefresh ? 'on' : 'off'}
+        </button>
+      </div>
     </div>
   );
 }
@@ -3177,6 +3659,11 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
     }
   }, [accent, data, filters, selectedModule]);
 
+  const currentModuleLabel = useMemo(
+    () => data.tabs.find((tab) => tab.id === selectedModule)?.label ?? 'Portfolio module',
+    [data.tabs, selectedModule]
+  );
+
   if (!data) {
     return null;
   }
@@ -3228,9 +3715,12 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                 <Sparkles className="h-4 w-4" aria-hidden />
                 {data.hero.cta}
               </button>
-              <div className="rounded-xl border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-[12px] text-[var(--neutral-600,#5e6673)]">
-                Generated at {new Date(data.generatedAt).toLocaleString()}
-              </div>
+              <GeneratedAtIndicator
+                moduleId={selectedModule}
+                moduleLabel={currentModuleLabel}
+                filters={filters}
+                initialGeneratedAt={data.generatedAt}
+              />
             </div>
           </div>
           <div className="mt-8 flex flex-wrap items-center gap-3">
