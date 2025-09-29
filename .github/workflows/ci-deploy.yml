@@ -303,7 +303,7 @@ jobs:
           ./scripts/rollback_backend.sh ${{ needs.resolve-environment.outputs.environment }} previous
 
       - name: Roll back frontend deployment
-        if: secrets.VERCEL_TOKEN != ''
+        if: ${{ secrets.VERCEL_TOKEN != '' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -313,7 +313,7 @@ jobs:
           ./scripts/rollback_frontend.sh ${{ needs.resolve-environment.outputs.environment }}
 
       - name: Notify team
-        if: secrets.SLACK_WEBHOOK != ''
+        if: ${{ secrets.SLACK_WEBHOOK != '' }}
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
