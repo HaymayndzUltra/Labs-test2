@@ -1,0 +1,79 @@
+name: Codex E2E
+on:
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout using GH_TOKEN
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Configure Git author
+        run: |
+          git config user.name "${{ env.GIT_AUTHOR_NAME }}"
+          git config user.email "${{ env.GIT_AUTHOR_EMAIL }}"
+
+      - name: Install base toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            curl wget git unzip zip tar jq ca-certificates gnupg lsb-release \
+            build-essential pkg-config make openssl python3 python3-venv python3-pip \
+            software-properties-common git-lfs locales tzdata
+          # k6
+          curl -s https://dl.k6.io/key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/k6-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update && sudo apt-get install -y k6
+          # Node 18 + managers
+          curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+          corepack enable
+          corepack prepare pnpm@latest --activate
+          npm i -g yarn npm@latest
+          # Python deps
+          python3 -m pip install --upgrade pip
+          pip install pip-audit pytest pytest-cov locust requests pyyaml tomli
+
+      - name: Export E2E env
+        run: |
+          echo "NON_INTERACTIVE=1" >> $GITHUB_ENV
+          echo "YES=1" >> $GITHUB_ENV
+          echo "VARIANT_N=${{ env.VARIANT_N }}" >> $GITHUB_ENV
+          echo "PERF_OUTPUT=${{ env.PERF_OUTPUT }}" >> $GITHUB_ENV
+          echo "PERF_ENDPOINT=${{ env.PERF_ENDPOINT }}" >> $GITHUB_ENV
+          echo "PROJECT_NAME=${{ env.PROJECT_NAME }}" >> $GITHUB_ENV
+          echo "BRIEF_PATH=${{ env.BRIEF_PATH }}" >> $GITHUB_ENV
+
+      - name: Make scripts executable
+        run: |
+          chmod +x workflow/variant_controller.sh
+          chmod +x workflow/perf_smoke.sh
+
+      - name: Run Doctor
+        run: python3 workflow/doctor.py --strict
+
+      - name: Run Best-of-N E2E
+        run: bash workflow/variant_controller.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: submission-pack
+          path: |
+            dist/**
+            evidence/**
+            metrics/**
+            build_logs/**
+    env:
+      # from user/session env (we set these below before committing)
+      GIT_AUTHOR_NAME: ${{ env.GIT_AUTHOR_NAME }}
+      GIT_AUTHOR_EMAIL: ${{ env.GIT_AUTHOR_EMAIL }}
+      PROJECT_NAME: ${{ env.PROJECT_NAME }}
+      BRIEF_PATH: ${{ env.BRIEF_PATH }}
+      VARIANT_N: ${{ env.VARIANT_N }}
+      PERF_ENDPOINT: ${{ env.PERF_ENDPOINT }}
+      PERF_OUTPUT: ${{ env.PERF_OUTPUT }}
