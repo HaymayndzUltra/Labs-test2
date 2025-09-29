@@ -28,6 +28,7 @@ import {
   Activity,
   ClipboardList,
   Sparkles,
+  type LucideIcon,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
@@ -79,27 +80,36 @@ const channelOptions = [
   { id: 'apac', label: 'APAC' },
 ];
 
+const moduleGridClass = 'grid auto-rows-[minmax(0,1fr)] grid-cols-12 gap-x-6 gap-y-8';
+const stackColumnClass = 'flex h-full flex-col gap-6';
+
 type DashboardClientProps = {
   initialData: PortfolioDashboardResponse;
 };
 
 function AutomationList({
   items,
+  title = 'Automation orchestration',
+  description = 'Trigger → Action → Channel → Cadence. Workflows expose retries, audit logs, and SLA health.',
+  footnote = 'Enterprise packs unlock predictive triggers, anomaly detection, and compliance exports.',
+  icon: Icon = Workflow,
 }: {
   items: PortfolioDashboardResponse['saas']['automation'];
+  title?: string;
+  description?: string;
+  footnote?: string;
+  icon?: LucideIcon;
 }) {
   return (
-    <Card className="border border-[var(--surface-border)]" padding="md">
+    <Card className="flex h-full flex-col border border-[var(--surface-border)]" padding="md">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h3 className="text-title-sm text-slate-900">Automation orchestration</h3>
-          <p className="text-xs text-slate-600">
-            Trigger → Action → Channel → Cadence. Workflows expose retries, audit logs, and SLA health.
-          </p>
+          <h3 className="text-title-sm text-slate-900">{title}</h3>
+          <p className="text-xs text-slate-600">{description}</p>
         </div>
-        <Workflow className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
+        <Icon className="h-5 w-5 text-[var(--primary-500)]" aria-hidden />
       </div>
-      <div className="mt-5 space-y-3">
+      <div className="mt-5 flex-1 space-y-3">
         {items.map((automation) => (
           <article
             key={automation.id}
@@ -124,9 +134,7 @@ function AutomationList({
           </article>
         ))}
       </div>
-      <p className="mt-4 text-xs text-slate-500">
-        Enterprise packs unlock predictive triggers, anomaly detection, and compliance exports.
-      </p>
+      <p className="mt-auto pt-4 text-xs text-slate-500">{footnote}</p>
     </Card>
   );
 }
@@ -167,7 +175,7 @@ function SaaSModule({
   const apiRows = data.apiUsageTrend.map((point) => ({ week: point.label, usage: point.value }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="saas-panel" role="tabpanel" aria-labelledby="saas">
+    <div className={moduleGridClass} id="saas-panel" role="tabpanel" aria-labelledby="saas">
       <div className="col-span-12">
         <SectionHeader
           title="Subscription intelligence & API operations"
@@ -176,7 +184,7 @@ function SaaSModule({
         />
       </div>
 
-      <div className="col-span-12 lg:col-span-7">
+      <div className={`col-span-12 xl:col-span-8 ${stackColumnClass}`}>
         <Card className="border border-[var(--surface-border)]" role="region" aria-label="Subscription plans">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -225,7 +233,7 @@ function SaaSModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
+      <div className={`col-span-12 xl:col-span-4 ${stackColumnClass}`}>
         <ChartCard
           id="saas-churn"
           title="Churn health distribution"
@@ -276,7 +284,7 @@ function SaaSModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
+      <div className={`col-span-12 xl:col-span-6 ${stackColumnClass}`}>
         <ChartCard
           id="saas-growth"
           title="MRR growth"
@@ -297,7 +305,9 @@ function SaaSModule({
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>
+      </div>
 
+      <div className={`col-span-12 xl:col-span-6 ${stackColumnClass}`}>
         <ChartCard
           id="saas-api"
           title="API usage saturation"
@@ -324,9 +334,7 @@ function SaaSModule({
             </AreaChart>
           </ResponsiveContainer>
         </ChartCard>
-      </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
         <AutomationBuilder
           verticalAccent={accent}
           onCreate={async () => {
@@ -349,7 +357,7 @@ function CommerceModule({
   const salesRows = data.salesTrend.map((point) => ({ month: point.label, revenue: point.value }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="commerce-panel" role="tabpanel" aria-labelledby="commerce">
+    <div className={moduleGridClass} id="commerce-panel" role="tabpanel" aria-labelledby="commerce">
       <div className="col-span-12">
         <SectionHeader
           title="Merchandising, orders & fulfillment"
@@ -358,7 +366,7 @@ function CommerceModule({
         />
       </div>
 
-      <div className="col-span-12 lg:col-span-6">
+      <div className={`col-span-12 xl:col-span-8 ${stackColumnClass}`}>
         <Card className="border border-[var(--surface-border)]" role="region" aria-label="Top products leaderboard">
           <div className="flex items-center justify-between">
             <div>
@@ -396,9 +404,7 @@ function CommerceModule({
             </table>
           </div>
         </Card>
-      </div>
 
-      <div className="col-span-12 lg:col-span-6 space-y-6">
         <ChartCard
           id="commerce-sales"
           title="Sales trends"
@@ -419,7 +425,9 @@ function CommerceModule({
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
+      </div>
 
+      <div className={`col-span-12 xl:col-span-4 ${stackColumnClass}`}>
         <Card className="border border-[var(--surface-border)]" role="region" aria-label="Operational health">
           <div className="flex items-center justify-between">
             <div>
@@ -443,13 +451,9 @@ function CommerceModule({
             ))}
           </ul>
         </Card>
-      </div>
 
-      <div className="col-span-12 lg:col-span-6">
         <AutomationList items={data.automation} />
-      </div>
 
-      <div className="col-span-12 lg:col-span-6">
         <AutomationBuilder
           verticalAccent={accent}
           onCreate={async () => {
@@ -460,7 +464,6 @@ function CommerceModule({
     </div>
   );
 }
-
 function CorporateModule({
   data,
   accent,
@@ -478,7 +481,7 @@ function CorporateModule({
   const sourceRows = data.leadSources.map((source) => ({ source: source.label, share: `${source.value}%` }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="corporate-panel" role="tabpanel" aria-labelledby="corporate">
+    <div className={moduleGridClass} id="corporate-panel" role="tabpanel" aria-labelledby="corporate">
       <div className="col-span-12">
         <SectionHeader
           title="Growth marketing & pipeline analytics"
@@ -487,7 +490,7 @@ function CorporateModule({
         />
       </div>
 
-      <div className="col-span-12 lg:col-span-7 space-y-6">
+      <div className={`col-span-12 xl:col-span-8 ${stackColumnClass}`}>
         <ChartCard
           id="corporate-funnel"
           title="Conversion funnel"
@@ -531,7 +534,7 @@ function CorporateModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
+      <div className={`col-span-12 xl:col-span-4 ${stackColumnClass}`}>
         <ChartCard
           id="corporate-leads"
           title="Lead source mix"
@@ -569,7 +572,7 @@ function CustomAppModule({
   accent: string;
 }) {
   return (
-    <div className="grid grid-cols-12 gap-6" id="customApp-panel" role="tabpanel" aria-labelledby="customApp">
+    <div className={moduleGridClass} id="customApp-panel" role="tabpanel" aria-labelledby="customApp">
       <div className="col-span-12">
         <SectionHeader
           title="Productivity suite & automation"
@@ -578,7 +581,7 @@ function CustomAppModule({
         />
       </div>
 
-      <div className="col-span-12 xl:col-span-7">
+      <div className={`col-span-12 xl:col-span-8 ${stackColumnClass}`}>
         <Card className="border border-[var(--surface-border)]" role="region" aria-label="Kanban delivery board">
           <div className="flex items-center justify-between">
             <div>
@@ -613,9 +616,16 @@ function CustomAppModule({
             ))}
           </div>
         </Card>
+
+        <AutomationBuilder
+          verticalAccent={accent}
+          onCreate={async () => {
+            await new Promise((resolve) => setTimeout(resolve, 700));
+          }}
+        />
       </div>
 
-      <div className="col-span-12 xl:col-span-5 space-y-6">
+      <div className={`col-span-12 xl:col-span-4 ${stackColumnClass}`}>
         <Card className="border border-[var(--surface-border)]" role="region" aria-label="Idea backlog">
           <div className="flex items-center justify-between">
             <div>
@@ -654,24 +664,12 @@ function CustomAppModule({
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
-      </div>
 
-      <div className="col-span-12 lg:col-span-6">
-        <AutomationBuilder
-          verticalAccent={accent}
-          onCreate={async () => {
-            await new Promise((resolve) => setTimeout(resolve, 700));
-          }}
-        />
-      </div>
-
-      <div className="col-span-12 lg:col-span-6">
         <AutomationList items={data.automation} />
       </div>
     </div>
   );
 }
-
 function ContentModule({
   data,
   accent,
@@ -682,7 +680,7 @@ function ContentModule({
   const engagementRows = data.engagementTrend.map((point) => ({ period: point.label, score: point.value }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="content-panel" role="tabpanel" aria-labelledby="content">
+    <div className={moduleGridClass} id="content-panel" role="tabpanel" aria-labelledby="content">
       <div className="col-span-12">
         <SectionHeader
           title="Publishing workflow & engagement"
@@ -691,7 +689,7 @@ function ContentModule({
         />
       </div>
 
-      <div className="col-span-12 lg:col-span-7 space-y-6">
+      <div className={`col-span-12 xl:col-span-8 ${stackColumnClass}`}>
         <ChartCard
           id="content-engagement"
           title="Engagement trend"
@@ -745,7 +743,7 @@ function ContentModule({
         </Card>
       </div>
 
-      <div className="col-span-12 lg:col-span-5 space-y-6">
+      <div className={`col-span-12 xl:col-span-4 ${stackColumnClass}`}>
         <Card className="border border-[var(--surface-border)]" role="region" aria-label="Top performing stories">
           <div className="flex items-center justify-between">
             <div>
@@ -795,7 +793,7 @@ function EdTechModule({
   const heatmapMax = Math.max(...data.activityHeatmap.values.map((entry) => entry.score));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="edtech-panel" role="tabpanel" aria-labelledby="edtech">
+    <div className={moduleGridClass} id="edtech-panel" role="tabpanel" aria-labelledby="edtech">
       <div className="col-span-12">
         <SectionHeader
           title="Learning analytics & student success"
@@ -804,7 +802,7 @@ function EdTechModule({
         />
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
+      <div className={`col-span-12 xl:col-span-6 ${stackColumnClass}`}>
         <Card className="border border-[var(--surface-border)]" role="region" aria-label="Program performance">
           <div className="flex items-center justify-between">
             <div>
@@ -839,7 +837,7 @@ function EdTechModule({
         <AutomationList items={data.automation} />
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
+      <div className={`col-span-12 xl:col-span-6 ${stackColumnClass}`}>
         <Card className="border border-[var(--surface-border)]" role="region" aria-label="Student activity heatmap">
           <div className="flex items-center justify-between">
             <div>
@@ -923,7 +921,7 @@ function SpecializedModule({
   const roiRows = data.finance.roiBreakdown.map((item) => ({ channel: item.label, share: `${item.value}%` }));
 
   return (
-    <div className="grid grid-cols-12 gap-6" id="specialized-panel" role="tabpanel" aria-labelledby="specialized">
+    <div className={moduleGridClass} id="specialized-panel" role="tabpanel" aria-labelledby="specialized">
       <div className="col-span-12">
         <SectionHeader
           title="Specialized niches"
@@ -932,7 +930,7 @@ function SpecializedModule({
         />
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
+      <div className={`col-span-12 xl:col-span-6 ${stackColumnClass}`}>
         <ChartCard
           id="specialized-momentum"
           title="Market momentum"
@@ -978,9 +976,42 @@ function SpecializedModule({
             ))}
           </ul>
         </Card>
+
+        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Healthcare appointments">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-title-sm text-slate-900">Healthcare appointments</h3>
+              <p className="text-xs text-slate-600">Omni-channel reminders, smart rescheduling, PHI-safe.</p>
+            </div>
+          </div>
+          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
+            <table className="min-w-full" aria-label="Appointments table">
+              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
+                <tr>
+                  <th className="px-4 py-3 text-left">Patient</th>
+                  <th className="px-4 py-3 text-left">Clinician</th>
+                  <th className="px-4 py-3 text-left">Start</th>
+                  <th className="px-4 py-3 text-left">Channel</th>
+                  <th className="px-4 py-3 text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
+                {data.healthcare.appointments.map((appt) => (
+                  <tr key={appt.id}>
+                    <td className="px-4 py-[11px] text-slate-700">{appt.patient}</td>
+                    <td className="px-4 py-[11px] text-slate-700">{appt.clinician}</td>
+                    <td className="px-4 py-[11px] text-slate-700">{appt.start}</td>
+                    <td className="px-4 py-[11px] text-slate-700">{appt.channel}</td>
+                    <td className="px-4 py-[11px] text-right text-slate-700">{appt.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       </div>
 
-      <div className="col-span-12 xl:col-span-6 space-y-6">
+      <div className={`col-span-12 xl:col-span-6 ${stackColumnClass}`}>
         <ChartCard
           id="specialized-expenses"
           title="Expense vs budget"
@@ -1029,50 +1060,31 @@ function SpecializedModule({
         </ChartCard>
       </div>
 
-      <div className="col-span-12 lg:col-span-6">
-        <Card className="border border-[var(--surface-border)]" role="region" aria-label="Healthcare appointments">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-title-sm text-slate-900">Healthcare appointments</h3>
-              <p className="text-xs text-slate-600">Omni-channel reminders, smart rescheduling, PHI-safe.</p>
-            </div>
-          </div>
-          <div className="mt-4 overflow-hidden rounded-[18px] border border-[var(--surface-border)]">
-            <table className="min-w-full" aria-label="Appointments table">
-              <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
-                <tr>
-                  <th className="px-4 py-3 text-left">Patient</th>
-                  <th className="px-4 py-3 text-left">Clinician</th>
-                  <th className="px-4 py-3 text-left">Start</th>
-                  <th className="px-4 py-3 text-left">Channel</th>
-                  <th className="px-4 py-3 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm">
-                {data.healthcare.appointments.map((appt) => (
-                  <tr key={appt.id}>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.patient}</td>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.clinician}</td>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.start}</td>
-                    <td className="px-4 py-[11px] text-slate-700">{appt.channel}</td>
-                    <td className="px-4 py-[11px] text-right text-slate-700">{appt.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-      </div>
-
-      <div className="col-span-12 lg:col-span-6 space-y-6">
-        <AutomationList items={data.realEstate.automation} />
-        <AutomationList items={data.finance.automation} />
-        <AutomationList items={data.healthcare.automation} />
+      <div className="col-span-12">
+        <div className="grid gap-6 xl:grid-cols-3">
+          <AutomationList
+            items={data.realEstate.automation}
+            title="Real estate automations"
+            description="Lead nurture, showings, and agent accountability."
+            footnote="Broker dashboards sync back to MLS, CRM, and on-site tour tech."
+          />
+          <AutomationList
+            items={data.finance.automation}
+            title="Finance automations"
+            description="Close management, expense routing, and compliance checks."
+            footnote="SOX-friendly logs and anomaly alerts push directly to FP&A."
+          />
+          <AutomationList
+            items={data.healthcare.automation}
+            title="Healthcare automations"
+            description="Reminders, intake, and care coordination workflows."
+            footnote="HIPAA-compliant audit trails sync across patient ops tooling."
+          />
+        </div>
       </div>
     </div>
   );
 }
-
 function getModuleMetrics(
   moduleId: TabDefinition['id'],
   data: PortfolioDashboardResponse
