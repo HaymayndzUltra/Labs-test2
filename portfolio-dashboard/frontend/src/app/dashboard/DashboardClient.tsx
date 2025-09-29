@@ -60,6 +60,7 @@ import { Card } from '@/components/ui/Card';
 import { ChartCard } from '@/components/ui/ChartCard';
 import { AutomationBuilder } from '@/components/ui/AutomationBuilder';
 import { StatusChip } from '@/components/ui/StatusChip';
+import { GeneratedTimestamp } from '@/components/ui/GeneratedTimestamp';
 import { useToast } from '@/components/ui/ToastProvider';
 import { cn } from '@/lib/utils';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
@@ -3102,11 +3103,16 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
   const { push } = useToast();
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
+  const [filterTrayOpen, setFilterTrayOpen] = useState(false);
+  const filtersHydratedRef = useRef(false);
 
-  const { data } = useQuery({
+  const { data, refetch, isFetching, isError, dataUpdatedAt } = useQuery({
     queryKey: ['portfolio-dashboard'],
     queryFn: fetchPortfolioDashboard,
     initialData,
+    refetchInterval: 5 * 60 * 1000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: false,
   });
 
   useLiveMetrics();
@@ -3147,11 +3153,44 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
     router.replace(`?${params.toString()}`, { scroll: false });
   }, [filters, selectedModule, router]);
 
+  useEffect(() => {
+    if (!filtersHydratedRef.current) {
+      filtersHydratedRef.current = true;
+      return;
+    }
+    void refetch();
+  }, [filters.dateRange, filters.segment, filters.channel, selectedModule, refetch]);
+
+  const handleModuleChange = useCallback(
+    (id: TabDefinition['id']) => {
+      setModule(id);
+      setFilterTrayOpen(false);
+    },
+    [setModule]
+  );
   const accent = accentTokens[selectedModule];
+  const moduleTab = data?.tabs.find((tab) => tab.id === selectedModule);
   const moduleMetrics = data ? getModuleMetrics(selectedModule, data) : [];
   const isPrimaryDashboard = selectedModule === 'saas' || selectedModule === 'commerce';
   const showGlobalModuleKpis =
     !isPrimaryDashboard && selectedModule !== 'corporate' && selectedModule !== 'customApp';
+
+  const moduleLabel = moduleTab?.label ?? 'SaaS Platform';
+  const moduleDescription = moduleTab?.description ?? '';
+  const dateRangeLabel =
+    dateRangeOptions.find((option) => option.id === filters.dateRange)?.label ?? 'Last 30 days';
+  const segmentLabel =
+    segmentOptions.find((option) => option.id === (filters.segment ?? 'all'))?.label ?? 'All segments';
+  const regionLabel =
+    channelOptions.find((option) => option.id === (filters.channel ?? 'global'))?.label ?? 'Global';
+  const filterContext = `${dateRangeLabel} • ${segmentLabel} • ${regionLabel}`;
+  const summaryPills = [
+    { id: 'module', label: 'Module', value: moduleLabel },
+    { id: 'segment', label: 'Segment', value: segmentLabel },
+    { id: 'region', label: 'Region', value: regionLabel },
+    { id: 'date', label: 'Date', value: dateRangeLabel },
+  ];
+  const generatedIso = new Date(dataUpdatedAt || Date.now()).toISOString();
 
   const moduleContent = useMemo(() => {
     if (!data) return null;
@@ -3184,28 +3223,25 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
   return (
     <div className="min-h-screen bg-[var(--surface-s0)] pb-16 text-[var(--neutral-900,#0b0d12)]">
       <header className="border-b border-[var(--surface-border)] bg-[var(--surface-s0)]/95 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-6 py-8">
-          <div className={cn('grid grid-cols-12 gap-6', isReady && 'animate-dashboard-header')}>
+        <div className="mx-auto max-w-7xl px-6 py-8 space-y-6">
+          <div className={cn('grid grid-cols-12 items-start gap-6', isReady && 'animate-dashboard-header')}>
             <div className="col-span-12 lg:col-span-8 space-y-4">
-              <div>
+              <div className="space-y-2">
                 <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">
                   Portfolio-grade product operations
                 </p>
                 <h1 className="text-[32px] font-semibold text-[var(--neutral-900,#0b0d12)]">
                   {data.hero.title}
                 </h1>
-                <p className="mt-2 max-w-3xl text-[14px] text-[var(--neutral-600,#5e6673)]">{data.hero.description}</p>
+                <p className="max-w-3xl text-[14px] text-[var(--neutral-600,#5e6673)]">{data.hero.description}</p>
               </div>
-              <div className="flex flex-wrap gap-3">
-                <SegmentedTabs tabs={data.tabs} activeId={selectedModule} onChange={setModule} />
-                <div className="h-px flex-1 self-center border-t border-dashed border-[var(--surface-border)]" aria-hidden />
-              </div>
+              <p className="text-[13px] text-[var(--neutral-600,#5e6673)]">{moduleDescription}</p>
             </div>
-            <div className="col-span-12 lg:col-span-4 flex flex-col items-start gap-4 lg:items-end">
+            <div className="col-span-12 lg:col-span-4 flex flex-col items-end gap-4">
               <div className="flex flex-wrap items-center justify-end gap-2">
                 <button
                   type="button"
-                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
+                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring dark:hover:bg-[rgba(148,163,184,0.12)]"
                   onClick={toggleTheme}
                 >
                   {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden /> : <Moon className="h-4 w-4" aria-hidden />}
@@ -3213,7 +3249,7 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                 </button>
                 <button
                   type="button"
-                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
+                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring dark:hover:bg-[rgba(148,163,184,0.12)]"
                   onClick={() => setDirection(direction === 'ltr' ? 'rtl' : 'ltr')}
                 >
                   <Earth className="h-4 w-4" aria-hidden />
@@ -3228,37 +3264,112 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                 <Sparkles className="h-4 w-4" aria-hidden />
                 {data.hero.cta}
               </button>
-              <div className="rounded-xl border border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-3 text-[12px] text-[var(--neutral-600,#5e6673)]">
-                Generated at {new Date(data.generatedAt).toLocaleString()}
-              </div>
+              <GeneratedTimestamp
+                generatedAt={generatedIso}
+                dataUpdatedAt={dataUpdatedAt || Date.now()}
+                context={filterContext}
+                scopeLabel={moduleLabel}
+                isFetching={isFetching}
+                isError={isError}
+                onRefresh={() => {
+                  setFilterTrayOpen(false);
+                  void refetch();
+                }}
+              />
             </div>
           </div>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            {dateRangeOptions.map((option) => (
-              <FilterChip
-                key={option.id}
-                label={option.label}
-                active={filters.dateRange === option.id}
-                onClick={() => setFilters({ dateRange: option.id as typeof filters.dateRange })}
-                icon={filters.dateRange === option.id ? <Check className="h-4 w-4" aria-hidden /> : undefined}
-              />
-            ))}
-            {segmentOptions.map((option) => (
-              <FilterChip
-                key={option.id}
-                label={option.label}
-                active={(filters.segment ?? 'all') === option.id}
-                onClick={() => setFilters({ segment: option.id === 'all' ? null : option.id })}
-              />
-            ))}
-            {channelOptions.map((option) => (
-              <FilterChip
-                key={option.id}
-                label={option.label}
-                active={(filters.channel ?? 'global') === option.id}
-                onClick={() => setFilters({ channel: option.id === 'global' ? null : option.id })}
-              />
-            ))}
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <SegmentedTabs tabs={data.tabs} activeId={selectedModule} onChange={handleModuleChange} />
+              <div className="flex flex-wrap items-center gap-2">
+                {summaryPills.map((pill) => (
+                  <button
+                    key={pill.id}
+                    type="button"
+                    onClick={() => setFilterTrayOpen(true)}
+                    className="inline-flex min-h-[38px] items-center gap-2 rounded-full border border-[var(--surface-border)] bg-[var(--surface-s1)] px-3 py-1.5 text-[13px] font-medium text-[var(--neutral-600,#5e6673)] transition hover:bg-white focus-visible:focus-ring dark:hover:bg-[rgba(148,163,184,0.12)]"
+                    title={`${pill.label}: ${pill.value}`}
+                  >
+                    <span className="text-[11px] uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">{pill.label}</span>
+                    <span className="font-semibold text-[var(--neutral-700,#384150)] dark:text-[rgba(226,232,240,0.92)]">{pill.value}</span>
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-2 text-[12px] font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring dark:hover:bg-[rgba(148,163,184,0.12)]"
+                  onClick={() => setFilterTrayOpen((open) => !open)}
+                  aria-expanded={filterTrayOpen}
+                  aria-controls="global-filter-tray"
+                >
+                  <SlidersHorizontal className="h-4 w-4" aria-hidden />
+                  {filterTrayOpen ? 'Hide filters' : 'Filters'}
+                </button>
+              </div>
+            </div>
+            <div className="filter-tray" data-open={filterTrayOpen} id="global-filter-tray">
+              <div className="grid grid-cols-12 gap-4 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-s1)] px-5 py-5 shadow-sm">
+                <div className="col-span-12 xl:col-span-4 space-y-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Module scope</p>
+                  <SegmentedTabs
+                    tabs={data.tabs}
+                    activeId={selectedModule}
+                    onChange={handleModuleChange}
+                    density="compact"
+                    ariaLabel="Module scope"
+                  />
+                  <p className="text-[12px] text-[var(--neutral-600,#5e6673)]">{moduleDescription}</p>
+                </div>
+                <div className="col-span-12 md:col-span-4 space-y-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Segment</p>
+                  <div className="flex flex-wrap gap-2">
+                    {segmentOptions.map((option) => (
+                      <FilterChip
+                        key={option.id}
+                        label={option.label}
+                        active={(filters.segment ?? 'all') === option.id}
+                        onClick={() => {
+                          setFilters({ segment: option.id === 'all' ? null : option.id });
+                          setFilterTrayOpen(false);
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="col-span-12 md:col-span-4 space-y-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Region</p>
+                  <div className="flex flex-wrap gap-2">
+                    {channelOptions.map((option) => (
+                      <FilterChip
+                        key={option.id}
+                        label={option.label}
+                        active={(filters.channel ?? 'global') === option.id}
+                        onClick={() => {
+                          setFilters({ channel: option.id === 'global' ? null : option.id });
+                          setFilterTrayOpen(false);
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="col-span-12 md:col-span-4 space-y-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">Date</p>
+                  <div className="flex flex-wrap gap-2">
+                    {dateRangeOptions.map((option) => (
+                      <FilterChip
+                        key={option.id}
+                        label={option.label}
+                        active={filters.dateRange === option.id}
+                        icon={filters.dateRange === option.id ? <Check className="h-4 w-4" aria-hidden /> : undefined}
+                        onClick={() => {
+                          setFilters({ dateRange: option.id as typeof filters.dateRange });
+                          setFilterTrayOpen(false);
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </header>
