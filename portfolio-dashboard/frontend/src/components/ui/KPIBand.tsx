@@ -33,7 +33,8 @@ export function KPIBand({ metrics, accentToken, onInspect }: KPIBandProps) {
             onClick={() => onInspect?.(metric)}
             className="snap-item min-w-[260px] flex-1 rounded-[20px] border border-[color:var(--surface-border)] bg-[var(--surface-s1)] p-5 text-left shadow-sm transition focus-visible:focus-ring"
             style={{
-              boxShadow: '0 18px 36px rgba(79, 70, 229, 0.08)',
+              boxShadow: '0 18px 36px rgba(75, 93, 255, 0.08)',
+              borderColor: `color-mix(in srgb, var(${accentToken}) 35%, transparent)`,
             }}
           >
             <div className="flex items-center justify-between gap-4">
@@ -51,8 +52,8 @@ export function KPIBand({ metrics, accentToken, onInspect }: KPIBandProps) {
               ) : null}
             </div>
             <p
-              className="kpi-value mt-3 text-3xl font-semibold"
-              style={{ color: `var(${accentToken})` }}
+              className="kpi-value mt-3 text-3xl font-semibold text-[#4B5DFF]"
+              style={{ textShadow: '0 4px 24px rgba(75, 93, 255, 0.2)' }}
             >
               {metric.value}
             </p>

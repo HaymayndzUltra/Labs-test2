@@ -34,6 +34,10 @@ export type AutomationWorkflow = {
   channel: string;
   cadence: string;
   active: boolean;
+  lastRun: string;
+  status: 'healthy' | 'warning' | 'failed';
+  category: 'builder' | 'orchestration' | 'billing' | 'workflow';
+  logId: string;
 };
 
 export type TabDefinition = {
@@ -215,6 +219,10 @@ export type SpecializedSection = {
 
 export type PortfolioDashboardResponse = {
   generatedAt: string;
+  globalFreshness: {
+    updatedAt: string;
+    description: string;
+  };
   hero: {
     title: string;
     subtitle: string;
@@ -229,10 +237,19 @@ export type PortfolioDashboardResponse = {
   content: ContentSection;
   edtech: EdTechSection;
   specialized: SpecializedSection;
+  metadata: Record<string, {
+    updatedAt: string;
+    source: string;
+    scope: string;
+  }>;
 };
 
 const portfolioDashboard: PortfolioDashboardResponse = {
   generatedAt: '2024-11-18T08:00:00.000Z',
+  globalFreshness: {
+    updatedAt: '2024-11-18T08:05:00.000Z',
+    description: 'Live sync across Snowflake, Segment, and observability pipelines',
+  },
   hero: {
     title: 'Portfolio-grade product operations',
     subtitle: 'Multi-domain dashboards built with enterprise rigor',
@@ -390,6 +407,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Webhook + Slack digest',
         cadence: 'Monthly',
         active: true,
+        lastRun: '2024-11-01T02:12:00.000Z',
+        status: 'healthy',
+        category: 'billing',
+        logId: 'AUT-SaaS-001',
       },
       {
         id: 'churn-alerts',
@@ -400,6 +421,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Email + CRM task',
         cadence: 'Real-time',
         active: true,
+        lastRun: '2024-11-18T07:20:00.000Z',
+        status: 'healthy',
+        category: 'orchestration',
+        logId: 'AUT-SaaS-002',
       },
       {
         id: 'api-burst',
@@ -410,6 +435,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'PagerDuty + Slack',
         cadence: 'Real-time',
         active: true,
+        lastRun: '2024-11-17T18:44:00.000Z',
+        status: 'warning',
+        category: 'workflow',
+        logId: 'AUT-SaaS-003',
       },
     ],
     billingCycles: [
@@ -531,6 +560,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Klaviyo + WhatsApp',
         cadence: 'Rolling',
         active: true,
+        lastRun: '2024-11-18T06:55:00.000Z',
+        status: 'healthy',
+        category: 'orchestration',
+        logId: 'AUT-Commerce-001',
       },
       {
         id: 'inventory-sync',
@@ -541,6 +574,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'ERP webhook + Slack',
         cadence: 'Hourly',
         active: true,
+        lastRun: '2024-11-18T07:10:00.000Z',
+        status: 'healthy',
+        category: 'workflow',
+        logId: 'AUT-Commerce-002',
       },
       {
         id: 'vip-segment',
@@ -551,6 +588,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Email + Fulfillment',
         cadence: 'Weekly',
         active: true,
+        lastRun: '2024-11-16T11:00:00.000Z',
+        status: 'warning',
+        category: 'builder',
+        logId: 'AUT-Commerce-003',
       },
     ],
     operations: [
@@ -633,6 +674,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Salesforce + Slack',
         cadence: 'Continuous',
         active: true,
+        lastRun: '2024-11-18T07:05:00.000Z',
+        status: 'healthy',
+        category: 'builder',
+        logId: 'AUT-Corporate-001',
       },
       {
         id: 'intent-sync',
@@ -643,6 +688,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Slack + LinkedIn ads',
         cadence: 'Daily',
         active: true,
+        lastRun: '2024-11-18T06:15:00.000Z',
+        status: 'warning',
+        category: 'orchestration',
+        logId: 'AUT-Corporate-002',
       },
       {
         id: 'nurture',
@@ -653,6 +702,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'HubSpot + Outreach',
         cadence: 'Weekly',
         active: true,
+        lastRun: '2024-11-15T12:00:00.000Z',
+        status: 'healthy',
+        category: 'workflow',
+        logId: 'AUT-Corporate-003',
       },
     ],
     insights: [
@@ -775,6 +828,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Slack + Calendar',
         cadence: 'Bi-weekly',
         active: true,
+        lastRun: '2024-11-18T09:00:00.000Z',
+        status: 'healthy',
+        category: 'workflow',
+        logId: 'AUT-Custom-001',
       },
       {
         id: 'task-reminders',
@@ -785,6 +842,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Email + In-app',
         cadence: 'Daily',
         active: true,
+        lastRun: '2024-11-18T07:30:00.000Z',
+        status: 'healthy',
+        category: 'builder',
+        logId: 'AUT-Custom-002',
       },
       {
         id: 'intake',
@@ -795,6 +856,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Notion + Jira',
         cadence: 'Real-time',
         active: true,
+        lastRun: '2024-11-18T04:12:00.000Z',
+        status: 'warning',
+        category: 'orchestration',
+        logId: 'AUT-Custom-003',
       },
     ],
     backlogIdeas: [
@@ -893,6 +958,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'CMS webhook + Slack',
         cadence: 'Hourly',
         active: true,
+        lastRun: '2024-11-18T08:00:00.000Z',
+        status: 'healthy',
+        category: 'workflow',
+        logId: 'AUT-Content-001',
       },
       {
         id: 'auto-tagging',
@@ -903,6 +972,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'CMS + Notion wiki',
         cadence: 'Real-time',
         active: true,
+        lastRun: '2024-11-18T07:42:00.000Z',
+        status: 'healthy',
+        category: 'builder',
+        logId: 'AUT-Content-002',
       },
       {
         id: 'highlight-reel',
@@ -913,6 +986,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Premiere Pro API + Dropbox',
         cadence: 'Daily',
         active: true,
+        lastRun: '2024-11-17T23:00:00.000Z',
+        status: 'warning',
+        category: 'orchestration',
+        logId: 'AUT-Content-003',
       },
     ],
     publishingQueue: [
@@ -1062,6 +1139,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Email + LMS inbox',
         cadence: 'Real-time',
         active: true,
+        lastRun: '2024-11-18T08:10:00.000Z',
+        status: 'healthy',
+        category: 'workflow',
+        logId: 'AUT-EdTech-001',
       },
       {
         id: 'inactivity-alerts',
@@ -1072,6 +1153,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'SMS + Push',
         cadence: 'Daily',
         active: true,
+        lastRun: '2024-11-17T21:00:00.000Z',
+        status: 'warning',
+        category: 'orchestration',
+        logId: 'AUT-EdTech-002',
       },
       {
         id: 'mentor-rotation',
@@ -1082,6 +1167,10 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         channel: 'Calendly + Slack',
         cadence: 'Weekly',
         active: true,
+        lastRun: '2024-11-16T15:30:00.000Z',
+        status: 'healthy',
+        category: 'builder',
+        logId: 'AUT-EdTech-003',
       },
     ],
     alerts: [
@@ -1154,26 +1243,34 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         },
       ],
       automation: [
-        {
-          id: 'agent-alerts',
-          title: 'Agent notification loop',
-          trigger: 'Lead engages with listing twice in 24h',
-          action: 'Send personalized follow-up script & schedule showing',
-          owner: 'Broker Ops',
-          channel: 'SMS + CRM task',
-          cadence: 'Instant',
-          active: true,
-        },
-        {
-          id: 'listing-drip',
-          title: 'Listing nurture drip',
-          trigger: 'Lead source = Relocation & stage = Discovery',
-          action: 'Trigger 4-step concierge email with area guide',
-          owner: 'Marketing Concierge',
-          channel: 'Email',
-          cadence: 'Rolling',
-          active: true,
-        },
+      {
+        id: 'agent-alerts',
+        title: 'Agent notification loop',
+        trigger: 'Lead engages with listing twice in 24h',
+        action: 'Send personalized follow-up script & schedule showing',
+        owner: 'Broker Ops',
+        channel: 'SMS + CRM task',
+        cadence: 'Instant',
+        active: true,
+        lastRun: '2024-11-18T06:45:00.000Z',
+        status: 'healthy',
+        category: 'orchestration',
+        logId: 'AUT-RealEstate-001',
+      },
+      {
+        id: 'listing-drip',
+        title: 'Listing nurture drip',
+        trigger: 'Lead source = Relocation & stage = Discovery',
+        action: 'Trigger 4-step concierge email with area guide',
+        owner: 'Marketing Concierge',
+        channel: 'Email',
+        cadence: 'Rolling',
+        active: true,
+        lastRun: '2024-11-17T19:30:00.000Z',
+        status: 'warning',
+        category: 'builder',
+        logId: 'AUT-RealEstate-002',
+      },
       ],
       trend: [
         { label: 'Jul', value: 214 },
@@ -1227,26 +1324,34 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         { id: 'community', label: 'Community', value: 12, color: '#facc15' },
       ],
       automation: [
-        {
-          id: 'close-management',
-          title: 'Close management',
-          trigger: 'Month-end close window opens',
-          action: 'Lock ledgers, auto-generate variance analysis, notify FP&A',
-          owner: 'Finance Systems',
-          channel: 'Email + Slack',
-          cadence: 'Monthly',
-          active: true,
-        },
-        {
-          id: 'expense-routing',
-          title: 'Expense routing bot',
-          trigger: 'New expense entry detected',
-          action: 'Auto-categorize, match receipt, request approval if > $5K',
-          owner: 'Accounts Payable',
-          channel: 'Procurement suite',
-          cadence: 'Continuous',
-          active: true,
-        },
+      {
+        id: 'close-management',
+        title: 'Close management',
+        trigger: 'Month-end close window opens',
+        action: 'Lock ledgers, auto-generate variance analysis, notify FP&A',
+        owner: 'Finance Systems',
+        channel: 'Email + Slack',
+        cadence: 'Monthly',
+        active: true,
+        lastRun: '2024-10-31T23:55:00.000Z',
+        status: 'healthy',
+        category: 'billing',
+        logId: 'AUT-Finance-001',
+      },
+      {
+        id: 'expense-routing',
+        title: 'Expense routing bot',
+        trigger: 'New expense entry detected',
+        action: 'Auto-categorize, match receipt, request approval if > $5K',
+        owner: 'Accounts Payable',
+        channel: 'Procurement suite',
+        cadence: 'Continuous',
+        active: true,
+        lastRun: '2024-11-18T08:02:00.000Z',
+        status: 'healthy',
+        category: 'workflow',
+        logId: 'AUT-Finance-002',
+      },
       ],
     },
     healthcare: {
@@ -1303,27 +1408,132 @@ const portfolioDashboard: PortfolioDashboardResponse = {
         },
       ],
       automation: [
-        {
-          id: 'reminder-suite',
-          title: 'Omni-channel reminders',
-          trigger: 'Appointment scheduled or status change',
-          action: 'Send SMS, email, voice reminders with prep checklist',
-          owner: 'Patient Ops',
-          channel: 'Twilio + EHR',
-          cadence: 'Timed',
-          active: true,
-        },
-        {
-          id: 'intake-automation',
-          title: 'Digital intake assistant',
-          trigger: 'New patient created',
-          action: 'Send secure form, validate insurance, sync to visit note',
-          owner: 'Clinical Admin',
-          channel: 'Portal + Email',
-          cadence: 'Real-time',
-          active: true,
-        },
+      {
+        id: 'reminder-suite',
+        title: 'Omni-channel reminders',
+        trigger: 'Appointment scheduled or status change',
+        action: 'Send SMS, email, voice reminders with prep checklist',
+        owner: 'Patient Ops',
+        channel: 'Twilio + EHR',
+        cadence: 'Timed',
+        active: true,
+        lastRun: '2024-11-18T06:30:00.000Z',
+        status: 'healthy',
+        category: 'workflow',
+        logId: 'AUT-Healthcare-001',
+      },
+      {
+        id: 'intake-automation',
+        title: 'Digital intake assistant',
+        trigger: 'New patient created',
+        action: 'Send secure form, validate insurance, sync to visit note',
+        owner: 'Clinical Admin',
+        channel: 'Portal + Email',
+        cadence: 'Real-time',
+        active: true,
+        lastRun: '2024-11-18T07:05:00.000Z',
+        status: 'warning',
+        category: 'builder',
+        logId: 'AUT-Healthcare-002',
+      },
       ],
+    },
+  },
+  metadata: {
+    default: {
+      updatedAt: '2024-11-18T08:00:00.000Z',
+      source: 'Unified analytics warehouse',
+      scope: 'Global portfolio',
+    },
+    'automation-orchestrator': {
+      updatedAt: '2024-11-18T08:02:00.000Z',
+      source: 'Automation control plane',
+      scope: 'All automations',
+    },
+    'saas-subscription': {
+      updatedAt: '2024-11-18T07:50:00.000Z',
+      source: 'Snowflake • Billing mart',
+      scope: 'SaaS platform',
+    },
+    'saas-churn': {
+      updatedAt: '2024-11-18T07:55:00.000Z',
+      source: 'RevOps churn model',
+      scope: 'Enterprise + Scale plans',
+    },
+    'saas-growth': {
+      updatedAt: '2024-11-18T07:58:00.000Z',
+      source: 'Finance warehouse',
+      scope: 'MRR cohorts',
+    },
+    'saas-api': {
+      updatedAt: '2024-11-18T07:53:00.000Z',
+      source: 'Platform observability',
+      scope: 'API gateway',
+    },
+    'commerce-products': {
+      updatedAt: '2024-11-18T07:45:00.000Z',
+      source: 'Commerce BI mart',
+      scope: 'SKU 100-250',
+    },
+    'commerce-sales': {
+      updatedAt: '2024-11-18T07:40:00.000Z',
+      source: 'GMV ledger',
+      scope: 'Global storefronts',
+    },
+    'corporate-funnel': {
+      updatedAt: '2024-11-18T07:30:00.000Z',
+      source: 'RevOps warehouse',
+      scope: 'Full funnel',
+    },
+    'corporate-sources': {
+      updatedAt: '2024-11-18T07:28:00.000Z',
+      source: 'Attribution model v5',
+      scope: 'Marketing mix',
+    },
+    'content-engagement': {
+      updatedAt: '2024-11-18T07:48:00.000Z',
+      source: 'Audience analytics',
+      scope: 'Omni-channel',
+    },
+    'content-top-stories': {
+      updatedAt: '2024-11-18T07:46:00.000Z',
+      source: 'CMS insights',
+      scope: 'Publishing queue',
+    },
+    'edtech-heatmap': {
+      updatedAt: '2024-11-18T07:25:00.000Z',
+      source: 'Learning telemetry',
+      scope: 'Cohorts A-H',
+    },
+    'edtech-programs': {
+      updatedAt: '2024-11-18T07:20:00.000Z',
+      source: 'Student success mart',
+      scope: 'Global programs',
+    },
+    'custom-kanban': {
+      updatedAt: '2024-11-18T07:18:00.000Z',
+      source: 'Product operations workspace',
+      scope: 'Sprint lanes',
+    },
+    'custom-workload': {
+      updatedAt: '2024-11-18T07:16:00.000Z',
+      source: 'Work management telemetry',
+      scope: 'Team allocation',
+    },
+    'specialized-realestate': {
+      updatedAt: '2024-11-18T07:12:00.000Z',
+      source: 'MLS sync',
+      scope: 'Top markets',
+    },
+    'specialized-finance': {
+      updatedAt: '2024-11-18T07:08:00.000Z',
+      source: 'ERP + Spend API',
+      scope: 'Operating expenses',
+    },
+    'specialized-healthcare': {
+      updatedAt: '2024-11-18T07:04:00.000Z',
+      source: 'EHR integration',
+      scope: 'Multi-clinic',
     },
   },
 };
