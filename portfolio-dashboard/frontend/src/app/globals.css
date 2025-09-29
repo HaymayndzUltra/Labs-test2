@@ -74,6 +74,10 @@
     --radius-lg: 24px;
     --radius-md: 16px;
     --radius-sm: 12px;
+
+    --neutral-500: #5e6673;
+    --neutral-600: #4a5160;
+    --neutral-700: #384150;
   }
 
   [data-theme='dark'] {
@@ -111,6 +115,10 @@
     --info-50: #0b192f;
     --info-500: #60a5fa;
     --info-600: #3b82f6;
+
+    --neutral-500: rgba(203, 213, 225, 0.82);
+    --neutral-600: rgba(214, 223, 234, 0.86);
+    --neutral-700: rgba(226, 232, 240, 0.92);
   }
 
   [data-theme='dark'] body {
@@ -315,7 +323,8 @@
   .freshness-tooltip {
     position: absolute;
     inset-block-start: calc(100% + 10px);
-    inset-inline-end: 0;
+    left: 0;
+    right: auto;
     width: min(280px, 68vw);
     padding: 0.85rem 1rem;
     border-radius: 14px;
@@ -325,6 +334,7 @@
     opacity: 0;
     pointer-events: none;
     transform: translateY(6px);
+    transform-origin: left top;
     transition: opacity 0.16s ease, transform 0.16s ease;
     z-index: 10;
   }
@@ -481,6 +491,74 @@
   .generated-at-surface[data-prefers-reduced-motion='true'] .generated-at-value--swap {
     animation-duration: 0.12s;
     animation-timing-function: linear;
+  }
+
+  .filter-chip__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .filter-chip__label {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  [dir='rtl'] .filter-chip {
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+
+  [dir='rtl'] .filter-chip__icon {
+    transform: scaleX(-1);
+  }
+
+  [dir='rtl'] .filter-chip__label {
+    text-align: right;
+    justify-content: flex-end;
+  }
+
+  [dir='rtl'] .generated-at-surface[data-direction='rtl'] .freshness-inline-status {
+    flex-direction: row-reverse;
+  }
+
+  [dir='rtl'] .generated-at-surface[data-direction='rtl'] .freshness-inline-status svg {
+    transform: scaleX(-1);
+  }
+
+  .chart-card__caption {
+    letter-spacing: 0.01em;
+  }
+
+  [data-theme='dark'] .chart-card__caption {
+    letter-spacing: -0.02em;
+  }
+
+  [dir='rtl'] .chart-card__header {
+    flex-direction: row-reverse;
+  }
+
+  [dir='rtl'] .chart-card__title-block {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  [dir='rtl'] .chart-card__toolbar {
+    justify-content: flex-start;
+  }
+
+  [dir='rtl'] .chart-card__toolbar svg {
+    transform: scaleX(-1);
+  }
+
+  [dir='rtl'] .chart-card__header .text-left {
+    text-align: right;
+  }
+
+  [dir='rtl'] table .text-left {
+    text-align: right;
   }
 
   @keyframes generated-at-fade {
