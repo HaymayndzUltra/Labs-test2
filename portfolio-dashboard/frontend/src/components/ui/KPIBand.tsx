@@ -36,7 +36,7 @@ export function KPIBand({ metrics, accentToken, onInspect }: KPIBandProps) {
             type="button"
             onClick={() => onInspect?.(metric)}
             className={cn(
-              'group kpi-hover relative flex h-full flex-col justify-between rounded-[16px] border border-[var(--surface-border)] bg-[var(--surface-s1)] p-5 text-left transition focus-visible:focus-ring',
+              'group kpi-hover motion-kpi-card relative flex h-full flex-col justify-between rounded-[16px] border border-[var(--surface-border)] bg-[var(--surface-s1)] p-5 text-left transition focus-visible:focus-ring',
             )}
             style={{ animationDelay: `${index * 80}ms` }}
             aria-label={`${metric.label}: ${metric.value}`}
