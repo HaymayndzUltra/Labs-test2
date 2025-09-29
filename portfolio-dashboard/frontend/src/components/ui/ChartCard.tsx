@@ -20,6 +20,7 @@ type ChartCardProps = {
   ariaDescription?: string;
   toolbar?: ReactNode;
   tone?: 'default' | 'accent';
+  className?: string;
 };
 
 export function ChartCard({
@@ -33,6 +34,7 @@ export function ChartCard({
   ariaDescription,
   toolbar,
   tone = 'default',
+  className,
 }: ChartCardProps) {
   const borderClass = tone === 'accent' ? 'border-[var(--primary-300)]/50' : 'border-[var(--surface-border)]';
 
@@ -42,25 +44,30 @@ export function ChartCard({
       aria-labelledby={`${id}-title`}
       aria-describedby={ariaDescription ? `${id}-desc` : undefined}
       role="region"
-      className={cn('flex h-full flex-col gap-5 border bg-[var(--surface-s1)]', borderClass)}
+      className={cn(
+        'flex h-full flex-col gap-6 border bg-[var(--surface-s1)] shadow-sm animate-dashboard-panel',
+        borderClass,
+        className,
+      )}
     >
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h3 id={`${id}-title`} className="text-title-sm text-slate-900">
-              {title}
-            </h3>
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-1">
             {description ? (
-              <p id={`${id}-desc`} className="text-xs text-slate-600">
+              <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">
                 {description}
               </p>
             ) : null}
+            <h3 id={`${id}-title`} className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">
+              {title}
+            </h3>
+            {caption ? <p className="text-xs text-[var(--neutral-600,#5e6673)]">{caption}</p> : null}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {toolbar}
             <button
               type="button"
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+              className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-2 text-[12px] font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
               onClick={() => downloadAs('csv', `${id}.csv`, rows)}
             >
               <Download className="h-4 w-4" aria-hidden />
@@ -68,7 +75,7 @@ export function ChartCard({
             </button>
             <button
               type="button"
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-100/70 focus-visible:focus-ring"
+              className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-2 text-[12px] font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
               onClick={() => downloadAs('json', `${id}.json`, rows)}
             >
               <Download className="h-4 w-4" aria-hidden />
@@ -76,39 +83,58 @@ export function ChartCard({
             </button>
           </div>
         </div>
-        {caption ? <p className="text-xs text-slate-500">{caption}</p> : null}
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-5">
         <div role="figure" aria-labelledby={`${id}-title`} aria-describedby={ariaDescription ? `${id}-desc` : undefined}>
-          {children}
+          <div className="animate-dashboard-chart">{children}</div>
         </div>
-        <div className="overflow-auto rounded-[18px] border border-dashed border-[var(--surface-border)]">
-          <table className="min-w-full divide-y divide-[var(--surface-border)]" aria-label={`${title} data table`}>
-            <thead className="bg-[var(--surface-s0)] text-xs uppercase tracking-[0.08em] text-slate-500">
-              <tr>
-                {columns.map((column) => (
-                  <th key={column.key} className={cn('px-4 py-3 text-left', column.align === 'right' && 'text-right')}>
-                    {column.label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--surface-border)] bg-[var(--surface-s1)] text-sm text-slate-700">
-              {rows.map((row, rowIndex) => (
-                <tr key={`${id}-row-${rowIndex}`} className="focus-within:bg-[var(--primary-50)]">
+        <div className="overflow-hidden rounded-xl border border-dashed border-[var(--surface-border)]">
+          <div className="max-h-[220px] overflow-auto">
+            <table className="min-w-full" aria-label={`${title} data table`}>
+              <thead className="sticky top-0 z-10 bg-[var(--surface-s1)] text-[12px] font-medium uppercase tracking-[0.08em] text-[var(--neutral-500,#5e6673)]">
+                <tr>
                   {columns.map((column) => (
-                    <td
-                      key={`${id}-row-${rowIndex}-${column.key}`}
-                      className={cn('px-4 py-[11px]', column.align === 'right' && 'text-right')}
+                    <th
+                      key={column.key}
+                      className={cn(
+                        'px-4 py-3 text-left',
+                        column.align === 'right' && 'text-right',
+                        column.align === 'center' && 'text-center',
+                      )}
+                      scope="col"
                     >
-                      {String(row[column.key] ?? '—')}
-                    </td>
+                      {column.label}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="text-[13px] text-[var(--neutral-700,#384150)]">
+                {rows.map((row, rowIndex) => (
+                  <tr key={`${id}-row-${rowIndex}`} className="transition hover:bg-[rgba(59,130,246,0.05)]">
+                    {columns.map((column) => (
+                      <td
+                        key={`${id}-row-${rowIndex}-${column.key}`}
+                        className={cn(
+                          'px-4 py-[11px]',
+                          rowIndex % 2 === 0
+                            ? 'bg-white/80 dark:bg-[rgba(15,23,42,0.35)]'
+                            : 'bg-[var(--surface-s1)]/90 dark:bg-[rgba(15,23,42,0.55)]',
+                          column.align === 'right' && 'text-right',
+                          column.align === 'center' && 'text-center',
+                        )}
+                      >
+                        {String(row[column.key] ?? '—')}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="border-t border-[var(--surface-border)] bg-[var(--surface-s1)] px-4 py-2 text-right text-[11px] uppercase tracking-[0.2em] text-[var(--neutral-500,#5e6673)]">
+            Scroll for more
+          </div>
         </div>
       </div>
     </Card>
