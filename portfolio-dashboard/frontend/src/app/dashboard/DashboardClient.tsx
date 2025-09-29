@@ -610,7 +610,7 @@ function FilterSummary({ label, value }: { label: string; value: string }) {
 function AutomationPill({ label }: { label: string }) {
   return (
     <span
-      className="automation-pill dashboard-pill inline-flex items-center rounded-full border border-[var(--surface-border)] bg-white/80 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--neutral-600,#5e6673)]"
+      className="automation-pill dashboard-pill inline-flex items-center rounded-full border border-[var(--surface-border)] bg-white/80 px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--neutral-600,#5e6673)]"
       title={label}
     >
       {label}
@@ -2963,15 +2963,15 @@ function SpecializedModule({
               <h3 className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">Patient scheduling detail</h3>
             </div>
           </div>
-          <div className="overflow-hidden rounded-2xl border border-[var(--surface-border)]">
-            <table className="min-w-full text-left" aria-label="Appointments table">
+          <div className="rounded-2xl border border-[var(--surface-border)] overflow-x-auto">
+            <table className="min-w-full text-left table-fixed" aria-label="Appointments table">
               <thead className="sticky top-0 z-10 bg-white text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--neutral-500,#5e6673)]">
                 <tr>
-                  <th className="px-4 py-3 text-left">Patient</th>
-                  <th className="px-4 py-3 text-left">Clinician</th>
-                  <th className="px-4 py-3 text-left">Start</th>
-                  <th className="px-4 py-3 text-left">Channel</th>
-                  <th className="px-4 py-3 text-right">Status</th>
+                  <th className="px-4 py-3 text-left w-[20%]">Patient</th>
+                  <th className="px-4 py-3 text-left w-[25%]">Clinician</th>
+                  <th className="px-4 py-3 text-left w-[20%]">Start</th>
+                  <th className="px-4 py-3 text-left w-[15%]">Channel</th>
+                  <th className="px-4 py-3 text-right w-[20%]">Status</th>
                 </tr>
               </thead>
               <tbody className="text-[13px]">
