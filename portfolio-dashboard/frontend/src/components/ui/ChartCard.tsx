@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Download } from 'lucide-react';
 import { Card } from './Card';
 import { cn, downloadAs } from '@/lib/utils';
+import { useThemeContext } from '@/components/theme/ThemeProvider';
 
 type Column = {
   key: string;
@@ -37,6 +38,9 @@ export function ChartCard({
   className,
 }: ChartCardProps) {
   const borderClass = tone === 'accent' ? 'border-[var(--primary-300)]/50' : 'border-[var(--surface-border)]';
+  const { direction } = useThemeContext();
+  const isRtl = direction === 'rtl';
+  const downloadIconClass = cn('h-4 w-4', isRtl && 'scale-x-[-1]');
 
   return (
     <Card
@@ -51,7 +55,7 @@ export function ChartCard({
       )}
     >
       <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className={cn('flex flex-wrap items-start justify-between gap-4', isRtl && 'text-right')}>
           <div className="space-y-1">
             {description ? (
               <p className="text-[13px] font-medium uppercase tracking-[0.12em] text-[var(--neutral-500,#5e6673)]">
@@ -61,16 +65,21 @@ export function ChartCard({
             <h3 id={`${id}-title`} className="text-[18px] font-semibold text-[var(--neutral-900,#0b0d12)]">
               {title}
             </h3>
-            {caption ? <p className="text-xs text-[var(--neutral-600,#5e6673)]">{caption}</p> : null}
+            {caption ? <p className="section-caption text-xs text-[var(--neutral-600,#5e6673)]">{caption}</p> : null}
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div
+            className={cn(
+              'flex flex-wrap items-center gap-2',
+              isRtl ? 'flex-row-reverse justify-start' : 'justify-end'
+            )}
+          >
             {toolbar}
             <button
               type="button"
               className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-2 text-[12px] font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
               onClick={() => downloadAs('csv', `${id}.csv`, rows)}
             >
-              <Download className="h-4 w-4" aria-hidden />
+              <Download className={downloadIconClass} aria-hidden />
               Export CSV
             </button>
             <button
@@ -78,7 +87,7 @@ export function ChartCard({
               className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-3 py-2 text-[12px] font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
               onClick={() => downloadAs('json', `${id}.json`, rows)}
             >
-              <Download className="h-4 w-4" aria-hidden />
+              <Download className={downloadIconClass} aria-hidden />
               Export JSON
             </button>
           </div>

@@ -1185,6 +1185,7 @@ function GeneratedAtIndicator({
           <button
             type="button"
             className="generated-at-button"
+            dir="ltr"
             onMouseEnter={() => setTooltipOpen(true)}
             onMouseLeave={() => setTooltipOpen(false)}
             onFocus={() => setTooltipOpen(true)}
@@ -3580,6 +3581,7 @@ function getModuleMetrics(
 
 export default function DashboardClient({ initialData }: DashboardClientProps) {
   const { theme, toggleTheme, direction, setDirection } = useThemeContext();
+  const isRtl = direction === 'rtl';
   const { selectedModule, setModule, filters, setFilters } = useDashboardStore();
   const { push } = useToast();
   const router = useRouter();
@@ -3673,48 +3675,62 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
       <header className="border-b border-[var(--surface-border)] bg-[var(--surface-s0)]/95 backdrop-blur">
         <div className="mx-auto max-w-7xl px-6 py-8">
           <div className={cn('grid grid-cols-12 gap-6', isReady && 'animate-dashboard-header')}>
-            <div className="col-span-12 lg:col-span-8 space-y-4">
-              <div>
-                <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">
-                  Portfolio-grade product operations
-                </p>
-                <h1 className="text-[32px] font-semibold text-[var(--neutral-900,#0b0d12)]">
-                  {data.hero.title}
-                </h1>
-                <p className="mt-2 max-w-3xl text-[14px] text-[var(--neutral-600,#5e6673)]">{data.hero.description}</p>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <SegmentedTabs tabs={data.tabs} activeId={selectedModule} onChange={setModule} />
-                <div className="h-px flex-1 self-center border-t border-dashed border-[var(--surface-border)]" aria-hidden />
-              </div>
+          <div className={cn('col-span-12 lg:col-span-8 space-y-4', isRtl && 'text-right')}>
+            <div>
+              <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500,#5e6673)]">
+                Portfolio-grade product operations
+              </p>
+              <h1 className="text-[32px] font-semibold text-[var(--neutral-900,#0b0d12)]">
+                {data.hero.title}
+              </h1>
+              <p className="mt-2 max-w-3xl text-[14px] text-[var(--neutral-600,#5e6673)]">{data.hero.description}</p>
             </div>
-            <div className="col-span-12 lg:col-span-4 flex flex-col items-start gap-4 lg:items-end">
-              <div className="flex flex-wrap items-center justify-end gap-2">
-                <button
-                  type="button"
-                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
-                  onClick={toggleTheme}
-                >
+            <div className={cn('flex flex-wrap gap-3', isRtl && 'flex-row-reverse justify-end')}>
+              <SegmentedTabs tabs={data.tabs} activeId={selectedModule} onChange={setModule} />
+              <div className="h-px flex-1 self-center border-t border-dashed border-[var(--surface-border)]" aria-hidden />
+            </div>
+          </div>
+          <div
+            className={cn(
+              'col-span-12 lg:col-span-4 flex flex-col gap-4',
+              isRtl ? 'items-end lg:items-start text-right' : 'items-start lg:items-end'
+            )}
+          >
+            <div
+              className={cn(
+                'flex flex-wrap items-center gap-2',
+                isRtl ? 'flex-row-reverse justify-start' : 'justify-end'
+              )}
+            >
+              <button
+                type="button"
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
+                onClick={toggleTheme}
+              >
                   {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden /> : <Moon className="h-4 w-4" aria-hidden />}
                   {theme === 'dark' ? 'Light mode' : 'Dark mode'}
                 </button>
-                <button
-                  type="button"
-                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
-                  onClick={() => setDirection(direction === 'ltr' ? 'rtl' : 'ltr')}
-                >
-                  <Earth className="h-4 w-4" aria-hidden />
-                  {direction === 'ltr' ? 'Switch to RTL' : 'Switch to LTR'}
-                </button>
-              </div>
               <button
                 type="button"
-                className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[var(--primary-600)] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--primary-500)] focus-visible:focus-ring"
-                onClick={() => push({ title: 'Capability deck requested', description: 'We will send the full portfolio within 5 minutes.', tone: 'info' })}
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--surface-border)] px-4 py-2 text-sm font-medium text-[var(--neutral-700,#384150)] transition hover:bg-white focus-visible:focus-ring"
+                onClick={() => setDirection(direction === 'ltr' ? 'rtl' : 'ltr')}
               >
-                <Sparkles className="h-4 w-4" aria-hidden />
-                {data.hero.cta}
+                <Earth className="h-4 w-4" aria-hidden />
+                {direction === 'ltr' ? 'Switch to RTL' : 'Switch to LTR'}
               </button>
+            </div>
+            <button
+              type="button"
+              className={cn(
+                'inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[var(--primary-600)] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--primary-500)] focus-visible:focus-ring',
+                isRtl ? 'self-start' : 'self-end'
+              )}
+              onClick={() => push({ title: 'Capability deck requested', description: 'We will send the full portfolio within 5 minutes.', tone: 'info' })}
+            >
+              <Sparkles className="h-4 w-4" aria-hidden />
+              {data.hero.cta}
+            </button>
+            <div className={cn('w-full', isRtl ? 'self-start' : 'self-end')}>
               <GeneratedAtIndicator
                 moduleId={selectedModule}
                 moduleLabel={currentModuleLabel}
@@ -3723,12 +3739,18 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
               />
             </div>
           </div>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            {dateRangeOptions.map((option) => (
-              <FilterChip
-                key={option.id}
-                label={option.label}
-                active={filters.dateRange === option.id}
+        </div>
+        <div
+          className={cn(
+            'mt-8 flex flex-wrap items-center gap-3',
+            isRtl && 'flex-row-reverse justify-end text-right'
+          )}
+        >
+          {dateRangeOptions.map((option) => (
+            <FilterChip
+              key={option.id}
+              label={option.label}
+              active={filters.dateRange === option.id}
                 onClick={() => setFilters({ dateRange: option.id as typeof filters.dateRange })}
                 icon={filters.dateRange === option.id ? <Check className="h-4 w-4" aria-hidden /> : undefined}
               />
