@@ -1,0 +1,16 @@
+{
+  "compliance": [
+    "soc2",
+    "accessibility",
+    "security"
+  ],
+  "industry": "saas",
+  "owners": [
+    {
+      "email": "team@propwise.io",
+      "name": "PropWise Core Team"
+    }
+  ],
+  "project_name": "PropWise",
+  "project_type": "fullstack"
+}

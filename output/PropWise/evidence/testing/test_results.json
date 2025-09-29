@@ -1,0 +1,14 @@
+{
+  "coverage": 80.48,
+  "status": "passed",
+  "suites": [
+    {
+      "name": "frontend",
+      "status": "passed"
+    },
+    {
+      "name": "backend",
+      "status": "passed"
+    }
+  ]
+}

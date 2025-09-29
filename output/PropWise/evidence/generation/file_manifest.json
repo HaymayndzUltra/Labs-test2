@@ -1,0 +1,20 @@
+{
+  "files": [
+    {
+      "checksum": "placeholder",
+      "path": "frontend/src/app/page.tsx"
+    },
+    {
+      "checksum": "placeholder",
+      "path": "frontend/src/app/dashboard/page.tsx"
+    },
+    {
+      "checksum": "placeholder",
+      "path": "backend/app/main.py"
+    },
+    {
+      "checksum": "placeholder",
+      "path": "backend/app/api/v1/endpoints/users.py"
+    }
+  ]
+}

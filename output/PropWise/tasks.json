@@ -1,0 +1,366 @@
+{
+  "tasks": [
+    {
+      "id": "PLN-ARCH",
+      "title": "Finalize PropWise multi-tenant architecture",
+      "area": "architecture",
+      "tags": [
+        "architecture"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "PLN-COMPLIANCE",
+      "title": "Map SOC2, security, and accessibility controls",
+      "area": "compliance",
+      "tags": [
+        "compliance"
+      ],
+      "dependencies": [
+        "PLN-ARCH"
+      ]
+    },
+    {
+      "id": "PLN-TESTING",
+      "title": "Plan automated testing strategy",
+      "area": "qa",
+      "tags": [
+        "testing"
+      ],
+      "dependencies": [
+        "PLN-COMPLIANCE"
+      ]
+    },
+    {
+      "id": "PLN-DEPLOY",
+      "title": "Define Docker Compose deployment pipeline",
+      "area": "devops",
+      "tags": [
+        "deployment"
+      ],
+      "dependencies": [
+        "PLN-ARCH"
+      ]
+    },
+    {
+      "id": "PLN-BACKLOG",
+      "title": "Seed backlog for tenant, payments, and tickets",
+      "area": "backend",
+      "tags": [
+        "architecture",
+        "testing"
+      ],
+      "dependencies": [
+        "PLN-ARCH"
+      ]
+    }
+  ],
+  "frontend": [
+    {
+      "id": "FE-PAGE",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/src/app/dashboard/page.tsx",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-LAYOUT",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/src/app/layout.tsx",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE--ERROR.JS.NFT",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/server/pages/_error.js.nft.json",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-500",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/server/pages/500.html",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE--DOCUMENT.JS.NFT",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/server/pages/_document.js.nft.json",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-404",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/server/pages/404.html",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE--APP",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/server/pages/_app.js",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE--DOCUMENT",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/server/pages/_document.js",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE--APP.JS.NFT",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/server/pages/_app.js.nft.json",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE--ERROR",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/server/pages/_error.js",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-INDEX",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/server/app/index.html",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE--NOT-FOUND",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/server/app/_not-found.rsc",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-PAGE-CLIENT-REFER",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/server/app/dashboard/page_client-reference-manifest.js",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-DASHBOARD",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/server/app/dashboard.rsc",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-PAGE.JS.NFT",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/server/app/dashboard/page.js.nft.json",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE--APP-7D307437ACA1",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/static/chunks/pages/_app-7d307437aca18ad4.js",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE--ERROR-CB2A52F75F",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/static/chunks/pages/_error-cb2a52f75f2162e2.js",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-PAGE-ACCF676AF0B2",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/static/chunks/app/page-accf676af0b206e8.js",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-LAYOUT-E2B6EFF7CB",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/static/chunks/app/layout-e2b6eff7cb777483.js",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-PAGE-A005CC110FEB",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/static/chunks/app/_not-found/page-a005cc110feb5d5e.js",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-PAGE-6B685A35737E",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/.next/static/chunks/app/dashboard/page-6b685a35737e77b8.js",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-PROVIDERS",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/src/app/providers.tsx",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-GLOBALS",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/src/app/globals.css",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-PAGE.TEST",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/frontend/src/app/page.test.tsx",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-DATABASE",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/backend/app/database.py",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE---INIT--",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/backend/app/models/__init__.py",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-CONFIG",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/backend/app/config.py",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-USER",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/backend/app/models/user.py",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-TOKEN",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/backend/app/schemas/token.py",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-MSG",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/backend/app/schemas/msg.py",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-SECURITY",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/backend/app/core/security.py",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-CRUD-USER",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/backend/app/crud/crud_user.py",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-BASE",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/backend/app/crud/base.py",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-DEPS",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/backend/app/api/deps.py",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-ROUTER",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/backend/app/api/v1/router.py",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-AUTH",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/backend/app/api/v1/endpoints/auth.py",
+      "area": "frontend",
+      "blocked_by": []
+    },
+    {
+      "id": "FE-USERS",
+      "title": "FE: implement page /workspace/Labs-test2/output/PropWise/backend/app/api/v1/endpoints/users.py",
+      "area": "frontend",
+      "blocked_by": []
+    }
+  ],
+  "backend": [
+    {
+      "id": "BE-ROUTER",
+      "title": "BE: implement endpoint(s) in /workspace/Labs-test2/output/PropWise/backend/app/api/v1/router.py",
+      "area": "backend",
+      "blocked_by": []
+    },
+    {
+      "id": "BE-AUTH",
+      "title": "BE: implement endpoint(s) in /workspace/Labs-test2/output/PropWise/backend/app/api/v1/endpoints/auth.py",
+      "area": "backend",
+      "blocked_by": []
+    },
+    {
+      "id": "BE-USERS",
+      "title": "BE: implement endpoint(s) in /workspace/Labs-test2/output/PropWise/backend/app/api/v1/endpoints/users.py",
+      "area": "backend",
+      "blocked_by": []
+    }
+  ],
+  "db": [
+    {
+      "id": "DB-README",
+      "title": "DB: migration present /workspace/Labs-test2/output/PropWise/backend/alembic/README",
+      "area": "db",
+      "blocked_by": []
+    },
+    {
+      "id": "DB-ENV",
+      "title": "DB: migration present /workspace/Labs-test2/output/PropWise/backend/alembic/env.py",
+      "area": "db",
+      "blocked_by": []
+    },
+    {
+      "id": "DB-SCRIPT.PY",
+      "title": "DB: migration present /workspace/Labs-test2/output/PropWise/backend/alembic/script.py.mako",
+      "area": "db",
+      "blocked_by": []
+    }
+  ],
+  "qa": [
+    {
+      "id": "QA-TEST-DEPS",
+      "title": "QA: tests present /workspace/Labs-test2/output/PropWise/backend/tests/test_deps.py",
+      "area": "qa",
+      "blocked_by": []
+    },
+    {
+      "id": "QA-TEST-MAIN",
+      "title": "QA: tests present /workspace/Labs-test2/output/PropWise/backend/tests/test_main.py",
+      "area": "qa",
+      "blocked_by": []
+    },
+    {
+      "id": "QA-TEST-SECURITY",
+      "title": "QA: tests present /workspace/Labs-test2/output/PropWise/backend/tests/test_security.py",
+      "area": "qa",
+      "blocked_by": []
+    },
+    {
+      "id": "QA---INIT--",
+      "title": "QA: tests present /workspace/Labs-test2/output/PropWise/backend/tests/__init__.py",
+      "area": "qa",
+      "blocked_by": []
+    },
+    {
+      "id": "QA-TEST-AUTH-ENDPOIN",
+      "title": "QA: tests present /workspace/Labs-test2/output/PropWise/backend/tests/test_auth_endpoints.py",
+      "area": "qa",
+      "blocked_by": []
+    },
+    {
+      "id": "QA-CONFTEST",
+      "title": "QA: tests present /workspace/Labs-test2/output/PropWise/backend/tests/conftest.py",
+      "area": "qa",
+      "blocked_by": []
+    },
+    {
+      "id": "QA-TEST-CRUD-USER",
+      "title": "QA: tests present /workspace/Labs-test2/output/PropWise/backend/tests/test_crud_user.py",
+      "area": "qa",
+      "blocked_by": []
+    }
+  ]
+}

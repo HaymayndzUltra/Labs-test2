@@ -1,0 +1,107 @@
+[
+  {
+    "path": "compliance/compliance_report.json",
+    "category": "compliance",
+    "description": "Compliance attestation snapshot",
+    "checksum": "e0b0dd8ae1398c7a93c7bfa786ea34c0be88a77611faae856aae369e87fe2aac",
+    "created_at": "2025-09-29T04:21:01.731434Z"
+  },
+  {
+    "path": "dryrun/snapshot.json",
+    "category": "generation",
+    "description": "Dry-run snapshot",
+    "checksum": "61aefece44cb1dc7e60bf749f75a1d57c34d06cba9f4cfb9376d19bbab57eeb8",
+    "created_at": "2025-09-29T04:21:01.729706Z"
+  },
+  {
+    "path": "environment/tool_report.json",
+    "category": "environment",
+    "description": "Tool availability report",
+    "checksum": "c2d7f9c343de202f7edfd7fe2af6751bc174c5c1d73e1474e999dfa469f58383",
+    "created_at": "2025-09-29T04:21:01.726895Z"
+  },
+  {
+    "path": "gates/gates_report.json",
+    "category": "gates",
+    "description": "Gate execution report",
+    "checksum": "4de74cc121db935ebb079bd461d71307c5a4fa007da37f4f7cc79be08d4016c3",
+    "created_at": "2025-09-29T04:21:01.733097Z"
+  },
+  {
+    "path": "generation/file_manifest.json",
+    "category": "generation",
+    "description": "Generated file manifest",
+    "checksum": "15fff9b10c244579f23c771e0c20c29e95bd026766ca2d26d8529b328815643f",
+    "created_at": "2025-09-29T04:21:01.730120Z"
+  },
+  {
+    "path": "intake/brief_excerpt.md",
+    "category": "intake",
+    "description": "Brief excerpt captured during intake gate",
+    "checksum": "810ebf3c0acf6427663dc066fc32743969f7555edec0bfc02130ea6e82d8930d",
+    "created_at": "2025-09-29T04:21:01.692214Z"
+  },
+  {
+    "path": "intake/metadata_snapshot.json",
+    "category": "intake",
+    "description": "Intake metadata snapshot",
+    "checksum": "8fa45835b387091a370e70b9df00711229409e9efe8b0a7a95ed1b747ca01b37",
+    "created_at": "2025-09-29T04:21:01.692006Z"
+  },
+  {
+    "path": "metrics/metrics_report.json",
+    "category": "metrics",
+    "description": "Aggregated metrics report",
+    "checksum": "5d3b4f631a6eefc79eeea94b575ef8ad18e49da3e9cd922d09cecc1d3b9ca933",
+    "created_at": "2025-09-29T04:21:01.731016Z"
+  },
+  {
+    "path": "planning/task_graph_validation.json",
+    "category": "planning",
+    "description": "Task graph validation report",
+    "checksum": "ec93fb42115f2be8d67643d9dccc381dcffcff8e63d660acd1447f3579a6e31e",
+    "created_at": "2025-09-29T04:21:01.728170Z"
+  },
+  {
+    "path": "planning/tasks_snapshot.json",
+    "category": "planning",
+    "description": "Task plan snapshot",
+    "checksum": "2f05334fddab69c25586b240f53a58c7ce2e7621dd5c0853219345f9fc7aba6f",
+    "created_at": "2025-09-29T04:21:01.727607Z"
+  },
+  {
+    "path": "prd/prd_hash.txt",
+    "category": "documentation",
+    "description": "PRD and architecture verification hashes",
+    "checksum": "e9e7ad87ebd321a17807bee4b06fa5381fe945fcaa9f9916e0992148e3828c80",
+    "created_at": "2025-09-29T04:21:01.728709Z"
+  },
+  {
+    "path": "stack/stack_report.json",
+    "category": "stack",
+    "description": "Stack selection validation",
+    "checksum": "248d42cf86661352dd03a91c7612f4072e736c1de6744334c14147681fa0bf58",
+    "created_at": "2025-09-29T04:21:01.729266Z"
+  },
+  {
+    "path": "submission/checklist.md",
+    "category": "submission",
+    "description": "Submission readiness checklist",
+    "checksum": "ec904ff91a9a6dd6081bdf765cbc6063d1e5fca380e2110ebff79213b248010b",
+    "created_at": "2025-09-29T04:21:01.732637Z"
+  },
+  {
+    "path": "submission/dist_manifest.json",
+    "category": "submission",
+    "description": "Submission package manifest",
+    "checksum": "aad9888d19671f804770d1e0496050b0e776efca17e1cb789723969bde46d4aa",
+    "created_at": "2025-09-29T04:21:01.732449Z"
+  },
+  {
+    "path": "testing/test_results.json",
+    "category": "testing",
+    "description": "Automated test results",
+    "checksum": "93947bdde973924123da093aae7aa7c3cafe6425e210def4218be40f8baa77f3",
+    "created_at": "2025-09-29T04:21:01.730558Z"
+  }
+]

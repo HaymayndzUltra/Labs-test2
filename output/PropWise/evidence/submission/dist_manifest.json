@@ -1,0 +1,9 @@
+{
+  "files": [
+    "PropWise-submission/SUBMISSION.md",
+    "PropWise-submission/manifest.json",
+    "PropWise-submission/CHECKSUMS.sha256",
+    "PropWise-submission/evidence/index.json",
+    "PropWise-submission/evidence/gates/gates_report.json"
+  ]
+}

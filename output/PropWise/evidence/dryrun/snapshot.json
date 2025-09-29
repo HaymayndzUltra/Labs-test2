@@ -1,0 +1,10 @@
+{
+  "generated_at": "2025-09-29T03:00:00Z",
+  "modules": [
+    "frontend",
+    "backend",
+    "database"
+  ],
+  "notes": "Phase 1 dry-run captured module availability for PropWise.",
+  "status": "success"
+}

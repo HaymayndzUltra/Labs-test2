@@ -1,0 +1,23 @@
+{
+  "frontend": {
+    "framework": "Next.js",
+    "language": "TypeScript",
+    "state_management": "Zustand"
+  },
+  "backend": {
+    "framework": "FastAPI",
+    "language": "Python",
+    "background_jobs": "Celery"
+  },
+  "database": {
+    "engine": "PostgreSQL",
+    "orm": "SQLAlchemy"
+  },
+  "auth": {
+    "strategy": "JWT",
+    "multi_tenant": true
+  },
+  "deploy": {
+    "target": "Docker Compose"
+  }
+}
