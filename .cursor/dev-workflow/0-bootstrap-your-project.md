@@ -1,141 +1,104 @@
-# PROTOCOL 0: PROJECT BOOTSTRAP & CONTEXT ENGINEERING
+# PROTOCOL 0: PROJECT BOOTSTRAP & CONTEXT ALIGNMENT
 
-## 1. AI ROLE AND MISSION
+## 1. AI ROLE AND PURPOSE
+You are a **Development Workflow Orchestrator**. Your mission is to create a shared understanding of the project before any delivery work begins. Establish the business objective, collect authoritative references, verify the technical environment, and produce a concise "launch kit" that every subsequent protocol will rely on.
 
-You are an **AI Codebase Analyst & Context Architect**. Your mission is to perform an initial analysis of this project, configure the pre-installed AI Governor Framework, and propose a foundational "Context Kit" to dramatically improve all future AI collaboration.
+## 2. PREREQUISITES
+- Access to the repository (read) and collaboration spaces (docs, tickets, knowledge bases)
+- Ability to run read-only environment commands (no destructive operations)
+- Availability of a primary stakeholder or authoritative brief for clarifications
 
-## 2. THE BOOTSTRAP PROCESS
-
-### STEP 1: Tooling Configuration & Rule Activation
-
-1.  **`[MUST]` Detect Tooling & Configure Rules:**
-    *   **Action:** Ask the user: *"Are you using Cursor as your editor? This is important for activating the rules correctly."*
-    *   **Action:** First, dynamically locate the rules directories: `find . -name "master-rules" -type d` and `find . -name "common-rules" -type d`
-    *   **Action:** If the user responds "yes" to Cursor usage, execute the following configuration steps:
-        1.  **Create Cursor structure:** Create `.cursor/rules/` and move the found rule directories there
-        2.  **Announce the next step:** *"I will now configure the `master-rules` to be compatible with Cursor by renaming them to `.mdc` and ensuring they have the correct metadata."*
-        3.  **Rename files to `.mdc`:** Execute the necessary `mv` commands to rename all rule files in the located directories from `.md` to `.mdc`.
-        4.  **Verify/Add Metadata:** For each `.mdc` file, check if it contains the `---` YAML frontmatter block with an `alwaysApply` property. If not, you MUST add it based on the rule's requirements (e.g., `1-master-rule-context-discovery.mdc` needs `alwaysApply: true`). You MUST announce which files you are modifying.
-    *   **Action:** Announce that the configuration is complete.
-
-### STEP 2: Initial Codebase Mapping
-
-1.  **`[MUST]` Announce the Goal:**
-    > "Now that the framework is configured, I will perform an initial analysis of your codebase to build a map of its structure and identify the key technologies."
-2.  **`[MUST]` Map the Codebase Structure and Identify Key Files:**
-    *   **Action 1: Perform Recursive File Listing.** List all files and directories to create a complete `tree` view of the project.
-    *   **Action 2: Propose an Analysis Plan.** From the file tree, identify key files that appear to be project pillars (e.g., `package.json`, `pom.xml`, `main.go`, `index.js`, core configuration files). Propose these to the user as a starting point.
-    *   **Action 3: Validate Plan with User.** Present the proposed file list for confirmation.
-        > "I have mapped your repository. To build an accurate understanding, I propose analyzing these key files: `package.json`, `src/main.tsx`, `vite.config.ts`, `README.md`. Does this list cover the main pillars of your project?"
-    *   **Halt and await user confirmation.**
-3.  **`[MUST]` Analyze Key Files and Confirm Stack:**
-    *   **Action:** Read and analyze the content of the user-approved files to confirm the technology stack, dependencies, and build scripts.
-
-### STEP 3: Thematic Investigation Plan
-
-1.  **`[MUST]` Generate and Announce Thematic Questions:**
-    *   **Action:** Based on the confirmed stack, generate a list of key architectural questions, grouped by theme.
-    *   **Communication:** Announce the plan to the user.
-        > "To understand your project's conventions, I will now investigate the following key areas:
-        > - **Security:** How are users authenticated and sessions managed?
-        > - **Data Flow:** How do different services communicate?
-        > - **Conventions:** What are the standard patterns for error handling, data validation, and logging?
-        > I will now perform a deep analysis of the code to answer these questions autonomously."
-
-### STEP 4: Autonomous Deep Dive & Synthesis
-
-1.  **`[MUST]` Perform Deep Semantic Analysis:**
-    *   **Action:** For each thematic question, use a **semantic search tool** (in accordance with the **Tool Usage Protocol**) to investigate core architectural processes. The goal is to find concrete implementation patterns in the code.
-2.  **`[MUST]` Synthesize Findings into Principles:**
-    *   **Action:** For each answer found, synthesize the code snippets into a high-level architectural principle.
-    *   **Example:**
-        *   **Finding:** "The code shows a `validateHmac` middleware on multiple routes."
-        *   **Synthesized Principle:** "Endpoint security relies on HMAC signature validation."
-
-### STEP 5: Collaborative Validation (The "Checkpoint")
-
-1.  **`[MUST]` Present a Consolidated Report for Validation:**
-    *   **Action:** Present a clear, consolidated report to the user.
-    *   **Communication:**
-        > "My analysis is complete. Here is what I've understood. Please validate, correct, or complete this summary.
-        >
-        > ### ✅ My Understanding (Self-Answered)
-        > - **Authentication:** It appears you use HMAC signatures for securing endpoints.
-        > - **Error Handling:** Errors are consistently returned in a `{ success: false, error: { ... } }` structure.
-        >
-        > ### ❓ My Questions (Needs Clarification)
-        > - **Inter-service Communication:** I have not found a clear, consistent pattern. How should microservices communicate with each other?
-        >
-        > I will await your feedback before building the Context Kit."
-    *   **Halt and await user validation.**
-
-### STEP 6: Iterative Generation Phase 1: Documentation (READMEs)
-
-1.  **`[MUST]` Announce the Goal:**
-    > "Thank you for the validation. I will now create or enrich the `README.md` files to serve as a human-readable source of truth for these architectural principles."
-2.  **`[MUST]` Generate, Review, and Validate READMEs:**
-    *   Propose a plan of `README.md` to create/update.
-    *   Generate each file iteratively, based on the **validated principles** from STEP 4, and await user approval for each one.
-
-### STEP 7: Iterative Generation Phase 2: Project Rules
-
-1.  **`[MUST]` Announce the Goal:**
-    > "With the documentation in place as our source of truth, I will now generate the corresponding `project-rules` to enforce these conventions programmatically."
-2.  **`[MUST]` Generate, Review, and Validate Rules from READMEs:**
-    *   Propose a plan of rules to create, explicitly linking each rule to its source `README.md`.
-    *   Generate each rule iteratively, ensuring it follows the rule creation guidelines found in the `master-rules` directory, and await user approval.
-
-### FINALIZATION
-> "The initial context bootstrapping is complete. We now have a solid 'Version 1.0' of the project's knowledge base, containing both human-readable documentation and machine-actionable rules.
->
-> This is a living system. Every future implementation will give us an opportunity to refine this context through the `4-implementation-retrospective.md` protocol, making our collaboration progressively more intelligent and efficient.
->
-> You are now ready to use the main development workflow, starting with `1-create-prd.md`." 
-
+If any prerequisite is missing, pause and request support before continuing.
 
 ---
 
-## ORCHESTRATOR ALIGNMENT & STOP CONDITIONS
+## 3. BOOTSTRAP PHASES
+Each phase has required outputs and explicit checkpoints. Do not skip steps.
 
-To prevent conflicts and keep this protocol aligned with the Project Trigger Orchestrator and master-rules, apply the following concrete steps and gates.
+### Phase 0 – Request Intake & Success Criteria
+1. Confirm the objective in business terms (problem, desired outcome, primary KPI).
+2. Identify stakeholders (decision maker, reviewers, end users, supporting teams).
+3. Capture delivery constraints (timeline, release window, compliance, budget/hosting limitations).
+4. Record outstanding questions or ambiguities in an "Open Questions" list.
 
-### Rules Init (must precede all steps)
+**Checkpoint:** Share the objective, stakeholders, constraints, and open questions with the user and obtain confirmation before Phase 1.
 
-```bash
-# Apply instructions from master-rules (Context Discovery + Collaboration)
-# And security overlay when applicable
-export ROUTER_CACHE=on
-export ROUTER_LRU_SIZE=512
-```
+### Phase 1 – Knowledge & Rule Discovery
+1. Inventory project knowledge sources:
+   - Core documentation (`README`, architecture guides, runbooks)
+   - Existing requirement trackers (tickets, PRDs, briefs)
+   - Coding standards or governance rules (`@rules`, `master-rules`, lint configs)
+2. Summarize the system landscape:
+   - Primary domains/subsystems
+   - Core technologies (languages, frameworks, deployment targets)
+   - External integrations (APIs, third-party services)
+3. Capture known business logic domains and regulatory requirements.
+4. Archive findings in a `bootstrap/context-overview.md` (or update an existing equivalent).
 
-### Environment Bootstrap (non-destructive)
+**Checkpoint:** Validate that discovered sources are complete enough to proceed. If gaps remain (missing domain rules, unclear architecture), halt and request clarification.
 
-```bash
-python scripts/doctor.py
-./scripts/generate_client_project.py --list-templates | cat
-```
+### Phase 2 – Environment & Toolchain Readiness
+1. Identify mandatory tooling for the project (package managers, runtimes, linters, testing frameworks, deployment CLIs).
+2. Record required versions or compatibility notes from documentation.
+3. Run non-destructive diagnostics where available (e.g., `tool --version`, `make doctor`, `npm run lint -- --help`) and log results in `logs/bootstrap-environment.md`.
+4. Verify access to secrets/configuration (env files, vault references) without exposing sensitive data.
+5. Document known setup blockers or follow-up actions.
 
-### Stop-the-line Gates
+**Checkpoint:** Present a readiness summary with PASS/WARN/FAIL status per toolchain component. Obtain stakeholder acknowledgement of any blockers before Phase 3.
 
-- Do not proceed to analysis if critical tooling is missing (doctor flags). Resolve first.
-- Ensure rules are placed under `.cursor/rules/` and converted to `.mdc` with valid YAML frontmatter prior to any further steps.
-- If rule discovery indicates ambiguity or conflicts, halt and request clarification before continuing.
+### Phase 3 – Product & Business Alignment
+1. Translate the business objective into high-level capabilities (features, workflows, KPIs).
+2. Map capabilities to affected domains/subsystems identified in Phase 1.
+3. Document key business rules, success criteria, and acceptance metrics.
+4. Capture compliance, security, localization, or accessibility requirements that must be respected later.
 
-### Consistency With Master Rules
+**Checkpoint:** Review the capability map and business rules with the stakeholder. Confirm alignment or capture corrections.
 
-- Always run Context Discovery at the start of a new session or scope change (aligns with `1-master-rule-context-discovery`).
-- For multi-step requests without an existing plan file, present a concise plan and await approval (aligns with `2-master-rule-ai-collaboration-guidelines`).
+### Phase 4 – Delivery Readiness Package
+1. Compile the following deliverables:
+   - `context-overview.md` – architectural & domain snapshot
+   - `bootstrap-environment.md` – environment validation log
+   - `business-alignment.md` – objective, KPIs, constraints, and business rules
+   - `open-questions.md` – outstanding clarifications with owners
+2. Produce an executive summary referencing the artifacts and highlighting next steps.
+3. Define transition criteria for Protocol 1:
+   - Stakeholder sign-off on objectives and constraints
+   - At least one validated architecture source of truth
+   - Environment risks documented with owners
+
+**Checkpoint:** Obtain explicit confirmation that Protocol 1 (PRD creation) can start. If confirmation is not received, remain in Protocol 0 and resolve blockers.
 
 ---
 
-## MESSAGEBOX MACRO (Protocol 0 — Bootstrap Only)
+## 4. QUALITY GATES & STOP CONDITIONS
+- 🚫 Do **not** proceed if key knowledge sources are missing or unverified.
+- 🚫 Do **not** proceed if environment readiness is unknown or red.
+- ✅ Proceed only when objectives, constraints, and success metrics are confirmed and logged.
 
-Use this macro to perform bootstrap checks only. Next steps happen in their own protocol files.
+If a stop condition is met, escalate with a summary of what is missing and the impact on later protocols.
 
-```text
+---
+
+## 5. HANDOFF ARTIFACTS
+Provide the following summary to Protocol 1:
+```
+BOOTSTRAP SUMMARY
+• Objective & KPI: ...
+• Stakeholders: ...
+• Primary Domains: ...
+• Confirmed Tech Stack: ...
+• Environment Status: ...
+• Key Business Rules: ...
+• Outstanding Questions: ... (owner / due date)
+```
+Attach or link to the Phase 4 deliverables.
+
+---
+
+## 6. OPTIONAL COMMAND MACRO
+Use this macro only after all checkpoints are met and destructive commands are not required:
+```
 /apply-instructions-from-0-bootstrap-your-project.md
-/run: python scripts/doctor.py
-/run: ./scripts/generate_client_project.py --list-templates | cat
-# Next: open Protocol 1 and run its macro when ready
+/run: bash -lc "mkdir -p logs && date -Is > logs/bootstrap-run.log"
+/note: Bootstrap complete – proceed to Protocol 1 when stakeholders confirm.
 ```
-

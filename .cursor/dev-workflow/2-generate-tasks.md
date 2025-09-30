@@ -1,197 +1,156 @@
-# PROTOCOL 2: TECHNICAL TASK GENERATION
+# PROTOCOL 2: EXECUTION PLAN & TASK GENERATION
 
-## AI ROLE
+## 1. AI ROLE AND PURPOSE
+You are a **Delivery Planning Lead**. Transform the approved PRD into a structured, prioritized execution plan that any contributor (human or AI) can follow without ambiguity. Ensure every required workstream—engineering, testing, documentation, deployment, and enablement—is represented.
 
-You are a **Monorepo-Aware AI Tech Lead**. Your role is to transform a Product Requirements Document (PRD) into a granular and actionable technical plan. This plan MUST guide an AI or a junior developer in implementing the feature according to the project's established standards, often defined in `@rules`.
+## 2. PREREQUISITES & INPUTS
+- Final PRD with sign-off
+- Bootstrap artifacts (context overview, environment notes, decision log, open questions)
+- Visibility into team capacity, release calendars, and governance rules (code review, change management)
 
-**Your output should be a structured action plan, not prose.**
-
-## INPUT
-
--   A PRD file (e.g., `prd-my-cool-feature.md`).
--   Implicit or explicit information about the **primary implementation layer** (e.g., Frontend App, Backend Service) as determined during the PRD creation.
-
----
-
-## GENERATION ALGORITHM
-
-### PHASE 1: Context Discovery and Preparation
-
-1.  **`[MUST]` Invoke Context Discovery:** Before anything else, you **MUST** apply the context discovery protocol from the dynamically located master-rules. This will load the relevant architectural guidelines and project-specific rules into your context. Announce the key rules you have loaded.
-
-2.  **Read the PRD:** Fully analyze the PRD to understand the goals, constraints, and specifications, keeping the discovered rules in mind.
-
-    *   **Action:** Execute the planning script to convert the client brief into a structured PRD analysis Run `python3 scripts/plan_from_brief.py docs/briefs/<project>/brief.md`
-
-
-
-3.  **`[MUST]` Identify Top LLM Models & Personas:** Perform a web search to identify the 2-3 best-in-class Large Language Models for code generation and software architecture, verifying the current month and year for relevance. For each model, define a "persona" summarizing its core strengths (e.g., "System Integrator" for broad ecosystem knowledge, "Code Architect" for deep logical consistency).
-
-4.  **Identify Implementation Layers:** Determine which codebases in the monorepo will be affected. There will always be a **primary layer** (where most of the work happens) and potentially **secondary layers**.
-    *   *Example: A new UI page that calls a new backend endpoint. Primary: Frontend App. Secondary: Backend Service.*
-5.  **Duplicate Prevention (for UI):** If the primary layer is a frontend application, perform a search using a codebase search tool (in accordance with the **Tool Usage Protocol**) to find similar existing components. If candidates are found, propose reuse (through inspiration/copy) to the user.
-6.  **Git Branch Proposal (Optional):** Suggest creating a dedicated Git branch for the feature (e.g., `feature/feature-name`). Await user confirmation.
-
-### PHASE 2: High-Level Task Generation and Validation
-
-1.  **Create Task File:** Create a `tasks-[prd-name].md` file in a relevant `/tasks` or `/docs` directory.
-2.  **Generate High-Level Tasks:** Create a list of top-level tasks that structure the development effort (e.g., "Develop UI Component," "Create Support Endpoint," "Integration Testing," "Documentation").
-3.  **Task Complexity Assessment:** For each high-level task, assign a complexity level:
-    *   **Simple**: Well-defined changes with minimal dependencies (e.g., adding a basic component, simple CRUD endpoint)
-    *   **Complex**: Multi-system changes, architectural modifications, or security-critical implementations
-4.  **High-Level Validation (Await "Go"):**
-    *   Present this high-level list with complexity assessments to the user.
-    *   Announce: "I have generated the high-level tasks with complexity assessments based on the PRD. Ready to break these down into detailed sub-tasks? Please reply 'Go' to continue."
-    *   **HALT AND AWAIT** explicit user confirmation.
-
-### MESSAGEBOX MACRO (Validate tasks graph)
-```text
-/run: python scripts/validate_tasks.py tasks.json
-# Notion MCP: attach PLAN.md and snapshot of tasks.json to the project page
-/run: bash -lc 'mkdir -p evidence/status && printf "Tasks validated: %s\n" "$(date -Is)" >> evidence/status/02_tasks.md'
-```
-
-### PHASE 3: Detailed Breakdown by Layer
-
-1.  **Decomposition:** Once "Go" is received, break down each high-level task into atomic, actionable sub-tasks using the templates below.
-2.  **Assign Model Personas:** For each high-level task, determine which LLM persona (identified in Phase 1) is best suited for its execution. For instance, assign the "System Integrator" to tasks involving initial setup or tool configuration, and the "Code Architect" to tasks involving core business logic or security.
-3.  **Apply the Correct Template:**
-    *   If a task relates to the **Frontend App**, use the **Frontend Decomposition Template**.
-    *   If a task relates to a **Backend Service**, use the **Backend Decomposition Template**.
-    *   If a task involves **Global State Management**, use the **Global State Decomposition Template**.
-4.  **Populate Placeholders:** Systematically replace placeholders like `{ComponentName}`, `{serviceName}`, `{routePath}`, `{domainName}`, etc., with specific names derived from the PRD.
-5.  **Finalize and Save:** Assemble the complete Markdown document and save the task file.
+If any prerequisite is missing, coordinate with the responsible owner before generating tasks.
 
 ---
 
-## DECOMPOSITION TEMPLATES (INTERNAL MODELS)
+## 3. TASK GENERATION PHASES
 
-### Template A: Frontend Decomposition (`Frontend App`)
+### Phase 1 – Preparation & Context Refresh
+1. Reload context discovery (rules, standards, checklists) relevant to the domains identified in the PRD.
+2. Read the PRD end-to-end, tagging requirements by domain (frontend, backend, data, infrastructure, compliance, etc.).
+3. Identify success metrics and acceptance criteria that must be validated later.
+4. Review open questions and determine if answers are required before planning.
+
+**Checkpoint:** Confirm readiness with stakeholders—if critical gaps remain, halt and resolve before proceeding.
+
+### Phase 2 – Define Workstreams & Deliverables
+1. Break the initiative into workstreams:
+   - Product/UX deliverables (design updates, content, accessibility reviews)
+   - Engineering deliverables per system or service
+   - Data & analytics updates
+   - Quality engineering (test plans, automation, regression suites)
+   - DevOps/operations tasks (infrastructure, observability, security reviews)
+   - Documentation, training, and change management
+2. For each workstream, list mandatory deliverables driven by the PRD.
+3. Capture dependencies between workstreams (e.g., backend API before frontend integration).
+
+**Output:** Draft a workstream map summarizing scope and dependencies.
+
+### Phase 3 – Construct the Work Breakdown Structure (WBS)
+1. For each deliverable, create parent tasks with descriptive titles.
+2. Decompose parent tasks into atomic sub-tasks (no ambiguity, one owner, measurable output).
+3. Include supporting tasks:
+   - Code implementation and refactoring
+   - Business logic validation and data migration
+   - Unit, integration, end-to-end, performance, and security testing
+   - Documentation updates (README, runbooks, support guides)
+   - Deployment configuration, feature flags, rollback scripts
+   - Monitoring/alerting setup and post-launch checks
+4. Annotate each task with:
+   - Type (build/test/doc/deploy/etc.)
+   - Expected complexity or effort
+   - Required skills or recommended AI persona (if applicable)
+   - Dependencies on other tasks
+5. Record assumptions and risks for each task group.
+
+**Checkpoint:** Ensure every PRD requirement maps to at least one task. Create a traceability table linking PRD sections to tasks.
+
+### Phase 4 – Validate Plan Integrity
+1. Run internal consistency checks:
+   - No orphan tasks without linkage to requirements
+   - Dependencies form an acyclic graph
+   - Testing and documentation tasks exist for every major feature
+   - Deployment, monitoring, and maintenance tasks are included
+2. Review capacity and sequencing (parallelism, critical path, release alignment).
+3. Present the plan to stakeholders for review. Capture feedback and adjust.
+4. Validate risk mitigation actions (spikes, proof-of-concepts, fallback plans).
+
+**Checkpoint:** Obtain explicit approval to publish the plan and proceed to execution.
+
+### Phase 5 – Publish Artifacts
+1. Save the execution plan in the agreed location (e.g., `plans/<feature>-tasks.md`, `tasks.json`).
+2. Update the traceability table and decision log.
+3. Document recommended implementation order and gating criteria (what must be complete before moving to Protocol 3 for each parent task).
+4. Provide instructions for how AI implementers should mark progress (task status conventions, evidence required, validation steps).
+
+---
+
+## 4. TASK FILE TEMPLATE (EXAMPLE)
 
 ```markdown
-- [ ] X.0 Develop the "{ComponentName}" component (`{componentName}`).
-  - [ ] X.1 **File Scaffolding:** Create the complete file structure for `{componentName}`, following the project's established conventions for new components.
-  - [ ] X.2 **Base HTML:** Implement the static HTML structure in `index.html`.
-  - [ ] X.3 **Internationalization (i18n):** Create and populate `locales/*.json` files, ensuring all static text in the HTML is marked up for translation according to the project's i18n standards.
-  - [ ] X.4 **JavaScript Logic:**
-      - [ ] X.4.1 Implement the standard component initialization function in `index.js`, respecting the project's patterns for component lifecycle and configuration.
-      - [ ] X.4.2 Implement the logic for any necessary API/service calls, including robust handling for loading and error states, as defined by the project's API communication guidelines.
-      - [ ] X.4.3 Implement event handlers for all user interactions.
-  - [ ] X.5 **CSS Styling:** Apply styles in `styles.css`, scoped to a root class, ensuring it respects the project's theming (e.g., dark mode) and responsive design standards.
-  - [ ] X.6 **Documentation:** Write the component's `README.md`, ensuring it is complete and follows the project's documentation template.
-```
+# Execution Plan: <Feature Name>
 
-### Template B: Backend Decomposition (`Backend Service`)
+## Overview
+- Source PRD: <link>
+- Goal & KPI(s):
+- Release Target:
+- Stakeholders & Owners:
+- Risks & Assumptions:
 
-```markdown
-- [ ] Y.0 Develop the "{RoutePurpose}" route in the `{serviceName}` service.
-  - [ ] Y.1 **Route Scaffolding:**
-      - [ ] Y.1.1 Create the directory `src/routes/{routePath}/`.
-      - [ ] Y.1.2 Create the necessary files (e.g., handler, validation schema, locales) following the project's conventions.
-      - [ ] Y.1.3 Run any build script required to register the new route.
-  - [ ] Y.2 **Handler Logic (`index.js`):**
-      - [ ] Y.2.1 Implement all required middleware (e.g., security, session handling, rate limiting) and validate the request body according to the project's security and validation standards.
-      - [ ] Y.2.2 Implement the orchestration logic: call business logic modules and format the response, ensuring proper logging and i18n support as defined by the project's conventions.
-  - [ ] Y.3 **Business Logic (`src/modules/`):**
-      - [ ] Y.3.1 (If complex) Create a dedicated module for the business logic.
-      - [ ] Y.3.2 Implement calls to any external dependencies (e.g., central APIs, other services via RPC, notification services) following the established patterns for inter-service communication.
-  - [ ] Y.4 **Testing:**
-      - [ ] Y.4.1 Write integration tests for the new route, covering both success and error cases.
-      - [ ] Y.4.2 (If applicable) Write unit tests for the business logic module, following the project's testing standards.
-```
+## Traceability Matrix
+| PRD Section | Requirement Summary | Task ID(s) |
+|-------------|---------------------|-----------|
 
-### Template C: Global State Management Decomposition
+## Workstreams & Parent Tasks
 
-```markdown
-- [ ] Z.0 Implement "{DomainName}" Global State Management.
-  - [ ] Z.1 **Store Creation:** Create `stores/{domainName}.ts` following global state management rules:
-      - [ ] Z.1.1 Define TypeScript interfaces for state, actions, and computed values.
-      - [ ] Z.1.2 Create primary atom store with initial state.
-      - [ ] Z.1.3 Implement actions object with all mutation methods and error handling.
-      - [ ] Z.1.4 Create computed stores and subscriptions as needed.
-  - [ ] Z.2 **Service Integration:** Create or update `lib/{domainName}.ts` service:
-      - [ ] Z.2.1 Implement `initialize()` method to load state from external sources.
-      - [ ] Z.2.2 Implement `startListener()` method for external synchronization with cleanup function.
-      - [ ] Z.2.3 Integrate all service methods with store actions.
-  - [ ] Z.3 **Application Integration:** Update main app component:
-      - [ ] Z.3.1 Add store initialization call in `firstUpdated()` with error handling.
-      - [ ] Z.3.2 Add listener startup and store cleanup function.
-      - [ ] Z.3.3 Add cleanup in `disconnectedCallback()` to prevent memory leaks.
-  - [ ] Z.4 **Component Integration:** Update components that use this state:
-      - [ ] Z.4.1 Add subscriptions to computed stores with proper cleanup.
-      - [ ] Z.4.2 Use actions for state mutations, never direct store access.
-      - [ ] Z.4.3 Handle loading and error states in component render methods.
-  - [ ] Z.5 **Documentation:** Update relevant README files:
-      - [ ] Z.5.1 Document store structure and state interface.
-      - [ ] Z.5.2 Provide usage examples for components and services.
-      - [ ] Z.5.3 Document integration architecture and lifecycle.
+### <Workstream Name>
+- [ ] <Task ID> <Parent Task Title> (Type, Complexity)
+  - [ ] <Task ID.1> Sub-task description (deliverable, validation method)
+  - [ ] <Task ID.2> ...
+  - [ ] <Task ID.n> ...
+  - **Dependencies:** <IDs>
+  - **Recommended Persona / Skillset:** <description>
+  - **Evidence Required:** <tests/docs>
+
+*(Repeat for all workstreams)*
+
+## Testing & Quality Activities
+- Planned automated tests:
+- Manual or exploratory tests:
+- Non-functional tests (performance, security, accessibility):
+
+## Deployment & Release Activities
+- Environments & approvals:
+- Feature flag / rollout plan:
+- Rollback strategy:
+- Monitoring setup:
+
+## Documentation & Enablement
+- README / architecture updates:
+- Runbooks / SOPs:
+- Training or support materials:
+
+## Completion Definition
+- Criteria for Protocol 3 handoff:
+- Validation checkpoints:
 ```
 
 ---
 
-## FINAL OUTPUT TEMPLATE (EXAMPLE)
-
-```markdown
-# Technical Execution Plan: {Feature Name}
-
-Based on PRD: `[Link to PRD file]`
-
-> **Note on AI Model Strategy:** This plan recommends specific AI model 'personas' for each phase, based on an analysis of top models available as of {current month, year}. Before starting a new section, verify the recommendation. If a switch is needed, **notify the user**.
-> *   **{Persona 1 Name} ({Model Name}):** {Persona 1 Description, e.g., Excels at system integration, DevOps, and using third-party tools.}
-> *   **{Persona 2 Name} ({Model Name}):** {Persona 2 Description, e.g., Excels at deep code architecture, security, and maintaining logical consistency.}
-
-## Primary Files Affected
-
-### Frontend App
-*   `src/components/{ComponentName}/...`
-
-### Backend Service
-*   `services/{serviceName}/src/routes/{routePath}/...`
-
-*(List the most important files to be created/modified for each affected layer)*
-
-## Detailed Execution Plan
-
--   [ ] 1.0 **High-Level Task 1 (e.g., Develop UI Component)** [COMPLEXITY: Simple/Complex]
-> **Recommended Model:** `{Persona Name}`
-    -   *(Use Frontend Decomposition Template)*
--   [ ] 2.0 **High-Level Task 2 (e.g., Create Backend Route)** [COMPLEXITY: Simple/Complex]
-> **Recommended Model:** `{Persona Name}`
-    -   *(Use Backend Decomposition Template)*
--   [ ] 3.0 **High-Level Task 3 (e.g., End-to-End Integration Tests)** [COMPLEXITY: Simple/Complex]
-> **Recommended Model:** `{Persona Name}`
-    -   [ ] 3.1 [Specific test sub-task]
-``` 
+## 5. QUALITY GATES & STOP CONDITIONS
+- 🚫 Do not release the plan if any PRD requirement lacks corresponding tasks.
+- 🚫 Do not proceed if testing, deployment, or documentation workstreams are missing.
+- 🚫 Do not proceed if dependencies or risks are unaddressed.
+- ✅ Proceed to Protocol 3 only after stakeholders approve the execution plan.
 
 ---
 
-## ORCHESTRATOR ALIGNMENT & STOP CONDITIONS
-
-### Required Commands
-
-After generating tasks from the PRD, always validate and serialize execution:
-
-```bash
-# Validate graph integrity
-python scripts/validate_tasks.py tasks.json
-
-# (Optional) compute lane-based execution suggestion
-python scripts/lane_executor.py --lane backend --cap 3
-python scripts/lane_executor.py --lane frontend --cap 3
+## 6. HANDOFF PACKAGE FOR PROTOCOL 3
+Provide implementers with:
+```
+TASK PLAN HANDOFF
+• Location of the execution plan artifact(s)
+• Recommended task order and gating
+• Traceability matrix linking tasks to PRD requirements
+• Identified risks, mitigations, and decision log updates
+• Evidence expectations for marking tasks complete
+• Contacts for clarifications
 ```
 
-### Gate Rules
-
-- Do not proceed to generation/execution until `tasks.json` passes validation (no duplicate IDs, no missing deps, no cycles).
-- If UI tasks are primary, perform duplicate-prevention search before decomposition; propose reuse when viable.
-- Present high-level tasks and wait for explicit "Go" before detailed decomposition.
-
 ---
 
-### Notion Integration (optional)
-
-After validation, attach artifacts to the project page.
-
-```text
-# Notion MCP: attach PLAN.md and snapshot of tasks.json to the project page
+## 7. OPTIONAL COMMAND MACRO
+```
+/apply-instructions-from-2-generate-tasks.md
+/run: bash -lc "mkdir -p logs && date -Is > logs/tasks-generated.log"
+/note: Task plan approved – ready for Protocol 3 execution.
 ```

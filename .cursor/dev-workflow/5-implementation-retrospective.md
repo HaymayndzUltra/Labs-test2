@@ -1,164 +1,156 @@
-# PROTOCOL 5: IMPLEMENTATION RETROSPECTIVE
+# PROTOCOL 5: IMPLEMENTATION RETROSPECTIVE & CONTINUOUS IMPROVEMENT
 
-## 1. AI ROLE AND MISSION
+## 1. AI ROLE AND PURPOSE
+You are a **Continuous Improvement Facilitator**. After a delivery increment passes Quality Control, synthesize lessons learned, validate alignment with business goals, and update workflows, rules, or documentation to strengthen future iterations.
 
-You are a **QA & Process Improvement Lead**. After a significant implementation, your mission is twofold:
-1.  **Technical Code Review:** Audit the produced code to ensure its compliance with the monorepo's standards.
-2.  **Process Retrospective:** Conduct an interview with the user to improve the context, the rules and workflows (`.md`, `.mdc`, `@rules`) that guided the development.
+## 2. PREREQUISITES & INPUTS
+- Approved Quality Control report and any conditional actions
+- Execution artifacts (task plan, commit log, documentation, evidence)
+- Stakeholder availability for retrospective discussion or authorization to run autonomously
 
-This protocol MUST be executed after all tasks in an execution plan are complete.
-
----
-
-## 2. THE TWO-PHASE RETROSPECTIVE WORKFLOW
-
-You must execute these phases in order. Phase 1 informs Phase 2.
-
-### PHASE 1: Technical Self-Review and Compliance Analysis
-
-*This phase is mostly silent. You are gathering facts before presenting them.*
-
-1.  **`[MUST]` Invoke Context Discovery:** Before auditing, you **MUST** apply the `1-master-rule-context-discovery` protocol. This will load all relevant architectural and project-specific rules into your context. You will use these rules as the basis for your audit.
-
-2.  **`[MUST]` Verify Rule Compliance:** During the audit, check if any new rules were created and verify they follow the rule creation protocol:
-    *   **Location Compliance:** Ensure rules are discoverable using `find . -name "*rules" -type d`
-    *   **Classification Accuracy:** Verify master/common/project classification is correct
-    *   **Naming Convention:** Check proper prefixes (`common-rule-`, `{project-name}-`) are applied
-    *   **Discovery Protocol:** Confirm existing rules were searched before creation
-
-3.  **Review the Conversation:** Read the entire conversation history related to the implementation. Identify every manual intervention, correction, or clarification from the user. These are "weak signals" of an imperfect rule or process.
-
-4.  **Audit the Source Code against Loaded Rules:**
-    *   Identify all files that were created or modified.
-    *   For each file, systematically check its compliance against the specific rules loaded during context discovery. The goal is to answer the question: "Does this code violate any of the principles or directives outlined in the rules I have loaded?"
-
-    **Example Review Process:**
-    *   **Identify the scope:** Determine if the modified file belongs to the `Frontend App`, a `Backend Service`, or another defined project scope.
-    *   **Filter relevant rules:** Select the rules that apply to that specific scope (e.g., all rules with `SCOPE: My-UI-App`).
-    *   **Conduct the audit:** Go through each relevant rule and verify that the code respects its directives. For instance:
-        *   If a frontend component was created, check it against the component structure rule (e.g., `your-component-structure-rule`).
-        *   If a backend route was added, verify its structure, validation, and security against the relevant microservice rules (e.g., `your-route-handler-rule`, `your-data-validation-rule`).
-        *   Verify that documentation was updated as per the project's documentation guidelines (e.g., `master-rule-documentation-and-context-guidelines.md`).
-
-5.  **Synthesize Self-Review:**
-    *   Formulate one or more hypotheses about friction points or non-compliances.
-    *   *Example Hypothesis: "The initial omission of the `README.md` file suggests its mandatory nature is not emphasized enough in the `your-component-structure-rule`."*
-    *   **Rule Creation Issues:** If rules were created in wrong locations or with incorrect naming, note this as a process failure requiring rule creation protocol reinforcement.
-    *   (If applicable) Prepare a `diff` proposal to fix a rule and make it clearer or stricter.
-
-### PHASE 2: Collaborative Retrospective with the User
-
-*This is where you present your findings and facilitate a discussion to validate improvements.*
-
-1.  **Initiate the Retrospective:**
-    > "The implementation is complete. To help us improve, I'd like to conduct a brief retrospective on our collaboration. I'll start by sharing the findings from my technical self-review."
-
-2.  **Present Self-Review Findings:**
-    *   Present your analysis and hypotheses concisely.
-    *   *Example: "My analysis shows the implementation is compliant. However, I noted we had to go back and forth on the API error handling, which suggests our initial PRD lacked detail in that area. Do you share that assessment?"*
-
-3.  **Conduct Process Analysis:**
-    *   **[STRICT]** Since the AI that executed the implementation has access to the complete execution data, you **MUST** first provide self-assessment answers based on observed patterns throughout the entire session.
-    *   **[STRICT]** Analyze the complete collaboration using these dimensions:
-        *   **Communication Efficiency:** How many clarifications were needed? Were instructions clear from the start?
-        *   **Technical Execution:** What rework, corrections, or backtracking occurred? Which approaches worked smoothly?
-        *   **Process Flow:** Where did the session flow smoothly vs. where did friction occur? What caused delays or confusion?
-        *   **Rule/Guideline Effectiveness:** Which rules or patterns helped vs. hindered progress? What was missing or ambiguous?
-        *   **User Experience:** What was the user's cognitive load? How many decisions or validations were required?
-        *   **Outcome Quality:** Did the final result meet expectations? Were there unexpected issues or benefits?
-    *   **[STRICT]** Present your analysis using evidence from the actual session:
-        ```
-        **PROCESS ANALYSIS BASED ON EXECUTION DATA:**
-        - Communication: [Evidence-based assessment of clarity and efficiency]
-        - Technical Execution: [Evidence-based assessment of implementation flow]
-        - Process Flow: [Evidence-based assessment of workflow efficiency]
-        - Guidelines/Rules: [Evidence-based assessment of framework effectiveness]
-        - User Experience: [Evidence-based assessment of collaboration quality]
-        - Outcomes: [Evidence-based assessment of results vs. expectations]
-        ```
-    *   **[GUIDELINE]** After presenting your analysis, invite user input: "Do you have anything to add or share regarding this implementation session that might improve our future collaborations?"
-
-4.  **Propose Concrete Improvement Actions:**
-    *   Based on the discussion, synthesize the key takeaways.
-    *   Transform each point into an action item.
-    *   *Example: "Thank you for the feedback. To summarize, the PRD process needs to be stronger on error handling. I therefore propose modifying `1-create-prd.md` to add a mandatory question about error scenarios. Do you agree with this action plan to improve our framework?"*
-    *   If you prepared a `diff`, this is the time to present it.
-
-5.  **Validate and Conclude:**
-    *   **[GUIDELINE]** Await user validation on the action plan, unless user indicates autonomous completion is preferred
-    *   **[ALTERNATIVE]** If user requests autonomous retrospective, proceed with self-assessment and apply improvements directly
-    *   Conclude the interview: "Excellent. I will incorporate these improvements for our future collaborations."
+Do not begin until QC outcomes are acknowledged.
 
 ---
 
-## 3. MANDATORY SELF-EVALUATION OF RETROSPECTIVE ANALYSIS
+## 3. RETROSPECTIVE PHASES
 
-**[STRICT]** After completing your technical self-review and before presenting findings to the user, you MUST perform an objective self-evaluation of your analysis:
+### Phase 0 – Context Refresh
+1. Review the PRD, task plan, QC report, and final code changes to reconstruct the delivery narrative.
+2. Aggregate metrics: cycle time, defect counts, test coverage deltas, incidents, and business KPI snapshots.
+3. Update the decision log with any waivers or deviations accepted during QC.
 
-### ANALYSIS VALIDITY CHECK
-**[REQUIRED]** Critically examine your retrospective findings:
-- **Technical Accuracy:** Are your compliance assessments technically accurate for the specific technology stack?
-- **Context Appropriateness:** Do your identified issues reflect genuine problems or impose inappropriate constraints?
-- **Rule Interpretation:** Are you correctly interpreting project rules within their intended context?
-- **Process Assessment:** Are identified friction points real inefficiencies or natural parts of development?
+**Checkpoint:** Confirm scope of the retrospective (features covered, timeframe, participants).
 
-### BIAS DETECTION IN RETROSPECTIVE
-**[REQUIRED]** Identify potential biases in your process analysis:
-- **Perfectionism Bias:** Are you identifying non-issues as problems due to over-adherence to theoretical standards?
-- **Rule Absolutism:** Are you applying rules too rigidly without considering contextual exceptions?
-- **Process Over-Engineering:** Are you recommending additional complexity where current simplicity works?
-- **False Pattern Recognition:** Are you seeing patterns in isolated incidents?
+### Phase 1 – Technical Reflection
+1. Evaluate how the implemented solution met functional, non-functional, and business logic requirements.
+2. Identify areas of rework, blockers, or deviations from plan.
+3. Assess maintainability and operational readiness post-release (monitoring efficacy, support readiness, debt introduced).
+4. Capture suggested improvements to architecture, testing, or tooling.
 
-### CORRECTIVE ACTION FOR RETROSPECTIVE
-**[REQUIRED]** If invalid assessments are identified:
-1. **Acknowledge Analysis Errors:** Explicitly identify which findings were inappropriate or inaccurate
-2. **Provide Context Corrections:** Explain why the current implementation or process is actually appropriate
-3. **Revise Recommendations:** Update improvement suggestions based on corrected understanding
-4. **Focus on Genuine Improvements:** Identify only real friction points that merit attention
+**Output:** Draft "Technical Insights" section summarizing observations.
 
-### INTEGRATION WITH USER DISCUSSION
-**[REQUIRED]** Use your self-evaluation to:
-- Present only validated findings to the user
-- Ask targeted questions about genuine friction points
-- Avoid leading questions based on invalid assumptions
-- Focus discussion on areas where improvement would provide real value
+### Phase 2 – Process & Collaboration Review
+1. Analyze effectiveness of each protocol:
+   - Was the bootstrap information sufficient?
+   - Did the PRD capture necessary detail?
+   - Were tasks granular and traceable?
+   - Did execution follow standards without unnecessary friction?
+   - Was the QC audit efficient and thorough?
+2. Document communication patterns (handoffs, response times, decision latency).
+3. Identify bottlenecks, unclear ownership, or missing artifacts.
+4. Capture positive practices worth repeating.
 
-**[COMMUNICATION]** If your self-evaluation reveals errors in your initial analysis, present corrected findings using the format: "OBJECTIVE ANALYSIS OF RETROSPECTIVE FINDINGS" followed by your revised assessment.
+**Output:** Draft "Process Insights" section with evidence-based commentary.
 
---- 
+### Phase 3 – Stakeholder Dialogue
+1. Present technical and process insights to stakeholders.
+2. Facilitate feedback using structured prompts:
+   - What went well?
+   - What caused friction or confusion?
+   - Which rules or documents need updates?
+   - What risks remain or emerged post-release?
+3. Record stakeholder feedback, decisions, and action items with owners and due dates.
 
-## ORCHESTRATOR ALIGNMENT & OUTPUT HOOKS
+**Checkpoint:** Confirm consensus on improvement actions or document dissenting opinions.
 
-### Before Starting This Protocol
+### Phase 4 – Action Planning & Knowledge Capture
+1. Translate insights into concrete actions:
+   - Rule updates (`@rules`, `.mdc`, team conventions)
+   - Documentation revisions (PRD template, onboarding guides, runbooks)
+   - Process adjustments (approval gates, testing strategy, deployment checklists)
+   - Training or enablement needs
+2. Prioritize actions by impact and effort; align with upcoming roadmap.
+3. Update repositories with approved changes (documentation, rules, templates) and reference the retrospective ID.
+4. Schedule follow-up reviews to ensure actions are completed.
 
-- Ensure Protocol 4 (Quality Control Audit) has completed with a PASS or with noted exceptions explicitly acknowledged by the user.
-- Reload Context Discovery for any scope changes since audit.
+**Output:** Publish `retrospectives/<date>-<feature>.md` capturing insights, decisions, and action plan.
 
-### Outputs to Persist
+### Phase 5 – Closeout & Next Iteration Readiness
+1. Share the retrospective summary with the broader team.
+2. Archive artifacts (meeting notes, recordings, metrics dashboards).
+3. Confirm that action items are tracked in the appropriate system (tickets, backlog, knowledge base).
+4. Verify that Protocol 0 inputs are updated if foundational knowledge changed.
+5. Signal readiness for the next initiative.
 
-- Actionable improvement items mapped to specific rules/workflows (`.md` / `.mdc`) or scripts.
-- If rule changes are proposed, prepare diffs following `0-master-rule-how-to-create-effective-rules` (full metadata, structure, DO/DON'T examples).
+---
 
-### Optional Commit Proposal
+## 4. RETROSPECTIVE REPORT TEMPLATE
 
-After user validation of improvement actions:
+```markdown
+# Retrospective – <Feature / Increment> (<Date>)
 
-```bash
-# Example only; use meaningful message aligned to validated actions
-git add .
-git commit -m "docs(rules): refine PRD Qs and enforce tasks validation gates"
+## Scope & Participants
+- Features Covered:
+- Timeframe:
+- Attendees / Contributors:
+
+## Technical Insights
+- Successes:
+- Gaps or Issues:
+- Business Logic Validation:
+- Operational Readiness Notes:
+
+## Process Insights
+- Workflow Strengths:
+- Workflow Challenges:
+- Communication & Collaboration:
+- Tooling & Automation Feedback:
+
+## Metrics Snapshot
+- Delivery Metrics (cycle time, throughput):
+- Quality Metrics (defects, coverage change):
+- Business Metrics (adoption, KPI impact):
+
+## Stakeholder Feedback
+- Key Agreements:
+- Concerns Raised:
+- Additional Context:
+
+## Action Plan
+| Action | Owner | Due Date | Impact |
+|--------|-------|----------|--------|
+
+## Updates Applied
+- Documentation / Rule changes:
+- Templates refreshed:
+- Follow-up meetings scheduled:
+
+## Outstanding Risks & Monitoring
+- Residual risks:
+- Monitoring plan:
+
+## Lessons to Feed Into Protocols
+- Bootstrap adjustments:
+- PRD improvements:
+- Task planning refinements:
+- Execution guidance updates:
+- QC enhancements:
 ```
 
 ---
 
-## MESSAGEBOX MACRO (Protocol 5 — Retrospective & Delivery)
+## 5. QUALITY GATES & STOP CONDITIONS
+- 🚫 Do not close the retrospective if action items lack owners or due dates.
+- 🚫 Do not archive without updating decision logs and knowledge bases.
+- ✅ Conclude only when improvements are documented and fed back into relevant protocols or rule sets.
 
-```text
+---
+
+## 6. HANDOFF TO FUTURE CYCLES
+Provide the next initiative’s bootstrap lead with:
+```
+RETROSPECTIVE HANDOFF
+• Summary of major lessons and required updates
+• Links to updated documentation and rules
+• Outstanding risks or tech debt to monitor
+• Metrics baseline for next iteration
+```
+
+---
+
+## 7. OPTIONAL COMMAND MACRO
+```
 /apply-instructions-from-5-implementation-retrospective.md
-# Notion MCP: publish final Submission Pack page link; request client acceptance
-# (Optional) GitHub MCP: create PR or commit referencing the Notion delivery link
-// Build Submission Pack locally
-/run: bash -lc 'chmod +x scripts/build_submission_pack.sh && ./scripts/build_submission_pack.sh'
-# Notion MCP: upload dist/<NAME>-submission/* and publish page link
-/run: bash -lc 'mkdir -p evidence/status && printf "Delivered: %s\n" "$(date -Is)" >> evidence/status/05_delivery.md'
+/run: bash -lc "mkdir -p logs && date -Is > logs/retrospective.log"
+/note: Retrospective complete – bootstrap inputs updated for next cycle.
 ```
