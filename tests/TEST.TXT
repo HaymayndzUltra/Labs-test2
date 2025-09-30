@@ -1,0 +1,1895 @@
+diff --git a/.cursor/dev-workflow/0-bootstrap-your-project.md b/.cursor/dev-workflow/0-bootstrap-your-project.md
+index 18598c90d98811a1befe60521100379bcad73578..186fa6bf7613d31e1829277db2ebf0310be7cc4c 100644
+--- a/.cursor/dev-workflow/0-bootstrap-your-project.md
++++ b/.cursor/dev-workflow/0-bootstrap-your-project.md
+@@ -1,141 +1,80 @@
+-# PROTOCOL 0: PROJECT BOOTSTRAP & CONTEXT ENGINEERING
+-
+-## 1. AI ROLE AND MISSION
+-
+-You are an **AI Codebase Analyst & Context Architect**. Your mission is to perform an initial analysis of this project, configure the pre-installed AI Governor Framework, and propose a foundational "Context Kit" to dramatically improve all future AI collaboration.
+-
+-## 2. THE BOOTSTRAP PROCESS
+-
+-### STEP 1: Tooling Configuration & Rule Activation
+-
+-1.  **`[MUST]` Detect Tooling & Configure Rules:**
+-    *   **Action:** Ask the user: *"Are you using Cursor as your editor? This is important for activating the rules correctly."*
+-    *   **Action:** First, dynamically locate the rules directories: `find . -name "master-rules" -type d` and `find . -name "common-rules" -type d`
+-    *   **Action:** If the user responds "yes" to Cursor usage, execute the following configuration steps:
+-        1.  **Create Cursor structure:** Create `.cursor/rules/` and move the found rule directories there
+-        2.  **Announce the next step:** *"I will now configure the `master-rules` to be compatible with Cursor by renaming them to `.mdc` and ensuring they have the correct metadata."*
+-        3.  **Rename files to `.mdc`:** Execute the necessary `mv` commands to rename all rule files in the located directories from `.md` to `.mdc`.
+-        4.  **Verify/Add Metadata:** For each `.mdc` file, check if it contains the `---` YAML frontmatter block with an `alwaysApply` property. If not, you MUST add it based on the rule's requirements (e.g., `1-master-rule-context-discovery.mdc` needs `alwaysApply: true`). You MUST announce which files you are modifying.
+-    *   **Action:** Announce that the configuration is complete.
+-
+-### STEP 2: Initial Codebase Mapping
+-
+-1.  **`[MUST]` Announce the Goal:**
+-    > "Now that the framework is configured, I will perform an initial analysis of your codebase to build a map of its structure and identify the key technologies."
+-2.  **`[MUST]` Map the Codebase Structure and Identify Key Files:**
+-    *   **Action 1: Perform Recursive File Listing.** List all files and directories to create a complete `tree` view of the project.
+-    *   **Action 2: Propose an Analysis Plan.** From the file tree, identify key files that appear to be project pillars (e.g., `package.json`, `pom.xml`, `main.go`, `index.js`, core configuration files). Propose these to the user as a starting point.
+-    *   **Action 3: Validate Plan with User.** Present the proposed file list for confirmation.
+-        > "I have mapped your repository. To build an accurate understanding, I propose analyzing these key files: `package.json`, `src/main.tsx`, `vite.config.ts`, `README.md`. Does this list cover the main pillars of your project?"
+-    *   **Halt and await user confirmation.**
+-3.  **`[MUST]` Analyze Key Files and Confirm Stack:**
+-    *   **Action:** Read and analyze the content of the user-approved files to confirm the technology stack, dependencies, and build scripts.
+-
+-### STEP 3: Thematic Investigation Plan
+-
+-1.  **`[MUST]` Generate and Announce Thematic Questions:**
+-    *   **Action:** Based on the confirmed stack, generate a list of key architectural questions, grouped by theme.
+-    *   **Communication:** Announce the plan to the user.
+-        > "To understand your project's conventions, I will now investigate the following key areas:
+-        > - **Security:** How are users authenticated and sessions managed?
+-        > - **Data Flow:** How do different services communicate?
+-        > - **Conventions:** What are the standard patterns for error handling, data validation, and logging?
+-        > I will now perform a deep analysis of the code to answer these questions autonomously."
+-
+-### STEP 4: Autonomous Deep Dive & Synthesis
+-
+-1.  **`[MUST]` Perform Deep Semantic Analysis:**
+-    *   **Action:** For each thematic question, use a **semantic search tool** (in accordance with the **Tool Usage Protocol**) to investigate core architectural processes. The goal is to find concrete implementation patterns in the code.
+-2.  **`[MUST]` Synthesize Findings into Principles:**
+-    *   **Action:** For each answer found, synthesize the code snippets into a high-level architectural principle.
+-    *   **Example:**
+-        *   **Finding:** "The code shows a `validateHmac` middleware on multiple routes."
+-        *   **Synthesized Principle:** "Endpoint security relies on HMAC signature validation."
+-
+-### STEP 5: Collaborative Validation (The "Checkpoint")
+-
+-1.  **`[MUST]` Present a Consolidated Report for Validation:**
+-    *   **Action:** Present a clear, consolidated report to the user.
+-    *   **Communication:**
+-        > "My analysis is complete. Here is what I've understood. Please validate, correct, or complete this summary.
+-        >
+-        > ### ✅ My Understanding (Self-Answered)
+-        > - **Authentication:** It appears you use HMAC signatures for securing endpoints.
+-        > - **Error Handling:** Errors are consistently returned in a `{ success: false, error: { ... } }` structure.
+-        >
+-        > ### ❓ My Questions (Needs Clarification)
+-        > - **Inter-service Communication:** I have not found a clear, consistent pattern. How should microservices communicate with each other?
+-        >
+-        > I will await your feedback before building the Context Kit."
+-    *   **Halt and await user validation.**
+-
+-### STEP 6: Iterative Generation Phase 1: Documentation (READMEs)
+-
+-1.  **`[MUST]` Announce the Goal:**
+-    > "Thank you for the validation. I will now create or enrich the `README.md` files to serve as a human-readable source of truth for these architectural principles."
+-2.  **`[MUST]` Generate, Review, and Validate READMEs:**
+-    *   Propose a plan of `README.md` to create/update.
+-    *   Generate each file iteratively, based on the **validated principles** from STEP 4, and await user approval for each one.
+-
+-### STEP 7: Iterative Generation Phase 2: Project Rules
+-
+-1.  **`[MUST]` Announce the Goal:**
+-    > "With the documentation in place as our source of truth, I will now generate the corresponding `project-rules` to enforce these conventions programmatically."
+-2.  **`[MUST]` Generate, Review, and Validate Rules from READMEs:**
+-    *   Propose a plan of rules to create, explicitly linking each rule to its source `README.md`.
+-    *   Generate each rule iteratively, ensuring it follows the rule creation guidelines found in the `master-rules` directory, and await user approval.
+-
+-### FINALIZATION
+-> "The initial context bootstrapping is complete. We now have a solid 'Version 1.0' of the project's knowledge base, containing both human-readable documentation and machine-actionable rules.
+->
+-> This is a living system. Every future implementation will give us an opportunity to refine this context through the `4-implementation-retrospective.md` protocol, making our collaboration progressively more intelligent and efficient.
+->
+-> You are now ready to use the main development workflow, starting with `1-create-prd.md`." 
+-
+-
+----
+-
+-## ORCHESTRATOR ALIGNMENT & STOP CONDITIONS
+-
+-To prevent conflicts and keep this protocol aligned with the Project Trigger Orchestrator and master-rules, apply the following concrete steps and gates.
+-
+-### Rules Init (must precede all steps)
+-
+-```bash
+-# Apply instructions from master-rules (Context Discovery + Collaboration)
+-# And security overlay when applicable
+-export ROUTER_CACHE=on
+-export ROUTER_LRU_SIZE=512
+-```
+-
+-### Environment Bootstrap (non-destructive)
+-
+-```bash
+-python scripts/doctor.py
+-./scripts/generate_client_project.py --list-templates | cat
+-```
+-
+-### Stop-the-line Gates
+-
+-- Do not proceed to analysis if critical tooling is missing (doctor flags). Resolve first.
+-- Ensure rules are placed under `.cursor/rules/` and converted to `.mdc` with valid YAML frontmatter prior to any further steps.
+-- If rule discovery indicates ambiguity or conflicts, halt and request clarification before continuing.
+-
+-### Consistency With Master Rules
+-
+-- Always run Context Discovery at the start of a new session or scope change (aligns with `1-master-rule-context-discovery`).
+-- For multi-step requests without an existing plan file, present a concise plan and await approval (aligns with `2-master-rule-ai-collaboration-guidelines`).
+-
+----
+-
+-## MESSAGEBOX MACRO (Protocol 0 — Bootstrap Only)
+-
+-Use this macro to perform bootstrap checks only. Next steps happen in their own protocol files.
+-
+-```text
+-/apply-instructions-from-0-bootstrap-your-project.md
+-/run: python scripts/doctor.py
+-/run: ./scripts/generate_client_project.py --list-templates | cat
+-# Next: open Protocol 1 and run its macro when ready
+-```
+-
++# Protocol 0 · Project Bootstrap & Context Initialization
++
++## Purpose & Role
++- **Role:** Universal Project Bootstrap Lead (AI or human).
++- **Mission:** Establish a complete understanding of the project vision, constraints, and working agreements so that every subsequent protocol operates with accurate, validated context.
++- **Success Criteria:** Repository access confirmed, stakeholders aligned on outcomes, working environment validated, initial risks logged, and a concise "Context Kit" prepared for Protocol 1.
++
++## Required Inputs
++- Access to the project repository and any existing documentation (README, architecture notes, rule sets, service runbooks).
++- Named stakeholders or decision makers who can confirm business goals and priorities.
++- The list of mandatory rule files (e.g., `master-rules`, `common-rules`, custom `.mdc` files) supplied with the engagement.
++
++## Expected Outputs
++1. Validated repository map highlighting core modules, tech stacks, and entry points.
++2. Environment readiness report covering tooling, runtime versions, and integration credentials.
++3. Stakeholder alignment summary capturing business goals, success metrics, and delivery constraints.
++4. Risk, dependency, and assumption log with mitigation owners.
++5. "Context Kit" packet referencing:
++   - Core documentation links
++   - Technology summary
++   - Rule collections loaded
++   - Outstanding questions for the PRD interview (Protocol 1)
++
++## Phase Breakdown
++
++### Phase 0 · Rule & Instruction Refresh
++1. Re-discover all rule directories: `find . -type d -name "*rules"`.
++2. Load mandatory instruction sets (e.g., `elaboration-specialist.mdc`, master/common rules, domain-specific overlays).
++3. Summarize active rule scopes and clarify any conflicts or waivers.
++4. Record the refresh in the Context Kit.
++
++### Phase 1 · Stakeholder & Vision Alignment
++1. Identify sponsor, product owner, technical lead, and QA contact.
++2. Capture business objectives, target users, value proposition, and high-level success metrics.
++3. Document delivery constraints (timeline, budget, compliance, localization, accessibility, service-level objectives).
++4. Validate assumptions and outstanding decisions with stakeholders; log unresolved items.
++
++### Phase 2 · Repository & Architecture Discovery
++1. Produce a non-destructive directory map (tree summary) of the repository.
++2. Identify core services, applications, packages, infrastructure code, and shared libraries.
++3. Highlight technology stacks per area (languages, frameworks, tooling, deployment targets).
++4. Note integration points (APIs, queues, databases, external providers) and existing test infrastructure.
++
++### Phase 3 · Environment & Toolchain Validation
++1. Confirm availability of required runtimes, package managers, and build/test tools.
++2. Validate ability to run the project locally (smoke install/build/test commands where safe).
++3. Verify access to supporting resources: environment variables, secrets, CI/CD pipelines, monitoring dashboards.
++4. Record compatibility issues, license constraints, or missing access.
++
++### Phase 4 · Risk, Dependency, and Governance Review
++1. Classify risks (delivery, technical, compliance, operational) with severity and mitigation owners.
++2. Map dependencies to teams, vendors, or services; confirm communication channels.
++3. Check governance requirements (security reviews, legal sign-off, data residency, audit trails).
++4. Identify required approvals or checkpoints before implementation can start.
++
++### Phase 5 · Context Kit Assembly & Handoff
++1. Assemble all findings into the Context Kit (shared document or repository notes).
++2. Include:
++   - Executive summary of goals and constraints
++   - Repository architecture map
++   - Environment readiness results
++   - Risk/dependency register
++   - Open questions for Protocol 1
++3. Share the Context Kit with stakeholders for validation.
++4. Confirm readiness to start **Protocol 1 · PRD Creation** once validation and outstanding questions are addressed.
++
++## Quality Gates & Checkpoints
++- **Rule Activation Gate:** All relevant rule files documented and conflicts resolved.
++- **Stakeholder Sign-off Gate:** Business objectives and success metrics approved.
++- **Environment Gate:** Critical tooling verified or mitigation plan documented.
++- **Risk Log Gate:** High/critical risks tracked with mitigation owners.
++- **Context Kit Gate:** Context Kit approved and stored in a discoverable location.
++
++## Transition to Protocol 1
++Proceed to `1-create-prd.md` only after:
++1. Context Kit is published and acknowledged.
++2. Outstanding questions for the PRD interview are assigned to responsible stakeholders.
++3. Environment blockers (if any) have an agreed resolution plan.
++
++*This protocol ensures that every collaborator—human or AI—shares the same foundational understanding before requirements gathering begins.*
+diff --git a/.cursor/dev-workflow/1-create-prd.md b/.cursor/dev-workflow/1-create-prd.md
+index 1b5705e044a868dca83ab045554476979ba9cb50..db97e7db2883fec7be52857e281d2fa25237db4e 100644
+--- a/.cursor/dev-workflow/1-create-prd.md
++++ b/.cursor/dev-workflow/1-create-prd.md
+@@ -1,183 +1,140 @@
+-# PROTOCOL 1: UNIFIED PRD CREATION
+-
+-## AI ROLE
+-
+-You are a **Monorepo-Aware AI Product Manager**. Your goal is to conduct an interview with the user to create a comprehensive Product Requirements Document (PRD). This PRD must **automatically determine where and how** a feature should be implemented within the user's technology ecosystem.
+-
+-### 📚 MANDATORY PREREQUISITE
+-
+-**BEFORE ANY INTERROGATION**, you MUST familiarize yourself with the project's overall architecture. If the user has a master `README.md` or an architecture guide, you should consult it to understand the communication constraints, technology stacks, and established patterns.
+-
+-You MUST follow the phases below in order and use the **Architectural Decision Matrix** to guide the implementation strategy.
+-
+----
+-
+-## 🎯 ARCHITECTURAL DECISION MATRIX (EXAMPLE)
+-
+-This is a generic template. You should adapt your questions to help the user define a similar matrix for their own project.
+-
+-| **Need Type** | **Likely Implementation Target** | **Key Constraints** | **Communication Patterns** |
+-|---|---|---|---|
+-| **User Interface / Component** | Frontend Application | Responsive Design, Theming, i18n | API calls (e.g., Read-only REST), Direct calls to backend services |
+-| **Business Logic / Processing** | Backend Microservices | Scalability, Inter-service RPC | Full CRUD to a central API, async messaging |
+-| **Data CRUD / DB Management** | Central REST API | Exclusive DB access, OpenAPI spec | Direct DB queries (SQL/NoSQL) |
+-| **Static Assets / Templates** | Object Storage (e.g., S3/R2) | Caching strategy, Versioning | Direct SDK/API access to storage |
+-
+----
+-
+-## PHASE 1: ANALYSIS AND SCOPING
+-
+-**Goal:** Determine the "what," "why," and **"where in the architecture."**
+-
+-### 1.1 Initial Qualification
+-**Ask this crucial first question:**
+-1.  **"Are we CREATING a new feature from scratch, or MODIFYING an existing one?"**
+-
+-Based on the answer, proceed to the relevant section below.
+-
+-### 1.2 Path A: Creating a New Feature
+-Ask these questions and **AWAIT ANSWERS** before proceeding:
+-
+-1.  **"In one sentence, what is the core business need? What problem are you solving?"**
+-2.  **"Is this feature primarily about:"**
+-    -   **User Interface** (pages, components, navigation)?
+-    -   **Business Process** (calculations, validations, orchestrations)?
+-    -   **Data Management** (CRUD, complex queries, reporting)?
+-    -   **Static Assets** (emails, documents, static files)?
+-
+-Proceed to **Section 1.4: Announcing the Detected Layer**.
+-
+-### 1.3 Path B: Modifying an Existing Feature
+-Ask these questions and **AWAIT ANSWERS** before proceeding:
+-
+-1.  **"Please describe the current behavior of the feature you want to modify."**
+-2.  **"Now, describe the desired behavior after the modification."**
+-3.  **"Which are the main files, components, or services involved in this feature?"**
+-4.  **"What potential regression risks should we be mindful of? (e.g., 'Don't break the user login process')."**
+-
+-### 1.4 Announcing the Detected Layer
+-Based on the answers and any architectural context you have, **ANNOUNCE** the detected implementation layer:
+-
+-```
+-🎯 **DETECTED LAYER**: [Frontend App | Backend Service | Central API | Object Storage]
+-
+-📋 **APPLICABLE CONSTRAINTS** (Based on our discussion):
+--   Communication: [e.g., Frontend can only read from the Central API]
+--   Technology: [e.g., React, Node.js, Cloudflare Workers]
+--   Architecture: [e.g., Microservices, Monolith]
+-```
+-
+-### 1.5 Validating the Placement
+-3.  **"Does this detected implementation layer seem correct to you? If not, please clarify."**
+-
+----
+-
+-## PHASE 2: SPECIFICATIONS BY LAYER
+-
+-### 2A. For a Frontend Application (UI)
+-
+-1.  **"Who is the target user (e.g., admin, customer, guest)?"**
+-2.  **"Can you describe 2-3 user stories? 'As a [role], I want to [action] so that [benefit]'."**
+-3.  **"Do you have a wireframe or a clear description of the desired look and feel?"**
+-4.  **"How should this component handle responsiveness and different themes (e.g., dark mode)?"**
+-5.  **"Does this component need to fetch data from an API or trigger actions in a backend service?"**
+-
+-### 2B. For a Backend Service (Business Logic)
+-
+-1.  **"What will the exact API route be (e.g., `/users/{userId}/profile`)?"**
+-2.  **"Which HTTP method (GET/POST/PUT/DELETE) and what is the schema of the request body?"**
+-3.  **"What is the schema of a successful response, and what are the expected error scenarios?"**
+-4.  **"What are the logical steps the service should perform, in order?"**
+-5.  **"Does this service need to call other APIs or communicate with other services?"**
+-6.  **"What is the security model (public, authenticated, API key) and what roles are authorized?"**
+-
+-*(Adapt questions for other layers like Central API or Object Storage based on the matrix)*
+-
+----
+-
+-## PHASE 3: ARCHITECTURAL CONSTRAINTS
+-
+-Verify that the proposed interactions respect the project's known communication rules.
+-
+-**✅ Example of Allowed Flows:**
+--   UI → Central API: GET only
+--   UI → Backend Services: GET/POST only
+--   Backend Services → Central API: Full CRUD
+-
+-**❌ Example of Prohibited Flows:**
+--   UI → Database: Direct access is forbidden
+-
+----
+-
+-## PHASE 4: SYNTHESIS AND GENERATION
+-
+-1.  **Summarize the Architecture:**
+-    ```
+-    🏗️ **FEATURE ARCHITECTURE SUMMARY**
+-
+-    📍 **Primary Component**: [Detected Layer]
+-    🔗 **Communications**: [Validated Flows]
+-    ```
+-2.  **Final Validation:**
+-    "Is this summary correct? Shall I proceed with generating the full PRD?"
+-
+----
+-
+-## FINAL PRD TEMPLATE (EXAMPLE)
+-
++# Protocol 1 · Product Requirements Definition (PRD)
++
++## Purpose & Role
++- **Role:** Product Discovery Lead collaborating with stakeholders across product, engineering, design, QA, and operations.
++- **Mission:** Capture a validated, end-to-end specification that links business outcomes to user experience, technical architecture, quality expectations, and delivery constraints.
++- **Success Criteria:** Approved PRD file, architecture alignment summary, prioritized backlog of open questions, and clear handoff to task generation.
++
++## Required Inputs
++- Approved Context Kit from Protocol 0.
++- Named stakeholders for product, engineering, QA, security/compliance, and operations.
++- Access to historical analytics, customer feedback, or support tickets relevant to the problem space.
++- Applicable rule sets, standards, or regulatory requirements.
++
++## Expected Outputs
++1. PRD file stored in a version-controlled location.
++2. Architecture placement statement identifying primary and secondary implementation layers.
++3. Business logic specification detailing key domain rules, decision tables, and state transitions.
++4. Acceptance criteria matrix covering functional, non-functional, and business validation.
++5. Initial testing & release strategy summary (unit, integration, e2e, manual, monitoring).
++6. Open issues log for deferred questions or assumptions.
++
++## Phase Breakdown
++
++### Phase 0 · Preparation
++1. Review Context Kit, confirm stakeholder availability, and re-apply any updated rule sets.
++2. Define interview agenda covering business, user, technical, and operational angles.
++3. Prepare data capture template (use the PRD structure below) to avoid missing sections.
++
++### Phase 1 · Business & Stakeholder Discovery
++1. Clarify problem statement, business goals, KPIs, and success metrics.
++2. Identify target users, personas, or consuming systems.
++3. Capture business priorities, release deadlines, and go-to-market considerations.
++4. Record compliance, security, accessibility, localization, and privacy constraints.
++5. Confirm budget or capacity boundaries that influence scope.
++
++### Phase 2 · User Experience & Workflow Analysis
++1. Document user journeys, service workflows, or API sequence diagrams.
++2. Break down primary scenarios into steps, decision points, and triggers.
++3. Capture edge cases, error states, rollback behavior, and audit requirements.
++4. Map content/communication needs (emails, notifications, documentation updates).
++
++### Phase 3 · Business Logic & Data Definition
++1. Identify domain entities, data contracts, and storage impacts.
++2. Define business rules (calculations, validations, approvals) and represent them as tables or flowcharts.
++3. Note dependencies on reference data, third-party services, or machine learning models.
++4. Record required migrations, seeding, or backfill work at a high level.
++
++### Phase 4 · Technical & Architectural Alignment
++1. Determine primary implementation layer (e.g., client app, backend service, data pipeline) and secondary touchpoints.
++2. Document integration points: internal APIs, external services, event streams, batch jobs.
++3. Capture performance, scalability, availability, and observability targets.
++4. Align on deployment strategy (environments, rollout plan, feature flags, compliance gates).
++5. Validate feasibility with engineering leads; capture risks and mitigation strategies.
++
++### Phase 5 · Quality, Testing, & Support Plan
++1. Define acceptance criteria per scenario using Given/When/Then or input/output tables.
++2. Outline testing approach: unit, integration, contract, E2E, exploratory/manual, regression, security scans.
++3. Specify monitoring, alerting, analytics, and support handoff requirements.
++4. Establish documentation deliverables (README updates, runbooks, API references, change logs).
++
++### Phase 6 · PRD Consolidation & Sign-off
++1. Populate the PRD template (below) with validated information and flag open questions.
++2. Circulate the draft for stakeholder review; track feedback and decisions.
++3. Finalize sign-off status, approval owners, and date.
++4. Produce a handoff note for Protocol 2 summarizing:
++   - Final scope and success metrics
++   - Architecture placement and impacted systems
++   - Confirmed quality expectations and deployment strategy
++   - Outstanding questions for task generation or design
++
++## PRD Template (Reference)
+ ```markdown
+-# PRD: [Feature Name]
++# PRD · <Feature / Initiative Name>
+ 
+ ## 1. Overview
+-- **Business Goal:** [Description of the need and problem solved]
+-- **Detected Architecture:**
+-  - **Primary Component:** `[Frontend App | Backend Service | ...]`
+-
+-## 2. Functional Specifications
+-- **User Stories:** [For UI] or **API Contract:** [For Services]
+-- **Data Flow Diagram:**
+-  ```
+-  [A simple diagram showing the interaction between components]
+-  ```
+-
+-## 3. Technical Specifications
+-- **Inter-Service Communication:** [Details of API calls]
+-- **Security & Authentication:** [Security model for the chosen layer]
+-
+-## 4. Out of Scope
+-- [What this feature will NOT do]
+-``` 
+-
+----
+-
+-## ORCHESTRATOR ALIGNMENT & STOP CONDITIONS
+-
+-### Pre-requisites
+-
+-- Context Discovery MUST be executed at start (load master/common/project rules).
+-- Confirm detected implementation layer and architectural constraints with the user before drafting the PRD.
+-
+-### Integration With Planning Pipeline
+-
+-Once PRD is validated, proceed to task generation:
+-
+-```bash
+-python scripts/plan_from_brief.py docs/briefs/<project>/brief.md
+-python scripts/validate_tasks.py tasks.json
++- **Problem Statement:**
++- **Business Goals & KPIs:**
++- **Primary Users / Consumers:**
++- **Success Metrics & Guardrails:**
++
++## 2. Scope & Requirements
++- **In Scope:**
++- **Out of Scope:**
++- **Assumptions:**
++- **Dependencies:**
++
++## 3. User Journeys & Workflows
++- **Primary Journey:**
++- **Secondary / Edge Scenarios:**
++- **Error & Recovery Flow:**
++
++## 4. Business Logic & Data
++- **Domain Model / Entities:**
++- **Rules / Decision Tables:**
++- **Data Sources & Ownership:**
++- **Migration / Backfill Needs:**
++
++## 5. Architecture & Integration
++- **Primary Implementation Layer:**
++- **Supporting Services / Components:**
++- **External Integrations:**
++- **Non-Functional Requirements (performance, availability, security, compliance):**
++
++## 6. Quality & Testing
++- **Acceptance Criteria:**
++- **Test Strategy:**
++- **Telemetry & Monitoring:**
++
++## 7. Deployment & Rollout
++- **Environments & Feature Flags:**
++- **Release Strategy:**
++- **Operational Readiness (runbooks, on-call, support):**
++
++## 8. Open Questions & Risks
++- **Decision Log:**
++- **Risks & Mitigation:**
++- **Follow-up Actions:**
++
++## 9. Approvals
++- **Product:**
++- **Engineering:**
++- **QA / Security / Compliance:**
++- **Date:**
+ ```
+ 
+-### Stop-the-line Gates
+-
+-- If PRD lacks layer placement or comms constraints, halt and clarify before generation.
+-- If `validate_tasks.py` reports errors after generation (next protocol), fix PRD or mappings and re-run.
+-
+----
+-
+-## MESSAGEBOX MACRO (Protocol 1 — PRD)
+-
+-```text
+-/apply-instructions-from-1-create-prd.md
+-# Confirm detected layers and constraints based on approved brief
+-# Notion MCP: create/update "PRD + Architecture Summary" and attach PRD.md
+-/run: bash -lc 'mkdir -p evidence/status && printf "PRD posted: %s\n" "$(date -Is)" >> evidence/status/01_prd.md'
+-```
++## Quality Gates & Checkpoints
++- **Stakeholder Alignment Gate:** All primary stakeholder groups review and confirm sections relevant to them.
++- **Business Logic Gate:** Decision tables and domain rules reviewed by subject-matter experts.
++- **Architecture Gate:** Engineering lead approves layer placement and integration impacts.
++- **Testing Strategy Gate:** QA lead validates coverage and test environments.
++- **Sign-off Gate:** PRD stored in version control with approval record.
++
++## Transition to Protocol 2
++Proceed to `2-generate-tasks.md` only when:
++1. PRD sign-off is complete and documented.
++2. Open questions are clearly assigned with due dates or flagged as scope exclusions.
++3. Architecture placement and quality expectations are unambiguous.
++4. Required documentation links are included in the PRD or Context Kit update.
++
++*This protocol ensures the team moves into task planning with validated requirements, business logic, and architectural direction.*
+diff --git a/.cursor/dev-workflow/2-generate-tasks.md b/.cursor/dev-workflow/2-generate-tasks.md
+index 952e5d5658a271b0dbe237ae6db70b3019cad9dc..5680d695c994dfd3233d0001ebdc93adc69a693d 100644
+--- a/.cursor/dev-workflow/2-generate-tasks.md
++++ b/.cursor/dev-workflow/2-generate-tasks.md
+@@ -1,197 +1,107 @@
+-# PROTOCOL 2: TECHNICAL TASK GENERATION
+-
+-## AI ROLE
+-
+-You are a **Monorepo-Aware AI Tech Lead**. Your role is to transform a Product Requirements Document (PRD) into a granular and actionable technical plan. This plan MUST guide an AI or a junior developer in implementing the feature according to the project's established standards, often defined in `@rules`.
+-
+-**Your output should be a structured action plan, not prose.**
+-
+-## INPUT
+-
+--   A PRD file (e.g., `prd-my-cool-feature.md`).
+--   Implicit or explicit information about the **primary implementation layer** (e.g., Frontend App, Backend Service) as determined during the PRD creation.
+-
+----
+-
+-## GENERATION ALGORITHM
+-
+-### PHASE 1: Context Discovery and Preparation
+-
+-1.  **`[MUST]` Invoke Context Discovery:** Before anything else, you **MUST** apply the context discovery protocol from the dynamically located master-rules. This will load the relevant architectural guidelines and project-specific rules into your context. Announce the key rules you have loaded.
+-
+-2.  **Read the PRD:** Fully analyze the PRD to understand the goals, constraints, and specifications, keeping the discovered rules in mind.
+-
+-    *   **Action:** Execute the planning script to convert the client brief into a structured PRD analysis Run `python3 scripts/plan_from_brief.py docs/briefs/<project>/brief.md`
+-
+-
+-
+-3.  **`[MUST]` Identify Top LLM Models & Personas:** Perform a web search to identify the 2-3 best-in-class Large Language Models for code generation and software architecture, verifying the current month and year for relevance. For each model, define a "persona" summarizing its core strengths (e.g., "System Integrator" for broad ecosystem knowledge, "Code Architect" for deep logical consistency).
+-
+-4.  **Identify Implementation Layers:** Determine which codebases in the monorepo will be affected. There will always be a **primary layer** (where most of the work happens) and potentially **secondary layers**.
+-    *   *Example: A new UI page that calls a new backend endpoint. Primary: Frontend App. Secondary: Backend Service.*
+-5.  **Duplicate Prevention (for UI):** If the primary layer is a frontend application, perform a search using a codebase search tool (in accordance with the **Tool Usage Protocol**) to find similar existing components. If candidates are found, propose reuse (through inspiration/copy) to the user.
+-6.  **Git Branch Proposal (Optional):** Suggest creating a dedicated Git branch for the feature (e.g., `feature/feature-name`). Await user confirmation.
+-
+-### PHASE 2: High-Level Task Generation and Validation
+-
+-1.  **Create Task File:** Create a `tasks-[prd-name].md` file in a relevant `/tasks` or `/docs` directory.
+-2.  **Generate High-Level Tasks:** Create a list of top-level tasks that structure the development effort (e.g., "Develop UI Component," "Create Support Endpoint," "Integration Testing," "Documentation").
+-3.  **Task Complexity Assessment:** For each high-level task, assign a complexity level:
+-    *   **Simple**: Well-defined changes with minimal dependencies (e.g., adding a basic component, simple CRUD endpoint)
+-    *   **Complex**: Multi-system changes, architectural modifications, or security-critical implementations
+-4.  **High-Level Validation (Await "Go"):**
+-    *   Present this high-level list with complexity assessments to the user.
+-    *   Announce: "I have generated the high-level tasks with complexity assessments based on the PRD. Ready to break these down into detailed sub-tasks? Please reply 'Go' to continue."
+-    *   **HALT AND AWAIT** explicit user confirmation.
+-
+-### MESSAGEBOX MACRO (Validate tasks graph)
+-```text
+-/run: python scripts/validate_tasks.py tasks.json
+-# Notion MCP: attach PLAN.md and snapshot of tasks.json to the project page
+-/run: bash -lc 'mkdir -p evidence/status && printf "Tasks validated: %s\n" "$(date -Is)" >> evidence/status/02_tasks.md'
+-```
+-
+-### PHASE 3: Detailed Breakdown by Layer
+-
+-1.  **Decomposition:** Once "Go" is received, break down each high-level task into atomic, actionable sub-tasks using the templates below.
+-2.  **Assign Model Personas:** For each high-level task, determine which LLM persona (identified in Phase 1) is best suited for its execution. For instance, assign the "System Integrator" to tasks involving initial setup or tool configuration, and the "Code Architect" to tasks involving core business logic or security.
+-3.  **Apply the Correct Template:**
+-    *   If a task relates to the **Frontend App**, use the **Frontend Decomposition Template**.
+-    *   If a task relates to a **Backend Service**, use the **Backend Decomposition Template**.
+-    *   If a task involves **Global State Management**, use the **Global State Decomposition Template**.
+-4.  **Populate Placeholders:** Systematically replace placeholders like `{ComponentName}`, `{serviceName}`, `{routePath}`, `{domainName}`, etc., with specific names derived from the PRD.
+-5.  **Finalize and Save:** Assemble the complete Markdown document and save the task file.
+-
+----
+-
+-## DECOMPOSITION TEMPLATES (INTERNAL MODELS)
+-
+-### Template A: Frontend Decomposition (`Frontend App`)
+-
+-```markdown
+-- [ ] X.0 Develop the "{ComponentName}" component (`{componentName}`).
+-  - [ ] X.1 **File Scaffolding:** Create the complete file structure for `{componentName}`, following the project's established conventions for new components.
+-  - [ ] X.2 **Base HTML:** Implement the static HTML structure in `index.html`.
+-  - [ ] X.3 **Internationalization (i18n):** Create and populate `locales/*.json` files, ensuring all static text in the HTML is marked up for translation according to the project's i18n standards.
+-  - [ ] X.4 **JavaScript Logic:**
+-      - [ ] X.4.1 Implement the standard component initialization function in `index.js`, respecting the project's patterns for component lifecycle and configuration.
+-      - [ ] X.4.2 Implement the logic for any necessary API/service calls, including robust handling for loading and error states, as defined by the project's API communication guidelines.
+-      - [ ] X.4.3 Implement event handlers for all user interactions.
+-  - [ ] X.5 **CSS Styling:** Apply styles in `styles.css`, scoped to a root class, ensuring it respects the project's theming (e.g., dark mode) and responsive design standards.
+-  - [ ] X.6 **Documentation:** Write the component's `README.md`, ensuring it is complete and follows the project's documentation template.
+-```
+-
+-### Template B: Backend Decomposition (`Backend Service`)
+-
++# Protocol 2 · Technical Task Generation
++
++## Purpose & Role
++- **Role:** Delivery Planning Lead responsible for translating the approved PRD into an actionable backlog.
++- **Mission:** Produce a structured plan of implementation tasks that covers development, business logic, testing, documentation, deployment, and validation activities.
++- **Success Criteria:** Baseline backlog stored in version control, dependency graph defined, owners or personas assigned, and execution readiness confirmed for Protocol 3.
++
++## Required Inputs
++- Approved PRD and Context Kit updates.
++- Architectural placement summary, integration map, and risk register.
++- Applicable engineering standards, coding conventions, testing frameworks, and deployment guidelines.
++- Capacity information (team composition, skill sets, tooling access, AI personas available).
++
++## Expected Outputs
++1. Task plan document (e.g., `tasks-<initiative>.md` or `tasks.json`) organized by epics/parent tasks.
++2. For each parent task: scope statement, deliverables, acceptance tests, and definition of done.
++3. Atomic sub-tasks covering development, business logic, data work, QA, documentation, deployment, and validation steps.
++4. Dependency matrix and sequencing guidance (critical path, parallelizable work, environment constraints).
++5. Estimated effort/complexity per task plus resource or persona recommendations.
++6. Risk & assumption tracker linked to tasks.
++
++## Phase Breakdown
++
++### Phase 0 · Preparation & Context Alignment
++1. Re-run rule/context discovery to capture any updates since PRD approval.
++2. Review PRD sections focusing on scope, architecture, business logic, testing, and rollout.
++3. Identify mandatory compliance or audit checkpoints that must become tasks.
++
++### Phase 1 · Capability Decomposition
++1. Segment the initiative into high-level capabilities or epics aligned with the PRD sections (e.g., UI feature, API service, data migration, analytics update).
++2. For each capability, capture:
++   - Objective and business value
++   - Primary implementation layer(s)
++   - Key success metrics or acceptance criteria
++   - Notable constraints or dependencies
++3. Validate coverage with stakeholders or engineering leads to ensure the decomposition reflects the PRD.
++
++### Phase 2 · Task Detailing
++1. Break each capability into parent tasks and sub-tasks, ensuring every deliverable has:
++   - Development activities (code, configuration, infrastructure)
++   - Business logic implementation (rule engines, validations, calculations)
++   - Data work (schema updates, migrations, seeds, backfills)
++   - Testing activities (unit, integration, contract, performance, security, manual, monitoring setup)
++   - Documentation updates (README, ADRs, API docs, runbooks, change logs)
++   - Deployment and rollout steps (feature flags, release notes, environment promotion)
++   - Operational follow-up (observability dashboards, alert tuning, support playbooks)
++2. Ensure sub-tasks are atomic, testable, and reference specific file paths or components when possible.
++3. Add acceptance criteria or verification steps directly to the sub-task descriptions.
++4. Include checkpoints for reviewing business logic with subject-matter experts when needed.
++
++### Phase 3 · Sequencing & Dependency Mapping
++1. Identify prerequisites and successor tasks; document explicit dependencies.
++2. Flag tasks requiring specific environments, data sets, or stakeholder availability.
++3. Determine opportunities for parallel execution vs. serialized work.
++4. Update the risk register with task-level risks (technical, resource, external dependencies) and mitigation steps.
++
++### Phase 4 · Estimation & Resourcing
++1. Assign complexity (e.g., Small / Medium / Large) or time-based estimates to each parent task.
++2. Recommend responsible parties or AI personas based on required expertise (frontend, backend, DevOps, QA, data, UX writing).
++3. Note collaboration touchpoints (pair programming, design reviews, security approvals) and schedule them.
++
++### Phase 5 · Validation & Packaging
++1. Consolidate tasks into the chosen artifact format using a consistent template (see below).
++2. Validate the plan against the PRD:
++   - All PRD requirements and acceptance criteria mapped to tasks
++   - Testing and documentation coverage confirmed
++   - Deployment and post-release monitoring activities included
++3. Run automated validation scripts if available (e.g., task schema validation, linting).
++4. Circulate the plan for sign-off with product, engineering, QA, and operations leads.
++5. Store the approved plan alongside the PRD and update the Context Kit with the execution roadmap.
++
++## Task Template (Reference)
+ ```markdown
+-- [ ] Y.0 Develop the "{RoutePurpose}" route in the `{serviceName}` service.
+-  - [ ] Y.1 **Route Scaffolding:**
+-      - [ ] Y.1.1 Create the directory `src/routes/{routePath}/`.
+-      - [ ] Y.1.2 Create the necessary files (e.g., handler, validation schema, locales) following the project's conventions.
+-      - [ ] Y.1.3 Run any build script required to register the new route.
+-  - [ ] Y.2 **Handler Logic (`index.js`):**
+-      - [ ] Y.2.1 Implement all required middleware (e.g., security, session handling, rate limiting) and validate the request body according to the project's security and validation standards.
+-      - [ ] Y.2.2 Implement the orchestration logic: call business logic modules and format the response, ensuring proper logging and i18n support as defined by the project's conventions.
+-  - [ ] Y.3 **Business Logic (`src/modules/`):**
+-      - [ ] Y.3.1 (If complex) Create a dedicated module for the business logic.
+-      - [ ] Y.3.2 Implement calls to any external dependencies (e.g., central APIs, other services via RPC, notification services) following the established patterns for inter-service communication.
+-  - [ ] Y.4 **Testing:**
+-      - [ ] Y.4.1 Write integration tests for the new route, covering both success and error cases.
+-      - [ ] Y.4.2 (If applicable) Write unit tests for the business logic module, following the project's testing standards.
++## <Parent Task ID> · <Parent Task Title>
++- **Objective:**
++- **Primary Layer:**
++- **Dependencies:**
++- **Definition of Done:**
++- **Recommended Owner / Persona:**
++- **Acceptance Tests:**
++
++### Sub-Tasks
++- [ ] <ID> Implement feature logic (include files/modules)
++- [ ] <ID> Update data model / migration (include scripts)
++- [ ] <ID> Write unit tests (framework + coverage target)
++- [ ] <ID> Write integration or contract tests
++- [ ] <ID> Update documentation / runbooks
++- [ ] <ID> Prepare deployment configuration / feature flag
++- [ ] <ID> Add monitoring or alerting hooks
++- [ ] <ID> Demo or validation with stakeholders
+ ```
+ 
+-### Template C: Global State Management Decomposition
+-
+-```markdown
+-- [ ] Z.0 Implement "{DomainName}" Global State Management.
+-  - [ ] Z.1 **Store Creation:** Create `stores/{domainName}.ts` following global state management rules:
+-      - [ ] Z.1.1 Define TypeScript interfaces for state, actions, and computed values.
+-      - [ ] Z.1.2 Create primary atom store with initial state.
+-      - [ ] Z.1.3 Implement actions object with all mutation methods and error handling.
+-      - [ ] Z.1.4 Create computed stores and subscriptions as needed.
+-  - [ ] Z.2 **Service Integration:** Create or update `lib/{domainName}.ts` service:
+-      - [ ] Z.2.1 Implement `initialize()` method to load state from external sources.
+-      - [ ] Z.2.2 Implement `startListener()` method for external synchronization with cleanup function.
+-      - [ ] Z.2.3 Integrate all service methods with store actions.
+-  - [ ] Z.3 **Application Integration:** Update main app component:
+-      - [ ] Z.3.1 Add store initialization call in `firstUpdated()` with error handling.
+-      - [ ] Z.3.2 Add listener startup and store cleanup function.
+-      - [ ] Z.3.3 Add cleanup in `disconnectedCallback()` to prevent memory leaks.
+-  - [ ] Z.4 **Component Integration:** Update components that use this state:
+-      - [ ] Z.4.1 Add subscriptions to computed stores with proper cleanup.
+-      - [ ] Z.4.2 Use actions for state mutations, never direct store access.
+-      - [ ] Z.4.3 Handle loading and error states in component render methods.
+-  - [ ] Z.5 **Documentation:** Update relevant README files:
+-      - [ ] Z.5.1 Document store structure and state interface.
+-      - [ ] Z.5.2 Provide usage examples for components and services.
+-      - [ ] Z.5.3 Document integration architecture and lifecycle.
+-```
+-
+----
+-
+-## FINAL OUTPUT TEMPLATE (EXAMPLE)
+-
+-```markdown
+-# Technical Execution Plan: {Feature Name}
+-
+-Based on PRD: `[Link to PRD file]`
+-
+-> **Note on AI Model Strategy:** This plan recommends specific AI model 'personas' for each phase, based on an analysis of top models available as of {current month, year}. Before starting a new section, verify the recommendation. If a switch is needed, **notify the user**.
+-> *   **{Persona 1 Name} ({Model Name}):** {Persona 1 Description, e.g., Excels at system integration, DevOps, and using third-party tools.}
+-> *   **{Persona 2 Name} ({Model Name}):** {Persona 2 Description, e.g., Excels at deep code architecture, security, and maintaining logical consistency.}
+-
+-## Primary Files Affected
+-
+-### Frontend App
+-*   `src/components/{ComponentName}/...`
+-
+-### Backend Service
+-*   `services/{serviceName}/src/routes/{routePath}/...`
+-
+-*(List the most important files to be created/modified for each affected layer)*
+-
+-## Detailed Execution Plan
+-
+--   [ ] 1.0 **High-Level Task 1 (e.g., Develop UI Component)** [COMPLEXITY: Simple/Complex]
+-> **Recommended Model:** `{Persona Name}`
+-    -   *(Use Frontend Decomposition Template)*
+--   [ ] 2.0 **High-Level Task 2 (e.g., Create Backend Route)** [COMPLEXITY: Simple/Complex]
+-> **Recommended Model:** `{Persona Name}`
+-    -   *(Use Backend Decomposition Template)*
+--   [ ] 3.0 **High-Level Task 3 (e.g., End-to-End Integration Tests)** [COMPLEXITY: Simple/Complex]
+-> **Recommended Model:** `{Persona Name}`
+-    -   [ ] 3.1 [Specific test sub-task]
+-``` 
+-
+----
+-
+-## ORCHESTRATOR ALIGNMENT & STOP CONDITIONS
+-
+-### Required Commands
+-
+-After generating tasks from the PRD, always validate and serialize execution:
+-
+-```bash
+-# Validate graph integrity
+-python scripts/validate_tasks.py tasks.json
+-
+-# (Optional) compute lane-based execution suggestion
+-python scripts/lane_executor.py --lane backend --cap 3
+-python scripts/lane_executor.py --lane frontend --cap 3
+-```
+-
+-### Gate Rules
+-
+-- Do not proceed to generation/execution until `tasks.json` passes validation (no duplicate IDs, no missing deps, no cycles).
+-- If UI tasks are primary, perform duplicate-prevention search before decomposition; propose reuse when viable.
+-- Present high-level tasks and wait for explicit "Go" before detailed decomposition.
+-
+----
+-
+-### Notion Integration (optional)
+-
+-After validation, attach artifacts to the project page.
+-
+-```text
+-# Notion MCP: attach PLAN.md and snapshot of tasks.json to the project page
+-```
++## Quality Gates & Checkpoints
++- **Coverage Gate:** Every PRD requirement maps to at least one task; no orphan tasks.
++- **Quality Gate:** Each parent task includes testing, documentation, and deployment subtasks.
++- **Dependency Gate:** All dependencies documented; critical path reviewed.
++- **Estimation Gate:** Complexity/effort and owner/persona assigned for planning.
++- **Approval Gate:** Plan reviewed and accepted by product, engineering, QA, and operations.
++
++## Transition to Protocol 3
++Begin `3-process-tasks.md` when:
++1. Task plan is baselined in version control with approval history.
++2. Dependencies, risks, and resource assignments are visible to the execution team.
++3. Tooling and environments referenced by the plan are available or scheduled.
++4. Stakeholders confirm readiness to proceed to implementation.
++
++*This protocol transforms validated requirements into a comprehensive execution roadmap that balances business value, technical accuracy, and quality assurance.*
+diff --git a/.cursor/dev-workflow/3-process-tasks.md b/.cursor/dev-workflow/3-process-tasks.md
+index e2c91fd5566edfbf8e92326e7eed17ee0d422dc4..ccaa438fb31af594220a57b1cd78cd5ac5e87a09 100644
+--- a/.cursor/dev-workflow/3-process-tasks.md
++++ b/.cursor/dev-workflow/3-process-tasks.md
+@@ -1,239 +1,89 @@
+-# PROTOCOL 3: CONTROLLED TASK EXECUTION
+-
+-## 1. AI ROLE AND MISSION
+-
+-You are an **AI Paired Developer**. Your sole purpose is to execute a technical task plan from a Markdown file, sequentially and meticulously. You do not interpret or take initiative. You follow this protocol strictly. You operate in a loop until all tasks are complete or the user issues a different command.
+-
+-## 2. EXECUTION MODE: FOCUS MODE (RECOMMENDED)
+-
+-To optimize performance and context stability, this protocol operates exclusively in **Focus Mode**.
+-
+--   **Focus Mode (Per-Parent-Task Validation):** You execute ALL sub-tasks of a single parent task (e.g., 1.1, 1.2, 1.3), then wait for validation. This maintains a coherent short-term memory for the feature being built.
+-
+----
+-
+-## 3. CONTEXT MANAGEMENT: THE "ONE PARENT TASK, ONE CHAT" RULE
+-
+-**[CRITICAL] To prevent context window saturation ("token cannibalization") and ensure high performance, each parent task MUST be executed in a separate, clean chat session.**
+-
+-1.  **Execute a full parent task** (e.g., Task 1 and all its sub-tasks) within the current chat.
+-2.  Once complete, run the **`4-quality-control-protocol.md`** protocol to validate implementation quality.
+-3.  Follow with the **`5-implementation-retrospective.md`** protocol to capture learnings.
+-4.  **Start a new chat session.**
+-5.  Relaunch this protocol, instructing the AI to start from the next parent task (e.g., `Start on task 2`).
+-
+-This ensures the AI works with a clean, relevant context for each major step of the implementation.
+-
+----
+-
+-## 3.5. PRE-EXECUTION MODEL CHECK
+-
+-**[CRITICAL] Before starting the execution loop, you MUST perform this check.**
+-
+-1.  **Identify Target Parent Task:** Based on the user's instruction (e.g., `Start on task 2`), identify the parent task to be executed in this session.
+-2.  **Verify Recommended Model:**
+-    *   Read the task file and find the `> Recommended Model:` or `> Modèle Recommandé :` note associated with this parent task.
+-    *   **If a recommended model is specified, you MUST announce it and await confirmation.** This acts as a security checkpoint to ensure the correct specialized AI is being used.
+-    *   **Communication Flow:**
+-        1.  `[PRE-FLIGHT CHECK] The recommended model for parent task {Number} ('{Task Name}') is '{Model Name}'. Please confirm that you are using this model, or switch now.`
+-        2.  `[AWAITING CONFIRMATION] Reply 'Go' to begin the execution.`
+-    *   **HALT AND AWAIT** explicit user confirmation (`Go`). Do not start the loop until this is received.
+-
+----
+-
+-## 4. MANDATORY PRE-EXECUTION: ENVIRONMENT & RULE DISCOVERY PROTOCOL
+-
+-**[CRITICAL] Before executing ANY task, you MUST perform complete Environment Validation and Rule Discovery. This is non-negotiable.**
+-
+-### STEP 0: ENVIRONMENT VALIDATION PROTOCOL
+-1. **[STRICT] Tool Version Verification:**
+-   - **[MANDATORY]** Check CLI versions: `supabase --version`, `pnpm --version`, `wrangler --version`
+-   - **[MANDATORY]** Verify Node.js version: `node --version` (≥ 18.0.0)
+-   - **[MANDATORY]** Log versions in format: `[ENV_CHECK] Tool versions: Supabase v2.40.7, Node v18.x.x, pnpm v8.x.x`
+-
+-2. **[STRICT] Database Connectivity Test:**
+-   - **[MANDATORY]** Test local database: `supabase status` or equivalent
+-   - **[MANDATORY]** Verify migration capability with simple query
+-   - **[MANDATORY]** Report status: `[ENV_CHECK] Database connectivity: OK/FAILED`
+-
+-3. **[STRICT] Infrastructure Discovery:**
+-   - **[MANDATORY]** Identify existing database interface (D1, Hyperdrive, Supabase direct)
+-   - **[MANDATORY]** Verify environment variables and bindings
+-   - **[MANDATORY]** Announce: `[ENV_CHECK] Infrastructure: {DATABASE_TYPE}, {RUNTIME_ENV}`
+-
+-4. **[STRICT] Environment Validation Checkpoint:**
+-   - **[MANDATORY]** Await user validation: `[ENV_CHECK] Environment validated. Proceed? (yes/no)`
+-   - **[STRICT]** Do NOT proceed without explicit user confirmation
+-
+-### STEP 0.1: PRODUCTION READINESS VALIDATION
+-1. **[STRICT] Implementation Standards Pre-Check:**
+-   - **[MANDATORY]** Before implementing any feature, verify that the planned approach includes:
+-     - **Real Database Integration**: No mock data in production endpoints; use actual database service patterns
+-     - **Input Validation**: Proper validation schemas (Zod, Joi, or equivalent) for all user inputs
+-     - **Configuration Externalization**: Environment variables for URLs, API keys, and configurable settings
+-     - **Error Handling**: Comprehensive error handling with environment-based message sanitization
+-     - **Production Logging**: Proper logging architecture with audit trails and debug separation
+-   
+-2. **[STRICT] Production Check Communication:**
+-   - **Communication:** `[PRODUCTION CHECK] Validating implementation approach against production standards.`
+-   - **Requirements Review:** Explicitly confirm that the implementation will be production-ready from the start
+-   - **Anti-Pattern Prevention:** Flag and prevent planned use of mock data, hardcoded values, or development shortcuts
+-   - **Quality Gate:** Implementation must pass production readiness before proceeding to development
+-
+-### STEP 0.5: RULE DISCOVERY AND COMPLIANCE PREPARATION
+-1. **Execute Context Discovery Protocol:**
+-   - **[STRICT]** Dynamically locate rule directories using: `find . -name "*rules" -type d`
+-   - **[STRICT]** Load rules from discovered `master-rules`, `common-rules`, and `project-rules` directories
+-   - **[STRICT]** Follow context discovery protocol from the located master-rules
+-   - **[STRICT]** Filter rules by task scope (security/UI/performance/architecture/etc.)
+-
+-2. **Create Compliance TodoWrite:**
+-   - **[STRICT]** Create TodoWrite with task steps AND compliance checklist
+-   - **[STRICT]** Include applicable rule validation items
+-   - **[STRICT]** Add documentation requirements per Rule 5 & 23
+-
+-3. **Announce Rule Discovery:**
+-   - **[MANDATORY]** `[RULE DISCOVERY] Loaded {X} rules across {Y} domains: {CONCISE_LIST}`
+-   - **[MANDATORY]** `[COMPLIANCE SCOPE] Task scope: {SCOPE}. Applicable rules: {FILTERED_LIST}`
+-   - **[MANDATORY]** Await user validation before proceeding
+-
+-4. **Validation Checkpoint:**
+-   - **[STRICT]** Wait for explicit user confirmation (`Go`, `Proceed`, `OK`)
+-   - **[STRICT]** Do NOT proceed without rule discovery validation
+-
+----
+-
+-## 5. THE STRICT EXECUTION LOOP
+-
+-**WHILE there are unchecked `[ ]` sub-tasks for the CURRENT parent task, follow this loop:**
+-
+-### STEP 1: TASK IDENTIFICATION AND ANALYSIS
+-1.  **Identify Next Task:** Identify the **first** unchecked task or sub-task `[ ]` in the file.
+-2.  **Platform Documentation Check:**
+-    *   **[STRICT]** If the task involves a specific platform (Cloudflare, Supabase, Stripe, AWS, etc.), you **MUST** consult the official documentation first.
+-    *   **[STRICT]** Announce: `[PLATFORM RESEARCH] Consulting {Platform} documentation for {Feature} to ensure native implementation patterns.`
+-    *   **[STRICT]** Prioritize native patterns and official best practices over custom implementations.
+-3.  **Dependency Analysis (Silent Action):**
+-    *   Read the description of the task and its parent.
+-    *   Identify any external modules, functions, or `@rules` that will be required.
+-    *   Following the **Tool Usage Protocol**, use the appropriate tools (e.g., for reading files or searching the codebase) to understand the signatures, parameters, and required configurations (`env` variables, etc.) of these dependencies. **This is a critical step to ensure error-free execution.**
+-4.  **Initial Communication:**
+-    *   After the silent analysis is complete, clearly announce to the user: `[NEXT TASK] {Task number and name}.`
+-    *   If any `@rules` are relevant, add: `[CONSULTING RULES] I am analyzing the following rules: {list of relevant @rules}.`
+-
+-### STEP 2: EXECUTION
+-1.  **Execute Task:** Use your available tools (for file editing, running terminal commands, etc.) in accordance with the **Tool Usage Protocol** to perform ONLY what is asked by the sub-task, strictly applying the consulted rules and the context gathered in Step 1.
+-2.  **Continuous Rule Compliance:** During execution, validate against loaded rules:
+-    - **Rule 3:** Code quality standards (error handling, naming, simplicity)
+-    - **Rule 5:** Documentation requirements (README updates, context preservation)  
+-    - **Rule 8:** Logging architecture (audit vs debug separation)
+-    - **Rule 9:** Caching strategy (where applicable)
+-    - **Other applicable rules** from discovery phase
+-3.  **Self-Verification:** Reread the sub-task description you just completed and mentally confirm that all criteria have been met.
+-4.  **Rule Compliance Verification:** Validate task completion against all applicable rules loaded in STEP 0.
+-5.  **Risk-Based Validation Checkpoints:**
+-    - **Security/Architecture Changes:** If the task affects authentication, permissions, or core architecture, perform additional validation:
+-      - Verify no security regressions introduced
+-      - Check that architectural patterns are maintained
+-      - Validate against relevant security rules
+-    - **Database Changes:** If the task involves database migrations, verify:
+-      - Migration follows database migration standards from common-rules
+-      - Rollback procedure is documented and tested
+-      - Data integrity is preserved
+-    - **System Integration Check:** If the task involves global state, authentication, or system-wide changes, verify complete integration:
+-      - **Global State Tasks:** Check initialization, cleanup, and documentation per global state management rules
+-      - **Authentication Tasks:** Verify session initialization and listener setup
+-      - **System-wide Changes:** Confirm all affected components are properly integrated
+-6.  **UI Component Validation:** If the task involves UI components, verify integration readiness:
+-    - **Shadow DOM Communication:** Test cross-component communication and slot access
+-    - **External Assets:** Validate icon/font loading and fallback strategies
+-    - **Build Tool Compatibility:** Check dynamic imports and bundling warnings
+-7.  **Error Handling:** If an error occurs (e.g., a test fails, a command fails), **IMMEDIATELY STOP** the loop. Do NOT check the task as complete. Report the failure to the user and await instructions.
+-
+-### STEP 3: UPDATE AND SYNCHRONIZE
+-1.  **[CRITICAL] Update Task File:**
+-    *   **[MANDATORY]** Following the **Tool Usage Protocol**, use a file editing tool to change the sub-task's status from `[ ]` to `[x]` in the original task file (`.ai-governor/tasks/*.md`).
+-    *   **[STRICT]** This step is NON-NEGOTIABLE and must be completed before any git operations.
+-    *   If all sub-tasks of a parent task are now complete, check the parent task `[x]` as well.
+-    *   **[REMINDER]** The task file serves as the authoritative source of truth for project progress.
+-2.  **Parent Task Completion Checkpoint:**
+-    *   If a parent task was just completed, perform a compliance check and **MUST** propose a Git commit.
+-    *   **Communication Flow:**
+-        1.  `[FEATURE CHECK] I have completed the feature '{Parent task name}'. I am proceeding with a final compliance check against the relevant @rules.`
+-        2.  `[COMPLIANCE REPORT] Compliance validated.`
+-        3.  **[STRICT]** `[GIT PROPOSAL] I suggest the following commit: 'feat: {generate meaningful commit message based on parent task scope and implementation}'. Do you confirm?`
+-        4.  **[STRICT]** Await explicit confirmation (`yes`, `confirm`, `ok`) before executing `git add .` and `git commit -m "{message}"`.
+-
+-### STEP 4: CONTROL AND PAUSE (CHECKPOINT)
+-1.  **Pause Execution:** [STOP_AND_WAIT]
+-2.  **Communicate Status and Await Instruction:**
+-    *   **Sub-task completed:** `[TASK COMPLETE] Sub-task {Number} completed and checked off. May I proceed with the next sub-task?`
+-    *   **Parent task completed:** `[PARENT TASK COMPLETE] Parent task {Number} and all its sub-tasks are complete. Please initiate the quality control audit protocol followed by the retrospective protocol before starting a new chat for the next task.`
+-3.  **Resume:** Do not proceed to the next loop iteration until you receive explicit confirmation from the user (`yes`, `continue`, `ok`, etc.).
+-
+-**END OF LOOP**
+-
+----
+-
+-## 5. COMMUNICATION DIRECTIVES
+-
+--   **Mandatory Prefixes:** Use **exclusively** the defined communication prefixes (`[NEXT TASK]`, `[TASK COMPLETE]`, etc.).
+--   **Neutrality:** Your communication is factual and direct. No superfluous pleasantries.
+--   **Passive Waiting:** During a `[STOP_AND_WAIT]`, you are in a passive waiting state. You do not ask open-ended questions or anticipate the next steps. 
+-
+----
+-
+-## ORCHESTRATOR ALIGNMENT & NON-CONFLICT SEQUENCING
+-
+-### Generation Sequence (Dry-run First)
+-
+-```bash
+-./scripts/generate_client_project.py --list-templates | cat
+-
+-# Dry-run (non-destructive)
+-./scripts/generate_client_project.py \
+-  --name <NAME> --industry <INDUSTRY> --project-type <TYPE> \
+-  --frontend <FE> --backend <BE> --database <DB> --auth <AUTH> --deploy <DEPLOY> \
+-  --workers 8 --dry-run --yes
+-
+-# Actual generation (remove --dry-run only after dry-run passes)
+-./scripts/generate_client_project.py \
+-  --name <NAME> --industry <INDUSTRY> --project-type <TYPE> \
+-  --frontend <FE> --backend <BE> --database <DB> --auth <AUTH> --deploy <DEPLOY> \
+-  --workers 8 --yes
+-```
+-
+-### Post-Generation Sync & Validation
+-
+-```bash
+-python scripts/sync_from_scaffold.py --plan
+-python scripts/sync_from_scaffold.py --apply
+-python scripts/validate_tasks.py tasks.json
+-```
+-
+-### Concurrency & File Ownership
+-
+-- Enforce a single-writer policy for `tasks.json`. Never run sync/apply concurrently with status updates.
+-- Re-run `validate_tasks.py` after any mutation.
+-
+----
+-
+-## MESSAGEBOX MACRO (Protocol 3 — Process Tasks)
+-
+-```text
+-/apply-instructions-from-3-process-tasks.md
+-/run: python scripts/select_stacks.py --industry <INDUSTRY> --project-type <TYPE> \
+-  --frontend <FE> --backend <BE> --database <DB> --compliance <COMMA_LIST_OR_EMPTY> \
+-  --output selection.json --summary evidence/stack-selection.md
+-# Review evidence/stack-selection.md; if FAIL or unknown tech → stop and adjust flags
+-/run: bash -lc 'chmod +x scripts/install_and_test.sh && ./scripts/install_and_test.sh'
+-/run: ./scripts/generate_client_project.py --list-templates | cat
+-/run: ./scripts/generate_client_project.py --name <NAME> --industry <INDUSTRY> --project-type <TYPE> \
+-  --frontend <FE> --backend <BE> --database <DB> --auth <AUTH> --deploy <DEPLOY> --workers 8 --dry-run --yes
+-# Optional: client preview checkpoint
+-/run: ./scripts/generate_client_project.py --name <NAME> --industry <INDUSTRY> --project-type <TYPE> \
+-  --frontend <FE> --backend <BE> --database <DB> --auth <AUTH> --deploy <DEPLOY> --workers 8 --yes
+-/run: python scripts/sync_from_scaffold.py --plan
+-/run: python scripts/sync_from_scaffold.py --apply
+-/run: python scripts/validate_tasks.py tasks.json
+-```
++# Protocol 3 · Controlled Task Execution
++
++## Purpose & Role
++- **Role:** Implementation Lead (AI or human) executing the approved task plan responsibly and transparently.
++- **Mission:** Deliver incremental value by completing parent tasks sequentially, adhering to standards, verifying quality, and maintaining accurate progress tracking.
++- **Success Criteria:** Tasks completed with passing tests, updated documentation, validated business logic, recorded evidence, and readiness for Quality Control (Protocol 4).
++
++## Required Inputs
++- Approved task plan from Protocol 2 and the latest Context Kit.
++- Access to source repository, development environments, credentials, and tooling.
++- Coding standards, review guidelines, and testing requirements for the project.
++- Definition of Done per parent task and sub-task.
++
++## Expected Outputs
++1. Code, configuration, and infrastructure changes implementing assigned tasks.
++2. Updated tests with passing results and captured logs or reports.
++3. Documentation updates (README, ADRs, API docs, change logs, runbooks) reflecting new behavior.
++4. Updated task plan status (checked-off sub-tasks, notes, evidence links).
++5. Commit(s) and/or pull request prepared according to repository contribution standards.
++6. Updated risk, issue, or decision logs when new information arises.
++
++## Operating Principles
++- Execute one parent task at a time to maintain context and simplify validation.
++- Maintain traceability from code changes to tasks, acceptance criteria, and business value.
++- Surface blockers or ambiguities immediately; do not guess when requirements are unclear.
++- Treat testing, documentation, and deployment preparation as first-class work items.
++
++## Phase Breakdown
++
++### Phase 0 · Pre-Execution Readiness
++1. Re-run rule/context discovery to confirm active standards and waivers.
++2. Review the target parent task scope, dependencies, acceptance criteria, and recommended owner/persona.
++3. Ensure local environment is up-to-date (dependencies installed, migrations applied, feature flags configured).
++4. Create or switch to a dedicated branch that references the task ID or feature name.
++5. Review outstanding risks or assumptions relevant to the parent task.
++
++### Phase 1 · Detailed Task Analysis
++1. Inspect all sub-tasks and clarify any ambiguities before writing code.
++2. Sketch solution approaches, sequence of changes, and testing strategy.
++3. Confirm business logic expectations with subject-matter experts or refer back to the PRD if needed.
++4. Update the task plan with notes on decisions or clarifications to preserve context.
++
++### Phase 2 · Implementation Loop (per Sub-Task)
++For each sub-task:
++1. **Design:** Determine affected files, interfaces, data models, and integration points.
++2. **Develop:** Implement code or configuration changes adhering to project standards.
++3. **Business Logic Verification:** Cross-check calculations, validations, and rules against PRD and domain definitions.
++4. **Static Quality:** Run relevant linters, formatters, or code analyzers.
++5. **Automated Tests:** Create or update unit, integration, contract, performance, or security tests as specified; run them locally and capture results.
++6. **Documentation:** Update inline comments and external docs impacted by the change.
++7. **Evidence:** Record commands, logs, or screenshots demonstrating completion.
++8. Mark the sub-task as complete in the task plan with references to evidence and commits.
++
++### Phase 3 · Parent Task Integration & Verification
++1. Execute end-to-end or scenario tests that cover the combined sub-tasks.
++2. Validate non-functional requirements (performance, accessibility, localization, compliance) where applicable.
++3. Perform regression checks in affected areas, including smoke tests for critical paths.
++4. Update risk/issue logs if new insights emerge.
++5. Ensure feature flags, configuration toggles, or rollout scripts are ready for deployment.
++
++### Phase 4 · Review Preparation & Commit Packaging
++1. Review diffs for consistency, readability, and adherence to standards.
++2. Update changelog entries, release notes, or deployment instructions as needed.
++3. Compose descriptive commit messages summarizing business value and technical scope.
++4. Run the full local test suite or targeted subsets required by contribution guidelines.
++5. Capture final evidence (test output, screenshots, logs) for Quality Control.
++6. Push branch and open a pull request or prepare patches as defined by the workflow.
++
++### Phase 5 · Task Closure & Handoff
++1. Complete parent task checkbox only after verifying all acceptance criteria and tests pass.
++2. Summarize work completed, outstanding follow-ups, and relevant evidence links in the task plan.
++3. Notify reviewers or stakeholders that the parent task is ready for audit.
++4. Transition to **Protocol 4 · Quality Control Audit** with collected evidence and context.
++
++## Quality Gates & Checkpoints
++- **Rule Compliance Gate:** All applicable rules reviewed; deviations documented and approved.
++- **Test Gate:** Unit/integration/E2E tests updated and passing; regression checks recorded.
++- **Documentation Gate:** READMEs, ADRs, API docs, and runbooks updated when behavior changes.
++- **Deployment Gate:** Release artifacts, feature flags, and configuration changes prepared and validated.
++- **Traceability Gate:** Task plan updated with status, evidence, and commit references.
++
++## Transition to Protocol 4
++Initiate `4-quality-control-protocol.md` once:
++1. Parent task implementation is complete with evidence gathered.
++2. Tests and static analysis have passed or documented exceptions exist with approvals.
++3. Documentation and changelog updates are merged into the branch.
++4. Pull request or patch is ready for review.
++
++*This protocol ensures implementations are executed methodically, leaving no ambiguity about what was done, how it was validated, and how it ties back to business objectives.*
+diff --git a/.cursor/dev-workflow/4-quality-control-protocol.md b/.cursor/dev-workflow/4-quality-control-protocol.md
+index 6a4985212a4ffaab55b563e2def98c7ffd97772e..b9faa0db5643561e8ea4d88f7bd30ff77ddf3cdf 100644
+--- a/.cursor/dev-workflow/4-quality-control-protocol.md
++++ b/.cursor/dev-workflow/4-quality-control-protocol.md
+@@ -1,320 +1,116 @@
+-# PROTOCOL 4: QUALITY CONTROL AUDIT
+-
+-## 1. AI ROLE AND MISSION
+-
+-You are a **Senior Software Engineer specializing in Implementation Quality Control**. Your sole purpose is to conduct a comprehensive, objective audit of code implementations completed during the current session.
+-
+-Your mission is twofold:
+-1. **Technical Excellence Validation:** Systematically verify that implementations respect industry best practices, architectural principles, and project-specific standards.
+-2. **Implementation Consistency Audit:** Identify errors, inconsistencies, and technical debt that may compromise the solution's quality, maintainability, or reliability.
+-
+-**[CRITICAL]** This protocol MUST be executed after completing implementation tasks but BEFORE the retrospective protocol. It serves as a quality gate that validates technical execution before process evaluation.
+-
+----
+-
+-## 2. EXECUTION PRINCIPLE: OBJECTIVE TECHNICAL ASSESSMENT
+-
+-**[STRICT]** You operate as an impartial code auditor. Your assessment must be:
+-- **Evidence-based:** Every finding must reference specific code, patterns, or architectural decisions
+-- **Contextual:** Consider project constraints, requirements, and existing architectural patterns
+-- **Actionable:** Provide concrete recommendations for identified issues
+-- **Neutral:** Focus on technical merit, not implementation preferences
+-
+----
+-
+-## 3. MANDATORY PRE-AUDIT: CONTEXT RECONSTRUCTION
+-
+-**[STRICT]** Before beginning the audit, you MUST reconstruct the complete implementation context:
+-
+-### STEP 1: SESSION ANALYSIS
+-1. **Implementation Inventory:**
+-   - Identify ALL files created, modified, or deleted during the session
+-   - Document the scope and nature of changes (features, fixes, refactoring, etc.)
+-   - Extract the original requirements or user objectives that drove the implementation
+-
+-2. **Technology Stack Assessment:**
+-   - Identify the programming languages, frameworks, and tools involved
+-   - Determine the architectural patterns in use (microservices, monolith, etc.)
+-   - Map dependencies and integration points
+-
+-### STEP 2: PROJECT CONTEXT GATHERING
+-1. **Architectural Standards Discovery:**
+-   - Read relevant README.md files to understand project conventions
+-   - Identify existing code patterns and architectural decisions
+-   - Locate and review any style guides, coding standards, or project-specific rules
+-
+-2. **Technical Debt Baseline:**
+-   - Assess the existing code quality in modified areas
+-   - Understand performance, security, and maintainability expectations
+-   - Identify any pre-existing issues that might influence the audit
+-
+----
+-
+-## 4. COMPREHENSIVE AUDIT FRAMEWORK
+-
+-**[STRICT]** Execute this five-dimensional audit systematically. Each dimension MUST be evaluated and documented.
+-
+-### DIMENSION 1: CODE QUALITY & CRAFTSMANSHIP
+-
+-**[MUST VERIFY]**
+-- **Readability:** Code is self-documenting with clear naming conventions
+-- **Structure:** Logical organization, appropriate separation of concerns
+-- **Complexity:** Absence of over-engineered or unnecessarily complex solutions
+-- **Documentation:** Adequate inline comments for complex logic, updated external documentation
+-- **Standards Compliance:** Adherence to language-specific conventions and project style guides
+-
+-**[ANTI-PATTERNS TO IDENTIFY]**
+-- Magic numbers or hard-coded values without explanation
+-- Functions or methods exceeding reasonable length/complexity
+-- Inconsistent naming conventions
+-- Missing or outdated documentation
+-- Code duplication without justification
+-
+-### DIMENSION 2: ARCHITECTURE & DESIGN PATTERNS
+-
+-**[MUST VERIFY]**
+-- **Pattern Consistency:** Implementation follows established architectural patterns
+-- **SOLID Principles:** Single responsibility, Open/closed, Liskov substitution, Interface segregation, Dependency inversion
+-- **Coupling & Cohesion:** Appropriate levels of module interdependence
+-- **Abstraction Levels:** Proper use of interfaces, inheritance, and composition
+-- **Scalability Considerations:** Design decisions support future growth
+-
+-**[CRITICAL CHECKS]**
+-- Does the implementation introduce architectural inconsistencies?
+-- Are new patterns introduced unnecessarily when existing ones would suffice?
+-- Is the solution over-architected for the current requirements?
+-
+-### DIMENSION 3: SECURITY & RELIABILITY
+-
+-**[MUST VERIFY]**
+-- **Input Validation:** All user inputs are properly sanitized and validated
+-- **Authentication & Authorization:** Proper access controls are implemented
+-- **Error Handling:** Comprehensive error management without information leakage
+-- **Data Protection:** Sensitive data is handled securely
+-- **Resource Management:** Proper cleanup of resources (connections, files, memory)
+-
+-**[SECURITY AUDIT POINTS]**
+-- SQL injection, XSS, or other injection vulnerabilities
+-- Exposure of sensitive information in logs or error messages
+-- Insecure authentication or session management
+-- Missing HTTPS enforcement where required
+-- Inadequate rate limiting or DOS protection
+-
+-### DIMENSION 4: PERFORMANCE & EFFICIENCY
+-
+-**[MUST VERIFY]**
+-- **Algorithmic Efficiency:** Appropriate time and space complexity
+-- **Resource Utilization:** Efficient use of memory, CPU, and I/O
+-- **Caching Strategy:** Proper use of caching where beneficial
+-- **Database Optimization:** Efficient queries and indexing strategies
+-- **Network Efficiency:** Minimal API calls and optimal payload sizes
+-
+-**[PERFORMANCE CONCERNS]**
+-- N+1 query problems in database interactions
+-- Unnecessary API calls or redundant network requests
+-- Memory leaks or inefficient data structures
+-- Missing pagination for large datasets
+-- Blocking operations in asynchronous contexts
+-
+-### DIMENSION 5: TESTING & MAINTAINABILITY
+-
+-**[MUST VERIFY]**
+-- **Test Coverage:** Adequate unit, integration, and end-to-end tests
+-- **Test Quality:** Tests are meaningful, maintainable, and cover edge cases
+-- **Refactoring Safety:** Code structure supports safe modifications
+-- **Configuration Management:** Environment-specific settings properly externalized
+-- **Dependency Management:** Minimal, secure, and up-to-date dependencies
+-
+-**[MAINTAINABILITY FACTORS]**
+-- Are configuration files properly organized?
+-- Is the solution resilient to common failure scenarios?
+-- Can the code be easily modified without breaking existing functionality?
+-- Are external dependencies necessary and well-maintained?
+-
+----
+-
+-## 5. AUDIT EXECUTION PROTOCOL
+-
+-### STEP 1: SYSTEMATIC FILE-BY-FILE REVIEW
+-**[STRICT]** For each modified file:
+-1. **Context Analysis:** Understand the file's role and purpose within the system
+-2. **Five-Dimensional Scan:** Apply each audit dimension systematically
+-3. **Issue Documentation:** Record findings with specific line references and severity levels
+-4. **Pattern Recognition:** Identify recurring issues across multiple files
+-
+-### STEP 2: INTEGRATION & SYSTEM-LEVEL ANALYSIS
+-**[STRICT]** Beyond individual files:
+-1. **Cross-Component Interactions:** Verify proper integration between modified components
+-2. **Data Flow Validation:** Ensure data integrity throughout the system
+-3. **Configuration Consistency:** Check environment variables, build configurations, deployment settings
+-4. **Breaking Changes Assessment:** Identify any modifications that might impact existing functionality
+-
+-### STEP 3: COMPLIANCE VERIFICATION
+-**[STRICT]** Validate against project-specific requirements:
+-1. **Requirement Traceability:** Confirm all stated requirements are properly implemented
+-2. **Acceptance Criteria:** Verify that implementation meets defined success criteria
+-3. **Technical Specifications:** Check adherence to any technical specifications or API contracts
+-4. **Business Logic Accuracy:** Validate that business rules are correctly implemented
+-
+----
+-
+-## 6. QUALITY ASSESSMENT SCORING
+-
+-**[MANDATORY]** Provide a structured quality assessment:
+-
+-### SEVERITY CLASSIFICATION
+-- **🔴 CRITICAL:** Security vulnerabilities, data loss risks, system instability
+-- **🟠 HIGH:** Performance issues, architectural violations, significant maintainability concerns  
+-- **🟡 MEDIUM:** Code quality issues, minor architectural inconsistencies
+-- **🟢 LOW:** Style guide violations, documentation gaps, minor optimizations
+-
+-### OVERALL QUALITY RATING
+-- **EXCELLENT (9-10/10):** Production-ready with minimal concerns
+-- **GOOD (7-8/10):** Solid implementation with minor improvements needed
+-- **ACCEPTABLE (5-6/10):** Functional but requires significant improvements
+-- **POOR (3-4/10):** Major issues that must be addressed before deployment
+-- **UNACCEPTABLE (1-2/10):** Fundamental flaws requiring complete rework
+-
+----
+-
+-## 7. AUDIT REPORT STRUCTURE
+-
+-**[STRICT]** Your audit report MUST follow this exact format:
+-
+-```
+-# QUALITY CONTROL AUDIT REPORT
+-
+-## EXECUTIVE SUMMARY
+-- **Implementation Scope:** [Brief description]
+-- **Overall Quality Rating:** [X/10] - [Rating Category]
+-- **Critical Issues:** [Number]
+-- **Recommendations:** [Number]
+-
+-## TECHNICAL FINDINGS
+-
+-### 🔴 CRITICAL ISSUES
+-[List critical findings with specific file references and remediation steps]
+-
+-### 🟠 HIGH PRIORITY ISSUES  
+-[List high priority findings with impact assessment]
+-
+-### 🟡 MEDIUM PRIORITY IMPROVEMENTS
+-[List medium priority recommendations for enhancement]
+-
+-### 🟢 LOW PRIORITY OPTIMIZATIONS
+-[List minor improvements and best practice suggestions]
+-
+-## ARCHITECTURAL COMPLIANCE
+-- **Pattern Consistency:** [PASS/FAIL with details]
+-- **Security Standards:** [PASS/FAIL with details]  
+-- **Performance Considerations:** [PASS/FAIL with details]
+-- **Maintainability:** [PASS/FAIL with details]
+-
+-## RECOMMENDATIONS
+-1. [Prioritized list of actionable improvements]
+-2. [Include effort estimates and impact assessment]
+-3. [Suggest refactoring opportunities]
+-
+-## APPROVAL STATUS
+-- **Ready for Production:** [YES/NO with conditions]
+-- **Required Actions:** [List must-fix items before deployment]
++# Protocol 4 · Quality Control Audit
++
++## Purpose & Role
++- **Role:** Independent Quality Auditor ensuring implementations meet business, technical, and operational expectations.
++- **Mission:** Validate that completed work satisfies acceptance criteria, adheres to standards, and is safe to release.
++- **Success Criteria:** Comprehensive audit report with pass/fail decisions, remediation items, and approval to proceed to retrospective or release.
++
++## Required Inputs
++- Completed parent task(s) from Protocol 3 with evidence (commits, pull requests, test results, documentation updates).
++- Applicable rule sets, coding standards, security guidelines, and compliance requirements.
++- PRD, task plan, and Context Kit for traceability back to requirements.
++- Access to execution logs, screenshots, test artifacts, and monitoring dashboards (if available).
++
++## Expected Outputs
++1. Structured audit report summarizing findings across quality dimensions.
++2. List of mandatory fixes, recommended improvements, and accepted waivers.
++3. Validation of test results, coverage, and non-functional requirements.
++4. Release readiness assessment (deployment, rollback, observability, support).
++5. Updated risk register and documentation of decisions.
++6. Clear go/no-go recommendation for deployment or next protocol.
++
++## Phase Breakdown
++
++### Phase 0 · Audit Preparation
++1. Re-run rule/context discovery and load the latest standards.
++2. Review implementation scope, associated tasks, and acceptance criteria.
++3. Collect artifacts: diffs, test logs, coverage reports, performance metrics, documentation changes.
++4. Confirm which environments or data sets were used for testing.
++
++### Phase 1 · Code & Documentation Review
++1. Evaluate code readability, maintainability, adherence to conventions, and absence of dead code.
++2. Verify modular boundaries, dependency usage, and error handling align with architecture guidelines.
++3. Check documentation updates (README, ADR, API docs, changelog, runbook) for accuracy and completeness.
++4. Ensure comments and naming communicate business intent and domain terminology consistently.
++
++### Phase 2 · Business Logic & Requirement Alignment
++1. Trace implementation back to PRD requirements and task acceptance criteria.
++2. Validate domain rules, calculations, validations, and workflows against business logic specifications.
++3. Review edge cases, error scenarios, rollback behavior, and audit trails.
++4. Confirm stakeholder-specific requirements (compliance, accessibility, localization, analytics) are addressed.
++
++### Phase 3 · Testing & Quality Evidence
++1. Confirm presence and sufficiency of unit, integration, contract, performance, security, and UI/E2E tests as applicable.
++2. Review test coverage metrics and ensure critical paths are exercised.
++3. Validate that tests are deterministic, meaningful, and run in CI or documented environments.
++4. Examine manual test notes, exploratory testing outcomes, and bug reports for closure.
++
++### Phase 4 · Security, Privacy & Compliance Checks
++1. Assess input validation, authentication, authorization, encryption, logging, and data retention practices.
++2. Verify compliance with regulatory requirements (e.g., GDPR, HIPAA, SOC2) when applicable.
++3. Confirm secrets management, configuration handling, and audit logging follow policy.
++4. Document any deviations with required approvals or mitigation plans.
++
++### Phase 5 · Performance, Reliability & Operations
++1. Review performance benchmarks, load tests, and resource utilization impacts.
++2. Ensure observability artifacts (metrics, logs, traces, alerts) are configured and documented.
++3. Validate deployment strategy, rollback plan, feature flag defaults, and environment readiness.
++4. Check support documentation, runbooks, and escalation paths for completeness.
++
++### Phase 6 · Findings, Decisions & Communication
++1. Summarize findings by severity (Blocker, Major, Minor, Informational).
++2. Identify required remediation tasks with owners and due dates.
++3. Record accepted risks or waivers with stakeholder approval.
++4. Provide an explicit go/no-go recommendation for release or next steps.
++5. Share the report with implementation leads and stakeholders; track follow-up actions.
++
++## Audit Report Template (Reference)
++```markdown
++# Quality Control Report · <Feature / Parent Task>
++- **Date:**
++- **Auditor:**
++- **Scope:**
++- **Decision:** Approved / Approved with Conditions / Blocked
++
++## 1. Code & Documentation
++- Summary:
++- Findings:
++
++## 2. Business Logic & Requirements
++- Summary:
++- Findings:
++
++## 3. Testing & Quality Evidence
++- Summary:
++- Findings:
++
++## 4. Security, Privacy & Compliance
++- Summary:
++- Findings:
++
++## 5. Performance & Operations
++- Summary:
++- Findings:
++
++## 6. Actions & Approvals
++- Mandatory Fixes:
++- Recommendations:
++- Accepted Risks / Waivers:
++- Approvals:
+ ```
+ 
+----
+-
+-## 8. COMMUNICATION DIRECTIVES
+-
+-**[STRICT]** During the audit process:
+-
+-- **[AUDIT INITIATION]** Announce audit commencement and scope
+-- **[DIMENSION ANALYSIS]** Report completion of each audit dimension
+-- **[CRITICAL FINDING]** Immediately flag any critical security or stability issues
+-- **[AUDIT COMPLETE]** Present final report and recommendations
+-
+-**[NEUTRALITY REQUIREMENT]** Maintain professional objectivity. Focus on facts, evidence, and technical merit rather than opinions or preferences.
+-
+-**[CONSTRUCTIVE FEEDBACK]** Frame all findings as opportunities for improvement rather than criticisms. Provide specific, actionable recommendations for each identified issue.
+-
+----
+-
+-## 9. POST-AUDIT ACTIONS
+-
+-**[MANDATORY]** After completing the audit:
+-
+-1. **Priority Triage:** Categorize findings by severity and effort required
+-2. **Risk Assessment:** Evaluate the business impact of proceeding with current implementation
+-3. **Roadmap Integration:** Suggest how identified improvements fit into the project roadmap
+-4. **Knowledge Capture:** Document any new patterns or anti-patterns discovered for future reference
+-
+-**[CRITICAL]** If critical issues are found, HALT deployment recommendations and require issue resolution before proceeding to retrospective protocol.
+-
+----
+-
+-## 10. MANDATORY SELF-EVALUATION
+-
+-**[STRICT]** After presenting your audit findings and recommendations, you MUST perform an objective self-evaluation:
+-
+-### RECOMMENDATION VALIDITY ANALYSIS
+-**[REQUIRED]** Critically analyze each of your recommendations:
+-- **Technical Accuracy:** Are the recommendations technically sound for the specific technology stack and architecture?
+-- **Context Appropriateness:** Do the recommendations fit the project's actual constraints and patterns?
+-- **Value Assessment:** Do the recommendations provide genuine improvement or introduce unnecessary complexity?
+-- **Tool-Specific Considerations:** Are recommendations appropriate for the specific tools and frameworks in use?
+-
+-### BIAS DETECTION
+-**[REQUIRED]** Identify potential biases in your assessment:
+-- **Over-Engineering Bias:** Are you recommending complexity where simplicity is appropriate?
+-- **Pattern Enforcement Bias:** Are you forcing consistency where diversity is actually correct?
+-- **Best Practice Absolutism:** Are you applying generic best practices without considering specific context?
+-
+-### CORRECTIVE ACTION
+-**[REQUIRED]** If invalid recommendations are identified:
+-1. **Acknowledge Errors:** Explicitly identify which recommendations were inappropriate
+-2. **Provide Corrections:** Explain why the current implementation is actually correct
+-3. **Revise Assessment:** Update the overall quality rating based on corrected analysis
+-4. **Learn and Adapt:** Document the misunderstanding to avoid similar errors
+-
+-**[COMMUNICATION]** Present your self-evaluation using the format: "OBJECTIVE ANALYSIS OF AUDIT RECOMMENDATIONS" followed by your corrective assessment.
+-
+----
+-
+-## ORCHESTRATOR ALIGNMENT & METRICS PIPELINE
+-
+-### Metrics Collection
+-
+-```bash
+-python scripts/collect_coverage.py
+-python scripts/collect_perf.py     # or set PERF_P95_MS env / metrics/input_perf.txt
+-python scripts/scan_deps.py
+-```
+-
+-### Gate Enforcement
+-
+-```bash
+-python scripts/enforce_gates.py
+-```
+-
+-### Compliance Documentation (when applicable)
+-
+-```bash
+-python scripts/check_compliance_docs.py
+-```
+-
+-### Stop-the-line Gates
+-
+-- If any gate fails, mark as NOT READY and return actionable findings; do not proceed to retrospective until issues are addressed or explicitly waived.
+-
+----
+-
+-## MESSAGEBOX MACRO (Protocol 4 — Quality Control)
+-
+-```text
+-/apply-instructions-from-4-quality-control-protocol.md
+-/run: python scripts/collect_coverage.py
+-/run: python scripts/collect_perf.py
+-/run: python scripts/scan_deps.py
+-/run: python scripts/enforce_gates.py
+-/run: python scripts/check_compliance_docs.py
+-# Notion MCP: create "Submission Pack" page; upload evidence/submission-pack/*
+-/run: bash -lc 'mkdir -p evidence/status && printf "QC PASS (if enforce_gates succeeded): %s\n" "$(date -Is)" >> evidence/status/04_qc.md'
+-```
++## Quality Gates & Checkpoints
++- **Traceability Gate:** Each requirement has corresponding evidence and tests.
++- **Testing Gate:** Required test suites executed with passing results; failures resolved or deferred with approval.
++- **Security Gate:** No unmitigated security/privacy issues.
++- **Documentation Gate:** User-facing and operational documentation updated.
++- **Readiness Gate:** Deployment, rollback, and monitoring plans verified.
++
++## Transition to Protocol 5
++Proceed to `5-implementation-retrospective.md` when:
++1. Audit report is completed and shared.
++2. Mandatory fixes are resolved or tracked with owners and deadlines.
++3. Go/no-go decision and approvals are recorded.
++4. Evidence and documentation are archived for future reference.
++
++*This protocol delivers a holistic quality verdict, ensuring only compliant, well-documented work advances to retrospective and release activities.*
+diff --git a/.cursor/dev-workflow/5-implementation-retrospective.md b/.cursor/dev-workflow/5-implementation-retrospective.md
+index 1a5ae01883b08605ec876acba215f43c608d6ab3..d2497fc664ee2e73ca69a23a893c5ab6b33f7960 100644
+--- a/.cursor/dev-workflow/5-implementation-retrospective.md
++++ b/.cursor/dev-workflow/5-implementation-retrospective.md
+@@ -1,164 +1,103 @@
+-# PROTOCOL 5: IMPLEMENTATION RETROSPECTIVE
+-
+-## 1. AI ROLE AND MISSION
+-
+-You are a **QA & Process Improvement Lead**. After a significant implementation, your mission is twofold:
+-1.  **Technical Code Review:** Audit the produced code to ensure its compliance with the monorepo's standards.
+-2.  **Process Retrospective:** Conduct an interview with the user to improve the context, the rules and workflows (`.md`, `.mdc`, `@rules`) that guided the development.
+-
+-This protocol MUST be executed after all tasks in an execution plan are complete.
+-
+----
+-
+-## 2. THE TWO-PHASE RETROSPECTIVE WORKFLOW
+-
+-You must execute these phases in order. Phase 1 informs Phase 2.
+-
+-### PHASE 1: Technical Self-Review and Compliance Analysis
+-
+-*This phase is mostly silent. You are gathering facts before presenting them.*
+-
+-1.  **`[MUST]` Invoke Context Discovery:** Before auditing, you **MUST** apply the `1-master-rule-context-discovery` protocol. This will load all relevant architectural and project-specific rules into your context. You will use these rules as the basis for your audit.
+-
+-2.  **`[MUST]` Verify Rule Compliance:** During the audit, check if any new rules were created and verify they follow the rule creation protocol:
+-    *   **Location Compliance:** Ensure rules are discoverable using `find . -name "*rules" -type d`
+-    *   **Classification Accuracy:** Verify master/common/project classification is correct
+-    *   **Naming Convention:** Check proper prefixes (`common-rule-`, `{project-name}-`) are applied
+-    *   **Discovery Protocol:** Confirm existing rules were searched before creation
+-
+-3.  **Review the Conversation:** Read the entire conversation history related to the implementation. Identify every manual intervention, correction, or clarification from the user. These are "weak signals" of an imperfect rule or process.
+-
+-4.  **Audit the Source Code against Loaded Rules:**
+-    *   Identify all files that were created or modified.
+-    *   For each file, systematically check its compliance against the specific rules loaded during context discovery. The goal is to answer the question: "Does this code violate any of the principles or directives outlined in the rules I have loaded?"
+-
+-    **Example Review Process:**
+-    *   **Identify the scope:** Determine if the modified file belongs to the `Frontend App`, a `Backend Service`, or another defined project scope.
+-    *   **Filter relevant rules:** Select the rules that apply to that specific scope (e.g., all rules with `SCOPE: My-UI-App`).
+-    *   **Conduct the audit:** Go through each relevant rule and verify that the code respects its directives. For instance:
+-        *   If a frontend component was created, check it against the component structure rule (e.g., `your-component-structure-rule`).
+-        *   If a backend route was added, verify its structure, validation, and security against the relevant microservice rules (e.g., `your-route-handler-rule`, `your-data-validation-rule`).
+-        *   Verify that documentation was updated as per the project's documentation guidelines (e.g., `master-rule-documentation-and-context-guidelines.md`).
+-
+-5.  **Synthesize Self-Review:**
+-    *   Formulate one or more hypotheses about friction points or non-compliances.
+-    *   *Example Hypothesis: "The initial omission of the `README.md` file suggests its mandatory nature is not emphasized enough in the `your-component-structure-rule`."*
+-    *   **Rule Creation Issues:** If rules were created in wrong locations or with incorrect naming, note this as a process failure requiring rule creation protocol reinforcement.
+-    *   (If applicable) Prepare a `diff` proposal to fix a rule and make it clearer or stricter.
+-
+-### PHASE 2: Collaborative Retrospective with the User
+-
+-*This is where you present your findings and facilitate a discussion to validate improvements.*
+-
+-1.  **Initiate the Retrospective:**
+-    > "The implementation is complete. To help us improve, I'd like to conduct a brief retrospective on our collaboration. I'll start by sharing the findings from my technical self-review."
+-
+-2.  **Present Self-Review Findings:**
+-    *   Present your analysis and hypotheses concisely.
+-    *   *Example: "My analysis shows the implementation is compliant. However, I noted we had to go back and forth on the API error handling, which suggests our initial PRD lacked detail in that area. Do you share that assessment?"*
+-
+-3.  **Conduct Process Analysis:**
+-    *   **[STRICT]** Since the AI that executed the implementation has access to the complete execution data, you **MUST** first provide self-assessment answers based on observed patterns throughout the entire session.
+-    *   **[STRICT]** Analyze the complete collaboration using these dimensions:
+-        *   **Communication Efficiency:** How many clarifications were needed? Were instructions clear from the start?
+-        *   **Technical Execution:** What rework, corrections, or backtracking occurred? Which approaches worked smoothly?
+-        *   **Process Flow:** Where did the session flow smoothly vs. where did friction occur? What caused delays or confusion?
+-        *   **Rule/Guideline Effectiveness:** Which rules or patterns helped vs. hindered progress? What was missing or ambiguous?
+-        *   **User Experience:** What was the user's cognitive load? How many decisions or validations were required?
+-        *   **Outcome Quality:** Did the final result meet expectations? Were there unexpected issues or benefits?
+-    *   **[STRICT]** Present your analysis using evidence from the actual session:
+-        ```
+-        **PROCESS ANALYSIS BASED ON EXECUTION DATA:**
+-        - Communication: [Evidence-based assessment of clarity and efficiency]
+-        - Technical Execution: [Evidence-based assessment of implementation flow]
+-        - Process Flow: [Evidence-based assessment of workflow efficiency]
+-        - Guidelines/Rules: [Evidence-based assessment of framework effectiveness]
+-        - User Experience: [Evidence-based assessment of collaboration quality]
+-        - Outcomes: [Evidence-based assessment of results vs. expectations]
+-        ```
+-    *   **[GUIDELINE]** After presenting your analysis, invite user input: "Do you have anything to add or share regarding this implementation session that might improve our future collaborations?"
+-
+-4.  **Propose Concrete Improvement Actions:**
+-    *   Based on the discussion, synthesize the key takeaways.
+-    *   Transform each point into an action item.
+-    *   *Example: "Thank you for the feedback. To summarize, the PRD process needs to be stronger on error handling. I therefore propose modifying `1-create-prd.md` to add a mandatory question about error scenarios. Do you agree with this action plan to improve our framework?"*
+-    *   If you prepared a `diff`, this is the time to present it.
+-
+-5.  **Validate and Conclude:**
+-    *   **[GUIDELINE]** Await user validation on the action plan, unless user indicates autonomous completion is preferred
+-    *   **[ALTERNATIVE]** If user requests autonomous retrospective, proceed with self-assessment and apply improvements directly
+-    *   Conclude the interview: "Excellent. I will incorporate these improvements for our future collaborations."
+-
+----
+-
+-## 3. MANDATORY SELF-EVALUATION OF RETROSPECTIVE ANALYSIS
+-
+-**[STRICT]** After completing your technical self-review and before presenting findings to the user, you MUST perform an objective self-evaluation of your analysis:
+-
+-### ANALYSIS VALIDITY CHECK
+-**[REQUIRED]** Critically examine your retrospective findings:
+-- **Technical Accuracy:** Are your compliance assessments technically accurate for the specific technology stack?
+-- **Context Appropriateness:** Do your identified issues reflect genuine problems or impose inappropriate constraints?
+-- **Rule Interpretation:** Are you correctly interpreting project rules within their intended context?
+-- **Process Assessment:** Are identified friction points real inefficiencies or natural parts of development?
+-
+-### BIAS DETECTION IN RETROSPECTIVE
+-**[REQUIRED]** Identify potential biases in your process analysis:
+-- **Perfectionism Bias:** Are you identifying non-issues as problems due to over-adherence to theoretical standards?
+-- **Rule Absolutism:** Are you applying rules too rigidly without considering contextual exceptions?
+-- **Process Over-Engineering:** Are you recommending additional complexity where current simplicity works?
+-- **False Pattern Recognition:** Are you seeing patterns in isolated incidents?
+-
+-### CORRECTIVE ACTION FOR RETROSPECTIVE
+-**[REQUIRED]** If invalid assessments are identified:
+-1. **Acknowledge Analysis Errors:** Explicitly identify which findings were inappropriate or inaccurate
+-2. **Provide Context Corrections:** Explain why the current implementation or process is actually appropriate
+-3. **Revise Recommendations:** Update improvement suggestions based on corrected understanding
+-4. **Focus on Genuine Improvements:** Identify only real friction points that merit attention
+-
+-### INTEGRATION WITH USER DISCUSSION
+-**[REQUIRED]** Use your self-evaluation to:
+-- Present only validated findings to the user
+-- Ask targeted questions about genuine friction points
+-- Avoid leading questions based on invalid assumptions
+-- Focus discussion on areas where improvement would provide real value
+-
+-**[COMMUNICATION]** If your self-evaluation reveals errors in your initial analysis, present corrected findings using the format: "OBJECTIVE ANALYSIS OF RETROSPECTIVE FINDINGS" followed by your revised assessment.
+-
+---- 
+-
+-## ORCHESTRATOR ALIGNMENT & OUTPUT HOOKS
+-
+-### Before Starting This Protocol
+-
+-- Ensure Protocol 4 (Quality Control Audit) has completed with a PASS or with noted exceptions explicitly acknowledged by the user.
+-- Reload Context Discovery for any scope changes since audit.
+-
+-### Outputs to Persist
+-
+-- Actionable improvement items mapped to specific rules/workflows (`.md` / `.mdc`) or scripts.
+-- If rule changes are proposed, prepare diffs following `0-master-rule-how-to-create-effective-rules` (full metadata, structure, DO/DON'T examples).
+-
+-### Optional Commit Proposal
+-
+-After user validation of improvement actions:
+-
+-```bash
+-# Example only; use meaningful message aligned to validated actions
+-git add .
+-git commit -m "docs(rules): refine PRD Qs and enforce tasks validation gates"
++# Protocol 5 · Implementation Retrospective & Continuous Improvement
++
++## Purpose & Role
++- **Role:** Continuous Improvement Lead facilitating reflection across product, engineering, QA, and operations.
++- **Mission:** Assess delivery outcomes, capture lessons learned, and feed improvements back into rules, documentation, and planning assets.
++- **Success Criteria:** Retrospective report with validated findings, prioritized improvement actions, ownership assignments, and updates to shared knowledge bases.
++
++## Required Inputs
++- Final audit report from Protocol 4 and associated evidence.
++- PRD, task plan, and Context Kit (including risk and decision logs).
++- Deployment results, monitoring data, user feedback, and support tickets (if applicable).
++- Metrics dashboards or analytics that reflect business and technical outcomes.
++
++## Expected Outputs
++1. Retrospective summary documenting what went well, what needs improvement, and data-driven insights.
++2. Action plan with owners, due dates, and links to updated rules/docs/backlog items.
++3. Updates to rule sets, playbooks, or templates reflecting lessons learned.
++4. Knowledge artifacts (ADR updates, FAQs, onboarding notes) for future teams.
++5. Communication to stakeholders highlighting outcomes, risks, and next steps.
++
++## Phase Breakdown
++
++### Phase 0 · Preparation & Data Collection
++1. Re-run rule/context discovery to incorporate any updates post-QC.
++2. Gather timeline of key events (kickoff, approvals, releases, incidents).
++3. Compile metrics: delivery velocity, defect counts, test coverage, deployment frequency, business KPIs.
++4. Collect qualitative feedback from stakeholders, implementers, QA, operations, and end users.
++
++### Phase 1 · Outcome Review
++1. Compare delivered functionality against PRD goals, success metrics, and business KPIs.
++2. Evaluate quality outcomes: defect leakage, severity of issues found, production stability.
++3. Assess delivery performance: schedule adherence, scope adjustments, resource utilization.
++4. Review customer or user impact: satisfaction scores, adoption metrics, support volume.
++
++### Phase 2 · Process Analysis
++1. Examine each protocol stage (0–4) for friction points, rework, or deviations from plan.
++2. Identify decisions that led to positive or negative outcomes (architecture choices, testing approaches, collaboration patterns).
++3. Analyze communication effectiveness, availability of context, and clarity of responsibilities.
++4. Surface systemic issues (tooling gaps, environment instability, unclear rules) requiring structural fixes.
++
++### Phase 3 · Improvement Planning
++1. Translate findings into specific actions categorized by theme (Process, Tooling, Documentation, Rules, Training, Product).
++2. Prioritize actions by impact and effort; assign owners and deadlines.
++3. Determine whether actions should become backlog items, rule updates, ADRs, or experiments.
++4. Define measurable success criteria for each action to enable follow-up.
++
++### Phase 4 · Knowledge Capture & Dissemination
++1. Update rule files, templates, or playbooks with refined guidance (include rationale and references).
++2. Document lessons learned in ADRs, retrospectives folder, or knowledge base entries.
++3. Share summaries with stakeholders, highlight key achievements, and acknowledge contributors.
++4. Update the Context Kit with new insights, risks, or standard operating procedures.
++
++### Phase 5 · Close-Out & Follow-Up
++1. Schedule follow-up reviews to track action item completion.
++2. Archive retrospective artifacts for future reference and onboarding.
++3. Confirm that outstanding risks or deferred scope items are transferred to the product backlog.
++4. Provide clear signal that the initiative has exited the delivery cycle or note upcoming iterations.
++
++## Retrospective Template (Reference)
++```markdown
++# Retrospective · <Feature / Iteration>
++- **Date:**
++- **Facilitator:**
++- **Participants:**
++- **Delivery Window:**
++
++## 1. Goals & Outcomes
++- Planned vs. actual scope
++- Business impact & KPIs
++- Quality metrics (defects, coverage, MTTR)
++
++## 2. Highlights
++- Successes worth repeating
++- Innovations or practices to standardize
++
++## 3. Challenges & Root Causes
++- Issues encountered
++- Root-cause analysis (5 Whys / Fishbone)
++
++## 4. Improvement Actions
++| Category | Description | Owner | Due Date | Success Metric |
++|----------|-------------|-------|---------|----------------|
++
++## 5. Rule / Documentation Updates
++- Files to update
++- Summary of changes
++
++## 6. Follow-Up Items
++- Deferred scope or risks
++- Upcoming checkpoints
+ ```
+ 
+----
++## Quality Gates & Checkpoints
++- **Evidence Gate:** Findings supported by data (metrics, logs, feedback).
++- **Action Gate:** Each improvement has an owner, due date, and metric.
++- **Knowledge Gate:** Relevant rules, docs, and templates updated.
++- **Communication Gate:** Retrospective outcomes shared with stakeholders.
++- **Follow-Up Gate:** Tracking mechanism established for action items.
+ 
+-## MESSAGEBOX MACRO (Protocol 5 — Retrospective & Delivery)
++## Transition to Future Work
++Use the retrospective outputs to refine Protocols 0–4 before the next initiative. Ensure action items are logged in the appropriate backlog or governance system and schedule the next retrospective review.
+ 
+-```text
+-/apply-instructions-from-5-implementation-retrospective.md
+-# Notion MCP: publish final Submission Pack page link; request client acceptance
+-# (Optional) GitHub MCP: create PR or commit referencing the Notion delivery link
+-// Build Submission Pack locally
+-/run: bash -lc 'chmod +x scripts/build_submission_pack.sh && ./scripts/build_submission_pack.sh'
+-# Notion MCP: upload dist/<NAME>-submission/* and publish page link
+-/run: bash -lc 'mkdir -p evidence/status && printf "Delivered: %s\n" "$(date -Is)" >> evidence/status/05_delivery.md'
+-```
++*This protocol closes the loop, ensuring continuous learning and proactive improvement across the entire development lifecycle.*

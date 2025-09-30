@@ -3683,7 +3683,7 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                   Portfolio-grade product operations - designed by Ray Quizon
                 </p>
                 <h1 className="text-[32px] font-semibold text-[var(--neutral-900,#0b0d12)]">
-                  PORTFOLIO OS
+                  Unified Dashboard Demo
                 </h1>
                 <p className="mt-2 max-w-3xl text-[14px] text-[var(--neutral-600,#5e6673)]">{data.hero.description}</p>
               </div>
