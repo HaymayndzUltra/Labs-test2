@@ -1,155 +1,145 @@
 # PROTOCOL 4: QUALITY CONTROL AUDIT
 
-## 1. AI ROLE AND PURPOSE
-You are a **Delivery Quality Authority**. Your mission is to validate that the implementation is production-ready, aligns with business intent, and meets governance standards before release or integration. Operate objectively, reference evidence, and provide actionable recommendations.
+## Purpose
+Provide an objective, evidence-based evaluation of the implementation before code is merged or released. The audit ensures the work meets business goals, technical standards, and release readiness criteria.
 
-## 2. PREREQUISITES & INPUTS
-- Completed execution handoff from Protocol 3 (tasks, evidence, test results)
-- Access to relevant repositories, build pipelines, and documentation
-- Knowledge of organizational quality standards (security, compliance, accessibility, performance)
+## Primary Role
+**AI Quality Auditor & Release Gatekeeper** – responsible for verifying correctness, completeness, and risk posture of the implementation.
 
-Do not start auditing until all required artifacts are available.
+## Inputs
+- Completed parent task(s) and associated code changes (Protocol 3)
+- Updated task plan with evidence links
+- Test results, logs, and metrics produced during execution
+- Applicable engineering rules, security policies, compliance requirements
 
----
-
-## 3. AUDIT PHASES
-
-### Phase 0 – Context Reconstruction
-1. Review the execution handoff package, commit history, and associated tickets.
-2. Identify the files, services, data models, and infrastructure components impacted.
-3. Re-read the PRD sections and traceability matrix to understand intended outcomes.
-4. Confirm applicable rule sets, coding standards, and regulatory requirements.
-
-**Checkpoint:** Summarize the audit scope (features, files, environments) and confirm with stakeholders.
-
-### Phase 1 – Automated Verification
-1. Reproduce the validation commands executed in Protocol 3 (tests, linters, build checks). Ensure results match.
-2. Execute additional audits required by policy (static analysis, security scans, accessibility checks, performance benchmarks).
-3. Capture logs, reports, and metrics in `evidence/qc/`.
-4. Document any failures with severity, reproduction steps, and suspected root cause.
-
-**Checkpoint:** If critical failures occur, halt the audit, notify stakeholders, and return to Protocol 3 for remediation.
-
-### Phase 2 – Manual Review & Requirement Traceability
-1. Perform a file-by-file review focusing on:
-   - Code quality (readability, structure, maintainability)
-   - Architectural alignment and coupling/cohesion
-   - Business logic correctness (edge cases, rule enforcement)
-   - Security and privacy practices (input validation, secrets handling)
-   - Performance considerations (resource usage, batching, caching)
-2. Validate documentation updates (README, runbooks, migration guides, change logs).
-3. Trace each PRD requirement to implemented code and tests using the matrix from Protocol 2.
-4. Verify that observability and maintenance tasks were completed (metrics, alerts, dashboards).
-
-**Checkpoint:** Produce preliminary findings categorized by severity. Review with implementers for factual accuracy if needed.
-
-### Phase 3 – Release Readiness Assessment
-1. Evaluate deployment artifacts (infrastructure definitions, configuration changes, rollout plans, rollback procedures).
-2. Confirm data migrations are reversible and tested in representative environments.
-3. Assess operational readiness (support documentation, on-call updates, training needs).
-4. Review risk register and mitigation status.
-
-**Checkpoint:** Decide whether the increment is **Ready**, **Ready with Conditions**, or **Not Ready**. Document rationale.
-
-### Phase 4 – Report & Recommendations
-1. Compile findings into a structured report (see Section 5).
-2. Prioritize remediation actions by severity and impact.
-3. Provide specific, actionable recommendations for each issue.
-4. Highlight improvements or best practices worth institutionalizing.
-5. Log the report and evidence in the agreed repository (e.g., `reports/qc/<date>-<feature>.md`).
-
-**Checkpoint:** Share the report with stakeholders and capture approvals or required follow-up.
+## Outputs
+1. Quality Control Audit Report (stored in `evidence/qc/<feature>.md` or equivalent).
+2. Pass/fail decision with required remediation actions.
+3. Validated list of tests executed and their outcomes.
+4. Sign-off for Protocol 5 or explicit blockers preventing progression.
 
 ---
 
-## 4. SEVERITY SCALE
-- **🔴 Critical:** Blocks release. Security vulnerabilities, data loss, major functional failure.
-- **🟠 High:** Must be resolved before release or requires executive waiver.
-- **🟡 Medium:** Should be addressed soon; may ship with mitigation if agreed.
-- **🟢 Low:** Minor improvement, documentation, or optimization suggestions.
+## Workflow
 
----
+### Phase 0: Context Reconstruction
+1. **Action:** Review task plan entries to understand scope, impacted files, and acceptance criteria.
+2. **Action:** Inspect git diff or change summary to enumerate modified files and their purposes.
+3. **Action:** Load relevant rules and standards (coding style, security, accessibility, performance, documentation).
+4. **Checkpoint:** Confirm understanding of scope: `[AUDIT INIT] Evaluating parent task <ID> affecting <modules>.`
 
-## 5. REPORT TEMPLATE
+### Phase 1: Evidence Collection
+1. **Action:** Gather test outputs, build logs, and manual verification notes from Protocol 3.
+2. **Action:** Run independent verification commands when feasible (e.g., re-run unit/integration/e2e tests, lint, type checks).
+3. **Action:** Capture results in the audit report with timestamps.
+4. **Checkpoint:** If critical tests fail or cannot be reproduced, stop the audit and request remediation.
 
+### Phase 2: Multi-Dimensional Review
+Evaluate each dimension systematically. Record findings with file references and severity.
+
+1. **Code Quality & Maintainability**
+   - Structure, readability, naming, duplication, documentation.
+   - Conformance to language/framework idioms.
+
+2. **Architecture & Design Alignment**
+   - Adherence to approved patterns and layering rules.
+   - Appropriate separation of concerns and dependency management.
+   - Impact on scalability and extensibility.
+
+3. **Business Logic & Functional Correctness**
+   - Implementation matches PRD requirements and task acceptance criteria.
+   - Edge cases, validation rules, and error handling covered.
+   - Data transformations and workflows remain consistent with business processes.
+
+4. **Security, Compliance & Privacy**
+   - Input validation, authentication, authorization, data protection.
+   - Secrets management, logging hygiene, regulatory considerations (GDPR, PCI, HIPAA, etc.).
+
+5. **Performance & Reliability**
+   - Efficiency of algorithms, database access patterns, caching strategy.
+   - Resilience (timeouts, retries, circuit breakers), resource usage.
+
+6. **Testing & Release Readiness**
+   - Depth and breadth of automated tests.
+   - Manual verification steps documented when automation insufficient.
+   - Deployment plan, rollback strategy, monitoring updates, documentation completeness.
+
+### Phase 3: Findings & Severity Assessment
+1. **Action:** Categorize findings by severity:
+   - 🔴 Critical – must resolve before release.
+   - 🟠 High – resolve before merge unless explicitly deferred.
+   - 🟡 Medium – should address soon; may ship with plan.
+   - 🟢 Low – improvement opportunities.
+2. **Action:** Provide remediation guidance and owner for each finding.
+3. **Checkpoint:** If any 🔴 findings exist, mark audit as failed until resolved.
+
+### Phase 4: Quality Control Report
+Use the following structure:
 ```markdown
-# QUALITY CONTROL AUDIT REPORT – <Feature / Increment>
+# QUALITY CONTROL AUDIT REPORT
 
 ## Executive Summary
 - Implementation Scope:
-- Overall Readiness: Ready / Ready with Conditions / Not Ready
-- Critical Issues: <count>
-- High Issues: <count>
-- Medium Issues: <count>
-- Low Issues: <count>
-- Key Recommendations:
+- Overall Quality Rating (1–10):
+- Critical Issues:
+- Recommended Actions:
 
-## Evidence Reviewed
-- Commits / PRs:
-- Test Runs:
-- Environments & Builds:
-- Documentation:
-
-## Findings by Severity
+## Detailed Findings
 ### 🔴 Critical Issues
-1. [ID] Description (File / Component, Impact, Required Action)
+- [ ] <Description, location, remediation>
 
 ### 🟠 High Priority Issues
-1. [ID] Description (File / Component, Impact, Required Action)
+- [ ] <Description, location, remediation>
 
 ### 🟡 Medium Priority Improvements
-1. [ID] Description (Context, Recommendation, Owner)
+- [ ] <Description, location, remediation>
 
 ### 🟢 Low Priority Optimizations
-1. [ID] Description (Context, Recommendation, Owner)
+- [ ] <Description, location, remediation>
 
-## Requirement Traceability
-| PRD Requirement | Implemented Evidence | Test Coverage | Status |
-|-----------------|----------------------|---------------|--------|
+## Compliance & Alignment
+- Architecture Patterns: PASS/FAIL (details)
+- Security & Privacy: PASS/FAIL (details)
+- Performance: PASS/FAIL (details)
+- Testing & Release Readiness: PASS/FAIL (details)
+- Documentation: PASS/FAIL (details)
 
-## Release Readiness Checklist
-- Deployment Plan Validated: Yes/No (notes)
-- Rollback Strategy Tested: Yes/No (notes)
-- Monitoring & Alerts Prepared: Yes/No (notes)
-- Documentation Complete: Yes/No (notes)
-- Residual Risks & Mitigations:
+## Verification Summary
+- Automated Tests Executed:
+- Manual Verification Performed:
+- Evidence Links:
 
-## Recommendations & Next Steps
-1. Action item (owner, due date)
-2. ...
-
-## Auditor Self-Evaluation
-- Confidence in Findings (High/Medium/Low):
-- Bias Check Summary:
-- Follow-up Actions for Future Audits:
+## Approval Status
+- Ready for Protocol 5: YES/NO (conditions if any)
+- Follow-up Tasks / Owners / Due Dates:
 ```
+
+### Phase 5: Decision & Communication
+1. **Action:** Deliver the report to stakeholders and Protocol 3 executor.
+2. **Action:** If approved, communicate `QC PASS` with any conditional items.
+3. **Action:** If blocked, specify required remediation tasks and re-entry criteria for this protocol.
+4. **Action:** Update the Context Kit or decision log with notable learnings (patterns to replicate or avoid).
 
 ---
 
-## 6. QUALITY GATES & STOP CONDITIONS
-- 🚫 Stop if automated checks fail or cannot be reproduced.
-- 🚫 Stop if requirement traceability reveals gaps.
-- 🚫 Stop if deployment or rollback procedures are missing.
-- ✅ Proceed to Protocol 5 only after stakeholders acknowledge the report and resolve/accept required actions.
+## Quality Gates
+- Audit covers all modified files and relevant systems.
+- Independent verification of tests completed and recorded.
+- Business logic validated against PRD acceptance criteria.
+- No unresolved critical findings.
+- Documentation and release artefacts verified.
 
----
+## Transition to Protocol 5
+Provide to the retrospective lead:
+- Final QC report location
+- Summary of findings and outstanding actions
+- Confirmation of release readiness or conditions
 
-## 7. HANDOFF TO PROTOCOL 5
-Provide the retrospective lead with:
-```
-QC HANDOFF
-• Final audit report link
-• Summary of accepted issues and waivers
-• Follow-up actions with owners
-• Insights worth feeding into rules/process updates
-• Metrics or anomalies to monitor post-release
-```
-
----
-
-## 8. OPTIONAL COMMAND MACRO
+## Messagebox Macro (Optional)
 ```
 /apply-instructions-from-4-quality-control-protocol.md
-/run: bash -lc "mkdir -p logs && date -Is > logs/qc-audit.log"
-/note: QC report delivered – ready for Protocol 5 retrospective.
+# Example placeholders – replace with project commands
+/run: <package-manager> test
+/run: <linter-command>
+/run: bash -lc 'mkdir -p evidence/qc && touch evidence/qc/<feature>.md'
 ```

@@ -1,161 +1,160 @@
-# PROTOCOL 1: PRODUCT REQUIREMENTS DOCUMENT CREATION
+# PROTOCOL 1: UNIFIED PRD CREATION
 
-## 1. AI ROLE AND PURPOSE
-You are a **Cross-Discipline Product Strategist**. Your mission is to convert the launch kit from Protocol 0 into a validated Product Requirements Document (PRD) that captures business value, user experience, technical constraints, and success metrics. The PRD must be actionable for engineering, design, QA, and operations.
+## Purpose
+Translate the contextual knowledge from Protocol 0 into a validated Product Requirements Document that aligns business goals, user needs, and architectural realities. The PRD becomes the single source of truth for planning and implementation.
 
-## 2. PREREQUISITES & INPUTS
-- Approved bootstrap summary and artifacts (`context-overview`, `business-alignment`, open questions)
-- Access to domain stakeholders (business owner, technical lead, QA, operations)
-- Awareness of organization-wide standards (security, compliance, accessibility)
+## Primary Role
+**AI Product Strategist & Systems Planner** – facilitates discovery conversations, synthesizes requirements, and confirms implementation scope across all relevant systems.
 
-If prerequisites are incomplete, return to Protocol 0 and resolve gaps before drafting the PRD.
+## Inputs
+- Approved Context Kit (Protocol 0)
+- Stakeholder contacts and availability
+- Existing product documentation, user research, analytics (when available)
 
----
-
-## 3. PRD CREATION PHASES
-Follow the phases sequentially. Each phase has explicit outputs and validation checkpoints.
-
-### Phase 1 – Clarify Scope & Change Type
-1. Determine whether the initiative is a **net-new capability** or an **enhancement**.
-2. Document current state vs. desired future state at a high level.
-3. Confirm primary persona(s) and affected user journeys.
-4. Update the open questions list with any unknowns uncovered.
-
-**Checkpoint:** Present the scope summary and change type to stakeholders. Obtain confirmation before moving to Phase 2.
-
-### Phase 2 – Business Goals & Success Metrics
-1. Capture the business rationale, expected value, and priority.
-2. Define measurable success criteria (KPIs, SLAs, error budgets, adoption goals).
-3. Document regulatory, compliance, or policy obligations.
-4. Identify release drivers (target launch date, dependencies on campaigns or other teams).
-
-**Output:** Populate the "Business Context" section of the PRD.
-
-### Phase 3 – Functional & Business Logic Requirements
-1. Derive user stories or job stories for each persona.
-2. Elaborate functional flows, including alternate and error paths.
-3. Detail business rules (calculations, approvals, thresholds, localization rules, access permissions).
-4. Capture data requirements (entities, fields, privacy classifications).
-5. Define integration touchpoints (APIs, events, queues, third-party services).
-
-**Checkpoint:** Review business logic with subject-matter experts or product owners. Confirm accuracy before Phase 4.
-
-### Phase 4 – Non-Functional Requirements & Constraints
-1. Document performance expectations (latency, throughput, batch windows).
-2. Define availability and resiliency targets (SLOs, failover expectations, disaster recovery needs).
-3. Capture security requirements (authentication, authorization, audit, data residency).
-4. Specify usability, accessibility, localization, and analytics instrumentation.
-5. Highlight operational constraints (support model, maintenance windows, cost budgets).
-
-**Output:** Complete the "Non-Functional Requirements" PRD section.
-
-### Phase 5 – Solution Alignment & System Placement
-1. Map the capability to system architecture:
-   - Affected applications/services
-   - Ownership and points of contact
-   - Data flow diagrams or sequence diagrams (even at high level)
-2. Outline high-level solution options if multiple approaches exist. Evaluate trade-offs.
-3. Select the preferred approach and state rationale (alignment with standards, cost, risk, timeline).
-4. Identify technical dependencies (platform work, shared components, enabling infrastructure).
-
-**Checkpoint:** Secure agreement from engineering/architecture leads on system placement and approach.
-
-### Phase 6 – Delivery Plan Hooks
-1. Define testing strategy expectations (unit, integration, UAT, performance, security).
-2. Note documentation deliverables (README updates, runbooks, migration guides, onboarding material).
-3. Specify deployment and release considerations (environments, feature flags, rollout plan, rollback strategy).
-4. Capture post-launch monitoring and maintenance needs (dashboards, alerts, success metric tracking).
-
-**Output:** Fill the "Implementation Considerations" section and provide hooks for Protocol 2 task generation.
-
-### Phase 7 – Validation & Sign-off
-1. Circulate the draft PRD to stakeholders for review.
-2. Track feedback and resolutions in a decision log (`prd/decision-log.md`).
-3. Obtain explicit approval from product, engineering, QA, and operations stakeholders.
-4. Archive final PRD in the agreed repository location and version it if necessary.
-
-**Checkpoint:** Confirm sign-off before invoking Protocol 2.
+## Outputs
+1. Signed-off PRD stored in the repository (e.g., `docs/prd/<feature>.md`).
+2. Architectural placement summary including primary and secondary systems.
+3. Success criteria matrix with measurable outcomes and acceptance tests.
+4. Decision & assumption log with outstanding questions.
 
 ---
 
-## 4. STANDARD PRD TEMPLATE
-Use this structure (expand or adjust headings as needed, but maintain coverage):
+## Workflow
 
+### Phase 1: Initiative Discovery
+1. **Action:** Confirm whether the work is a new capability, an enhancement, or maintenance.
+2. **Action:** Capture the business problem, target personas, and expected value (revenue impact, risk reduction, experience improvement).
+3. **Action:** Document success metrics (KPIs, SLAs, qualitative goals) and how they will be measured.
+4. **Checkpoint:** Restate the initiative summary and obtain stakeholder confirmation before moving forward.
+
+### Phase 2: Solution Boundaries & Architecture Placement
+1. **Action:** Identify which domains or systems are impacted (frontend, backend services, APIs, data pipelines, infrastructure, integrations).
+2. **Action:** Determine primary implementation layer(s) and secondary dependencies using questions such as:
+   - What user interaction or trigger starts the flow?
+   - Where does business logic live today?
+   - Which systems own the canonical data?
+3. **Action:** Capture constraints (performance targets, compliance regimes, uptime requirements, localization, accessibility).
+4. **Checkpoint:** Present a placement summary and confirm it is accurate. Example:
+   ```
+   🎯 Detected Primary Layer: Backend service `orders`
+   🔗 Supporting Layers: Web app, reporting pipeline
+   ⚠️ Constraints: PCI scope, <200ms response, deployment window Fridays 20:00 UTC
+   ```
+
+### Phase 3: Requirement Elicitation by Perspective
+Perform structured interviews or document reviews for each perspective:
+
+1. **User Experience & Workflow**
+   - Capture personas, scenarios, and user stories.
+   - Document UI/UX expectations, accessibility needs, localization.
+
+2. **Business Logic & Rules**
+   - Enumerate decisions, calculations, validations, and exception handling.
+   - Identify data transformations and orchestration steps.
+
+3. **Data & Integration**
+   - Define data inputs/outputs, storage requirements, schema changes.
+   - List external APIs, event streams, or file exchanges.
+
+4. **Quality & Testing Expectations**
+   - Capture functional acceptance tests, edge cases, regression concerns.
+   - Document non-functional requirements (performance, security, observability).
+
+5. **Deployment & Operations**
+   - Determine release strategy, feature flag usage, rollback requirements.
+   - Note monitoring, alerting, and maintenance expectations.
+
+6. **Documentation & Compliance**
+   - Identify artefacts that must be updated (help center, runbooks, onboarding).
+   - Record regulatory or audit evidence requirements.
+
+**Checkpoint:** Validate each perspective with stakeholders; unresolved items become tracked questions.
+
+### Phase 4: PRD Synthesis
+1. **Action:** Compile findings into the standard PRD structure (template below).
+2. **Action:** Ensure every requirement links back to stakeholder input or existing documentation.
+3. **Action:** Map success metrics and acceptance tests to each major requirement.
+4. **Action:** Summarize open questions, assumptions, and decisions with owners and due dates.
+5. **Checkpoint:** Circulate the draft PRD for review. Collect approvals or requested changes.
+
+### Phase 5: Sign-off & Handoff
+1. **Action:** Finalize the PRD after incorporating feedback.
+2. **Action:** Store the PRD in version control and update the Context Kit with a link.
+3. **Action:** Announce approval status, success criteria, and implementation layers to the team.
+4. **Action:** Explicitly hand off to Protocol 2 with instructions such as `Use PRD docs/prd/feature-x.md as the basis for task generation.`
+
+---
+
+## Standard PRD Template
 ```markdown
-# PRD: <Feature or Initiative Name>
+# PRD: <Feature Name>
 
-## 1. Business Context
-- Objective & KPI(s):
-- Stakeholders & Roles:
-- Change Type: New / Enhancement / Sunset
-- Priority & Target Release Window:
-- Dependencies & Constraints:
+## 1. Executive Summary
+- **Business Goal:**
+- **Users & Personas:**
+- **Success Metrics:**
 
-## 2. Functional Requirements
-- Personas & User Stories:
-- Primary Flow Diagram / Description:
-- Alternate & Error Flows:
-- Business Rules & Validation Logic:
-- Data Model & Persistence Considerations:
-- Integration Interfaces:
+## 2. Problem Statement & Objectives
+- Current pain points
+- Desired outcomes
+- Non-goals / out of scope
 
-## 3. Non-Functional Requirements
-- Performance & Scalability:
-- Availability & Resiliency:
-- Security & Compliance:
-- Accessibility & Localization:
-- Observability & Analytics:
+## 3. Solution Overview
+- Primary and secondary systems
+- High-level workflow diagram or description
+- Key business rules and logic summary
 
-## 4. Solution Alignment
-- Affected Systems & Owners:
-- High-Level Architecture Diagram / Description:
-- Selected Approach & Rationale:
-- Technical Dependencies & Risks:
+## 4. Detailed Requirements
+### 4.1 Functional Requirements
+- FR-1: <description>
+- Acceptance tests / scenarios
 
-## 5. Implementation Considerations
-- Testing Strategy Overview:
-- Deployment & Release Plan:
-- Documentation & Training Needs:
-- Post-Launch Monitoring & Maintenance:
+### 4.2 Data & Integration Requirements
+- Data contracts, schema changes, migration needs
+- External system interactions
 
-## 6. Acceptance Criteria & Success Metrics
-- Qualitative Criteria:
-- Quantitative Metrics:
-- Launch Readiness Checklist:
+### 4.3 User Experience Requirements
+- UI flows or wireframe references
+- Accessibility, localization, device considerations
 
-## 7. Decision Log & Open Questions
-- Decisions:
-- Outstanding Questions (owner / due date):
+### 4.4 Non-Functional Requirements
+- Performance / scalability targets
+- Security, privacy, compliance
+- Observability and logging expectations
+
+## 5. Release & Operations Plan
+- Deployment strategy & environment impacts
+- Feature flags / configuration
+- Monitoring, alerting, support readiness
+
+## 6. Documentation & Training
+- Artefacts to create/update
+- Owner and due date
+
+## 7. Risks, Assumptions, Open Questions
+- R-1: <risk description, mitigation>
+- A-1: <assumption>
+- Q-1: <open question, owner, due date>
 ```
 
 ---
 
-## 5. QUALITY GATES & STOP CONDITIONS
-- 🚫 Halt if business rules or success metrics remain undefined.
-- 🚫 Halt if system placement or architectural approach lacks engineering approval.
-- 🚫 Halt if testing, deployment, or maintenance considerations are missing.
-- ✅ Proceed to Protocol 2 only after the PRD is reviewed and approved by required stakeholders.
+## Quality Gates
+- All perspectives (UX, business logic, data, operations, testing, compliance) documented.
+- Success metrics and acceptance tests defined and measurable.
+- Implementation layers confirmed with stakeholders.
+- Open questions tracked with owners and deadlines.
+- PRD approved by product, engineering, and relevant governance partners.
 
----
+## Transition to Protocol 2
+Provide the finalized PRD location, architectural placement summary, and any priority or sequencing constraints for task generation. Explicitly state dependencies or deadlines identified during PRD creation.
 
-## 6. HANDOFF PACKAGE FOR PROTOCOL 2
-Provide to the task generation team:
-```
-PRD HANDOFF
-• Link to final PRD
-• Key business outcomes & success metrics
-• Approved architecture summary
-• Known constraints & risks
-• Required documentation, testing, and deployment expectations
-• Outstanding questions to track during planning
-```
-
----
-
-## 7. OPTIONAL COMMAND MACRO
-Use when documentation systems support automated logging:
+## Messagebox Macro (Optional)
 ```
 /apply-instructions-from-1-create-prd.md
-/run: bash -lc "mkdir -p logs && date -Is > logs/prd-created.log"
-/note: PRD approved – ready for Protocol 2 task planning.
+# Gather discovery notes
+/run: mkdir -p evidence/discovery
+/run: bash -lc 'date -Is > evidence/discovery/summary.log'
+# Store PRD draft
+/run: bash -lc 'mkdir -p docs/prd && touch docs/prd/<feature>.md'
 ```

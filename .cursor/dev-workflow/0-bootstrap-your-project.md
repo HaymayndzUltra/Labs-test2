@@ -1,104 +1,99 @@
-# PROTOCOL 0: PROJECT BOOTSTRAP & CONTEXT ALIGNMENT
+# PROTOCOL 0: UNIVERSAL PROJECT BOOTSTRAP
 
-## 1. AI ROLE AND PURPOSE
-You are a **Development Workflow Orchestrator**. Your mission is to create a shared understanding of the project before any delivery work begins. Establish the business objective, collect authoritative references, verify the technical environment, and produce a concise "launch kit" that every subsequent protocol will rely on.
+## Purpose
+Establish a shared understanding of the initiative, validate the working environment, and capture the information required for all downstream protocols. The outcome is a "Context Kit" that any contributor or AI agent can rely on without assumptions.
 
-## 2. PREREQUISITES
-- Access to the repository (read) and collaboration spaces (docs, tickets, knowledge bases)
-- Ability to run read-only environment commands (no destructive operations)
-- Availability of a primary stakeholder or authoritative brief for clarifications
+## Primary Role
+**AI Context Architect & Delivery Lead** – responsible for gathering domain knowledge, documenting constraints, and ensuring the repository is ready for structured execution.
 
-If any prerequisite is missing, pause and request support before continuing.
+## Inputs & Preconditions
+- Access to the repository and available documentation (README files, architecture notes, briefs).
+- Ability to run read-only commands in the workspace.
+- Stakeholder availability for clarifying questions.
 
----
-
-## 3. BOOTSTRAP PHASES
-Each phase has required outputs and explicit checkpoints. Do not skip steps.
-
-### Phase 0 – Request Intake & Success Criteria
-1. Confirm the objective in business terms (problem, desired outcome, primary KPI).
-2. Identify stakeholders (decision maker, reviewers, end users, supporting teams).
-3. Capture delivery constraints (timeline, release window, compliance, budget/hosting limitations).
-4. Record outstanding questions or ambiguities in an "Open Questions" list.
-
-**Checkpoint:** Share the objective, stakeholders, constraints, and open questions with the user and obtain confirmation before Phase 1.
-
-### Phase 1 – Knowledge & Rule Discovery
-1. Inventory project knowledge sources:
-   - Core documentation (`README`, architecture guides, runbooks)
-   - Existing requirement trackers (tickets, PRDs, briefs)
-   - Coding standards or governance rules (`@rules`, `master-rules`, lint configs)
-2. Summarize the system landscape:
-   - Primary domains/subsystems
-   - Core technologies (languages, frameworks, deployment targets)
-   - External integrations (APIs, third-party services)
-3. Capture known business logic domains and regulatory requirements.
-4. Archive findings in a `bootstrap/context-overview.md` (or update an existing equivalent).
-
-**Checkpoint:** Validate that discovered sources are complete enough to proceed. If gaps remain (missing domain rules, unclear architecture), halt and request clarification.
-
-### Phase 2 – Environment & Toolchain Readiness
-1. Identify mandatory tooling for the project (package managers, runtimes, linters, testing frameworks, deployment CLIs).
-2. Record required versions or compatibility notes from documentation.
-3. Run non-destructive diagnostics where available (e.g., `tool --version`, `make doctor`, `npm run lint -- --help`) and log results in `logs/bootstrap-environment.md`.
-4. Verify access to secrets/configuration (env files, vault references) without exposing sensitive data.
-5. Document known setup blockers or follow-up actions.
-
-**Checkpoint:** Present a readiness summary with PASS/WARN/FAIL status per toolchain component. Obtain stakeholder acknowledgement of any blockers before Phase 3.
-
-### Phase 3 – Product & Business Alignment
-1. Translate the business objective into high-level capabilities (features, workflows, KPIs).
-2. Map capabilities to affected domains/subsystems identified in Phase 1.
-3. Document key business rules, success criteria, and acceptance metrics.
-4. Capture compliance, security, localization, or accessibility requirements that must be respected later.
-
-**Checkpoint:** Review the capability map and business rules with the stakeholder. Confirm alignment or capture corrections.
-
-### Phase 4 – Delivery Readiness Package
-1. Compile the following deliverables:
-   - `context-overview.md` – architectural & domain snapshot
-   - `bootstrap-environment.md` – environment validation log
-   - `business-alignment.md` – objective, KPIs, constraints, and business rules
-   - `open-questions.md` – outstanding clarifications with owners
-2. Produce an executive summary referencing the artifacts and highlighting next steps.
-3. Define transition criteria for Protocol 1:
-   - Stakeholder sign-off on objectives and constraints
-   - At least one validated architecture source of truth
-   - Environment risks documented with owners
-
-**Checkpoint:** Obtain explicit confirmation that Protocol 1 (PRD creation) can start. If confirmation is not received, remain in Protocol 0 and resolve blockers.
+## Outputs
+1. Context Kit (living document or folder) containing:
+   - Project overview and business objectives
+   - Key systems, services, and integrations
+   - Known constraints (technical, compliance, delivery)
+   - Success criteria and definition of done
+   - Open questions and risks
+2. Verified environment checklist with tooling versions and accessibility status.
+3. Confirmed transition plan into **Protocol 1 – Unified PRD Creation**.
 
 ---
 
-## 4. QUALITY GATES & STOP CONDITIONS
-- 🚫 Do **not** proceed if key knowledge sources are missing or unverified.
-- 🚫 Do **not** proceed if environment readiness is unknown or red.
-- ✅ Proceed only when objectives, constraints, and success metrics are confirmed and logged.
+## Workflow
 
-If a stop condition is met, escalate with a summary of what is missing and the impact on later protocols.
+### Phase 0: Confirm Engagement Scope
+1. **Action:** Identify who can clarify business and technical decisions (product owner, tech lead, domain expert).
+2. **Action:** Request or locate existing briefs, charters, or requirement documents.
+3. **Checkpoint:** Acknowledge alignment message such as `Scope confirmed for bootstrap. Proceeding with context discovery.`
+
+### Phase 1: Environment & Toolchain Validation
+1. **Action:** Enumerate required tooling for the project (language runtime, package managers, test frameworks, linters, database clients, deployment CLIs).
+2. **Action:** Run non-destructive version checks (e.g., `node --version`, `python --version`, `npm --version`, `<framework-cli> --help`). Record output verbatim in the Context Kit.
+3. **Action:** Verify local commands for installing dependencies (e.g., `package-manager install` dry run) and executing tests (`package-manager test --help`).
+4. **Action:** Document environment variables or secrets that are required and whether they are available in the current workspace.
+5. **Checkpoint:** If any prerequisite is missing, stop and request remediation before advancing.
+
+### Phase 2: Repository Mapping & Knowledge Capture
+1. **Action:** Produce a lightweight inventory of the repository using project-approved discovery commands (e.g., `tree -L 3`, `fd`, or `find` with depth limits). Avoid recursive listings that may be disallowed.
+2. **Action:** Identify major domains/modules (frontend, services, data layer, infra) and note their locations.
+3. **Action:** Record critical configuration files (package manifests, build configs, CI workflows, infrastructure definitions).
+4. **Action:** Capture existing documentation sources (docs folder, ADRs, wiki links).
+5. **Checkpoint:** Summarize findings in the Context Kit and tag knowledge gaps for follow-up.
+
+### Phase 3: Business & Technical Alignment
+1. **Action:** Interview stakeholders (or review documents) to answer:
+   - What business problem does the project solve?
+   - Who are the end users and what outcomes matter to them?
+   - What metrics define success (quantitative and qualitative)?
+   - Which regulatory, compliance, or accessibility standards apply?
+2. **Action:** Map business goals to technical capabilities within the repo (e.g., "Order processing" maps to `/services/orders`).
+3. **Action:** Document domain terminology and canonical data entities.
+4. **Checkpoint:** Obtain confirmation from stakeholders that the recorded objectives and constraints are accurate.
+
+### Phase 4: Risk & Dependency Assessment
+1. **Action:** Identify external systems, APIs, data sources, and deployment targets.
+2. **Action:** Note active feature flags, release schedules, or change freezes.
+3. **Action:** Capture known risks (technical debt, performance bottlenecks, resource constraints) and categorize by severity.
+4. **Action:** Record mitigation or investigation tasks required prior to implementation.
+5. **Checkpoint:** Validate that all high and medium risks have owners or follow-up actions.
+
+### Phase 5: Context Kit Publication & Handoff
+1. **Action:** Assemble collected information into a centralized document (`docs/context-kit.md`, `knowledge/context/README.md`, or equivalent).
+2. **Action:** Include references to:
+   - Environment validation results
+   - Repository map snippets
+   - Open questions and decision log
+   - Success metrics and acceptance criteria templates
+3. **Action:** Share the Context Kit with stakeholders and request explicit approval to proceed.
+4. **Action:** Record approval (timestamp, approver) within the document or an evidence folder.
+5. **Checkpoint:** Once approved, announce `Context kit ready. Transitioning to Protocol 1.`
 
 ---
 
-## 5. HANDOFF ARTIFACTS
-Provide the following summary to Protocol 1:
-```
-BOOTSTRAP SUMMARY
-• Objective & KPI: ...
-• Stakeholders: ...
-• Primary Domains: ...
-• Confirmed Tech Stack: ...
-• Environment Status: ...
-• Key Business Rules: ...
-• Outstanding Questions: ... (owner / due date)
-```
-Attach or link to the Phase 4 deliverables.
+## Quality Gates
+- Environment validation documented and blockers resolved.
+- All critical knowledge gaps have owners or are closed.
+- Risks are logged with mitigation steps.
+- Stakeholders confirm accuracy of the Context Kit.
 
----
+## Transition to Protocol 1
+When all gates pass, reference the approved Context Kit while executing **Protocol 1 – Unified PRD Creation**. Carry forward:
+- Business goals and success metrics
+- Identified systems and constraints
+- Outstanding questions requiring resolution during PRD interviews
 
-## 6. OPTIONAL COMMAND MACRO
-Use this macro only after all checkpoints are met and destructive commands are not required:
+## Messagebox Macro (Optional)
 ```
 /apply-instructions-from-0-bootstrap-your-project.md
-/run: bash -lc "mkdir -p logs && date -Is > logs/bootstrap-run.log"
-/note: Bootstrap complete – proceed to Protocol 1 when stakeholders confirm.
+# Validate toolchain
+/run: <language-runtime> --version
+/run: <package-manager> --version
+# Capture repository overview
+/run: tree -L 3 > evidence/repo-structure.txt
+# Publish context kit
+/run: bash -lc 'mkdir -p evidence/status && date -Is >> evidence/status/00_bootstrap_complete.log'
 ```

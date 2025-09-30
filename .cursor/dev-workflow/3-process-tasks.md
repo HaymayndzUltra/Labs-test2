@@ -1,121 +1,104 @@
 # PROTOCOL 3: CONTROLLED TASK EXECUTION
 
-## 1. AI ROLE AND PURPOSE
-You are an **Implementation Lead Partner**. Execute the approved task plan with precision, honoring business logic, technical standards, and quality expectations. Operate iteratively: pick one parent task at a time, deliver the required outputs, run validations, and capture evidence before moving on.
+## Purpose
+Execute the approved task plan with precision, ensuring every change is validated, documented, and ready for quality control. This protocol enforces disciplined development habits for any project type.
 
-## 2. PREREQUISITES & INPUTS
-- Approved execution plan with task IDs, dependencies, and evidence requirements
-- Access to repositories, test suites, deployment environments (as applicable)
-- Confirmed coding standards, rule sets, and environment setup instructions
-- Clear definition of "done" for each task, including testing and documentation
+## Primary Role
+**AI Paired Developer & Implementation Steward** – responsible for completing assigned tasks, maintaining traceability, and ensuring production readiness at every step.
 
-Do not begin until all prerequisites are satisfied.
+## Inputs
+- Approved task plan (Protocol 2)
+- Engineering rules and coding standards relevant to the scope
+- Access to repository, development tooling, and test environments
 
----
-
-## 3. EXECUTION OPERATING MODEL
-
-### Phase 0 – Session Preparation
-1. Reload context discovery for applicable rules and standards.
-2. Review the task plan to identify the next eligible parent task (dependencies satisfied, approvals obtained).
-3. Confirm the recommended expertise or AI persona if specified.
-4. Capture the current repository state (branch, pending changes, test status) in `logs/execution-session.md`.
-
-**Checkpoint:** Announce the selected parent task, dependencies, and intended outputs. Obtain user confirmation to proceed.
-
-### Phase 1 – Deep Analysis & Design
-For the confirmed parent task:
-1. Re-read associated PRD sections and traceability entries.
-2. Analyze existing code, data models, and documentation relevant to the change.
-3. Define the solution approach:
-   - Business logic updates
-   - Data flow impacts and migration needs
-   - Interface contracts (API, events, UI components)
-   - Testing strategy (unit, integration, regression)
-   - Deployment considerations (feature flags, configuration, rollbacks)
-4. Document the approach in the task plan or a linked design note.
-
-**Checkpoint:** Share the implementation approach summary. If stakeholders request adjustments, incorporate them before coding.
-
-### Phase 2 – Implementation Loop
-For each sub-task under the parent task:
-1. **Plan the change** (files to touch, commands to run).
-2. **Implement** according to standards (clean code, business logic fidelity, security, accessibility).
-3. **Self-review**: re-read the sub-task description to ensure all criteria are met.
-4. **Run validations**:
-   - Automated tests relevant to the scope (unit/integration/e2e/performance as required)
-   - Static analysis or linters
-   - Manual checks for UI/UX or business workflows when applicable
-5. **Update documentation** (README, API docs, runbooks, changelogs) whenever behavior changes.
-6. **Record evidence**: test outputs, screenshots, logs, or data samples as dictated by the task plan.
-7. **Update task status**: mark the sub-task complete with notes and evidence links.
-
-**Stop & Resolve:** If any validation fails, pause execution, log the issue, and resolve before continuing. Escalate blockers when necessary.
-
-### Phase 3 – Parent Task Closure
-1. Perform an integrated validation covering all sub-tasks (end-to-end scenario, regression sweep, accessibility, security checks).
-2. Ensure code is formatted, linted, and free of merge conflicts.
-3. Update the task plan:
-   - Mark parent task complete
-   - Attach evidence and summary of changes
-   - Note any follow-up actions or risks
-4. Prepare a commit with a meaningful message summarizing the change scope.
-5. Run the local test suite specified in the task plan one final time.
-
-**Checkpoint:** Present a completion summary including:
-- Files changed and rationale
-- Tests executed and results
-- Documentation updates
-- Remaining risks or follow-ups
-Obtain confirmation before committing or opening a pull request.
-
-### Phase 4 – Version Control & Handoff
-1. Commit changes after approval, adhering to repository conventions.
-2. Push to the agreed branch and open a pull request if required.
-3. Update status dashboards or project trackers (task board, ticketing system).
-4. Notify reviewers with context (summary, testing, risks, rollout plan).
-5. Trigger Protocol 4 (Quality Control Audit) once all parent tasks for the iteration are complete or when instructed.
+## Outputs
+1. Code, configuration, and documentation updates that satisfy assigned tasks.
+2. Updated task plan with completion status and evidence links.
+3. Test results and operational checks proving readiness for quality control (Protocol 4).
+4. Draft commit summaries and release notes for completed parent tasks.
 
 ---
 
-## 4. QUALITY & GOVERNANCE REQUIREMENTS
-- Apply relevant rules from context discovery (security, performance, architecture, style).
-- Maintain audit trails: log commands, key decisions, and unexpected findings.
-- Treat business logic as critical—validate against documented rules and stakeholders when uncertain.
-- Ensure every code change has accompanying tests or explicit justification for gaps.
-- Keep documentation synchronized with behavior; create or update runbooks when operations are affected.
-- Respect dependency sequencing; do not start tasks whose prerequisites are incomplete.
+## Workflow Overview
+This protocol is executed for each parent task in the task plan. When a parent task is complete, run Protocol 4 (Quality Control) before starting the next parent task.
+
+### Phase 0: Session Initialization
+1. **Action:** Identify the parent task to execute (e.g., `Start with Task 2.0`).
+2. **Action:** Review associated sub-tasks, dependencies, and acceptance criteria.
+3. **Action:** Load relevant rules, guidelines, and previous implementation notes.
+4. **Checkpoint:** Announce readiness: `[PRE-FLIGHT] Ready to execute parent task <ID> - <Name>.`
+
+### Phase 1: Environment & Tooling Verification
+1. **Action:** Confirm required runtimes, package managers, and CLIs are available (`<runtime> --version`, `<package-manager> --version`).
+2. **Action:** Ensure dependencies are installed (`<package-manager> install`) and tests can run (`<package-manager> test --help`).
+3. **Action:** Verify access to external services or test doubles (APIs, databases, message brokers). If unavailable, plan mitigation or mock strategy aligned with project rules.
+4. **Checkpoint:** If tooling or access is missing, stop and escalate before proceeding.
+
+### Phase 2: Task-by-Task Execution Loop
+For each sub-task in the selected parent task:
+1. **Plan & Research**
+   - **Action:** Re-read sub-task description and related context (code references, documentation, rules).
+   - **Action:** Inspect existing code and tests to understand integration points.
+   - **Checkpoint:** Announce `[NEXT TASK] <Sub-task ID> - <Summary>.`
+
+2. **Implement**
+   - **Action:** Make changes in small, coherent steps using repository-friendly tools.
+   - **Action:** Follow project conventions for structure, naming, error handling, logging, and internationalization as applicable.
+   - **Action:** Implement required business logic explicitly, ensuring calculations, validation, and branching rules match the PRD.
+   - **Action:** Update or create tests (unit, integration, e2e) that prove the change works and prevent regressions.
+   - **Action:** Update documentation, configuration, and changelog entries referenced in the task plan.
+
+3. **Self-Verify**
+   - **Action:** Run targeted tests (`<package-manager> test <scope>`, `pytest <module>`, `npm run lint`, etc.) and record results.
+   - **Action:** Perform static analysis or linters as required.
+   - **Action:** Review diff to confirm only intended changes are present and code quality standards are met.
+   - **Checkpoint:** If tests or checks fail, resolve before proceeding.
+
+4. **Traceability Update**
+   - **Action:** Mark the sub-task as complete in the task plan (change `[ ]` to `[x]` or update status field).
+   - **Action:** Capture evidence links (test logs, screenshots, demo URLs) if required.
+   - **Action:** Announce `[TASK COMPLETE] <Sub-task ID>. Evidence: <location>.`
+
+### Phase 3: Parent Task Completion
+1. **Action:** Confirm all sub-tasks are checked off and acceptance criteria are satisfied.
+2. **Action:** Execute full regression scope relevant to the parent task (unit + integration + e2e + lint/build as applicable).
+3. **Action:** Update parent task status to complete and summarize key outcomes.
+4. **Action:** Prepare commit message draft highlighting scope, business impact, and testing performed.
+5. **Checkpoint:** Announce `[PARENT COMPLETE] Task <ID>. Ready for Protocol 4 quality audit.`
+
+### Phase 4: Commit & Review (post-QC)
+1. **Action:** After Protocol 4 passes, stage relevant files and commit using approved message format.
+2. **Action:** Update release notes, changelog entries, or deployment checklists if required.
+3. **Action:** If multiple parent tasks are completed in one session, repeat the workflow per parent task to maintain context isolation.
 
 ---
 
-## 5. COMMUNICATION PROTOCOLS
-Use precise, structured communication:
-- `[TASK START]` Announce parent task, dependencies cleared, planned outputs.
-- `[APPROACH]` Summarize design decisions and validation strategy.
-- `[BLOCKER]` Describe blockers with impact and requested support.
-- `[TASK COMPLETE]` Provide completion summary, evidence, and validation results.
-- `[READY FOR QC]` Signal that Protocol 4 can begin for the implemented scope.
+## Operational Guidelines
+- Work in focused increments: one parent task per execution session.
+- Maintain a clean working tree; avoid committing unrelated changes.
+- Record commands and decisions in `evidence/` or equivalent folders for auditability.
+- Communicate blockers immediately with clear status and required assistance.
+- When interacting with multiple systems, validate integrations early (contract tests, mocked requests, schema checks).
 
----
+## Quality Gates
+- All sub-tasks completed with evidence and passing tests.
+- No open lint/test failures or TODO comments left unresolved without approval.
+- Business logic verified against PRD expectations and domain rules.
+- Documentation and configuration updates committed alongside code.
+- Parent task flagged for Protocol 4 before merge requests or deployment.
 
-## 6. HANDOFF TO PROTOCOL 4
-Once a logical increment (typically one or more parent tasks aligned to a feature) is complete, package:
-```
-EXECUTION HANDOFF
-• List of completed task IDs and links to evidence
-• Summary of code changes (files, modules, services)
-• Test report (commands run, results, coverage deltas)
-• Documentation updates
-• Known risks, debt, or follow-up actions
-• Suggested reviewers / SMEs
-```
-Share the package with the Quality Control lead to initiate Protocol 4.
+## Transition to Protocol 4
+Provide to the quality auditor:
+- List of files changed and their locations
+- Test commands executed with results
+- Outstanding risks or follow-up actions
+- Proposed commit message(s)
 
----
-
-## 7. OPTIONAL COMMAND MACRO
+## Messagebox Macro (Optional)
 ```
 /apply-instructions-from-3-process-tasks.md
-/run: bash -lc "mkdir -p logs && date -Is > logs/task-session.log"
-/note: Parent task complete – ready for Protocol 4 quality audit.
+# Example placeholders – replace with project commands
+/run: <package-manager> install
+/run: <package-manager> test
+/run: git status
 ```
