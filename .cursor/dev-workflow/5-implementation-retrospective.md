@@ -1,103 +1,156 @@
-# Protocol 5 · Implementation Retrospective & Continuous Improvement
+# PROTOCOL 5: IMPLEMENTATION RETROSPECTIVE & CONTINUOUS IMPROVEMENT
 
-## Purpose & Role
-- **Role:** Continuous Improvement Lead facilitating reflection across product, engineering, QA, and operations.
-- **Mission:** Assess delivery outcomes, capture lessons learned, and feed improvements back into rules, documentation, and planning assets.
-- **Success Criteria:** Retrospective report with validated findings, prioritized improvement actions, ownership assignments, and updates to shared knowledge bases.
+## 1. AI ROLE AND PURPOSE
+You are a **Continuous Improvement Facilitator**. After a delivery increment passes Quality Control, synthesize lessons learned, validate alignment with business goals, and update workflows, rules, or documentation to strengthen future iterations.
 
-## Required Inputs
-- Final audit report from Protocol 4 and associated evidence.
-- PRD, task plan, and Context Kit (including risk and decision logs).
-- Deployment results, monitoring data, user feedback, and support tickets (if applicable).
-- Metrics dashboards or analytics that reflect business and technical outcomes.
+## 2. PREREQUISITES & INPUTS
+- Approved Quality Control report and any conditional actions
+- Execution artifacts (task plan, commit log, documentation, evidence)
+- Stakeholder availability for retrospective discussion or authorization to run autonomously
 
-## Expected Outputs
-1. Retrospective summary documenting what went well, what needs improvement, and data-driven insights.
-2. Action plan with owners, due dates, and links to updated rules/docs/backlog items.
-3. Updates to rule sets, playbooks, or templates reflecting lessons learned.
-4. Knowledge artifacts (ADR updates, FAQs, onboarding notes) for future teams.
-5. Communication to stakeholders highlighting outcomes, risks, and next steps.
+Do not begin until QC outcomes are acknowledged.
 
-## Phase Breakdown
+---
 
-### Phase 0 · Preparation & Data Collection
-1. Re-run rule/context discovery to incorporate any updates post-QC.
-2. Gather timeline of key events (kickoff, approvals, releases, incidents).
-3. Compile metrics: delivery velocity, defect counts, test coverage, deployment frequency, business KPIs.
-4. Collect qualitative feedback from stakeholders, implementers, QA, operations, and end users.
+## 3. RETROSPECTIVE PHASES
 
-### Phase 1 · Outcome Review
-1. Compare delivered functionality against PRD goals, success metrics, and business KPIs.
-2. Evaluate quality outcomes: defect leakage, severity of issues found, production stability.
-3. Assess delivery performance: schedule adherence, scope adjustments, resource utilization.
-4. Review customer or user impact: satisfaction scores, adoption metrics, support volume.
+### Phase 0 – Context Refresh
+1. Review the PRD, task plan, QC report, and final code changes to reconstruct the delivery narrative.
+2. Aggregate metrics: cycle time, defect counts, test coverage deltas, incidents, and business KPI snapshots.
+3. Update the decision log with any waivers or deviations accepted during QC.
 
-### Phase 2 · Process Analysis
-1. Examine each protocol stage (0–4) for friction points, rework, or deviations from plan.
-2. Identify decisions that led to positive or negative outcomes (architecture choices, testing approaches, collaboration patterns).
-3. Analyze communication effectiveness, availability of context, and clarity of responsibilities.
-4. Surface systemic issues (tooling gaps, environment instability, unclear rules) requiring structural fixes.
+**Checkpoint:** Confirm scope of the retrospective (features covered, timeframe, participants).
 
-### Phase 3 · Improvement Planning
-1. Translate findings into specific actions categorized by theme (Process, Tooling, Documentation, Rules, Training, Product).
-2. Prioritize actions by impact and effort; assign owners and deadlines.
-3. Determine whether actions should become backlog items, rule updates, ADRs, or experiments.
-4. Define measurable success criteria for each action to enable follow-up.
+### Phase 1 – Technical Reflection
+1. Evaluate how the implemented solution met functional, non-functional, and business logic requirements.
+2. Identify areas of rework, blockers, or deviations from plan.
+3. Assess maintainability and operational readiness post-release (monitoring efficacy, support readiness, debt introduced).
+4. Capture suggested improvements to architecture, testing, or tooling.
 
-### Phase 4 · Knowledge Capture & Dissemination
-1. Update rule files, templates, or playbooks with refined guidance (include rationale and references).
-2. Document lessons learned in ADRs, retrospectives folder, or knowledge base entries.
-3. Share summaries with stakeholders, highlight key achievements, and acknowledge contributors.
-4. Update the Context Kit with new insights, risks, or standard operating procedures.
+**Output:** Draft "Technical Insights" section summarizing observations.
 
-### Phase 5 · Close-Out & Follow-Up
-1. Schedule follow-up reviews to track action item completion.
-2. Archive retrospective artifacts for future reference and onboarding.
-3. Confirm that outstanding risks or deferred scope items are transferred to the product backlog.
-4. Provide clear signal that the initiative has exited the delivery cycle or note upcoming iterations.
+### Phase 2 – Process & Collaboration Review
+1. Analyze effectiveness of each protocol:
+   - Was the bootstrap information sufficient?
+   - Did the PRD capture necessary detail?
+   - Were tasks granular and traceable?
+   - Did execution follow standards without unnecessary friction?
+   - Was the QC audit efficient and thorough?
+2. Document communication patterns (handoffs, response times, decision latency).
+3. Identify bottlenecks, unclear ownership, or missing artifacts.
+4. Capture positive practices worth repeating.
 
-## Retrospective Template (Reference)
+**Output:** Draft "Process Insights" section with evidence-based commentary.
+
+### Phase 3 – Stakeholder Dialogue
+1. Present technical and process insights to stakeholders.
+2. Facilitate feedback using structured prompts:
+   - What went well?
+   - What caused friction or confusion?
+   - Which rules or documents need updates?
+   - What risks remain or emerged post-release?
+3. Record stakeholder feedback, decisions, and action items with owners and due dates.
+
+**Checkpoint:** Confirm consensus on improvement actions or document dissenting opinions.
+
+### Phase 4 – Action Planning & Knowledge Capture
+1. Translate insights into concrete actions:
+   - Rule updates (`@rules`, `.mdc`, team conventions)
+   - Documentation revisions (PRD template, onboarding guides, runbooks)
+   - Process adjustments (approval gates, testing strategy, deployment checklists)
+   - Training or enablement needs
+2. Prioritize actions by impact and effort; align with upcoming roadmap.
+3. Update repositories with approved changes (documentation, rules, templates) and reference the retrospective ID.
+4. Schedule follow-up reviews to ensure actions are completed.
+
+**Output:** Publish `retrospectives/<date>-<feature>.md` capturing insights, decisions, and action plan.
+
+### Phase 5 – Closeout & Next Iteration Readiness
+1. Share the retrospective summary with the broader team.
+2. Archive artifacts (meeting notes, recordings, metrics dashboards).
+3. Confirm that action items are tracked in the appropriate system (tickets, backlog, knowledge base).
+4. Verify that Protocol 0 inputs are updated if foundational knowledge changed.
+5. Signal readiness for the next initiative.
+
+---
+
+## 4. RETROSPECTIVE REPORT TEMPLATE
+
 ```markdown
-# Retrospective · <Feature / Iteration>
-- **Date:**
-- **Facilitator:**
-- **Participants:**
-- **Delivery Window:**
+# Retrospective – <Feature / Increment> (<Date>)
 
-## 1. Goals & Outcomes
-- Planned vs. actual scope
-- Business impact & KPIs
-- Quality metrics (defects, coverage, MTTR)
+## Scope & Participants
+- Features Covered:
+- Timeframe:
+- Attendees / Contributors:
 
-## 2. Highlights
-- Successes worth repeating
-- Innovations or practices to standardize
+## Technical Insights
+- Successes:
+- Gaps or Issues:
+- Business Logic Validation:
+- Operational Readiness Notes:
 
-## 3. Challenges & Root Causes
-- Issues encountered
-- Root-cause analysis (5 Whys / Fishbone)
+## Process Insights
+- Workflow Strengths:
+- Workflow Challenges:
+- Communication & Collaboration:
+- Tooling & Automation Feedback:
 
-## 4. Improvement Actions
-| Category | Description | Owner | Due Date | Success Metric |
-|----------|-------------|-------|---------|----------------|
+## Metrics Snapshot
+- Delivery Metrics (cycle time, throughput):
+- Quality Metrics (defects, coverage change):
+- Business Metrics (adoption, KPI impact):
 
-## 5. Rule / Documentation Updates
-- Files to update
-- Summary of changes
+## Stakeholder Feedback
+- Key Agreements:
+- Concerns Raised:
+- Additional Context:
 
-## 6. Follow-Up Items
-- Deferred scope or risks
-- Upcoming checkpoints
+## Action Plan
+| Action | Owner | Due Date | Impact |
+|--------|-------|----------|--------|
+
+## Updates Applied
+- Documentation / Rule changes:
+- Templates refreshed:
+- Follow-up meetings scheduled:
+
+## Outstanding Risks & Monitoring
+- Residual risks:
+- Monitoring plan:
+
+## Lessons to Feed Into Protocols
+- Bootstrap adjustments:
+- PRD improvements:
+- Task planning refinements:
+- Execution guidance updates:
+- QC enhancements:
 ```
 
-## Quality Gates & Checkpoints
-- **Evidence Gate:** Findings supported by data (metrics, logs, feedback).
-- **Action Gate:** Each improvement has an owner, due date, and metric.
-- **Knowledge Gate:** Relevant rules, docs, and templates updated.
-- **Communication Gate:** Retrospective outcomes shared with stakeholders.
-- **Follow-Up Gate:** Tracking mechanism established for action items.
+---
 
-## Transition to Future Work
-Use the retrospective outputs to refine Protocols 0–4 before the next initiative. Ensure action items are logged in the appropriate backlog or governance system and schedule the next retrospective review.
+## 5. QUALITY GATES & STOP CONDITIONS
+- 🚫 Do not close the retrospective if action items lack owners or due dates.
+- 🚫 Do not archive without updating decision logs and knowledge bases.
+- ✅ Conclude only when improvements are documented and fed back into relevant protocols or rule sets.
 
-*This protocol closes the loop, ensuring continuous learning and proactive improvement across the entire development lifecycle.*
+---
+
+## 6. HANDOFF TO FUTURE CYCLES
+Provide the next initiative’s bootstrap lead with:
+```
+RETROSPECTIVE HANDOFF
+• Summary of major lessons and required updates
+• Links to updated documentation and rules
+• Outstanding risks or tech debt to monitor
+• Metrics baseline for next iteration
+```
+
+---
+
+## 7. OPTIONAL COMMAND MACRO
+```
+/apply-instructions-from-5-implementation-retrospective.md
+/run: bash -lc "mkdir -p logs && date -Is > logs/retrospective.log"
+/note: Retrospective complete – bootstrap inputs updated for next cycle.
+```

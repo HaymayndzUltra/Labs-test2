@@ -1,107 +1,156 @@
-# Protocol 2 · Technical Task Generation
+# PROTOCOL 2: EXECUTION PLAN & TASK GENERATION
 
-## Purpose & Role
-- **Role:** Delivery Planning Lead responsible for translating the approved PRD into an actionable backlog.
-- **Mission:** Produce a structured plan of implementation tasks that covers development, business logic, testing, documentation, deployment, and validation activities.
-- **Success Criteria:** Baseline backlog stored in version control, dependency graph defined, owners or personas assigned, and execution readiness confirmed for Protocol 3.
+## 1. AI ROLE AND PURPOSE
+You are a **Delivery Planning Lead**. Transform the approved PRD into a structured, prioritized execution plan that any contributor (human or AI) can follow without ambiguity. Ensure every required workstream—engineering, testing, documentation, deployment, and enablement—is represented.
 
-## Required Inputs
-- Approved PRD and Context Kit updates.
-- Architectural placement summary, integration map, and risk register.
-- Applicable engineering standards, coding conventions, testing frameworks, and deployment guidelines.
-- Capacity information (team composition, skill sets, tooling access, AI personas available).
+## 2. PREREQUISITES & INPUTS
+- Final PRD with sign-off
+- Bootstrap artifacts (context overview, environment notes, decision log, open questions)
+- Visibility into team capacity, release calendars, and governance rules (code review, change management)
 
-## Expected Outputs
-1. Task plan document (e.g., `tasks-<initiative>.md` or `tasks.json`) organized by epics/parent tasks.
-2. For each parent task: scope statement, deliverables, acceptance tests, and definition of done.
-3. Atomic sub-tasks covering development, business logic, data work, QA, documentation, deployment, and validation steps.
-4. Dependency matrix and sequencing guidance (critical path, parallelizable work, environment constraints).
-5. Estimated effort/complexity per task plus resource or persona recommendations.
-6. Risk & assumption tracker linked to tasks.
+If any prerequisite is missing, coordinate with the responsible owner before generating tasks.
 
-## Phase Breakdown
+---
 
-### Phase 0 · Preparation & Context Alignment
-1. Re-run rule/context discovery to capture any updates since PRD approval.
-2. Review PRD sections focusing on scope, architecture, business logic, testing, and rollout.
-3. Identify mandatory compliance or audit checkpoints that must become tasks.
+## 3. TASK GENERATION PHASES
 
-### Phase 1 · Capability Decomposition
-1. Segment the initiative into high-level capabilities or epics aligned with the PRD sections (e.g., UI feature, API service, data migration, analytics update).
-2. For each capability, capture:
-   - Objective and business value
-   - Primary implementation layer(s)
-   - Key success metrics or acceptance criteria
-   - Notable constraints or dependencies
-3. Validate coverage with stakeholders or engineering leads to ensure the decomposition reflects the PRD.
+### Phase 1 – Preparation & Context Refresh
+1. Reload context discovery (rules, standards, checklists) relevant to the domains identified in the PRD.
+2. Read the PRD end-to-end, tagging requirements by domain (frontend, backend, data, infrastructure, compliance, etc.).
+3. Identify success metrics and acceptance criteria that must be validated later.
+4. Review open questions and determine if answers are required before planning.
 
-### Phase 2 · Task Detailing
-1. Break each capability into parent tasks and sub-tasks, ensuring every deliverable has:
-   - Development activities (code, configuration, infrastructure)
-   - Business logic implementation (rule engines, validations, calculations)
-   - Data work (schema updates, migrations, seeds, backfills)
-   - Testing activities (unit, integration, contract, performance, security, manual, monitoring setup)
-   - Documentation updates (README, ADRs, API docs, runbooks, change logs)
-   - Deployment and rollout steps (feature flags, release notes, environment promotion)
-   - Operational follow-up (observability dashboards, alert tuning, support playbooks)
-2. Ensure sub-tasks are atomic, testable, and reference specific file paths or components when possible.
-3. Add acceptance criteria or verification steps directly to the sub-task descriptions.
-4. Include checkpoints for reviewing business logic with subject-matter experts when needed.
+**Checkpoint:** Confirm readiness with stakeholders—if critical gaps remain, halt and resolve before proceeding.
 
-### Phase 3 · Sequencing & Dependency Mapping
-1. Identify prerequisites and successor tasks; document explicit dependencies.
-2. Flag tasks requiring specific environments, data sets, or stakeholder availability.
-3. Determine opportunities for parallel execution vs. serialized work.
-4. Update the risk register with task-level risks (technical, resource, external dependencies) and mitigation steps.
+### Phase 2 – Define Workstreams & Deliverables
+1. Break the initiative into workstreams:
+   - Product/UX deliverables (design updates, content, accessibility reviews)
+   - Engineering deliverables per system or service
+   - Data & analytics updates
+   - Quality engineering (test plans, automation, regression suites)
+   - DevOps/operations tasks (infrastructure, observability, security reviews)
+   - Documentation, training, and change management
+2. For each workstream, list mandatory deliverables driven by the PRD.
+3. Capture dependencies between workstreams (e.g., backend API before frontend integration).
 
-### Phase 4 · Estimation & Resourcing
-1. Assign complexity (e.g., Small / Medium / Large) or time-based estimates to each parent task.
-2. Recommend responsible parties or AI personas based on required expertise (frontend, backend, DevOps, QA, data, UX writing).
-3. Note collaboration touchpoints (pair programming, design reviews, security approvals) and schedule them.
+**Output:** Draft a workstream map summarizing scope and dependencies.
 
-### Phase 5 · Validation & Packaging
-1. Consolidate tasks into the chosen artifact format using a consistent template (see below).
-2. Validate the plan against the PRD:
-   - All PRD requirements and acceptance criteria mapped to tasks
-   - Testing and documentation coverage confirmed
-   - Deployment and post-release monitoring activities included
-3. Run automated validation scripts if available (e.g., task schema validation, linting).
-4. Circulate the plan for sign-off with product, engineering, QA, and operations leads.
-5. Store the approved plan alongside the PRD and update the Context Kit with the execution roadmap.
+### Phase 3 – Construct the Work Breakdown Structure (WBS)
+1. For each deliverable, create parent tasks with descriptive titles.
+2. Decompose parent tasks into atomic sub-tasks (no ambiguity, one owner, measurable output).
+3. Include supporting tasks:
+   - Code implementation and refactoring
+   - Business logic validation and data migration
+   - Unit, integration, end-to-end, performance, and security testing
+   - Documentation updates (README, runbooks, support guides)
+   - Deployment configuration, feature flags, rollback scripts
+   - Monitoring/alerting setup and post-launch checks
+4. Annotate each task with:
+   - Type (build/test/doc/deploy/etc.)
+   - Expected complexity or effort
+   - Required skills or recommended AI persona (if applicable)
+   - Dependencies on other tasks
+5. Record assumptions and risks for each task group.
 
-## Task Template (Reference)
+**Checkpoint:** Ensure every PRD requirement maps to at least one task. Create a traceability table linking PRD sections to tasks.
+
+### Phase 4 – Validate Plan Integrity
+1. Run internal consistency checks:
+   - No orphan tasks without linkage to requirements
+   - Dependencies form an acyclic graph
+   - Testing and documentation tasks exist for every major feature
+   - Deployment, monitoring, and maintenance tasks are included
+2. Review capacity and sequencing (parallelism, critical path, release alignment).
+3. Present the plan to stakeholders for review. Capture feedback and adjust.
+4. Validate risk mitigation actions (spikes, proof-of-concepts, fallback plans).
+
+**Checkpoint:** Obtain explicit approval to publish the plan and proceed to execution.
+
+### Phase 5 – Publish Artifacts
+1. Save the execution plan in the agreed location (e.g., `plans/<feature>-tasks.md`, `tasks.json`).
+2. Update the traceability table and decision log.
+3. Document recommended implementation order and gating criteria (what must be complete before moving to Protocol 3 for each parent task).
+4. Provide instructions for how AI implementers should mark progress (task status conventions, evidence required, validation steps).
+
+---
+
+## 4. TASK FILE TEMPLATE (EXAMPLE)
+
 ```markdown
-## <Parent Task ID> · <Parent Task Title>
-- **Objective:**
-- **Primary Layer:**
-- **Dependencies:**
-- **Definition of Done:**
-- **Recommended Owner / Persona:**
-- **Acceptance Tests:**
+# Execution Plan: <Feature Name>
 
-### Sub-Tasks
-- [ ] <ID> Implement feature logic (include files/modules)
-- [ ] <ID> Update data model / migration (include scripts)
-- [ ] <ID> Write unit tests (framework + coverage target)
-- [ ] <ID> Write integration or contract tests
-- [ ] <ID> Update documentation / runbooks
-- [ ] <ID> Prepare deployment configuration / feature flag
-- [ ] <ID> Add monitoring or alerting hooks
-- [ ] <ID> Demo or validation with stakeholders
+## Overview
+- Source PRD: <link>
+- Goal & KPI(s):
+- Release Target:
+- Stakeholders & Owners:
+- Risks & Assumptions:
+
+## Traceability Matrix
+| PRD Section | Requirement Summary | Task ID(s) |
+|-------------|---------------------|-----------|
+
+## Workstreams & Parent Tasks
+
+### <Workstream Name>
+- [ ] <Task ID> <Parent Task Title> (Type, Complexity)
+  - [ ] <Task ID.1> Sub-task description (deliverable, validation method)
+  - [ ] <Task ID.2> ...
+  - [ ] <Task ID.n> ...
+  - **Dependencies:** <IDs>
+  - **Recommended Persona / Skillset:** <description>
+  - **Evidence Required:** <tests/docs>
+
+*(Repeat for all workstreams)*
+
+## Testing & Quality Activities
+- Planned automated tests:
+- Manual or exploratory tests:
+- Non-functional tests (performance, security, accessibility):
+
+## Deployment & Release Activities
+- Environments & approvals:
+- Feature flag / rollout plan:
+- Rollback strategy:
+- Monitoring setup:
+
+## Documentation & Enablement
+- README / architecture updates:
+- Runbooks / SOPs:
+- Training or support materials:
+
+## Completion Definition
+- Criteria for Protocol 3 handoff:
+- Validation checkpoints:
 ```
 
-## Quality Gates & Checkpoints
-- **Coverage Gate:** Every PRD requirement maps to at least one task; no orphan tasks.
-- **Quality Gate:** Each parent task includes testing, documentation, and deployment subtasks.
-- **Dependency Gate:** All dependencies documented; critical path reviewed.
-- **Estimation Gate:** Complexity/effort and owner/persona assigned for planning.
-- **Approval Gate:** Plan reviewed and accepted by product, engineering, QA, and operations.
+---
 
-## Transition to Protocol 3
-Begin `3-process-tasks.md` when:
-1. Task plan is baselined in version control with approval history.
-2. Dependencies, risks, and resource assignments are visible to the execution team.
-3. Tooling and environments referenced by the plan are available or scheduled.
-4. Stakeholders confirm readiness to proceed to implementation.
+## 5. QUALITY GATES & STOP CONDITIONS
+- 🚫 Do not release the plan if any PRD requirement lacks corresponding tasks.
+- 🚫 Do not proceed if testing, deployment, or documentation workstreams are missing.
+- 🚫 Do not proceed if dependencies or risks are unaddressed.
+- ✅ Proceed to Protocol 3 only after stakeholders approve the execution plan.
 
-*This protocol transforms validated requirements into a comprehensive execution roadmap that balances business value, technical accuracy, and quality assurance.*
+---
+
+## 6. HANDOFF PACKAGE FOR PROTOCOL 3
+Provide implementers with:
+```
+TASK PLAN HANDOFF
+• Location of the execution plan artifact(s)
+• Recommended task order and gating
+• Traceability matrix linking tasks to PRD requirements
+• Identified risks, mitigations, and decision log updates
+• Evidence expectations for marking tasks complete
+• Contacts for clarifications
+```
+
+---
+
+## 7. OPTIONAL COMMAND MACRO
+```
+/apply-instructions-from-2-generate-tasks.md
+/run: bash -lc "mkdir -p logs && date -Is > logs/tasks-generated.log"
+/note: Task plan approved – ready for Protocol 3 execution.
+```

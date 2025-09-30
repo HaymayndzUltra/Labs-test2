@@ -1,89 +1,121 @@
-# Protocol 3 · Controlled Task Execution
+# PROTOCOL 3: CONTROLLED TASK EXECUTION
 
-## Purpose & Role
-- **Role:** Implementation Lead (AI or human) executing the approved task plan responsibly and transparently.
-- **Mission:** Deliver incremental value by completing parent tasks sequentially, adhering to standards, verifying quality, and maintaining accurate progress tracking.
-- **Success Criteria:** Tasks completed with passing tests, updated documentation, validated business logic, recorded evidence, and readiness for Quality Control (Protocol 4).
+## 1. AI ROLE AND PURPOSE
+You are an **Implementation Lead Partner**. Execute the approved task plan with precision, honoring business logic, technical standards, and quality expectations. Operate iteratively: pick one parent task at a time, deliver the required outputs, run validations, and capture evidence before moving on.
 
-## Required Inputs
-- Approved task plan from Protocol 2 and the latest Context Kit.
-- Access to source repository, development environments, credentials, and tooling.
-- Coding standards, review guidelines, and testing requirements for the project.
-- Definition of Done per parent task and sub-task.
+## 2. PREREQUISITES & INPUTS
+- Approved execution plan with task IDs, dependencies, and evidence requirements
+- Access to repositories, test suites, deployment environments (as applicable)
+- Confirmed coding standards, rule sets, and environment setup instructions
+- Clear definition of "done" for each task, including testing and documentation
 
-## Expected Outputs
-1. Code, configuration, and infrastructure changes implementing assigned tasks.
-2. Updated tests with passing results and captured logs or reports.
-3. Documentation updates (README, ADRs, API docs, change logs, runbooks) reflecting new behavior.
-4. Updated task plan status (checked-off sub-tasks, notes, evidence links).
-5. Commit(s) and/or pull request prepared according to repository contribution standards.
-6. Updated risk, issue, or decision logs when new information arises.
+Do not begin until all prerequisites are satisfied.
 
-## Operating Principles
-- Execute one parent task at a time to maintain context and simplify validation.
-- Maintain traceability from code changes to tasks, acceptance criteria, and business value.
-- Surface blockers or ambiguities immediately; do not guess when requirements are unclear.
-- Treat testing, documentation, and deployment preparation as first-class work items.
+---
 
-## Phase Breakdown
+## 3. EXECUTION OPERATING MODEL
 
-### Phase 0 · Pre-Execution Readiness
-1. Re-run rule/context discovery to confirm active standards and waivers.
-2. Review the target parent task scope, dependencies, acceptance criteria, and recommended owner/persona.
-3. Ensure local environment is up-to-date (dependencies installed, migrations applied, feature flags configured).
-4. Create or switch to a dedicated branch that references the task ID or feature name.
-5. Review outstanding risks or assumptions relevant to the parent task.
+### Phase 0 – Session Preparation
+1. Reload context discovery for applicable rules and standards.
+2. Review the task plan to identify the next eligible parent task (dependencies satisfied, approvals obtained).
+3. Confirm the recommended expertise or AI persona if specified.
+4. Capture the current repository state (branch, pending changes, test status) in `logs/execution-session.md`.
 
-### Phase 1 · Detailed Task Analysis
-1. Inspect all sub-tasks and clarify any ambiguities before writing code.
-2. Sketch solution approaches, sequence of changes, and testing strategy.
-3. Confirm business logic expectations with subject-matter experts or refer back to the PRD if needed.
-4. Update the task plan with notes on decisions or clarifications to preserve context.
+**Checkpoint:** Announce the selected parent task, dependencies, and intended outputs. Obtain user confirmation to proceed.
 
-### Phase 2 · Implementation Loop (per Sub-Task)
-For each sub-task:
-1. **Design:** Determine affected files, interfaces, data models, and integration points.
-2. **Develop:** Implement code or configuration changes adhering to project standards.
-3. **Business Logic Verification:** Cross-check calculations, validations, and rules against PRD and domain definitions.
-4. **Static Quality:** Run relevant linters, formatters, or code analyzers.
-5. **Automated Tests:** Create or update unit, integration, contract, performance, or security tests as specified; run them locally and capture results.
-6. **Documentation:** Update inline comments and external docs impacted by the change.
-7. **Evidence:** Record commands, logs, or screenshots demonstrating completion.
-8. Mark the sub-task as complete in the task plan with references to evidence and commits.
+### Phase 1 – Deep Analysis & Design
+For the confirmed parent task:
+1. Re-read associated PRD sections and traceability entries.
+2. Analyze existing code, data models, and documentation relevant to the change.
+3. Define the solution approach:
+   - Business logic updates
+   - Data flow impacts and migration needs
+   - Interface contracts (API, events, UI components)
+   - Testing strategy (unit, integration, regression)
+   - Deployment considerations (feature flags, configuration, rollbacks)
+4. Document the approach in the task plan or a linked design note.
 
-### Phase 3 · Parent Task Integration & Verification
-1. Execute end-to-end or scenario tests that cover the combined sub-tasks.
-2. Validate non-functional requirements (performance, accessibility, localization, compliance) where applicable.
-3. Perform regression checks in affected areas, including smoke tests for critical paths.
-4. Update risk/issue logs if new insights emerge.
-5. Ensure feature flags, configuration toggles, or rollout scripts are ready for deployment.
+**Checkpoint:** Share the implementation approach summary. If stakeholders request adjustments, incorporate them before coding.
 
-### Phase 4 · Review Preparation & Commit Packaging
-1. Review diffs for consistency, readability, and adherence to standards.
-2. Update changelog entries, release notes, or deployment instructions as needed.
-3. Compose descriptive commit messages summarizing business value and technical scope.
-4. Run the full local test suite or targeted subsets required by contribution guidelines.
-5. Capture final evidence (test output, screenshots, logs) for Quality Control.
-6. Push branch and open a pull request or prepare patches as defined by the workflow.
+### Phase 2 – Implementation Loop
+For each sub-task under the parent task:
+1. **Plan the change** (files to touch, commands to run).
+2. **Implement** according to standards (clean code, business logic fidelity, security, accessibility).
+3. **Self-review**: re-read the sub-task description to ensure all criteria are met.
+4. **Run validations**:
+   - Automated tests relevant to the scope (unit/integration/e2e/performance as required)
+   - Static analysis or linters
+   - Manual checks for UI/UX or business workflows when applicable
+5. **Update documentation** (README, API docs, runbooks, changelogs) whenever behavior changes.
+6. **Record evidence**: test outputs, screenshots, logs, or data samples as dictated by the task plan.
+7. **Update task status**: mark the sub-task complete with notes and evidence links.
 
-### Phase 5 · Task Closure & Handoff
-1. Complete parent task checkbox only after verifying all acceptance criteria and tests pass.
-2. Summarize work completed, outstanding follow-ups, and relevant evidence links in the task plan.
-3. Notify reviewers or stakeholders that the parent task is ready for audit.
-4. Transition to **Protocol 4 · Quality Control Audit** with collected evidence and context.
+**Stop & Resolve:** If any validation fails, pause execution, log the issue, and resolve before continuing. Escalate blockers when necessary.
 
-## Quality Gates & Checkpoints
-- **Rule Compliance Gate:** All applicable rules reviewed; deviations documented and approved.
-- **Test Gate:** Unit/integration/E2E tests updated and passing; regression checks recorded.
-- **Documentation Gate:** READMEs, ADRs, API docs, and runbooks updated when behavior changes.
-- **Deployment Gate:** Release artifacts, feature flags, and configuration changes prepared and validated.
-- **Traceability Gate:** Task plan updated with status, evidence, and commit references.
+### Phase 3 – Parent Task Closure
+1. Perform an integrated validation covering all sub-tasks (end-to-end scenario, regression sweep, accessibility, security checks).
+2. Ensure code is formatted, linted, and free of merge conflicts.
+3. Update the task plan:
+   - Mark parent task complete
+   - Attach evidence and summary of changes
+   - Note any follow-up actions or risks
+4. Prepare a commit with a meaningful message summarizing the change scope.
+5. Run the local test suite specified in the task plan one final time.
 
-## Transition to Protocol 4
-Initiate `4-quality-control-protocol.md` once:
-1. Parent task implementation is complete with evidence gathered.
-2. Tests and static analysis have passed or documented exceptions exist with approvals.
-3. Documentation and changelog updates are merged into the branch.
-4. Pull request or patch is ready for review.
+**Checkpoint:** Present a completion summary including:
+- Files changed and rationale
+- Tests executed and results
+- Documentation updates
+- Remaining risks or follow-ups
+Obtain confirmation before committing or opening a pull request.
 
-*This protocol ensures implementations are executed methodically, leaving no ambiguity about what was done, how it was validated, and how it ties back to business objectives.*
+### Phase 4 – Version Control & Handoff
+1. Commit changes after approval, adhering to repository conventions.
+2. Push to the agreed branch and open a pull request if required.
+3. Update status dashboards or project trackers (task board, ticketing system).
+4. Notify reviewers with context (summary, testing, risks, rollout plan).
+5. Trigger Protocol 4 (Quality Control Audit) once all parent tasks for the iteration are complete or when instructed.
+
+---
+
+## 4. QUALITY & GOVERNANCE REQUIREMENTS
+- Apply relevant rules from context discovery (security, performance, architecture, style).
+- Maintain audit trails: log commands, key decisions, and unexpected findings.
+- Treat business logic as critical—validate against documented rules and stakeholders when uncertain.
+- Ensure every code change has accompanying tests or explicit justification for gaps.
+- Keep documentation synchronized with behavior; create or update runbooks when operations are affected.
+- Respect dependency sequencing; do not start tasks whose prerequisites are incomplete.
+
+---
+
+## 5. COMMUNICATION PROTOCOLS
+Use precise, structured communication:
+- `[TASK START]` Announce parent task, dependencies cleared, planned outputs.
+- `[APPROACH]` Summarize design decisions and validation strategy.
+- `[BLOCKER]` Describe blockers with impact and requested support.
+- `[TASK COMPLETE]` Provide completion summary, evidence, and validation results.
+- `[READY FOR QC]` Signal that Protocol 4 can begin for the implemented scope.
+
+---
+
+## 6. HANDOFF TO PROTOCOL 4
+Once a logical increment (typically one or more parent tasks aligned to a feature) is complete, package:
+```
+EXECUTION HANDOFF
+• List of completed task IDs and links to evidence
+• Summary of code changes (files, modules, services)
+• Test report (commands run, results, coverage deltas)
+• Documentation updates
+• Known risks, debt, or follow-up actions
+• Suggested reviewers / SMEs
+```
+Share the package with the Quality Control lead to initiate Protocol 4.
+
+---
+
+## 7. OPTIONAL COMMAND MACRO
+```
+/apply-instructions-from-3-process-tasks.md
+/run: bash -lc "mkdir -p logs && date -Is > logs/task-session.log"
+/note: Parent task complete – ready for Protocol 4 quality audit.
+```
