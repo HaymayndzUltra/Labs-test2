@@ -1,0 +1,113 @@
+---
+description: "TAGS: [global,workflow,task,roles] | TRIGGERS: /taskrole | SCOPE: global | DESCRIPTION: Converts specific AI tasks into precise system instructions with exact deliverables and file requirements."
+globs: .cursor/commands/taskrole.md
+---
+
+# Task-to-System-Instruction Converter Rule
+
+## Primary Function
+Take any specific AI task and convert it into a precise system instruction that tells the AI exactly what to do, what files to create, and what deliverables to produce.
+
+## Input Processing
+
+### 1. Task Analysis
+- Parse the complete task description provided
+- Extract specific requirements and deliverables
+- Identify file creation needs and formats
+- Determine exact output requirements
+
+### 2. Requirement Extraction
+- Identify specific files to create
+- Extract exact formats and naming conventions
+- Determine clear deliverables and success criteria
+- Identify validation requirements
+
+## System Instruction Generation
+
+### 1. Exact Task Definition
+- Define the specific task in clear, actionable terms
+- Specify exactly what the AI should do
+- Include specific file creation requirements
+- Define exact output formats and naming conventions
+
+### 2. Deliverable Specification
+- List exact files to create
+- Specify file formats and structure
+- Define naming conventions
+- Include content requirements for each file
+
+### 3. Success Criteria
+- Define clear validation criteria
+- Specify what constitutes successful completion
+- Include quality standards
+- Define handoff procedures if needed
+
+## Output Format
+
+### 1. System Instruction Structure
+
+System Instruction: [Specific Task Name]
+Task Definition
+[Exact task description and requirements]
+Files to Create
+[File 1]: [Format] - [Purpose and content requirements]
+[File 2]: [Format] - [Purpose and content requirements]
+Deliverables
+[Exact deliverables and their specifications]
+Success Criteria
+[Clear validation criteria and quality standards]
+Validation
+[How to verify the task is completed correctly]
+
+
+
+### 2. Quality Standards
+- Every instruction must be specific and actionable
+- Include exact file creation requirements
+- Specify precise formats and naming conventions
+- Define clear success criteria
+- No ambiguity about what to do
+
+## Implementation Example
+
+### Example Input: "Create a React component for user authentication"
+
+### Example Output:
+
+System Instruction: React Authentication Component
+Task Definition
+Create a complete React authentication component with login and registration functionality, including form validation and error handling.
+Files to Create
+src/components/AuthComponent.jsx: React component file - Complete authentication component with login/register forms
+src/styles/AuthComponent.css: CSS file - Styling for the authentication component
+src/utils/authValidation.js: JavaScript utility file - Form validation functions
+README.md: Documentation file - Usage instructions and API documentation
+Deliverables
+Functional React authentication component
+Complete form validation system
+Responsive CSS styling
+Comprehensive documentation
+Success Criteria
+Component renders without errors
+Login and registration forms work correctly
+Form validation prevents invalid submissions
+Responsive design works on mobile and desktop
+Code follows React best practices
+Documentation is complete and clear
+Validation
+Test component renders in browser
+Verify form validation works
+Check responsive design
+Review code quality and documentation
+
+
+
+## Success Metrics
+- **Specificity**: 100% specific to the exact task
+- **Actionability**: All instructions are immediately actionable
+- **Completeness**: All requirements covered
+- **Clarity**: No ambiguity about what to do
+- **Measurability**: Clear success criteria defined
+
+## Remember
+**This rule converts any specific AI task into a precise system instruction that tells the AI exactly what to do, what files to create, and what deliverables to produce - nothing more, nothing less.**

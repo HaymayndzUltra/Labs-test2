@@ -137,7 +137,7 @@ Is this correct? Should we continue?"
 
 ### Example 4: Final Confirmation
 
-User: "Yes, that's all"
+User: "Yes, that's all" , "go" , "proceed"
 AI: "Perfect! Let me confirm:
 📋 FINAL CHECKPOINT SUMMARY
 Requirements Collected So Far:
